@@ -9,10 +9,11 @@ void loop() {
   moveRA = (hourRA * onehour + minRA * (onehour / float(60)) + secRA * (onehour / float(3600))) / 2;
   moveDEC = (degreeDEC * float(164) + minDEC * (float(164) / float(60)) + secDEC * (float(164) / float(3600))) / 2;
 
-  if (moveRA > 6 * onehour) {         //turn both RA and DEC axis around if target is below horizontal parallel
-    moveRA -= long(12 * onehour);
+  if (moveRA > (6 * onehour / 2)) {         //turn both RA and DEC axis around if target is below horizontal parallel
+    moveRA -= long(12 * onehour / 2);
     moveDEC = -moveDEC;
   }
+
   stepperRA.moveTo(-moveRA);
   stepperDEC.moveTo(moveDEC);
 
@@ -37,7 +38,7 @@ void loop() {
         }
         while (menu == 5) {
           inputcal += 1;  //0.0001;
-          
+
           break;
         }
         break;
@@ -58,7 +59,7 @@ void loop() {
         }
         while (menu == 5) {
           inputcal -= 1 ; //0.0001;
-          
+
           break;
         }
         //while (menu == 2) {
@@ -73,8 +74,8 @@ void loop() {
       }
 
     case btnSELECT: {
-        /*stepperRA.moveTo(moveRA);
-          stepperDEC.moveTo(moveDEC);*/
+        /*stepperRA.moveTo(-moveRA);
+        stepperDEC.moveTo(moveDEC);*/
         if (menu < 2) {
           while (stepperRA.distanceToGo() != 0  && stepperDEC.distanceToGo() == 0) {
             stepperRA.run();

@@ -33,8 +33,8 @@ if (!pcControl) {
       //lcd.print("                    ");
 
       //lcd.print(int(diamCorrection));   //for debugging
-      lcd.print("   ");
-      lcd.print(hourRA);
+      lcd.print("");
+      lcd.print(moveRA);
       //lcd.print("   ");
     }
     if (RAselect == 1) {

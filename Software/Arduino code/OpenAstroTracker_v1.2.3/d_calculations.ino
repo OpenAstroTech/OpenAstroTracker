@@ -49,7 +49,9 @@ hourRAprint = hourRA + hHAcorrection;
 if (mHAcorrection < 0) hourRAprint -= 1;
 minRAprint = minRA + mHAcorrection;
 int secRAprint = secRA + sHAcorrection;
+
 //if (hourRA > 12) hourRA += -24;
+
 if (minRAprint > 59) {
   minRA -= 60;
   hourRA += 1;
