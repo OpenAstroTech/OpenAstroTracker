@@ -14,3 +14,6 @@ All parts needed once, except:
 
 The different versions for latitudes work in a +/- 5° degree range. Currently no support for southern hemisphere or latitudes outside 55-15° N.
 Also check out the first add-on, the [OpenAstroGuider](https://github.com/OpenAstroTech/OpenAstroGuider)
+
+## What to buy
+[Shopping list](https://docs.google.com/spreadsheets/d/1L4PQiUul5nzP-nE1Q71Y6VLvNZevVYpP3fgTrcX0LEM/edit?usp=sharing) 
