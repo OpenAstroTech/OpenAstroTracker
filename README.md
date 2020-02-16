@@ -1,2 +1,2 @@
-# OpenAstroTracker
-3D printed DSLR tracking mount
+## The OpenAstroTracker:
+A 3D printed, cheap Tracker for DSLR astrophotography.
