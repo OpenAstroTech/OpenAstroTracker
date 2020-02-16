@@ -10,3 +10,7 @@ All parts needed once, except:
 All parts needed once, except:
  -  part 17, twice
  - part 23, twice
+
+
+The different versions for latitudes work in a +/- 5° degree range. Currently no support for southern hemisphere or latitudes outside 55-15° N.
+Also check out the first add-on, the [OpenAstroGuider](https://github.com/OpenAstroTech/OpenAstroGuider)
