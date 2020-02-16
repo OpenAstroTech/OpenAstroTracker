@@ -22,7 +22,9 @@ I strongly suggest starting with part 14, the lens ring. If you cant make it fit
 
 ## Guides and how-to
 [Arduino wiring](https://imgur.com/hBMxBpg)
+
 [General Guide](https://drive.google.com/file/d/1_YVxujLwpIfMiU5c_vcGPQ0UwRyjkiqJ/view) for older version, needs revision
+
 [Polar alignment](https://drive.google.com/file/d/1WRThR709xvfjo2IPQmQuXUPK6YBmoFnY/view)
 
 **How to use the SCAD lens ring generator:**
