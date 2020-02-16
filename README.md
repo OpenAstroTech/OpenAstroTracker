@@ -4,18 +4,19 @@ A 3D printed, cheap Tracker for DSLR astrophotography.
 ## What parts to print:
 **For latitude specific parts:**
 All parts needed once, except:
- - part 10, needed 4 times
+ - part 05, needed 4 times
+ - 20degree has its own version of part 01a, dont use the one from all lat.
 
 **For all latitudes:**
 All parts needed once, except:
- -  part 17, twice
- - part 23, twice
+ -  part 12, twice
+ - part 15, twice
 
 
 The different versions for latitudes work in a +/- 5° degree range. Currently no support for southern hemisphere or latitudes outside 55-15° N.
 Also check out the first add-on, the [OpenAstroGuider](https://github.com/OpenAstroTech/OpenAstroGuider)
 
-I strongly suggest starting with part 14, the lens ring. If you cant make it fit, you will not be able to use the mount at this point. 
+I strongly suggest starting with part 09, the lens ring. If you cant make it fit, you will not be able to use the mount at this point. 
 
 ## What to buy
 [Shopping list](https://docs.google.com/spreadsheets/d/1L4PQiUul5nzP-nE1Q71Y6VLvNZevVYpP3fgTrcX0LEM/edit?usp=sharing) 
@@ -26,6 +27,8 @@ I strongly suggest starting with part 14, the lens ring. If you cant make it fit
 [General Guide](https://drive.google.com/file/d/1_YVxujLwpIfMiU5c_vcGPQ0UwRyjkiqJ/view) for older version, needs revision
 
 [Polar alignment](https://drive.google.com/file/d/1WRThR709xvfjo2IPQmQuXUPK6YBmoFnY/view)
+
+Other guides, including a assembly guide will follow shortly.
 
 **How to use the SCAD lens ring generator:**
 You will need [OpenSCAD](https://www.openscad.org/downloads.html)
