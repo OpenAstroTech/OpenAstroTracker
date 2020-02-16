@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ASCOM.Internal.Extensions</name>
+    </assembly>
+    <members>
+        <member name="T:ASCOM.Internal.FileInfoExtensions">
+            <summary>
+            Extension methods relating to <see cref="T:System.IO.FileInfo"/>.
+            </summary>
+        </member>
+        <member name="F:ASCOM.Internal.FileInfoExtensions.deviceClasses">
+            <summary>
+            The recognized ASCOM device classes.
+            </summary>
+            <remarks>
+            This list is specifically intended to support the Template Project Wizard
+            and contains a list of the device types for which the Wizard can expand
+            a project template.
+            </remarks>
+        </member>
+        <member name="M:ASCOM.Internal.FileInfoExtensions.IsDeviceSpecific(System.IO.FileInfo)">
+            <summary>
+            Determines whether the specified file is device specific.
+            </summary>
+            <param name="file">The file.</param>
+            <returns>
+            	<c>true</c> if it is device specific; otherwise, <c>false</c>.
+            </returns>
+            <remarks>
+            A file is considered 'device specific' if it meets the following criteria:
+            <list type="number">
+            	<item>
+            		The filename contains at least two dots ('.');
+            	</item>
+            	<item>
+            		The first dot-delimited segment of the filename matches one of the
+            		recognized interface types contained in
+            	</item>
+            </list>
+            </remarks>
+        </member>
+        <member name="T:ASCOM.Internal.IntExtensions">
+            <summary>
+            tring extension methods
+            </summary>
+        </member>
+        <member name="F:ASCOM.Internal.IntExtensions.bitMask">
+            <summary>
+            Defines a lookup table of bit masks, for a fast method of determining
+            a mask for any given bit position.
+            N.B. It might just be quicker to raise to a power of two,
+            the compiler might be smart enough to optimize that.
+            </summary>
+        </member>
+        <member name="M:ASCOM.Internal.IntExtensions.Bit(System.UInt32,System.Int32)">
+            <summary>
+            Returns a boolean value corresponding to the value at the specified bit position.
+            </summary>
+            <param name="register">The register, an unsigned integer, containing bit values.</param>
+            <param name="bitPosition">The bit position to be tested, where bit 0 is the least significant bit.</param>
+            <returns>A boolean value corresponding to the bit at the specified bit position.</returns>
+        </member>
+        <member name="M:ASCOM.Internal.IntExtensions.Bit(System.Int32,System.Int32)">
+            <summary>
+            Returns a boolean value corresponding to the value at the specified bit position.
+            </summary>
+            <param name="register">The register, an integer, containing bit values.</param>
+            <param name="bitPosition">The bit position to be tested, where bit 0 is the least significant bit.</param>
+            <returns>A boolean value corresponding to the bit at the specified bit position.</returns>
+        </member>
+        <member name="T:ASCOM.Internal.StringExtensions">
+            <summary>
+              String extension methods.
+            </summary>
+            <remarks>
+              Internal use only. Driver and application developers should not rely on this class,
+              because the interface and method signatures may change at any time.
+            </remarks>
+        </member>
+        <member name="M:ASCOM.Internal.StringExtensions.Head(System.String,System.Int32)">
+            <summary>
+              Returns the specified number of characters from the head of a string.
+            </summary>
+            <param name = "source">The source string.</param>
+            <param name = "length">The number of characters to be returned, must not be greater than the length of the string.</param>
+            <returns>The specified number of characters from the head of the source string, as a new string.</returns>
+            <exception cref = "T:System.ArgumentOutOfRangeException">Thrown if the requested number of characters exceeds the string length.</exception>
+        </member>
+        <member name="M:ASCOM.Internal.StringExtensions.Tail(System.String,System.Int32)">
+            <summary>
+              Returns the specified number of characters from the tail of a string.
+            </summary>
+            <param name = "source">The source string.</param>
+            <param name = "length">The number of characters to be returned, must not be greater than the length of the string.</param>
+            <returns>The specified number of characters from the tail of the source string, as a new string.</returns>
+            <exception cref = "T:System.ArgumentOutOfRangeException">Thrown if the requested number of characters exceeds the string length.</exception>
+        </member>
+        <member name="M:ASCOM.Internal.StringExtensions.Clean(System.String,System.String)">
+            <summary>
+              Cleans (that is, removes all unwanted characters) from the string.
+            </summary>
+            <param name = "source">The source string.</param>
+            <param name = "allowedCharacters">A list of the allowed characters. All other characters will be removed.</param>
+            <returns>A new string with all of the unwanted characters deleted.</returns>
+        </member>
+        <member name="M:ASCOM.Internal.StringExtensions.RemoveHead(System.String,System.Int32)">
+            <summary>
+            Remove the head of the string, leaving the tail.
+            </summary>
+            <param name="source">The source string.</param>
+            <param name="length">Number of characters to remove from the head.</param>
+            <returns>
+            A new string containing the old string with <paramref name="length"/> characters removed from the head.
+            </returns>
+        </member>
+        <member name="M:ASCOM.Internal.StringExtensions.RemoveTail(System.String,System.Int32)">
+            <summary>
+              Remove the tail of the string, leaving the head.
+            </summary>
+            <param name = "source">The source string.</param>
+            <param name = "length">Number of characters to remove from the tail.</param>
+            <returns>A new string containing the old string with <paramref name="length"/> characters removed from the tail.</returns>
+        </member>
+    </members>
+</doc>

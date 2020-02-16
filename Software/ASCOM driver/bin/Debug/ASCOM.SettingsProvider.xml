@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ASCOM.SettingsProvider</name>
+    </assembly>
+    <members>
+        <member name="T:TiGra.Diagnostics">
+            <summary>
+            The Diagnostics class provides a few helper methods that make it easier to produce coherent
+            debugging output. The class is implemented as a singleton that is created as soon as the assembly
+            is loaded. The level of trace output that is produced is controlled by a <see cref="T:System.Diagnostics.TraceSwitch"/>
+            that in turn loads its configuration from the App.config file. If there is no App.Config file,
+            the default is to produce verbose output for debug builds and errors/warnings for release builds.
+            <para>
+            We recommend SysInternals DbgView for viewing and capturing the trace output.
+            See http://www.sysinternals.com
+            </para>
+            </summary>
+        </member>
+        <member name="F:TiGra.Diagnostics.TraceLevels">
+            <summary>
+            Text versions of the various trace levels.
+            </summary>
+        </member>
+        <member name="M:TiGra.Diagnostics.#ctor">
+            <summary>
+            Construct and initialise diagnostics.
+            </summary>
+        </member>
+        <member name="M:TiGra.Diagnostics.GetInstance">
+            <summary>
+            Gets a reference to the one and only instance of this singleton class.
+            </summary>
+            <returns>a reference to the one and only instance of this singleton class.</returns>
+        </member>
+        <member name="M:TiGra.Diagnostics.TraceError(System.Object)">
+            <summary>
+            Send an object to the trace channel at severity level Error.
+            </summary>
+            <param name="msg">The object (which may be a string) to display.</param>
+        </member>
+        <member name="M:TiGra.Diagnostics.TraceError(System.String,System.Object[])">
+            <summary>
+            Format and send a list of objects to the trace channel at severity level Error.
+            </summary>
+            <param name="format">Format string used to format the objects.</param>
+            <param name="items">List of objects to be displayed.</param>
+        </member>
+        <member name="M:TiGra.Diagnostics.TraceWarning(System.Object)">
+            <summary>
+            Send an object to the trace channel at severity level Warning.
+            </summary>
+            <param name="msg">The object (which may be a string) to display.</param>
+        </member>
+        <member name="M:TiGra.Diagnostics.TraceWarning(System.String,System.Object[])">
+            <summary>
+            Format and send a list of objects to the trace channel at severity level Warning.
+            </summary>
+            <param name="format">Format string used to format the objects.</param>
+            <param name="items">List of objects to be displayed.</param>
+        </member>
+        <member name="M:TiGra.Diagnostics.TraceInfo(System.Object)">
+            <summary>
+            Send an object to the trace channel at severity level Information.
+            </summary>
+            <param name="msg">The object (which may be a string) to display.</param>
+        </member>
+        <member name="M:TiGra.Diagnostics.TraceInfo(System.String,System.Object[])">
+            <summary>
+            Format and send a list of objects to the trace channel at severity level Information.
+            </summary>
+            <param name="format">Format string used to format the objects.</param>
+            <param name="items">List of objects to be displayed.</param>
+        </member>
+        <member name="M:TiGra.Diagnostics.TraceVerbose(System.Object)">
+            <summary>
+            Send an object to the trace channel at severity level Verbose Information.
+            </summary>
+            <param name="msg">The object (which may be a string) to display.</param>
+        </member>
+        <member name="M:TiGra.Diagnostics.TraceVerbose(System.String,System.Object[])">
+            <summary>
+            Format and send a list of objects to the trace channel at severity level Verbose Information.
+            </summary>
+            <param name="format">Format string used to format the objects.</param>
+            <param name="items">List of objects to be displayed.</param>
+        </member>
+        <member name="T:ASCOM.SettingsProvider">
+            <summary>
+              Provides settings storage for ASCOM device drivers.
+              Settings are persisted in the ASCOM Device Profile store.
+            </summary>
+            <remarks>
+              Original version by Tim Long, March 2009.
+              Copyright © 2009 TiGra Astronomy, all rights reserved.
+              http://www.tigranetworks.co.uk/Astronomy
+            </remarks>
+        </member>
+        <member name="F:ASCOM.SettingsProvider.ascomProfile">
+            <summary>
+              A reference to an ASCOM profile provider. Normally, this will be the default implementation defined in
+              <see cref = "T:ASCOM.Utilities.Profile" />, but unit tests can also use dependency injection to provide
+              a mock provider. This value will be initialized (once) in the constructor.
+            </summary>
+        </member>
+        <member name="F:ASCOM.SettingsProvider.appName">
+            <summary>
+              Backing store for the ApplicationName property.
+            </summary>
+        </member>
+        <member name="M:ASCOM.SettingsProvider.#ctor">
+            <summary>
+              Initializes a new instance of the <see cref = "T:ASCOM.SettingsProvider" /> class with the default
+              profile provider <see cref = "T:ASCOM.Utilities.Profile" />.
+            </summary>
+        </member>
+        <member name="M:ASCOM.SettingsProvider.#ctor(ASCOM.Utilities.Interfaces.IProfile)">
+            <summary>
+              Initializes a new instance of the <see cref = "T:ASCOM.SettingsProvider" /> class with the supplied
+              Profile Provider. This is useful for injecting a mock profile object during unit testing.
+            </summary>
+            <param name = "profileProvider">The <see cref = "T:ASCOM.Utilities.Interfaces.IProfile" /> to be used.</param>
+        </member>
+        <member name="P:ASCOM.SettingsProvider.Name">
+            <summary>
+              Returns the provider's friendly name used during configuration.
+            </summary>
+        </member>
+        <member name="P:ASCOM.SettingsProvider.Description">
+            <summary>
+              Gets the provider's friendly description.
+            </summary>
+        </member>
+        <member name="P:ASCOM.SettingsProvider.ApplicationName">
+            <summary>
+              Gets the name of the driver or application for which settings are being managed.
+              This value is set during provider initialization and cannot be changed thereafter.
+            </summary>
+        </member>
+        <member name="M:ASCOM.SettingsProvider.Initialize(System.String,System.Collections.Specialized.NameValueCollection)">
+            <summary>
+              Initializes the ASCOM Settings Provider.
+            </summary>
+            <param name = "name">Ignored.</param>
+            <param name = "config">Not used.</param>
+            <remarks>
+              This method is called by <see cref = "T:System.Configuration.ApplicationSettingsBase" /> to initialize the settings provider.
+              Normally, this will set the provider's <see cref = "P:ASCOM.SettingsProvider.ApplicationName" /> property to the assembly name
+              of the application. This is later used to determine the storage location of each of the settings.
+              However, for ASCOM purposes, we can't use the application name and we need to key off the
+              ASCOM DeviceID of the driver, so in ASCOM.SettingsProvider, the application name is set but never used.
+            </remarks>
+        </member>
+        <member name="M:ASCOM.SettingsProvider.GetPropertyValues(System.Configuration.SettingsContext,System.Configuration.SettingsPropertyCollection)">
+            <summary>
+              Retrieves a collection of settings values from the underlying ASCOM Profile store.
+            </summary>
+            <param name = "context">Not used.</param>
+            <param name = "collection">The list of properties to be retrieved.</param>
+            <returns>
+              Returns a collection of the retrieved property values as a
+              <see cref = "T:System.Configuration.SettingsPropertyValueCollection" />.
+            </returns>
+            <remarks>
+              If any properties are absent in the underlying store, or if an error occurs while
+              retrieving them, then the property's default value is used.	This will be the case
+              if the driver has never been registered with ASCOM.
+            </remarks>
+        </member>
+        <member name="M:ASCOM.SettingsProvider.SetPropertyValues(System.Configuration.SettingsContext,System.Configuration.SettingsPropertyValueCollection)">
+            <summary>
+              Persists a collection of settings values to the underlying ASCOM Profile store.
+            </summary>
+            <param name = "context">Context to which the settings will be saved</param>
+            <param name = "collection">Settings to be saved</param>
+        </member>
+        <member name="M:ASCOM.SettingsProvider.EnsureRegistered(ASCOM.Utilities.Interfaces.IProfile,System.String)">
+            <summary>
+              Checks whether the driver is registered with ASCOM and, if not, registers it.
+            </summary>
+            <param name = "ascomProfile">
+              A reference to a <see cref = "T:ASCOM.Utilities.Profile" /> object
+              that is used to query the ASCOM Device Profile.
+            </param>
+            <param name = "driverId">The full ASCOM DeviceID to be verified.</param>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ASCOM.Attributes</name>
+    </assembly>
+    <members>
+        <member name="T:ASCOM.DeviceIdAttribute">
+            <summary>
+              An attribute for declaratively associating an assembly, class or property with an 
+              ASCOM device ID (and optionally, a display name).
+            </summary>
+            <remarks>
+              This attribute is intended for use in two main situations:
+              <list type = "number">
+                <item>
+                  <term>
+                    Settings management and integration with Visual Studio designers
+                  </term>
+                  <description>
+                    When this attribute is placed on the driver's <c>Properties.Settings</c> class, it  propagates
+                    down to each of the settings properties. When the setting is passed to the 
+                    <c>ASCOM.SettingsProvider</c> class at runtime, the settings provider looks for this attribute
+                    to determine which settings hive to save the value in when it is passed to 
+                    <see cref = "T:ASCOM.Utilities.Profile" />.
+                  </description>
+                </item>
+                <item>
+                  <term>
+                    Deployment
+                  </term>
+                  <description>
+                    The values in this attribute could be used by an installer custom action to perform
+                    ASCOM registration during setup. Historically this has been handled programmatically,
+                    but there are trends towards a more declarative approach to deployment (for example
+                    WiX, Windows Installer Xml). It is expected that such an installer may need to obtain
+                    registration data by reflecting on the assemblies being installed. Placing this attribute
+                    at the assembly level will assist in this situation.
+                  </description>
+                </item>
+              </list>
+            </remarks>
+        </member>
+        <member name="M:ASCOM.DeviceIdAttribute.#ctor(System.String)">
+            <summary>
+              Initializes a new instance of the <see cref = "T:ASCOM.DeviceIdAttribute" /> class.
+            </summary>
+            <param name = "deviceId">The ASCOM device ID (aka COM ProgID) to be associated with the class.</param>
+            <remarks>
+              <para>
+                Recommended usage is:
+                <example>
+                  [DeviceId("ASCOM.SuperDuper.Telescope", DeviceName="SuperDuper Deluxe")]
+                </example>
+              </para>
+              <para>
+                In the event that the DeviceName optional parameter is not set, it will return the DeviceId.
+              </para>
+            </remarks>
+        </member>
+        <member name="P:ASCOM.DeviceIdAttribute.DeviceId">
+            <summary>
+              Gets the ASCOM DeviceID, also known as the COM ProgID.
+            </summary>
+        </member>
+        <member name="P:ASCOM.DeviceIdAttribute.DeviceName">
+            <summary>
+              Gets or sets the display name of the device. This would be the short display name, as displayed in the ASCOM Chooser.
+            </summary>
+            <value>The name of the device.</value>
+        </member>
+        <member name="T:ASCOM.ServedClassNameAttribute">
+            <summary>
+              An attribute that confers a 'friendly name' on a class and marks it as loadable by LocalServer.
+              The 'friendly name' is used by the ASCOM LocalServer to register the class with the ASCOM Chooser.
+              The 'friendly name' is what gets displayed to the user in the driver selection combo box.
+              This attribute is also used by the LocalServer to filter the assemblies that it will
+              attempt to load at runtime. LocalServer will only load classes bearing this attribute.
+            </summary>
+        </member>
+        <member name="M:ASCOM.ServedClassNameAttribute.#ctor(System.String)">
+            <summary>
+              Initializes a new instance of the <see cref = "T:ASCOM.ServedClassNameAttribute" /> class.
+            </summary>
+            <param name = "servedClassName">The 'friendly name' of the served class.</param>
+        </member>
+        <member name="P:ASCOM.ServedClassNameAttribute.DisplayName">
+            <summary>
+              Gets or sets the 'friendly name' of the served class, as registered with the ASCOM Chooser.
+            </summary>
+            <value>The 'friendly name' of the served class.</value>
+        </member>
+    </members>
+</doc>
