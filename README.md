@@ -32,6 +32,7 @@ Other guides, including a assembly guide will follow shortly.
 
 **How to use the SCAD lens ring generator:**
 You will need [OpenSCAD](https://www.openscad.org/downloads.html)
+
 Take a look at an [example for my lens](https://imgur.com/Ql9mAmH).
  1. Start by roughly estimating the center of gravity of your lens with the camera attached.
  2. The coupler is going to be 30mm long, so you need measurements of 15mm in either direction from the center of gravity.
