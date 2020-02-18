@@ -1,5 +1,6 @@
-![ ](https://i.imgur.com/qGr2bFf.jpg)
 # The OpenAstroTracker:
+![ ](https://i.imgur.com/qGr2bFf.jpg)
+
 A 3D printed, cheap Tracker for DSLR astrophotography.
 
 Head over to [r/OpenAstroTech](https://www.reddit.com/r/OpenAstroTech/) for questions and stuff.
