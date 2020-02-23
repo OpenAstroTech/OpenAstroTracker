@@ -1,9 +1,0 @@
-C:\Users\Fabian\source\repos\OpenAstroTracker Control\bin\Release\OpenAstroTracker Control.exe.config
-C:\Users\Fabian\source\repos\OpenAstroTracker Control\bin\Release\OpenAstroTracker Control.exe
-C:\Users\Fabian\source\repos\OpenAstroTracker Control\bin\Release\OpenAstroTracker Control.pdb
-C:\Users\Fabian\source\repos\OpenAstroTracker Control\obj\Release\OpenAstroTracker Control.csprojAssemblyReference.cache
-C:\Users\Fabian\source\repos\OpenAstroTracker Control\obj\Release\OpenAstroTracker_Control.Form1.resources
-C:\Users\Fabian\source\repos\OpenAstroTracker Control\obj\Release\OpenAstroTracker_Control.Properties.Resources.resources
-C:\Users\Fabian\source\repos\OpenAstroTracker Control\obj\Release\OpenAstroTracker Control.csproj.GenerateResource.cache
-C:\Users\Fabian\source\repos\OpenAstroTracker Control\obj\Release\OpenAstroTracker Control.exe
-C:\Users\Fabian\source\repos\OpenAstroTracker Control\obj\Release\OpenAstroTracker Control.pdb
