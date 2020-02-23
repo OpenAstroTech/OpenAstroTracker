@@ -5,12 +5,16 @@ void loop() {
   //speedcalibration += inputcal / 1000;
   float trackingspeed = ((((335.1417 / 24) / 12) * RevSteps) / 3590) - 1 + float(speedcalibration);
 
-  float onehour = float(float(335.1417 / 24) / 12) * RevSteps;
+  float onehour = float(float(RAsteps / 24) / 12) * RevSteps;
   moveRA = (hourRA * onehour + minRA * (onehour / float(60)) + secRA * (onehour / float(3600))) / 2;
   moveDEC = (degreeDEC * float(164) + minDEC * (float(164) / float(60)) + secDEC * (float(164) / float(3600))) / 2;
 
   if (moveRA > (6 * onehour / 2)) {         //turn both RA and DEC axis around if target is below horizontal parallel
     moveRA -= long(12 * onehour / 2);
+    moveDEC = -moveDEC;
+  }
+  if (moveRA < (-6 * onehour / 2)) {         
+    moveRA += long(12 * onehour / 2);
     moveDEC = -moveDEC;
   }
 
@@ -75,7 +79,7 @@ void loop() {
 
     case btnSELECT: {
         /*stepperRA.moveTo(-moveRA);
-        stepperDEC.moveTo(moveDEC);*/
+          stepperDEC.moveTo(moveDEC);*/
         if (menu < 2) {
           while (stepperRA.distanceToGo() != 0  && stepperDEC.distanceToGo() == 0) {
             stepperRA.run();

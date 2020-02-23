@@ -1,7 +1,3 @@
-//guidedirectionE = guidedirectionW;
-
-
-
 while (RAheat == 1) {
   //tracking = 0;
   //stepperRA.enableOutputs();
