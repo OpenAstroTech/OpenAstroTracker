@@ -5,7 +5,7 @@ void loop() {
   //speedcalibration += inputcal / 1000;
   float trackingspeed = ((((335.1417 / 24) / 12) * RevSteps) / 3590) - 1 + float(speedcalibration);
 
-  float onehour = float(float(RAsteps / 24) / 12) * RevSteps;
+  float onehour = RevSteps * ((RAsteps) / 288);
   moveRA = (hourRA * onehour + minRA * (onehour / float(60)) + secRA * (onehour / float(3600))) / 2;
   moveDEC = (degreeDEC * float(164) + minDEC * (float(164) / float(60)) + secDEC * (float(164) / float(3600))) / 2;
 
