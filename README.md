@@ -5,6 +5,8 @@ A 3D printed, cheap Tracker for DSLR astrophotography.
 
 Head over to [r/OpenAstroTech](https://www.reddit.com/r/OpenAstroTech/) for questions and stuff.
 
+I you would be interested in buying the tracker as a printed kit, head over to [this site](https://openastrotech.com/products/)
+
 ## What parts to print:
 **For latitude specific parts:**
 All parts needed once, except:
