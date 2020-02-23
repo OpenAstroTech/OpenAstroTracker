@@ -7,3 +7,12 @@ C:\Users\Fabian\source\repos\OpenAstroTracker Control\bin\Debug\OpenAstroTracker
 C:\Users\Fabian\source\repos\OpenAstroTracker Control\obj\Debug\OpenAstroTracker Control.exe
 C:\Users\Fabian\source\repos\OpenAstroTracker Control\obj\Debug\OpenAstroTracker Control.pdb
 C:\Users\Fabian\source\repos\OpenAstroTracker Control\obj\Debug\OpenAstroTracker Control.csprojAssemblyReference.cache
+I:\OpenAstroTracker\Software\PC control\bin\Debug\OpenAstroTracker Control.exe.config
+I:\OpenAstroTracker\Software\PC control\bin\Debug\OpenAstroTracker Control.exe
+I:\OpenAstroTracker\Software\PC control\bin\Debug\OpenAstroTracker Control.pdb
+I:\OpenAstroTracker\Software\PC control\obj\Debug\OpenAstroTracker Control.csprojAssemblyReference.cache
+I:\OpenAstroTracker\Software\PC control\obj\Debug\OpenAstroTracker_Control.Form1.resources
+I:\OpenAstroTracker\Software\PC control\obj\Debug\OpenAstroTracker_Control.Properties.Resources.resources
+I:\OpenAstroTracker\Software\PC control\obj\Debug\OpenAstroTracker Control.csproj.GenerateResource.cache
+I:\OpenAstroTracker\Software\PC control\obj\Debug\OpenAstroTracker Control.exe
+I:\OpenAstroTracker\Software\PC control\obj\Debug\OpenAstroTracker Control.pdb
