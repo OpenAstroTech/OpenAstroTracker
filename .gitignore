@@ -2,7 +2,11 @@
 Software/PC control/.vs/
 Software/PC control/bin/Debug/
 Software/PC control/bin/Release/
+Software/PC control/obj/Debug/
+Software/PC control/obj/Release/
 
 Software/ASCOM driver/.vs/
 Software/ASCOM driver/bin/Debug/
 Software/ASCOM driver/bin/Release/
+Software/ASCOM driver/obj/Debug/
+Software/ASCOM driver/obj/Release/
