@@ -24,7 +24,6 @@ while (tracking == 1) {
   break;
 }
 
-//if (stepperRA.distanceToGo() == 0) stepperRA.disableOutputs();
 
 currentSecs = millis() / 1000;
 
@@ -56,6 +55,11 @@ if (hourRA > 23) hourRA -= 24;
 if (hourRAprint < 0) hourRAprint += 24;
 if (minRAprint < 0) minRAprint += 60;
 
-
-int printdegDEC = degreeDEC + 90;
-if (printdegDEC > 90) degreeDEC = 0;
+if (!north) {
+  printdegDEC = degreeDEC - 90;
+  if (printdegDEC < -90) degreeDEC = 0;
+}
+else {
+  printdegDEC = degreeDEC + 90;
+  if (printdegDEC > 90) degreeDEC = 0;
+}

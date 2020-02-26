@@ -5,6 +5,7 @@
 #include <LiquidCrystal.h>
 #define HALFSTEP 8
 #define FULLSTEP 4
+
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 
 #define motorPin1  2    // IN1 auf ULN2003 driver 1
@@ -86,6 +87,7 @@ int minDEC;
 int secDEC;
 float moveDEC;
 int DECselect;
+int printdegDEC;
 
 //Hour correction
 int hourHA = 0;

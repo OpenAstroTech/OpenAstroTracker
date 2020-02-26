@@ -1,16 +1,22 @@
 if (!pcControl) {
-
-
   lcd.setCursor(0, 0);
-
-  if (menu == 0) lcd.print(">RAs<DEC HA POL ");
-  if (menu == 1) lcd.print(" RAs>DEC<HA POL ");
-  //if (menu == 2) lcd.print(" RAs DEC>HOM<TRK");
-  //if (menu == 3) lcd.print(" RAs DEC HOM>TRK");
-  if (menu == 2) lcd.print(" RAs DEC>HA<POL ");
-  if (menu == 3) lcd.print(" RAs DEC HA>POL<");
-  if (menu == 4) lcd.print(" DEC HA POL>HEAT");
-  if (menu == 5) lcd.print("HA POL HEAT>CAL<");
+  
+  if (north == true) {
+    if (menu == 0) lcd.print(">RAs<DEC HA POL ");
+    if (menu == 1) lcd.print(" RAs>DEC<HA POL ");
+    if (menu == 2) lcd.print(" RAs DEC>HA<POL ");
+    if (menu == 3) lcd.print(" RAs DEC HA>POL<");
+    if (menu == 4) lcd.print(" DEC HA POL>HEAT");
+    if (menu == 5) lcd.print("HA POL HEAT>CAL<");
+  }
+  else {
+    if (menu == 0) lcd.print(">RAs<DEC HA HEAT");
+    if (menu == 1) lcd.print(" RAs>DEC<HA HEAT");
+    if (menu == 2) lcd.print(" RAs DEC>HA<HEAT");
+    //if (menu == 3) lcd.print(" RAs DEC HA>POL<");
+    if (menu == 4) lcd.print(" DEC HA>HEAT<CAL");
+    if (menu == 5) lcd.print("DEC HA HEAT>CAL<");
+  }
 
 
 
@@ -30,11 +36,11 @@ if (!pcControl) {
       lcd.print("m ");
       lcd.print(int(secRAprint));
       lcd.print("s");
-      //lcd.print("                    ");
+      lcd.print("                    ");
 
       //lcd.print(int(diamCorrection));   //for debugging
-      lcd.print("");
-      lcd.print(moveRA);
+      //lcd.print("");
+      //lcd.print(moveRA);
       //lcd.print("   ");
     }
     if (RAselect == 1) {
@@ -191,11 +197,11 @@ if (!pcControl) {
   }
   if (hPolarisPosition < -6) hPolarisPosition += 24;
   if (hPolarisPosition > 6) hPolarisPosition -= 12;
-  if (menu == 3) {
-    lcd.print(hPolarisPosition);
+  if (menu == 3 && north == true) {
+    /*lcd.print(hPolarisPosition);
     lcd.print("  ");
-    lcd.print(mPolarisPosition);
-    //lcd.print("Sel for Polaris");
+    lcd.print(mPolarisPosition);*/
+    lcd.print("Sel for Polaris");
     lcd.print("         ");
     /*lcd.print(int(hourRAprint));    //debugging
       lcd.print(" ");

@@ -5,7 +5,7 @@ void loop() {
   //speedcalibration += inputcal / 1000;
   float trackingspeed = ((((335.1417 / 24) / 12) * RevSteps) / 3590) - 1 + float(speedcalibration);
 
-  float onehour = RevSteps * ((RAsteps) / 288);
+  float onehour = float(float(RAsteps / 24) / 12) * RevSteps;
   moveRA = (hourRA * onehour + minRA * (onehour / float(60)) + secRA * (onehour / float(3600))) / 2;
   moveDEC = (degreeDEC * float(164) + minDEC * (float(164) / float(60)) + secDEC * (float(164) / float(3600))) / 2;
 
@@ -13,7 +13,7 @@ void loop() {
     moveRA -= long(12 * onehour / 2);
     moveDEC = -moveDEC;
   }
-  if (moveRA < (-6 * onehour / 2)) {         
+  if (moveRA < (-6 * onehour / 2)) {
     moveRA += long(12 * onehour / 2);
     moveDEC = -moveDEC;
   }
@@ -163,6 +163,9 @@ void loop() {
     case btnRIGHT: {
         menu += 1;
         while (menu > 5) menu = 0;
+        if (!north && menu == 3) menu = 4;
         break;
+        
+
       }
   }
