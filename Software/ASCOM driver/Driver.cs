@@ -84,6 +84,10 @@ namespace ASCOM.OpenAstroGuider
         /// Initializes a new instance of the <see cref="OpenAstroGuider"/> class.
         /// Must be public for COM registration.
         /// </summary>
+        /// 
+
+        private bool isSlewing = false;
+
         public Telescope()
         {
             ReadProfile(); // Read device configuration from the ASCOM Profile store
@@ -366,14 +370,7 @@ namespace ASCOM.OpenAstroGuider
 
         public bool CanMoveAxis(TelescopeAxes Axis)
         {
-            tl.LogMessage("CanMoveAxis", "Get - " + Axis.ToString());
-            switch (Axis)
-            {
-                case TelescopeAxes.axisPrimary: return false;
-                case TelescopeAxes.axisSecondary: return false;
-                case TelescopeAxes.axisTertiary: return false;
-                default: throw new InvalidValueException("CanMoveAxis", Axis.ToString(), "0 to 2");
-            }
+            return true;
         }
 
         public bool CanPark
@@ -627,8 +624,17 @@ namespace ASCOM.OpenAstroGuider
 
         public void MoveAxis(TelescopeAxes Axis, double Rate)
         {
-            tl.LogMessage("MoveAxis", "Not implemented");
-            throw new ASCOM.MethodNotImplementedException("MoveAxis");
+            this.isSlewing = true;
+
+            /*switch (Axis)
+            {
+                case TelescopeAxes.axisPrimary:
+                    if (Rate > 0)
+                    {
+                        
+                    }
+            }*/
+
         }
 
         public void Park()
@@ -811,8 +817,7 @@ namespace ASCOM.OpenAstroGuider
         {
             get
             {
-                tl.LogMessage("Slewing Get", "Not implemented");
-                throw new ASCOM.PropertyNotImplementedException("Slewing", false);
+                return this.isSlewing;
             }
         }
 
