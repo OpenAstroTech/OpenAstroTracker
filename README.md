@@ -19,7 +19,7 @@ All parts needed once, except:
  - part 15, twice
 
 
-The different versions for latitudes work in a +/- 5° degree range. For the southern hemisphere check the first tab of the arduino code and flip the wiring for the RA stepper. Polar alignment will be much harder.
+The different versions for latitudes work in a +/- 5° degree range. For the southern hemisphere check the first tab of the arduino code and flip the wiring for the RA stepper. Polar alignment will be much harder. 
 Also check out the first add-on, the [OpenAstroGuider](https://github.com/OpenAstroTech/OpenAstroGuider)
 
 I strongly suggest starting with part 14, the lens ring. If you cant make it fit, you will not be able to use the mount at this point. 
@@ -30,7 +30,11 @@ I strongly suggest starting with part 14, the lens ring. If you cant make it fit
 ## Guides and how-to
 [Arduino wiring](https://imgur.com/hBMxBpg)
 
-[General Guide](https://drive.google.com/file/d/1_YVxujLwpIfMiU5c_vcGPQ0UwRyjkiqJ/view) for older version, needs revision
+[Power wiring](https://imgur.com/COhaGhN)
+
+[General Guide](https://drive.google.com/file/d/1_YVxujLwpIfMiU5c_vcGPQ0UwRyjkiqJ/view) updated
+
+[Calibration Guide](https://drive.google.com/open?id=1mJl5MIimd8K-AQdB7M0tIwcVbD5wmMBv)
 
 [Polar alignment](https://drive.google.com/file/d/1WRThR709xvfjo2IPQmQuXUPK6YBmoFnY/view)
 
