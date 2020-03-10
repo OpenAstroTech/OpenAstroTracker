@@ -19,7 +19,7 @@ All parts needed once, except:
  - part 15, twice
 
 
-The different versions for latitudes work in a +/- 5° degree range. Currently no support for southern hemisphere or latitudes outside 55-15° N.
+The different versions for latitudes work in a +/- 5° degree range. For the southern hemisphere check the first tab of the arduino code and flip the wiring for the RA stepper. Polar alignment will be much harder.
 Also check out the first add-on, the [OpenAstroGuider](https://github.com/OpenAstroTech/OpenAstroGuider)
 
 I strongly suggest starting with part 14, the lens ring. If you cant make it fit, you will not be able to use the mount at this point. 
