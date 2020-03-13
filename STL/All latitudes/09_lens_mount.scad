@@ -3,7 +3,7 @@
 //lens_diameter = 62;
 
 diam1 = 69.5;
-diam2 = 65.5;
+diam2 = 69.5;
 high1 = 6;
 
 
@@ -15,8 +15,14 @@ high3 = 0;
 diam5 = 0;
 diam6 = 0;
 
+length = 30; //reduce this if needed
 
-
+/*union() {
+translate([0,0,20]) cube([(diam1/2)+5,100,10]);
+mirror([1,0,0]) translate([0,0,20]) cube([(diam1/2)+5,100,10]);
+mirror([0,1,0]) translate([0,0,20]) cube([(diam1/2)+5,100,10]);
+mirror([1,0,0])mirror([0,1,0]) translate([0,0,20]) cube([(diam1/2)+5,100,10]);
+}*/
 
 difference (){
 difference (){
@@ -33,6 +39,14 @@ union () {
 translate([0,0,-0.001]) cylinder(high1+0.1,d1=diam1,d2=diam2,$fn=512);
 translate([0,0,high1-0.01]) cylinder(high2+0.1,d1=diam3,d2=diam4,$fn=512);
 translate([0,0,high1+high2-0.02]) cylinder(high3+0.1,d1=diam5,d2=diam6,$fn=512);
+    
+union() {
+translate([0,0,length+0.001]) cube([(diam1/2)+4.2,100,100]);
+mirror([1,0,0]) translate([0,0,length+0.001]) cube([(diam1/2)+4.2,100,100]);
+mirror([0,1,0]) translate([0,0,length+0.001]) cube([(diam1/2)+4.2,100,100]);
+mirror([1,0,0])mirror([0,1,0]) translate([0,0,length+0.001]) cube([(diam1/2)+4.2,100,100]);
+}
+    
 }
 }
 cube([150,1,61],center=true);
