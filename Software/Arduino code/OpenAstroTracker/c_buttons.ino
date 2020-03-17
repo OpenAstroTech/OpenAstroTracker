@@ -3,11 +3,11 @@ void loop() {
   if (adc_key_in < 1000) delay(150);
   lcd_key = read_LCD_buttons();
   //speedcalibration += inputcal / 1000;
-  float trackingspeed = ((((335.1417 / 24) / 12) * RevSteps) / 3590) - 1 + float(speedcalibration);
+  trackingspeed = ((((335.1417 / 288.0) * RevSteps) / 3590)) - 1 + float(speedcalibration);  
 
-  float onehour = float(float(RAsteps / 24) / 12) * RevSteps;
+  onehour = (float(RAsteps / 288)) * RevSteps;
   moveRA = (hourRA * onehour + minRA * (onehour / float(60)) + secRA * (onehour / float(3600))) / 2;
-  moveDEC = (degreeDEC * float(164) + minDEC * (float(164) / float(60)) + secDEC * (float(164) / float(3600))) / 2;
+  moveDEC = (degreeDEC * float(DECsteps) + minDEC * (float(DECsteps) / float(60)) + secDEC * (float(DECsteps) / float(3600)));
 
   if (moveRA > (6 * onehour / 2)) {         //turn both RA and DEC axis around if target is below horizontal parallel
     moveRA -= long(12 * onehour / 2);
@@ -38,6 +38,9 @@ void loop() {
         while (menu == 2) {
           if (HAselect == 0) hourHA += 1;
           if (HAselect == 1) minHA += 1;
+          
+          EEPROM.update(1, hourHA);
+          EEPROM.update(2, minHA);
           break;
         }
         while (menu == 5) {
@@ -94,7 +97,10 @@ void loop() {
             stepperDEC.run();
           }
         }
-
+        if (menu == 2) {
+          hourHA = 0;
+          minHA = 0;
+        }
         if (menu == 3) {
           hPolarisPosition = 2 - hourRAprint;
           mPolarisPosition = 57 - minRAprint;
@@ -104,9 +110,9 @@ void loop() {
           }
           if (hPolarisPosition < -6) {
             hPolarisPosition += 24;
-            stepperDEC.moveTo(213.4);
+            stepperDEC.moveTo(213.4 * 2);
           }
-          else stepperDEC.moveTo(-213.4);
+          else stepperDEC.moveTo(-213.4 * 2);
 
           if (hPolarisPosition > 6) hPolarisPosition -= 12;
           int hPolarisMoveTo = (hPolarisPosition * onehour + mPolarisPosition * (onehour / 60)) / 2 ;

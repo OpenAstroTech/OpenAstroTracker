@@ -14,15 +14,17 @@ boolean north = true; // change this to 'false' if youre in the southern hemisph
 
 float speed = 1.000;    // Use this value to slightly increase or decrese tracking speed. The values from the "CAL" menu will be added to this.
 
-int RAsteps = 320;   // adjust this value to calibrate RA movement
+int RAsteps = 330;   // adjust this value to calibrate RA movement
+int DECsteps = 163;
 
 float RevSteps = 4096;
 // This is how many steps your 28BYJ-48 stepper needs for a full rotation. It is almost always 4096.
 // This code drives the steppers in halfstep mode
 
-int RAspeed = 200;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. High speeds tend to make
-int RAacceleration = 1000;  // these cheap steppers unprecice 
-int DECspeed = 200;
+int RAspeed = 400;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. High speeds tend to make
+int RAacceleration = 600;  // these cheap steppers unprecice 
+int DECspeed = 800;
+int DECacceleration = 400;
 
 // These values are needed to calculate the current position during initial alignment.
 int h = 21;   

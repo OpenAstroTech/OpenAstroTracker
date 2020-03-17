@@ -1,6 +1,11 @@
 # Changelog
 
 ## Parts
+17.03.2020
+
+ - updated parts 6a,b,c and 14 to v2
+ - added klwill1192's lens adapter for big lenses with the guidescope
+ Please see the [update post](https://www.reddit.com/r/OpenAstroTech/comments/fkcdho/improvements_to_the_splitring_design_and/) 
 
 13.03.2020
 
@@ -15,6 +20,12 @@
 
 
 ## Arduino Code:
+1.3b  -  17.03.2020
+
+ - added Stellarium support. Still a bit buggy
+ - upped some speeds and adjusted accelerations
+ chanegd the DEC stepper to halfstep mode
+
 1.2.5  -  26.02.2020
 
  - added support for southern hemisphere

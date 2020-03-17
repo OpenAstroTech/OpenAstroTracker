@@ -3,15 +3,17 @@
 #include <EEPROM.h>
 #include <AccelStepper.h>
 #include <LiquidCrystal.h>
+#include <SoftwareSerial.h>
 #define HALFSTEP 8
 #define FULLSTEP 4
 
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
+//SoftwareSerial BT(10,11);
 
-#define motorPin1  2    // IN1 auf ULN2003 driver 1
-#define motorPin2  3    // IN2 auf ULN2003 driver 1
-#define motorPin3  11    // IN3 auf ULN2003 driver 1
-#define motorPin4  12    // IN4 auf ULN2003 driver 1
+#define motorPin1  2    // IN1 auf ULN2003 driver 1    //  2 / 22
+#define motorPin2  3    // IN2 auf ULN2003 driver 1    //  3 / 24
+#define motorPin3  11    // IN3 auf ULN2003 driver 1   // 11 / 26
+#define motorPin4  12    // IN4 auf ULN2003 driver 1   // 12 / 28
 
 #define motorPin11  15    // IN1 auf ULN2003 driver 2
 #define motorPin12  16    // IN2 auf ULN2003 driver 2
@@ -40,13 +42,12 @@ int read_LCD_buttons() {
 
 String inString = "";
 
-
 AccelStepper stepperRA(FULLSTEP, motorPin1, motorPin3, motorPin2, motorPin4);
-AccelStepper stepperDEC(FULLSTEP, motorPin11, motorPin13, motorPin12, motorPin14);
+AccelStepper stepperDEC(HALFSTEP, motorPin11, motorPin13, motorPin12, motorPin14);
 AccelStepper stepperTRK(HALFSTEP, motorPin1, motorPin3, motorPin2, motorPin4);     //yes, this is the same motor as stepperRA, dont ask why
 AccelStepper stepperGUIDE(HALFSTEP, motorPin1, motorPin3, motorPin2, motorPin4);
 
-String inCmd;
+//String inCmd;
 //String inputString = "";
 //String commandString = "";
 //boolean isConnected = false;
@@ -57,6 +58,7 @@ String logString;
 boolean isPulseGuiding = true;
 
 unsigned long Zeit;
+float onehour;
 
 boolean pcControl = false;
 int menu = 2;
@@ -71,6 +73,7 @@ int hPolarisPosition;
 int mPolarisPosition;
 
 int tracking = 1;
+float trackingspeed;
 
 //RA stuff
 float hourRA;
@@ -80,6 +83,7 @@ float moveRA;
 int RAselect;
 int hourRAprint;
 int minRAprint;
+int secRAprint;
 
 //DEC stuff
 int degreeDEC;
@@ -103,6 +107,13 @@ int heatselect;
 int RAheat = 0;
 int DECheat = 1;
 
+//Stellarium 
+char current_RA[9];
+char current_DEC[10];
+int HAh_save;
+int HAm_save;
+float slew_RA;
+float slew_DEC;
 
 byte DEG[8] = {
   B01100,
@@ -136,3 +147,7 @@ byte sec[] = {
   B00000,
   B00000
 };
+
+
+//debugging
+String inBT;

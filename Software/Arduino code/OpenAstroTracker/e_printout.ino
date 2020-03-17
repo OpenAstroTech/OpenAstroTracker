@@ -1,6 +1,6 @@
 if (!pcControl) {
   lcd.setCursor(0, 0);
-  
+
   if (north == true) {
     if (menu == 0) lcd.print(">RAs<DEC HA POL ");
     if (menu == 1) lcd.print(" RAs>DEC<HA POL ");
@@ -40,7 +40,7 @@ if (!pcControl) {
 
       //lcd.print(int(diamCorrection));   //for debugging
       //lcd.print("");
-      //lcd.print(moveRA);
+      //lcd.print(trackingspeed);
       //lcd.print("   ");
     }
     if (RAselect == 1) {
@@ -81,6 +81,9 @@ if (!pcControl) {
       lcd.print(" ");
       lcd.print(secDEC);
       lcd.write(byte(2));
+      /*lcd.print(DECd);
+        lcd.print(DECm);
+        lcd.print(DECs);*/
       lcd.print("         ");
       //lcd.print(int(moveDEC));  //debugging
       //lcd.print("   ");
@@ -160,13 +163,9 @@ if (!pcControl) {
       lcd.print("h");
       lcd.print(minHAzeit);
       lcd.print("m");
-      lcd.print(" ");
-      //lcd.print();
-      lcd.print(" ");
-      //lcd.print();
-      lcd.print(" ");
-      //lcd.print( );
+      //lcd.print(trackingspeed, 5);
       lcd.print("         ");
+
     }
     if (HAselect == 1) {
       //lcd.print("Input HA ");
@@ -177,7 +176,6 @@ if (!pcControl) {
       lcd.print("m");
       lcd.print("         ");
     }
-    // if hourHA
   }
 
   //Calibration menu   -----------------------------
@@ -199,9 +197,11 @@ if (!pcControl) {
   if (hPolarisPosition > 6) hPolarisPosition -= 12;
   if (menu == 3 && north == true) {
     /*lcd.print(hPolarisPosition);
-    lcd.print("  ");
-    lcd.print(mPolarisPosition);*/
+      lcd.print("  ");
+      lcd.print(mPolarisPosition);*/
+
     lcd.print("Sel for Polaris");
+    //lcd.print(inCmd);
     lcd.print("         ");
     /*lcd.print(int(hourRAprint));    //debugging
       lcd.print(" ");
@@ -214,6 +214,7 @@ if (!pcControl) {
   }
 
 
-}
 
+}
+BTin();
 }

@@ -30,7 +30,7 @@ I strongly suggest starting with part 14, the lens ring. If you cant make it fit
 ## Guides and how-to
 [Arduino wiring](https://imgur.com/hBMxBpg)
 
-[Power wiring](https://imgur.com/COhaGhN)
+[Power wiring](https://imgur.com/oNTvcXm)
 
 [General Guide](https://drive.google.com/file/d/1_YVxujLwpIfMiU5c_vcGPQ0UwRyjkiqJ/view) updated
 

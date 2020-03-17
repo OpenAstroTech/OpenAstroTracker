@@ -43,7 +43,7 @@ mHAcorrection = minHAzeit - m;
 hourRAprint = hourRA + hHAcorrection;
 if (mHAcorrection < 0) hourRAprint -= 1;
 minRAprint = minRA + mHAcorrection;
-int secRAprint = secRA + sHAcorrection;
+secRAprint = secRA + sHAcorrection;
 
 //if (hourRA > 12) hourRA += -24;
 
