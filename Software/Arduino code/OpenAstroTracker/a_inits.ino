@@ -27,6 +27,14 @@ LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 #define btnSELECT 4
 #define btnNONE   5
 
+#define RA_Menu 0
+#define DEC_Menu 1
+#define HA_Menu 2
+#define Polaris_Menu 3
+#define Heat_Menu 4
+#define Calibration_Menu 5
+#define Last_Menu Calibration_Menu
+
 int lcd_key     = 0;
 int adc_key_in  = 0;
 int read_LCD_buttons() {
@@ -39,6 +47,7 @@ int read_LCD_buttons() {
   if (adc_key_in < 920)  return btnSELECT;
   //return btnNONE;
 }
+
 
 String inString = "";
 
@@ -61,7 +70,7 @@ unsigned long Zeit;
 float onehour;
 
 boolean pcControl = false;
-int menu = 2;
+int menu = HA_Menu;
 int currentSecs;
 int currentMins;
 float inputcal;

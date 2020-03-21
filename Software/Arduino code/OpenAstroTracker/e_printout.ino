@@ -2,30 +2,26 @@ if (!pcControl) {
   lcd.setCursor(0, 0);
 
   if (north == true) {
-    if (menu == 0) printMenu("     >RAs< DEC H");
-    if (menu == 1) printMenu(" RAs >DEC< HA PO");
-    if (menu == 2) printMenu(" DEC >HA < POL H");
-    if (menu == 3) printMenu("  HA >POL< HEAT ");
-    if (menu == 4) printMenu(" POL >HEAT< CAL ");
-    if (menu == 5) printMenu("HEAT >CAL<      ");
+    if (menu == RA_Menu)          printMenu("     >RAs< DEC H");
+    if (menu == DEC_Menu)         printMenu(" RAs >DEC< HA PO");
+    if (menu == HA_Menu)          printMenu(" DEC >HA < POL H");
+    if (menu == Polaris_Menu)     printMenu("  HA >POL< HEAT ");
+    if (menu == Heat_Menu)        printMenu(" POL >HEAT< CAL ");
+    if (menu == Calibration_Menu) printMenu("HEAT >CAL<      ");
   }
   else {
-    if (menu == 0) printMenu("     >RAs< DEC H");
-    if (menu == 1) printMenu(" RAs >DEC< HA HE");
-    if (menu == 2) printMenu(" DEC >HA < HEAT ");
-
-    if (menu == 4) printMenu(" HA  >HEAT< CAL ");
-    if (menu == 5) printMenu("HEAT >CAL<      ");
+    if (menu == RA_Menu)          printMenu("     >RAs< DEC H");
+    if (menu == DEC_Menu)         printMenu(" RAs >DEC< HA HE");
+    if (menu == HA_Menu)          printMenu(" DEC >HA < HEAT ");
+    if (menu == Heat_Menu)        printMenu(" HA  >HEAT< CAL ");
+    if (menu == Calibration_Menu) printMenu("HEAT >CAL<      ");
   }
-
-
 
   lcd.setCursor(0, 1);
 
-
   //RA Menu printing; =menu0 -------------------------------
 
-  if (menu == 0) {
+  if (menu == RA_Menu) {
     if (hourRAprint < 0) hourRAprint += 24;
     if (minRAprint < 0) minRAprint += 60;
     if (RAselect == 0) {
@@ -70,7 +66,7 @@ if (!pcControl) {
     }
   }
   //DEC menu printing =menu1  ------------------------------
-  if (menu == 1) {
+  if (menu == DEC_Menu) {
     if (DECselect == 0) {
       lcd.write(rightArrow);
       lcd.print(printdegDEC);
@@ -115,7 +111,7 @@ if (!pcControl) {
   }
 
   //Homing menu  ------------------------
-  /*if (menu == 2) {
+  /*if (menu == Homing_Menu) {
     //lcd.print("Select for home");   Doesnt work yet
     lcd.print("Work in Progress");
     lcd.print("         ");
@@ -128,7 +124,7 @@ if (!pcControl) {
     }*/
 
   //heating menu   -----------------------
-  if (menu == 4) {
+  if (menu == Heat_Menu) {
     if (heatselect == 0 && RAheat == 0 && DECheat == 0) {
       printMenu("RA>OFF< DEC: OFF ");
     }
@@ -156,7 +152,7 @@ if (!pcControl) {
   }
   
   //HA menu printing =menu2  -----------------------------
-  if (menu == 2) {
+  if (menu == HA_Menu) {
     if (HAselect == 0) {
       //lcd.print("Input HA:");
       lcd.write(rightArrow);
@@ -183,7 +179,7 @@ if (!pcControl) {
 
   //Calibration menu   -----------------------------
   speedcalibration = speed + inputcal / 10000;
-  if (menu == 5) {
+  if (menu == Calibration_Menu) {
     lcd.print("Speed:");
     lcd.print(speedcalibration, 4);
     lcd.print("        ");
@@ -198,7 +194,7 @@ if (!pcControl) {
   }
   if (hPolarisPosition < -6) hPolarisPosition += 24;
   if (hPolarisPosition > 6) hPolarisPosition -= 12;
-  if (menu == 3 && north == true) {
+  if (menu == Polaris_Menu && north == true) {
     /*lcd.print(hPolarisPosition);
       lcd.print("  ");
       lcd.print(mPolarisPosition);*/

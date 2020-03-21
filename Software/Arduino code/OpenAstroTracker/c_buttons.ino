@@ -23,74 +23,60 @@ void loop() {
 
   switch (lcd_key) {
     case btnUP: {
-        while (menu == 0) {
+        if (menu == RA_Menu) {
           if (RAselect == 0) hourRA += 1;
           if (RAselect == 1) minRA += 1;
           if (RAselect == 2) secRA += 1;
-          break;
         }
-        while (menu == 1) {
+        if (menu == DEC_Menu) {
           if (DECselect == 0) degreeDEC += 1;
           if (DECselect == 1) minDEC += 1;
           if (DECselect == 2) secDEC += 1;
-          break;
         }
-        while (menu == 2) {
+        if (menu == HA_Menu) {
           if (HAselect == 0) hourHA += 1;
           if (HAselect == 1) minHA += 1;
-          if (hourHA>24) hourHA-=24;
-          if (minHA>60) minHA-=60;
+          if (hourHA > 23) hourHA -= 24;
+          if (minHA > 59) minHA -= 60;
           
           EEPROM.update(1, hourHA);
           EEPROM.update(2, minHA);
-          break;
         }
-        while (menu == 5) {
+        if (menu == Calibration_Menu) {
           inputcal += 1;  //0.0001;
-
-          break;
         }
+        
         break;
       }
 
     case btnDOWN: {
-        while (menu == 0) {
+        if (menu == RA_Menu) {
           if (RAselect == 0) hourRA -= 1;
           if (RAselect == 1) minRA -= 1;
           if (RAselect == 2) secRA -= 1;
-          break;
         }
-        while (menu == 1) {
+        if (menu == DEC_Menu) {
           if (DECselect == 0) degreeDEC -= 1;
           if (DECselect == 1) minDEC -= 1;
           if (DECselect == 2) secDEC -= 1;
-          break;
         }
-        while (menu == 5) {
+        if (menu == HA_Menu) {
+          if (HAselect == 0) hourHA -= 1;
+          if (HAselect == 1) minHA -= 1;
+          if (hourHA < 0) hourHA += 24;
+          if (minHA < 0) minHA += 60;
+        }
+        if (menu == Calibration_Menu) {
           inputcal -= 1 ; //0.0001;
-
-          break;
-        }
-        while (menu == 2) {
-          if (HAselect == 0) hourHA -= 1;
-          if (HAselect == 1) minHA -= 1;
-          if (hourHA<0) hourHA+=24;
-          if (minHA<0) minHA+=60;
-          break;
         }
 
-        /*while (menu == 4) {              // only counting up recommended, breaks code otherwise
-          if (HAselect == 0) hourHA -= 1;
-          if (HAselect == 1) minHA -= 1;
-          break;
-          }*/
         break;
       }
 
     case btnSELECT: {
         /*stepperRA.moveTo(-moveRA);
           stepperDEC.moveTo(moveDEC);*/
-        if (menu < 2) {
+        if (menu < HA_Menu) {
           while (stepperRA.distanceToGo() != 0  && stepperDEC.distanceToGo() == 0) {
             stepperRA.run();
           }
@@ -104,11 +90,11 @@ void loop() {
             stepperDEC.run();
           }
         }
-        if (menu == 2) {
+        if (menu == HA_Menu) {
           hourHA = 0;
           minHA = 0;
         }
-        if (menu == 3) {
+        if (menu == Polaris_Menu) {
           hPolarisPosition = 2 - hourRAprint;
           mPolarisPosition = 57 - minRAprint;
           if (mPolarisPosition < 0) {
@@ -131,7 +117,7 @@ void loop() {
           }
         }
 
-        if (menu == 4) {
+        if (menu == Heat_Menu) {
           if (heatselect == 0) {
             RAheat += 1;
             if (RAheat > 1) RAheat = 0;
@@ -142,7 +128,7 @@ void loop() {
           }
           break;
         }
-        if (menu == 5) {
+        if (menu == Calibration_Menu) {
 
           EEPROM.update(0, inputcal);
           break;
@@ -152,21 +138,20 @@ void loop() {
 
 
     case btnLEFT: {
-        if (menu == 0) {
+        if (menu == RA_Menu) {
           RAselect += 1;
           while (RAselect > 2) RAselect = 0;
-          break;
         }
-        if (menu == 1) {
+        if (menu == DEC_Menu) {
           DECselect += 1;
           while (DECselect > 2) DECselect = 0;
         }
-        if (menu == 2) {
+        if (menu == HA_Menu) {
           HAselect += 1;
           while (HAselect > 1) HAselect = 0;
           break;
         }
-        if (menu == 4) {
+        if (menu == Heat_Menu) {
           heatselect += 1;
           while (heatselect > 1) heatselect = 0;
         }
@@ -175,13 +160,12 @@ void loop() {
 
     case btnRIGHT: {
         menu += 1;
-        if (menu > 5) menu = 0;
-        if (!north && menu == 3) menu = 4;
+        if (menu > Last_Menu) menu = 0;
+        if (!north && menu == Polaris_Menu) menu = Heat_Menu;
         while (read_LCD_buttons() != btnNONE) {
           delay(20);
         }
         break;
-        
-
       }
   }
+  
