@@ -38,6 +38,8 @@ void loop() {
         while (menu == 2) {
           if (HAselect == 0) hourHA += 1;
           if (HAselect == 1) minHA += 1;
+          if (hourHA>24) hourHA-=24;
+          if (minHA>60) minHA-=60;
           
           EEPROM.update(1, hourHA);
           EEPROM.update(2, minHA);
@@ -69,8 +71,13 @@ void loop() {
 
           break;
         }
-        //while (menu == 2) {
-        //  break;
+        while (menu == 2) {
+          if (HAselect == 0) hourHA -= 1;
+          if (HAselect == 1) minHA -= 1;
+          if (hourHA<0) hourHA+=24;
+          if (minHA<0) minHA+=60;
+          break;
+        }
 
         /*while (menu == 4) {              // only counting up recommended, breaks code otherwise
           if (HAselect == 0) hourHA -= 1;

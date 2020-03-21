@@ -2,20 +2,20 @@ if (!pcControl) {
   lcd.setCursor(0, 0);
 
   if (north == true) {
-    if (menu == 0) lcd.print(">RAs<DEC HA POL ");
-    if (menu == 1) lcd.print(" RAs>DEC<HA POL ");
-    if (menu == 2) lcd.print(" RAs DEC>HA<POL ");
-    if (menu == 3) lcd.print(" RAs DEC HA>POL<");
-    if (menu == 4) lcd.print(" DEC HA POL>HEAT");
-    if (menu == 5) lcd.print("HA POL HEAT>CAL<");
+    if (menu == 0) printMenu("     >RAs< DEC H");
+    if (menu == 1) printMenu(" RAs >DEC< HA PO");
+    if (menu == 2) printMenu(" DEC >HA < POL H");
+    if (menu == 3) printMenu("  HA >POL< HEAT ");
+    if (menu == 4) printMenu(" POL >HEAT< CAL ");
+    if (menu == 5) printMenu("HEAT >CAL<      ");
   }
   else {
-    if (menu == 0) lcd.print(">RAs<DEC HA HEAT");
-    if (menu == 1) lcd.print(" RAs>DEC<HA HEAT");
-    if (menu == 2) lcd.print(" RAs DEC>HA<HEAT");
-    //if (menu == 3) lcd.print(" RAs DEC HA>POL<");
-    if (menu == 4) lcd.print(" DEC HA>HEAT<CAL");
-    if (menu == 5) lcd.print("DEC HA HEAT>CAL<");
+    if (menu == 0) printMenu("     >RAs< DEC H");
+    if (menu == 1) printMenu(" RAs >DEC< HA HE");
+    if (menu == 2) printMenu(" DEC >HA < HEAT ");
+
+    if (menu == 4) printMenu(" HA  >HEAT< CAL ");
+    if (menu == 5) printMenu("HEAT >CAL<      ");
   }
 
 
@@ -29,7 +29,7 @@ if (!pcControl) {
     if (hourRAprint < 0) hourRAprint += 24;
     if (minRAprint < 0) minRAprint += 60;
     if (RAselect == 0) {
-      lcd.print(">");
+      lcd.write(rightArrow);
       lcd.print(int(hourRAprint));
       lcd.print("h ");
       lcd.print(int(minRAprint));
@@ -47,7 +47,7 @@ if (!pcControl) {
       lcd.print(" ");
       lcd.print(int(hourRAprint));
       lcd.print("h");
-      lcd.print(">");
+      lcd.write(rightArrow);
       lcd.print(int(minRAprint));
       lcd.print("m ");
       lcd.print(int(secRAprint));
@@ -62,7 +62,7 @@ if (!pcControl) {
       lcd.print(" ");
       lcd.print(int(minRAprint));
       lcd.print("m");
-      lcd.print(">");
+      lcd.write(rightArrow);
       lcd.print(int(secRAprint));
       lcd.print("s ");
       lcd.print("         ");
@@ -72,7 +72,7 @@ if (!pcControl) {
   //DEC menu printing =menu1  ------------------------------
   if (menu == 1) {
     if (DECselect == 0) {
-      lcd.print(">");
+      lcd.write(rightArrow);
       lcd.print(printdegDEC);
       lcd.write(byte(0));
       lcd.print(" ");
@@ -92,7 +92,7 @@ if (!pcControl) {
       lcd.print(" ");
       lcd.print(printdegDEC);
       lcd.write(byte(0));
-      lcd.print(">");
+      lcd.write(rightArrow);
       lcd.print(minDEC);
       lcd.write(byte(1));
       lcd.print(" ");
@@ -107,7 +107,7 @@ if (!pcControl) {
       lcd.print(" ");
       lcd.print(minDEC);
       lcd.write(byte(1));
-      lcd.print(">");
+      lcd.write(rightArrow);
       lcd.print(secDEC);
       lcd.write(byte(2));
       lcd.print("       ");
@@ -130,37 +130,39 @@ if (!pcControl) {
   //heating menu   -----------------------
   if (menu == 4) {
     if (heatselect == 0 && RAheat == 0 && DECheat == 0) {
-      lcd.print("RA>OFF< DEC: OFF ");
+      printMenu("RA>OFF< DEC: OFF ");
     }
     if (heatselect == 0 && RAheat == 1 && DECheat == 0) {
-      lcd.print("RA>ON < DEC: OFF ");
+      printMenu("RA>ON < DEC: OFF ");
     }
     if (heatselect == 0 && RAheat == 0 && DECheat == 1) {
-      lcd.print("RA>OFF< DEC: ON  ");
+      printMenu("RA>OFF< DEC: ON  ");
     }
     if (heatselect == 0 && RAheat == 1 && DECheat == 1) {
-      lcd.print("RA>ON < DEC: ON  ");
+      printMenu("RA>ON < DEC: ON  ");
     }
     if (heatselect == 1 && RAheat == 0 && DECheat == 0) {
-      lcd.print("RA:OFF  DEC>OFF< ");
+      printMenu("RA:OFF  DEC>OFF< ");
     }
     if (heatselect == 1 && RAheat == 1 && DECheat == 0) {
-      lcd.print("RA:ON   DEC>OFF< ");
+      printMenu("RA:ON   DEC>OFF< ");
     }
     if (heatselect == 1 && RAheat == 0 && DECheat == 1) {
-      lcd.print("RA:OFF  DEC>ON< ");
+      printMenu("RA:OFF  DEC>ON< ");
     }
     if (heatselect == 1 && RAheat == 1 && DECheat == 1) {
-      lcd.print("RA:ON   DEC>ON< ");
+      printMenu("RA:ON   DEC>ON< ");
     }
   }
+  
   //HA menu printing =menu2  -----------------------------
   if (menu == 2) {
     if (HAselect == 0) {
       //lcd.print("Input HA:");
-      lcd.print(">");
+      lcd.write(rightArrow);
       lcd.print(hourHAzeit);
       lcd.print("h");
+      lcd.print(" ");
       lcd.print(minHAzeit);
       lcd.print("m");
       //lcd.print(trackingspeed, 5);
@@ -169,9 +171,10 @@ if (!pcControl) {
     }
     if (HAselect == 1) {
       //lcd.print("Input HA ");
+      lcd.print(" ");
       lcd.print(hourHAzeit);
       lcd.print("h");
-      lcd.print(">");
+      lcd.write(rightArrow);
       lcd.print(minHAzeit);
       lcd.print("m");
       lcd.print("         ");

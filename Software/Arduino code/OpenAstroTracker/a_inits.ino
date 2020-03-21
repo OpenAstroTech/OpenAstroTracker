@@ -115,6 +115,9 @@ int HAm_save;
 float slew_RA;
 float slew_DEC;
 
+int rightArrow = 4;
+int leftArrow = 3;
+
 byte DEG[8] = {
   B01100,
   B10010,
@@ -148,6 +151,27 @@ byte sec[] = {
   B00000
 };
 
+byte RightArr[] = {
+  B00000,
+  B01000,
+  B01100,
+  B01110,
+  B01100,
+  B01000,
+  B00000,
+  B00000
+};
+
+byte LeftArr[] = {
+  B00000,
+  B00010,
+  B00110,
+  B01110,
+  B00110,
+  B00010,
+  B00000,
+  B00000
+};
 
 //debugging
 String inBT;

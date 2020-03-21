@@ -9,6 +9,8 @@ void setup() {
   lcd.createChar(0, DEG);
   lcd.createChar(1, min);
   lcd.createChar(2, sec);
+  lcd.createChar(leftArrow, LeftArr);
+  lcd.createChar(rightArrow, RightArr);
 
   stepperRA.setMaxSpeed(RAspeed);
   stepperRA.setAcceleration(RAacceleration);
