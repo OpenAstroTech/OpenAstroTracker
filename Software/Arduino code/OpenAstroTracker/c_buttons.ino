@@ -175,8 +175,11 @@ void loop() {
 
     case btnRIGHT: {
         menu += 1;
-        while (menu > 5) menu = 0;
+        if (menu > 5) menu = 0;
         if (!north && menu == 3) menu = 4;
+        while (read_LCD_buttons() != btnNONE) {
+          delay(20);
+        }
         break;
         
 
