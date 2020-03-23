@@ -1,16 +1,26 @@
+LcdMenu lcdMenu(&lcd, 16);
+
+DayTime RATime;
+DayTime RAAdjustedTime;
+DayTime HATime;
+
 void setup() {
 
-  Serial.begin(9600); 
-  //Serial.begin(9600);
+  //Serial.begin(38400);
+  Serial.begin(9600);
   //BT.begin(9600);
 
-  
+  Serial.println("Hello World!");
+
   lcd.begin(16, 2);
   lcd.createChar(0, DEG);
   lcd.createChar(1, min);
   lcd.createChar(2, sec);
-  lcd.createChar(leftArrow, LeftArr);
-  lcd.createChar(rightArrow, RightArr);
+
+  pinMode(A1, OUTPUT);
+  pinMode(A2, OUTPUT);
+  pinMode(A3, OUTPUT);
+  pinMode(A4, OUTPUT);
 
   stepperRA.setMaxSpeed(RAspeed);
   stepperRA.setAcceleration(RAacceleration);
@@ -22,8 +32,17 @@ void setup() {
   stepperGUIDE.setAcceleration(100);
 
   inputcal = EEPROM.read(0);
-  hourHA = EEPROM.read(1);
-  minHA = EEPROM.read(2);
-  
+  HATime = DayTime(EEPROM.read(1), EEPROM.read(2), 0);
 
+  lcdMenu.addItem("RAs", RA_Menu);
+  lcdMenu.addItem("DEC", DEC_Menu);
+  lcdMenu.addItem("HA", HA_Menu);
+  if (north) {
+    lcdMenu.addItem("POL", Polaris_Menu);
+  }
+  lcdMenu.addItem("HEAT", Heat_Menu);
+  lcdMenu.addItem("CTRL", Control_Menu);
+  lcdMenu.addItem("CAL", Calibration_Menu);
+
+  lcdMenu.setActive(HA_Menu);
 }

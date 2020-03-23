@@ -1,5 +1,6 @@
 // If you really want to look through this code, i apologise for my terrible coding
 //#include <SoftwareSerial.h>
+#include <stdarg.h>
 #include <EEPROM.h>
 #include <AccelStepper.h>
 #include <LiquidCrystal.h>
@@ -33,7 +34,7 @@ LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 #define Polaris_Menu 3
 #define Heat_Menu 4
 #define Calibration_Menu 5
-#define Last_Menu Calibration_Menu
+#define Control_Menu 6
 
 int lcd_key     = 0;
 int adc_key_in  = 0;
@@ -48,8 +49,40 @@ int read_LCD_buttons() {
   //return btnNONE;
 }
 
+// Adjust the given number by the given adjustment, wrap around the limits. 
+// Limits are inclusive, so they represent the lowest and highest valid number.
+int adjustWrap(int current, int adjustBy, int minVal, int maxVal)
+{
+  current += adjustBy;
+  if (current > maxVal) current -= (maxVal + 1);
+  if (current < minVal) current += (maxVal + 1);
+  return current;
+}
+
+// Adjust the given number by the given adjustment, clamping to the limits. 
+// Limits are inclusive, so they represent the lowest and highest valid number.
+int adjustClamp(int current, int adjustBy, int minVal, int maxVal)
+{
+  current += adjustBy;
+  if (current > maxVal) current = maxVal;
+  if (current < minVal) current = minVal;
+  return current;
+}
+
+int adjustSecond(int current, int adjustBy) {
+  return adjustWrap(current, adjustBy, 0, 59);
+}
+
+int adjustMinute(int current, int adjustBy) {
+  return adjustWrap(current, adjustBy, 0, 59);
+}
+
+int adjustHour(int current, int adjustBy) {
+  return adjustWrap(current, adjustBy, 0, 23);
+}
 
 String inString = "";
+int controlDisplay =0;
 
 AccelStepper stepperRA(FULLSTEP, motorPin1, motorPin3, motorPin2, motorPin4);
 AccelStepper stepperDEC(HALFSTEP, motorPin11, motorPin13, motorPin12, motorPin14);
@@ -66,11 +99,9 @@ String logString;
 //unsigned long timeWait;
 boolean isPulseGuiding = true;
 
-unsigned long Zeit;
 float onehour;
 
 boolean pcControl = false;
-int menu = HA_Menu;
 int currentSecs;
 int currentMins;
 float inputcal;
@@ -85,14 +116,14 @@ int tracking = 1;
 float trackingspeed;
 
 //RA stuff
-float hourRA;
-float minRA = 0;
-float secRA = 0;
+//float hourRA;
+//float minRA = 0;
+//float secRA = 0;
 float moveRA;
 int RAselect;
-int hourRAprint;
-int minRAprint;
-int secRAprint;
+//int hourRAprint;
+//int minRAprint;
+//int secRAprint;
 
 //DEC stuff
 int degreeDEC;
@@ -102,21 +133,16 @@ float moveDEC;
 int DECselect;
 int printdegDEC;
 
-//Hour correction
-int hourHA = 0;
-int minHA = 0;
 int HAselect;
-int hHAcorrection;
-int mHAcorrection = -5 ;  //wenn minus dann hHAcorrection -1
-int sHAcorrection;
-int hourHAzeit;
-int minHAzeit;
+//int hHAcorrection;
+//int mHAcorrection = -5 ;  //wenn minus dann hHAcorrection -1
+//int sHAcorrection;
 
 int heatselect;
 int RAheat = 0;
 int DECheat = 1;
 
-//Stellarium 
+//Stellarium
 char current_RA[9];
 char current_DEC[10];
 int HAh_save;
@@ -156,28 +182,6 @@ byte sec[] = {
   B00000,
   B00000,
   B00000,
-  B00000,
-  B00000
-};
-
-byte RightArr[] = {
-  B00000,
-  B01000,
-  B01100,
-  B01110,
-  B01100,
-  B01000,
-  B00000,
-  B00000
-};
-
-byte LeftArr[] = {
-  B00000,
-  B00010,
-  B00110,
-  B01110,
-  B00110,
-  B00010,
   B00000,
   B00000
 };

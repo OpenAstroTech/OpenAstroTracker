@@ -1,11 +1,10 @@
-while (RAheat == 1) {
+if (RAheat == 1) {
   //tracking = 0;
   //stepperRA.enableOutputs();
   digitalWrite(2, HIGH);
   digitalWrite(3, HIGH);
   digitalWrite(11, HIGH);
   digitalWrite(12, HIGH);
-  break;
 }
 
 if (DECheat == 1) {
@@ -14,25 +13,27 @@ if (DECheat == 1) {
   digitalWrite(16, HIGH);
   digitalWrite(17, HIGH);
   digitalWrite(18, HIGH);
-
 }
 
 
-while (tracking == 1) {
+if (tracking == 1) {
   stepperTRK.setSpeed(trackingspeed);
   stepperTRK.runSpeed();
-  break;
 }
 
 
 currentSecs = millis() / 1000;
 
-minHAzeit = minHA + Zeit / 60;
-if (minHAzeit > 59) {
-  minHA -= 60;
-  hourHA += 1;
-}
-if (hourHA > 23) hourHA -= 24;
+RAAdjustedTime.set(RATime);
+
+DayTime HACorrection(HATime);
+HACorrection.addTime(-h, -m, -s);
+
+RAAdjustedTime.addTime(HACorrection);
+
+/*
+ * 
+minHAzeit = minHA;
 hourHAzeit = hourHA;
 
 //HA correction
@@ -54,6 +55,7 @@ if (minRAprint > 59) {
 if (hourRA > 23) hourRA -= 24;
 if (hourRAprint < 0) hourRAprint += 24;
 if (minRAprint < 0) minRAprint += 60;
+*/
 
 if (!north) {
   printdegDEC = degreeDEC - 90;

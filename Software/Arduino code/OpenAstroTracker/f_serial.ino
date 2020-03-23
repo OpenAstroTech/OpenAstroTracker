@@ -25,9 +25,7 @@ void serialEvent() {
       String c = inCmd.substring(rm + 1, rs);
       int RaS = c.toInt();
 
-      hourRA = RaH;
-      minRA = RaM;
-      secRA = RaS;
+      RATime.set(RaH,RaH,RaS);
 
       //lcd.clear();
       //lcd.print(moveRA);
@@ -182,7 +180,7 @@ void serialEvent() {
     // Stellarium stuff--------------------------------------------------
 
     if (inCmd == ":GR") {
-      sprintf(current_RA, "%02d:%02d:%02d", int(hourRAprint), int(minRAprint), int(secRAprint));
+      sprintf(current_RA, "%02d:%02d:%02d", RAAdjustedTime.getHours(), RAAdjustedTime.getMinutes(), RAAdjustedTime.getSeconds());
       Serial.print(current_RA);
       Serial.print("#");
       //inCmd = "";
@@ -203,13 +201,12 @@ void serialEvent() {
       String z = inCmd.substring(10);
       int RaS = z.toInt();
 
-      int slew_RAh = (RaH - hourRAprint);
-      int slew_RAm = (RaM - minRAprint);
-      int slew_RAs = (RaS - secRAprint);
+      int slew_RAh = (RaH - RAAdjustedTime.getHours());
+      int slew_RAm = (RaM - RAAdjustedTime.getMinutes());
+      int slew_RAs = (RaS - RAAdjustedTime.getSeconds());
 
-      hourRA += slew_RAh;
-      minRA += slew_RAm;
-      secRA += slew_RAs;
+      RATime.addTime(slew_RAh,slew_RAm,slew_RAs);
+
       Serial.print("1");
       slew_RA = (slew_RAh * onehour + slew_RAm * (onehour / 60) + slew_RAs * (onehour / 3600)) / 2;
 
