@@ -208,7 +208,7 @@ void serialEvent() {
       RATime.addTime(slew_RAh,slew_RAm,slew_RAs);
 
       Serial.print("1");
-      slew_RA = (slew_RAh * onehour + slew_RAm * (onehour / 60) + slew_RAs * (onehour / 3600)) / 2;
+      slew_RA = (slew_RAh * stepsPerHour + slew_RAm * (stepsPerHour / 60) + slew_RAs * (stepsPerHour / 3600)) / 2;
 
       stepperRA.moveTo(slew_RA);
       //inCmd = "";

@@ -157,7 +157,7 @@ class LcdMenu {
             break;
           case 's': _lcd->print(va_arg(args, char*)); break;
           case 'd': _lcd->print((int)va_arg(args, int)); break;
-          case 'f': _lcd->print((float)va_arg(args, float)); break;
+          case 'f': _lcd->print((float)va_arg(args, double)); break;
           default: _lcd->print((char)*i); break;
         }
       }
@@ -173,10 +173,10 @@ class LcdMenu {
     {
       int spaces = _columns - line.length();
       for (int i = 0; i < line.length(); i++) {
-        if (line[i] == ' > ') {
+        if (line[i] == '>') {
           _lcd->write(_rightArrow);
         }
-        else if (line[i] == ' < ') {
+        else if (line[i] == '<') {
           _lcd->write(_leftArrow);
         }
         else {
@@ -187,6 +187,7 @@ class LcdMenu {
       // Clear the rest of the display
       while (spaces > 0) {
         _lcd->print(" ");
+        spaces--;
       }
     }
 

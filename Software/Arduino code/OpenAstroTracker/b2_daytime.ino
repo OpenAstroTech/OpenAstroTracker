@@ -35,6 +35,18 @@ class DayTime {
       return secs;
     }
 
+    float getTotalHours() {
+      return 1.0f * getHours() + ((float)getMinutes() / 60.0f) + ((float)getSeconds() / 3600.0f);
+    }
+
+    float getTotalMinutes() {
+      return 60.0f * getHours() + (float)getMinutes() + ((float)getSeconds() / 60.0f);
+    }
+
+    float getTotalSeconds() {
+      return 3600.0f * getHours() + (float)getMinutes() * 60.0f + (float)getSeconds();
+    }
+
     int getTime(int& h, int& m, int& s) {
       h = hours;
       m = mins;

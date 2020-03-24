@@ -25,15 +25,17 @@ if (tracking == 1) {
 currentSecs = millis() / 1000;
 
 RAAdjustedTime.set(RATime);
-
 DayTime HACorrection(HATime);
-HACorrection.addTime(-h, -m, -s);
-
+HACorrection.addTime(-h, -m, -s + sHAcorrection);
 RAAdjustedTime.addTime(HACorrection);
 
-/*
- * 
-minHAzeit = minHA;
+// --- old begin
+minHAzeit = minHA + Zeit / 60;
+if (minHAzeit > 59) {
+  minHA -= 60;
+  hourHA += 1;
+}
+if (hourHA > 23) hourHA -= 24;
 hourHAzeit = hourHA;
 
 //HA correction
@@ -55,7 +57,12 @@ if (minRAprint > 59) {
 if (hourRA > 23) hourRA -= 24;
 if (hourRAprint < 0) hourRAprint += 24;
 if (minRAprint < 0) minRAprint += 60;
-*/
+
+//Serial.println("---------------------------------------");
+//Serial.println(format("RA OLD           : %d %d %d",hourRA, minRA, secRA));
+//Serial.println(format("RAprint OLD      : %d %d %d",hourRAprint, minRAprint, secRAprint));
+
+// --- old end
 
 if (!north) {
   printdegDEC = degreeDEC - 90;

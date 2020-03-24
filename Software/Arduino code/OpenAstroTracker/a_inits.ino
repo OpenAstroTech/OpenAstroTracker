@@ -99,7 +99,8 @@ String logString;
 //unsigned long timeWait;
 boolean isPulseGuiding = true;
 
-float onehour;
+unsigned long Zeit;
+float stepsPerHour;
 
 boolean pcControl = false;
 int currentSecs;
@@ -116,14 +117,14 @@ int tracking = 1;
 float trackingspeed;
 
 //RA stuff
-//float hourRA;
-//float minRA = 0;
-//float secRA = 0;
+int hourRA=0;
+int minRA = 0;
+int secRA = 0;
 float moveRA;
 int RAselect;
-//int hourRAprint;
-//int minRAprint;
-//int secRAprint;
+int hourRAprint;
+int minRAprint;
+int secRAprint;
 
 //DEC stuff
 int degreeDEC;
@@ -133,10 +134,15 @@ float moveDEC;
 int DECselect;
 int printdegDEC;
 
+//Hour correction
+int hourHA = 0;
+int minHA = 0;
 int HAselect;
-//int hHAcorrection;
-//int mHAcorrection = -5 ;  //wenn minus dann hHAcorrection -1
-//int sHAcorrection;
+int hHAcorrection;
+int mHAcorrection = -5 ;  //wenn minus dann hHAcorrection -1
+int sHAcorrection;
+int hourHAzeit;
+int minHAzeit;
 
 int heatselect;
 int RAheat = 0;

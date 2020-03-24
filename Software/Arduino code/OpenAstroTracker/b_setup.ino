@@ -10,17 +10,12 @@ void setup() {
   Serial.begin(9600);
   //BT.begin(9600);
 
-  Serial.println("Hello World!");
-
+  log("Hello World!");
+  
   lcd.begin(16, 2);
   lcd.createChar(0, DEG);
   lcd.createChar(1, min);
   lcd.createChar(2, sec);
-
-  pinMode(A1, OUTPUT);
-  pinMode(A2, OUTPUT);
-  pinMode(A3, OUTPUT);
-  pinMode(A4, OUTPUT);
 
   stepperRA.setMaxSpeed(RAspeed);
   stepperRA.setAcceleration(RAacceleration);
@@ -33,6 +28,10 @@ void setup() {
 
   inputcal = EEPROM.read(0);
   HATime = DayTime(EEPROM.read(1), EEPROM.read(2), 0);
+  hourHA = HATime.getHours();
+  minHA = HATime.getMinutes();
+
+  logv("HATime = %s  oldHA = %d:%d",HATime.ToString().c_str(), hourHA, minHA);
 
   lcdMenu.addItem("RAs", RA_Menu);
   lcdMenu.addItem("DEC", DEC_Menu);
@@ -44,5 +43,5 @@ void setup() {
   lcdMenu.addItem("CTRL", Control_Menu);
   lcdMenu.addItem("CAL", Calibration_Menu);
 
-  lcdMenu.setActive(HA_Menu);
+  lcdMenu.setActive(RA_Menu);
 }

@@ -10,10 +10,15 @@ if (!pcControl) {
   //Serial.println("TO GO DEC:" + String(stepperDEC.distanceToGo()) + "  RA:" + String(stepperRA.distanceToGo()));
 
   if (lcdMenu.getActive() == RA_Menu) {
+//    if (hourRAprint < 0) hourRAprint += 24; // old
+//    if (minRAprint < 0) minRAprint += 60;   // old
+
+
+//    if ((RAAdjustedTime.getHours()!=hourRAprint) || (RAAdjustedTime.getMinutes()!=minRAprint)) {
+//      Serial.println(format("RA differs : old=%d:%d  new=%d:%d",hourRAprint, minRAprint,RAAdjustedTime.getHours(),RAAdjustedTime.getMinutes()));
+//    }
 
     //Serial.println("HA:" + HATime.ToString() + "  HA(corr):" + HACorrection.ToString() + "  RA:" + RATime.ToString() + "  RA(corr):" + RAAdjustedTime.ToString());
-//    if (hourRAprint < 0) hourRAprint += 24;
-//    if (minRAprint < 0) minRAprint += 60;
     if (RAselect == 0) {
       lcdMenu.printMenuArg(">%dh %dm %ds", RAAdjustedTime.getHours(), RAAdjustedTime.getMinutes(), RAAdjustedTime.getSeconds());
 
@@ -101,6 +106,10 @@ if (!pcControl) {
     lcd.print(speedcalibration, 4);
     lcd.print("        ");
   }
+
+//  if ((RAAdjustedTime.getHours()!=hourRAprint) || (RAAdjustedTime.getMinutes()!=minRAprint)) {
+//    Serial.println(format("Polaris differs : old=%d:%d  new=%d:%d",hourRAprint, minRAprint,RAAdjustedTime.getHours(),RAAdjustedTime.getMinutes()));
+//  }
 
   //Polaris menu + calculations -----------------------
   hPolarisPosition = 2 - RAAdjustedTime.getHours();

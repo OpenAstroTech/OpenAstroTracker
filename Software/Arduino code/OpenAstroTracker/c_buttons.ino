@@ -1,40 +1,21 @@
 void loop() {
   bool waitForButtonRelease = false;
-  //if (adc_key_in < 1000) delay(150);
+
   lcd_key = read_LCD_buttons();
-  //speedcalibration += inputcal / 1000;
+
   trackingspeed = ((((335.1417 / 288.0) * RevSteps) / 3590)) - 1 + float(speedcalibration);
 
-  onehour = (float(RAsteps) / 288.0) * RevSteps;
-  moveRA = (RATime.getHours() * onehour + RATime.getMinutes()* (onehour / 60.0f) + RATime.getSeconds()* (onehour / 3600.0f)) / 2;
-  moveDEC = (degreeDEC * float(DECsteps) + minDEC * (float(DECsteps) / 60.0f) + secDEC * (float(DECsteps) / 3600.0f));
+  handleDECandRACalculations();
 
-  if (moveRA > (6 * onehour / 2)) {         //turn both RA and DEC axis around if target is below horizontal parallel
-    moveRA -= long(12 * onehour / 2);
-    moveDEC = -moveDEC;
-  }
-  if (moveRA < (-6 * onehour / 2)) {
-    moveRA += long(12 * onehour / 2);
-    moveDEC = -moveDEC;
-  }
-
-  //if ((moveRA != 0) || (moveDEC != 0)) {
-  if (controlDisplay == 1) {
-    //Serial.println("DEC: " + String(stepperDEC.currentPosition()) + "  RA: " + String(stepperRA.currentPosition()));
-  }
-  //}
-
-  if (lcdMenu.getActive() != Control_Menu) {
-    stepperRA.moveTo(-moveRA);
-    stepperDEC.moveTo(moveDEC);
-  }
-
+  // Handle the keys
   switch (lcd_key) {
     case btnUP: {
         if (lcdMenu.getActive() == RA_Menu) {
           if (RAselect == 0) RATime.addHours(1);
           if (RAselect == 1) RATime.addMinutes(1);
           if (RAselect == 2) RATime.addSeconds(1);
+          hourRA = RATime.getHours();
+          minRA = RATime.getMinutes();
         }
         if (lcdMenu.getActive() == DEC_Menu) {
           if (DECselect == 0) degreeDEC = north ? adjustClamp(degreeDEC, 1, -180, 0) : adjustClamp(degreeDEC, 1, 0, 180);
@@ -61,8 +42,12 @@ void loop() {
     case btnDOWN: {
         if (lcdMenu.getActive() == RA_Menu) {
           if (RAselect == 0) RATime.addHours(-1);
-          if (RAselect == 1) RATime.addMinutes( -1);
-          if (RAselect == 2) RATime.addSeconds( -1);
+          if (RAselect == 1) RATime.addMinutes(-1);
+          if (RAselect == 2) RATime.addSeconds(-1);
+
+          if (RAselect == 0) hourRA -= 1;
+          if (RAselect == 1) minRA -= 1;
+          if (RAselect == 2) secRA -= 1;
         }
         if (lcdMenu.getActive() == DEC_Menu) {
           if (DECselect == 0) degreeDEC = north ? adjustClamp(degreeDEC, -1, -180, 0) : adjustClamp(degreeDEC, -1, 0, 180);
@@ -72,6 +57,11 @@ void loop() {
         if (lcdMenu.getActive() == HA_Menu) {
           if (HAselect == 0) HATime.addHours(-1);
           if (HAselect == 1) HATime.addMinutes(-1);
+
+          if (HAselect == 0) hourHA -= 1;
+          if (HAselect == 1) minHA -= 1;
+          if (hourHA < 0) hourHA += 24;
+          if (minHA < 0) minHA += 60;
         }
 
         if (lcdMenu.getActive() == Calibration_Menu) {
@@ -94,33 +84,30 @@ void loop() {
         int displaySkip = 100;
         int display = 0;
 
+        // Move stepper motors to target if menu mode is RA or DEC
         if (lcdMenu.getActive() < HA_Menu) {
-          while (stepperRA.distanceToGo() != 0  && stepperDEC.distanceToGo() == 0) {
-            stepperRA.run();
-            if (display == 0) {
-              lcd.setCursor(0, 1);
-              lcd.print("RA: " + String(stepperRA.distanceToGo()) + "  ");
-              display = displaySkip;
-            }
-            display--;
-          }
-          while (stepperDEC.distanceToGo() != 0 && stepperRA.distanceToGo() == 0) {
-            stepperDEC.run();
-            stepperTRK.setSpeed(trackingspeed);
-            stepperTRK.runSpeed();
-            if (display == 0) {
-              lcd.setCursor(0, 1);
-              lcd.print("DEC: " + String(stepperDEC.distanceToGo()) + "  ");
-              display = displaySkip;
-            }
-            display--;
-          }
+          float decTotal = 1.0f * abs(stepperDEC.distanceToGo());
+          float raTotal = 1.0f * abs(stepperRA.distanceToGo());
           while (stepperDEC.distanceToGo() != 0 || stepperRA.distanceToGo() != 0) {
             stepperRA.run();
             stepperDEC.run();
-            if (display == 0) {
+            // If we're not moving RA we should run the TRK stepper (same one at slow speed)
+            if (raTotal == 0) { 
+              stepperTRK.setSpeed(trackingspeed);
+              stepperTRK.runSpeed();
+            }
+            if (display <= 0) {
               lcd.setCursor(0, 1);
-              lcd.print("DEC:" + String(abs(stepperDEC.distanceToGo()) / 10) + "  RA:" + String(abs(stepperRA.distanceToGo()) / 10) + "   ");
+              String disp = "";
+              if (decTotal > 0)              {
+                float decDist = 100.0 - 100.0 * abs(stepperDEC.distanceToGo()) / decTotal;
+                disp = disp + format("DEC:%d%% ", (int)floor(decDist));
+              }
+              if (raTotal > 0) {
+                float raDist = 100.0 - 100.0 * abs(stepperRA.distanceToGo()) / raTotal;
+                disp = disp + format("RA:%d%%  ", (int)floor(raDist));
+              }
+              lcdMenu.printMenu(disp);
               display = displaySkip;
             }
             display--;
@@ -129,6 +116,9 @@ void loop() {
 
         if (lcdMenu.getActive() == HA_Menu) {
           HATime = DayTime(0, 0, 0);
+
+          hourHA = 0;
+          minHA = 0;
         }
 
         if (lcdMenu.getActive() == Polaris_Menu) {
@@ -145,15 +135,27 @@ void loop() {
           else stepperDEC.moveTo(-213.4 * 2);
 
           if (hPolarisPosition > 6) hPolarisPosition -= 12;
-          int hPolarisMoveTo = (hPolarisPosition * onehour + mPolarisPosition * (onehour / 60)) / 2 ;
+          int hPolarisMoveTo = (hPolarisPosition * stepsPerHour + mPolarisPosition * (stepsPerHour / 60)) / 2 ;
           stepperRA.moveTo(-hPolarisMoveTo);   //             (float(4096) / float(60)));    alt
 
-          while (stepperRA.distanceToGo() || stepperDEC.distanceToGo() != 0) {
+          float decTotal = 1.0f * abs(stepperDEC.distanceToGo());
+          float raTotal = 1.0f * abs(stepperRA.distanceToGo());
+
+          while (stepperRA.distanceToGo() != 0 || stepperDEC.distanceToGo() != 0) {
             stepperRA.run();
             stepperDEC.run();
             if (display == 0) {
               lcd.setCursor(0, 1);
-              lcd.print("DEC:" + String(abs(stepperDEC.distanceToGo()) / 10) + "  RA:" + String(abs(stepperRA.distanceToGo()) / 10) + "   ");
+              String disp = "";
+              if (decTotal > 0)              {
+                float decDist = 100.0 - 100.0 * abs(stepperDEC.distanceToGo()) / decTotal;
+                disp = disp + format("DEC:%d%% ", (int)floor(decDist));
+              }
+              if (raTotal > 0) {
+                float raDist = 100.0 - 100.0 * abs(stepperRA.distanceToGo()) / raTotal;
+                disp = disp + format("RA:%d%%  ", (int)floor(raDist));
+              }
+              lcdMenu.printMenu(disp);
               display = displaySkip;
             }
             display--;
