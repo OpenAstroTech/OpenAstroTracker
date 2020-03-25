@@ -180,7 +180,7 @@ void serialEvent() {
     // Stellarium stuff--------------------------------------------------
 
     if (inCmd == ":GR") {
-      sprintf(current_RA, "%02d:%02d:%02d", RAAdjustedTime.getHours(), RAAdjustedTime.getMinutes(), RAAdjustedTime.getSeconds());
+      sprintf(current_RA, "%02d:%02d:%02d", RADisplayTime.getHours(), RADisplayTime.getMinutes(), RADisplayTime.getSeconds());
       Serial.print(current_RA);
       Serial.print("#");
       //inCmd = "";
@@ -201,9 +201,9 @@ void serialEvent() {
       String z = inCmd.substring(10);
       int RaS = z.toInt();
 
-      int slew_RAh = (RaH - RAAdjustedTime.getHours());
-      int slew_RAm = (RaM - RAAdjustedTime.getMinutes());
-      int slew_RAs = (RaS - RAAdjustedTime.getSeconds());
+      int slew_RAh = (RaH - RADisplayTime.getHours());
+      int slew_RAm = (RaM - RADisplayTime.getMinutes());
+      int slew_RAs = (RaS - RADisplayTime.getSeconds());
 
       RATime.addTime(slew_RAh,slew_RAm,slew_RAs);
 

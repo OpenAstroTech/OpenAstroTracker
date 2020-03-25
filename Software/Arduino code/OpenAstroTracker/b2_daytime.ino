@@ -1,3 +1,5 @@
+// A class to handle hours, minutes, seconds in a unified manner, allowing 
+// addition of hours, minutes, seconds, other times and conversion to string.
 class DayTime {
   private:
     int hours;
@@ -65,6 +67,7 @@ class DayTime {
       secs = other.secs;
     }
 
+    // Add hours, wrapping days (which are not tracked)
     void addHours(int deltaHours) {
       hours += deltaHours;
       while (hours > 23) {
@@ -75,6 +78,7 @@ class DayTime {
       }
     }
 
+    // Add minutes, wrapping hours if needed
     void addMinutes(int deltaMins) {
       mins += deltaMins;
       while (mins > 59) {
@@ -87,6 +91,7 @@ class DayTime {
       }
     }
 
+    // Add seconds, wrapping minutes and hours if needed
     void addSeconds(int deltaSecs) {
       secs += deltaSecs;
       while (secs > 59) {
@@ -99,6 +104,7 @@ class DayTime {
       }
     }
 
+    // Add time components, wrapping seconds, minutes and hours if needed
     void addTime(int deltaHours, int deltaMinutes, int deltaSeconds)
     {
       addSeconds(deltaSeconds);
@@ -106,6 +112,7 @@ class DayTime {
       addHours(deltaHours);
     }
 
+    // Add another time, wrapping seconds, minutes and hours if needed
     void addTime(const DayTime& other)
     {
       addSeconds(other.getSeconds());
@@ -113,6 +120,7 @@ class DayTime {
       addHours(other.getHours());
     }
 
+    // Convert to a standard string (like 14:45:06)
     String ToString()
     {
       char achBuf[10];
