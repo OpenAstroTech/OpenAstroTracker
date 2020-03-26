@@ -1,6 +1,7 @@
 bool movingToTarget = false;
 
 void processDECKeys(int key) {
+
   switch (key) {
     case btnUP: {
         if (DECselect == 0) degreeDEC = north ? adjustClamp(degreeDEC, 1, -180, 0) : adjustClamp(degreeDEC, 1, 0, 180);
@@ -46,18 +47,22 @@ void processDECKeys(int key) {
 
   if (movingToTarget) {
     moveSteppersToTargetAsync();
+    if (!stepperRA.isRunning() && !stepperDEC.isRunning()) {
+      movingToTarget = false;
+    }
   }
 }
 
 void printDECSubmenu() {
-
-  if (DECselect == 0) {
-    lcdMenu.printMenuArg(">%d%c %d%c %d%s", printdegDEC, 0, minDEC, 1, secDEC, "\"");
-  }
-  if (DECselect == 1) {
-    lcdMenu.printMenuArg(" %d%c>%d%c %d%s", printdegDEC, 0, minDEC, 1, secDEC, "\"");
-  }
-  if (DECselect == 2) {
-    lcdMenu.printMenuArg(" %d%c %d%c>%d%s", printdegDEC, 0, minDEC, 1, secDEC, "\"");
+  if (!movingToTarget) {
+    if (DECselect == 0) {
+      lcdMenu.printMenuArg(">%d%c %d%c %d%s", printdegDEC, 0, minDEC, 1, secDEC, "\"");
+    }
+    if (DECselect == 1) {
+      lcdMenu.printMenuArg(" %d%c>%d%c %d%s", printdegDEC, 0, minDEC, 1, secDEC, "\"");
+    }
+    if (DECselect == 2) {
+      lcdMenu.printMenuArg(" %d%c %d%c>%d%s", printdegDEC, 0, minDEC, 1, secDEC, "\"");
+    }
   }
 }

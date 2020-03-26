@@ -1,4 +1,4 @@
-// A class to handle hours, minutes, seconds in a unified manner, allowing 
+// A class to handle hours, minutes, seconds in a unified manner, allowing
 // addition of hours, minutes, seconds, other times and conversion to string.
 class DayTime {
   private:

@@ -68,11 +68,11 @@ void moveSteppersToTarget() {
       String disp = "";
       if (decTotal > 0)              {
         float decDist = 100.0 - 100.0 * abs(stepperDEC.distanceToGo()) / decTotal;
-        disp = disp + format("DEC:%d%% ", (int)floor(decDist));
+        disp = disp + "DEC:" + String( (int)floor(decDist)) + "% ";
       }
       if (raTotal > 0) {
         float raDist = 100.0 - 100.0 * abs(stepperRA.distanceToGo()) / raTotal;
-        disp = disp + format("RA:%d%%  ", (int)floor(raDist));
+        disp = disp + "RA:" + String((int)floor(raDist)) + "%";
       }
       lcdMenu.printMenu(disp);
       display = displaySkip;
@@ -99,17 +99,17 @@ void moveSteppersToTargetAsync() {
       lcdMenu.setCursor(0, 1);
       String disp ;
       if ((totalDECMove == 0) || (totalRAMove == 0)) {
-        disp = String(format("D:%l R:%l", stepperDEC.currentPosition(), stepperRA.currentPosition()));
+        disp = "D:" + String(stepperDEC.currentPosition()) + " R:" + String( stepperRA.currentPosition());
       }
       else {
         disp = "";
         if (totalDECMove > 0)              {
           float decDist = 100.0 - 100.0 * abs(stepperDEC.distanceToGo()) / totalDECMove;
-          disp = disp + format("DEC:%d%% ", (int)floor(decDist));
+          disp = disp + "DEC:" + String((int)floor(decDist)) + "% ";
         }
         if (totalRAMove > 0) {
           float raDist = 100.0 - 100.0 * abs(stepperRA.distanceToGo()) / totalRAMove;
-          disp = disp + format("RA:%d%%  ", (int)floor(raDist));
+          disp = disp + "RA:" + String((int)floor(raDist)) + "%  ";
         }
       }
 

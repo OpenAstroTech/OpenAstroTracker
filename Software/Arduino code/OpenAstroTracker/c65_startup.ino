@@ -6,8 +6,12 @@
 #define StartupPoleConfirmed 10
 #define StartupCompleted 20
 
+#define YES 1
+#define NO 2
+#define CANCEL 3
+
 int startupState = StartupIsPointedAtPole;
-int isAtPole = 1;
+int isAtPole = NO;
 
 
 void startupIsCompleted() {
@@ -26,13 +30,13 @@ void processStartupKeys(int key) {
     case StartupIsPointedAtPole:
       {
         if (key == btnLEFT)    {
-          isAtPole = adjustWrap(isAtPole, 1, 0, 2);
+          isAtPole = adjustWrap(isAtPole, 1, YES, CANCEL);
         }
         else if (key == btnSELECT)    {
-          if (isAtPole == 1) { // Yes
+          if (isAtPole == YES) {
             startupState = StartupSetHATime;
           }
-          else if (isAtPole == 0) { // No
+          else if (isAtPole == NO) {
             startupState = StartupWaitForPoleCompletion;
             inStartup = false;
             lcdMenu.setCursor(0, 0);
@@ -42,7 +46,7 @@ void processStartupKeys(int key) {
             // Skip the 'Manual control' prompt
             inControlMode = true;
           }
-          else if (isAtPole == 2) { // Cancel
+          else if (isAtPole == CANCEL) {
             startupIsCompleted();
           }
         }
@@ -68,7 +72,7 @@ void processStartupKeys(int key) {
       break;
 
     case StartupPoleConfirmed: {
-        isAtPole = true;
+        isAtPole = YES;
 
         // Ask again to confirm
         startupState = StartupIsPointedAtPole;
@@ -85,15 +89,15 @@ void prinStartupMenu() {
       {
         //              0123456789012345
         String choices(" Yes  No  Cancl ");
-        if (isAtPole == 1) {
+        if (isAtPole == YES) {
           choices.setCharAt(0, '>');
           choices.setCharAt(4, '<');
         }
-        if (isAtPole == 0) {
+        if (isAtPole == NO) {
           choices.setCharAt(5, '>');
           choices.setCharAt(8, '<');
         }
-        if (isAtPole == 2) {
+        if (isAtPole == CANCEL) {
           choices.setCharAt(9, '>');
           choices.setCharAt(15, '<');
         }

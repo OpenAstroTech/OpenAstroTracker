@@ -25,7 +25,7 @@ void serialEvent() {
       String c = inCmd.substring(rm + 1, rs);
       int RaS = c.toInt();
 
-      RATime.set(RaH,RaH,RaS);
+      RATime.set(RaH, RaH, RaS);
 
       //lcd.clear();
       //lcd.print(moveRA);
@@ -205,7 +205,7 @@ void serialEvent() {
       int slew_RAm = (RaM - RADisplayTime.getMinutes());
       int slew_RAs = (RaS - RADisplayTime.getSeconds());
 
-      RATime.addTime(slew_RAh,slew_RAm,slew_RAs);
+      RATime.addTime(slew_RAh, slew_RAm, slew_RAs);
 
       Serial.print("1");
       slew_RA = (slew_RAh * stepsPerHour + slew_RAm * (stepsPerHour / 60) + slew_RAs * (stepsPerHour / 3600)) / 2;

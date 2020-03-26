@@ -58,7 +58,7 @@ void setup() {
   if (north) {
     lcdMenu.addItem("POL", Polaris_Menu);
   }
-#ifdef SUPPORT_HEATING  
+#ifdef SUPPORT_HEATING
   lcdMenu.addItem("HEAT", Heat_Menu);
 #endif
   lcdMenu.addItem("CTRL", Control_Menu);
@@ -70,6 +70,4 @@ void setup() {
   lcd.setCursor(0, 1);
   lcd.print("     " + version);
   delay(1750);
-
-  
 }

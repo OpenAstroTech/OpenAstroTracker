@@ -43,9 +43,8 @@ void loop() {
     }
   }
 
-  if (waitForButtonRelease && (read_LCD_buttons() != btnNONE)) {
+  if (waitForButtonRelease && (lcd_key != btnNONE)) {
     while (read_LCD_buttons() != btnNONE) {
-
       // Make sure tracker can still run while fiddling with menus....
       runTracker();
     }

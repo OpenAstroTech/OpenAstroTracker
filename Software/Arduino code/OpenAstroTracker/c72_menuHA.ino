@@ -24,7 +24,7 @@ void processHAKeys(int key) {
       }
       break;
 
-    case btnSELECT: 
+    case btnSELECT:
     case btnRIGHT: {
         EEPROM.update(1, HATime.getHours());
         EEPROM.update(2, HATime.getMinutes());

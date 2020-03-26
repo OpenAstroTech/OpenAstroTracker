@@ -95,10 +95,10 @@ class LcdMenu {
     }
 
     // Pass throu utility function
-    void setCursor(int col, int row){
-      _lcd->setCursor(col,row);
+    void setCursor(int col, int row) {
+      _lcd->setCursor(col, row);
     }
-    
+
     // Go to the next menu item from currently active one
     void setNextActive() {
       // If the last item is active, go to the first.

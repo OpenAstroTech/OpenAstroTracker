@@ -8,6 +8,7 @@ void processControlKeys(int key) {
   if (!inControlMode ) {
     if (key == btnSELECT) {
       inControlMode = true;
+      Serial.println("CTRL: Reset totals!");
       totalDECMove = 0;
       totalRAMove = 0;
     } else if (key == btnRIGHT) {
@@ -41,7 +42,7 @@ void processControlKeys(int key) {
     } else if (key == btnLEFT) {
       setZeroPoint = !setZeroPoint;
     }
-    
+
     waitForButtonRelease = true;
     return;
   }
@@ -101,7 +102,7 @@ void processControlKeys(int key) {
         stopStepper(StateMaskDEC, &stepperDEC);
         stopStepper(StateMaskRA, &stepperRA);
 
-        lcdMenu.setCursor(0,0);
+        lcdMenu.setCursor(0, 0);
         lcdMenu.printMenu("Set home point?");
         confirmZeroPoint = true;
         waitForButtonRelease = true;
@@ -126,7 +127,7 @@ void printControlSubmenu() {
     lcdMenu.printMenu(disp);
   } else {
     if (!stepperDEC.isRunning() && !stepperRA.isRunning()) {
-      lcdMenu.printMenu(format("D:%l R:%l", stepperDEC.currentPosition(), stepperRA.currentPosition()));
+      lcdMenu.printMenu("D:" + String(stepperDEC.currentPosition()) + " R:" + stepperRA.currentPosition());
     }
   }
 }

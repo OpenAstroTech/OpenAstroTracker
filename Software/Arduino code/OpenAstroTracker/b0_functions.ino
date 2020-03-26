@@ -14,8 +14,9 @@ int read_LCD_buttons() {
 int adjustWrap(int current, int adjustBy, int minVal, int maxVal)
 {
   current += adjustBy;
-  if (current > maxVal) current -= (maxVal + 1);
-  if (current < minVal) current += (maxVal + 1);
+  if (current > maxVal) current -= (maxVal + 1 - minVal);
+  if (current < minVal) current += (maxVal + 1 - minVal
+  );
   return current;
 }
 
@@ -81,7 +82,6 @@ void logv(const char* input, ...) {
   va_end(argp);
   
 }
-#endif 
 
 String format(const char* input, ...) {
   va_list argp;
@@ -92,7 +92,7 @@ String format(const char* input, ...) {
 }
 
 String formatArg(const char* input, va_list args) {
-  char achBuffer[128];
+  char achBuffer[255];
   char*p = achBuffer;
 
   for (const char* i = input; *i != 0; i++) {
@@ -152,3 +152,4 @@ String formatArg(const char* input, va_list args) {
   *p = '\0';
   return String(achBuffer);
 }
+#endif 

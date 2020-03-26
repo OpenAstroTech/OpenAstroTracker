@@ -1,16 +1,20 @@
 /*
   =======================================================================================================================================
 
-    Version 1.4.1
+    Version 1.4.2
 
     1. Connect your Arduino, under tools choose "Arduino Uno", set the right Port and set "Arduino ISP" as the Programmer.
-    2. Hit upload
+    2. Hit upload (Ctrl-U)
 
     You might need to download the "AccelStepper" library by Mike McCauley
 
+    Authors: /u/intercipere  
+             /u/clutchplate
+             /u/EorEquis
+             
   =======================================================================================================================================
 */
-String version = "V1.4.1";
+String version = "V1.4.2";
 
 boolean north = true;    // change this to 'false' if youre in the southern hemisphere
 
