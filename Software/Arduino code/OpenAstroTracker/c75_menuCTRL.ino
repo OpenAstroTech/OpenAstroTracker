@@ -1,4 +1,7 @@
 
+bool confirmZeroPoint = false;
+bool setZeroPoint = true;
+
 void processControlKeys(int key) {
 
   // User must use SELECT to enter manual control.
@@ -10,6 +13,36 @@ void processControlKeys(int key) {
     } else if (key == btnRIGHT) {
       lcdMenu.setNextActive();
     }
+    return;
+  }
+
+  if (confirmZeroPoint) {
+    if (key == btnSELECT)
+    {
+      if (setZeroPoint) {
+        // Leaving Control Menu, so set stepper motor positions to zero.
+        stepperRA.setCurrentPosition(0);
+        stepperDEC.setCurrentPosition(0);
+      }
+
+      // Set flag to prevent resetting zero point when moving over the menu items
+      inControlMode = false;
+
+      if (startupState == StartupWaitForPoleCompletion) {
+        startupState = StartupPoleConfirmed;
+        inStartup = true;
+      }
+      else {
+        lcdMenu.setNextActive();
+      }
+
+      confirmZeroPoint = false;
+      setZeroPoint = true;
+    } else if (key == btnLEFT) {
+      setZeroPoint = !setZeroPoint;
+    }
+    
+    waitForButtonRelease = true;
     return;
   }
 
@@ -33,24 +66,10 @@ void processControlKeys(int key) {
           if (!stopStepper(StateMaskDEC, false))
           {
             // No, so start it.
-            stepperDEC.moveTo(11000);
+            stepperDEC.moveTo(22000);
             controlState = controlState | StateMaskDown;
           }
         }
-        waitForButtonRelease = false;
-      }
-      break;
-
-    case btnSELECT: {
-        if (lastKey != btnSELECT)
-        {
-          if (!stopStepper(StateMaskRA, true))
-          {
-            stepperRA.moveTo(15000);
-            controlState = controlState | StateMaskLeft;
-          }
-        }
-        waitForButtonRelease = false;
       }
       break;
 
@@ -59,31 +78,35 @@ void processControlKeys(int key) {
         {
           if (!stopStepper(StateMaskRA, true))
           {
-            stepperRA.moveTo(-15000);
-            controlState = controlState | StateMaskRight;
+            stepperRA.moveTo(15000);
+            controlState = controlState | StateMaskLeft;
           }
         }
-        waitForButtonRelease = false;
       }
       break;
 
     case btnRIGHT: {
-        stopStepper(StateMaskDEC, &stepperDEC);
-        stopStepper(StateMaskRA, &stepperRA);
-
-        // Leaving Control Menu, so set stepper motor positions to zero.
-        stepperRA.setCurrentPosition(0);
-        stepperDEC.setCurrentPosition(0);
-
-        // Set flag to prevent menu selection from resetting control mode
-        inControlMode = false;
-
-        lcdMenu.setNextActive();
+        if (lastKey != btnRIGHT)
+        {
+          if (!stopStepper(StateMaskRA, true))
+          {
+            stepperRA.moveTo(-15000);
+            controlState = controlState | StateMaskRight;
+          }
+        }
       }
       break;
 
-    case btnNONE: {
+    case btnSELECT: {
+        stopStepper(StateMaskDEC, &stepperDEC);
+        stopStepper(StateMaskRA, &stepperRA);
+
+        lcdMenu.setCursor(0,0);
+        lcdMenu.printMenu("Set home point?");
+        confirmZeroPoint = true;
+        waitForButtonRelease = true;
       }
+      break;
   }
 
   lastKey = key;
@@ -96,7 +119,12 @@ void printControlSubmenu() {
   if (!inControlMode ) {
     lcdMenu.printMenu(">Manual control");
   }
-  else {
+  else if (confirmZeroPoint) {
+    String disp = " Yes  No  ";
+    disp.setCharAt(setZeroPoint ? 0 : 5, '>');
+    disp.setCharAt(setZeroPoint ? 4 : 8, '<');
+    lcdMenu.printMenu(disp);
+  } else {
     if (!stepperDEC.isRunning() && !stepperRA.isRunning()) {
       lcdMenu.printMenu(format("D:%l R:%l", stepperDEC.currentPosition(), stepperRA.currentPosition()));
     }

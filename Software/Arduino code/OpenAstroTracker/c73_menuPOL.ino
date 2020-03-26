@@ -1,13 +1,5 @@
 void processPolarisKeys(int key) {
   switch (key) {
-    case btnUP: {
-      }
-      break;
-
-    case btnDOWN: {
-      }
-      break;
-
     case btnSELECT: {
         int displaySkip = 100;
         int display = 0;
@@ -29,9 +21,6 @@ void processPolarisKeys(int key) {
         stepperRA.moveTo(-hPolarisMoveTo);
 
         moveSteppersToTarget();
-      }
-      break;
-    case btnLEFT: {
       }
       break;
 

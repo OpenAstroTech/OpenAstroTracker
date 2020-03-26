@@ -42,6 +42,8 @@ class LcdMenu {
 
     int _leftArrow = 3;
     int _rightArrow = 4;
+    int _upArrow = 5;
+    int _downArrow = 6;
 
   public:
     // Create a new menu, using the given LCD screen and using the given number of LCD display columns
@@ -54,6 +56,8 @@ class LcdMenu {
       _columns = cols;
       lcd->createChar(_leftArrow, LeftArr);
       lcd->createChar(_rightArrow, RightArr);
+      lcd->createChar(_upArrow, UpArr);
+      lcd->createChar(_downArrow, DownArr);
     }
 
     // Find a menu item by its ID
@@ -90,6 +94,11 @@ class LcdMenu {
       _activeId = id;
     }
 
+    // Pass throu utility function
+    void setCursor(int col, int row){
+      _lcd->setCursor(col,row);
+    }
+    
     // Go to the next menu item from currently active one
     void setNextActive() {
       // If the last item is active, go to the first.
@@ -137,7 +146,7 @@ class LcdMenu {
           // For non-active items, pad with a space.
           itemString = " " + item->display() + " ";
         }
-        
+
         menuString += itemString;
         offset += itemString.length();
         item = item->nextItem();
@@ -159,11 +168,11 @@ class LcdMenu {
       while (displayString.length() < _columns) {
         displayString += " ";
       }
-      
+
       printMenu(displayString);
     }
 
-    // Prints a string to the LCD at the current cursor position, using a printf() style call 
+    // Prints a string to the LCD at the current cursor position, using a printf() style call
     void printMenuArg(const char* input, ...) {
       va_list args;
       va_start(args, input);
@@ -177,6 +186,12 @@ class LcdMenu {
           else if (*i == '<') {
             _lcd->write(_leftArrow);
           }
+          else if (*i == '^') {
+            _lcd->write(_upArrow);
+          }
+          else if (*i == '~') {
+            _lcd->write(_downArrow);
+          }
           else {
             _lcd->print(*i);
           }
@@ -189,7 +204,7 @@ class LcdMenu {
           case 'c':
             {
               byte b = (byte) (va_arg(args, int) && 0x00FF);
-              _lcd->write((byte)b);
+              _lcd->write(byte(b));
             }
             break;
           case 's': _lcd->print(va_arg(args, char*)); break;
@@ -200,7 +215,7 @@ class LcdMenu {
       }
       va_end(args);
 
-      // Since we don't know exaclty how many characters teh var_args printed we know the 
+      // Since we don't know exaclty how many characters teh var_args printed we know the
       // least count printed and just pad from that (extra spaces are ignored by the LCD).
       while (leastCount < _columns) {
         _lcd->print(" ");
@@ -218,6 +233,12 @@ class LcdMenu {
         }
         else if (line[i] == '<') {
           _lcd->write(_leftArrow);
+        }
+        else if (line[i] == '^') {
+          _lcd->write(_upArrow);
+        }
+        else if (line[i] == '~') {
+          _lcd->write(_downArrow);
         }
         else {
           _lcd->print(line[i]);
@@ -255,4 +276,25 @@ class LcdMenu {
       B00000
     };
 
+    byte UpArr[8] = {
+      B00100,
+      B01110,
+      B11111,
+      B00100,
+      B00100,
+      B00100,
+      B00100,
+      B00100
+    };
+
+    byte DownArr[8] = {
+      B000100,
+      B000100,
+      B000100,
+      B000100,
+      B000100,
+      B011111,
+      B001110,
+      B000100
+    };
 };

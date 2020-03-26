@@ -49,3 +49,10 @@ void handleDECandRACalculations()
   stepperRA.moveTo(targetRA);
   stepperDEC.moveTo(targetDEC);
 }
+
+void runTracker()
+{
+  if (tracking == 1) {
+    stepperTRK.runSpeed();
+  }
+}

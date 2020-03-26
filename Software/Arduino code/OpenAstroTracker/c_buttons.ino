@@ -9,45 +9,46 @@ void loop() {
   lcd.setCursor(0, 1);
 
   // Handle the keys
-  switch (lcdMenu.getActive()) {
-    case RA_Menu:
-      handleDECandRACalculations();
-      processRAKeys(lcd_key);
-      break;
-    case DEC_Menu:
-      handleDECandRACalculations();
-      processDECKeys(lcd_key);
-      break;
-    case Home_Menu:
-      processHomeKeys(lcd_key);
-      break;
-    case HA_Menu:
-      processHAKeys(lcd_key);
-      break;
-    case Polaris_Menu:
-      processPolarisKeys(lcd_key);
-      break;
-    case Heat_Menu:
-      processHeatKeys(lcd_key);
-      break;
-    case Control_Menu:
-      processControlKeys(lcd_key);
-      break;
-    case Calibration_Menu:
-      processCalibrationKeys(lcd_key);
-      break;
+  if (inStartup) {
+    processStartupKeys(lcd_key);
+  }
+  else {
+    switch (lcdMenu.getActive()) {
+      case RA_Menu:
+        handleDECandRACalculations();
+        processRAKeys(lcd_key);
+        break;
+      case DEC_Menu:
+        handleDECandRACalculations();
+        processDECKeys(lcd_key);
+        break;
+      case Home_Menu:
+        processHomeKeys(lcd_key);
+        break;
+      case HA_Menu:
+        processHAKeys(lcd_key);
+        break;
+      case Polaris_Menu:
+        processPolarisKeys(lcd_key);
+        break;
+      case Heat_Menu:
+        processHeatKeys(lcd_key);
+        break;
+      case Control_Menu:
+        processControlKeys(lcd_key);
+        break;
+      case Calibration_Menu:
+        processCalibrationKeys(lcd_key);
+        break;
+    }
   }
 
   if (waitForButtonRelease && (read_LCD_buttons() != btnNONE)) {
     while (read_LCD_buttons() != btnNONE) {
 
       // Make sure tracker can still run while fiddling with menus....
-      if (tracking == 1) {
-        stepperTRK.runSpeed();
-      }
+      runTracker();
     }
   }
-  
-  if (tracking == 1) {
-    stepperTRK.runSpeed();
-  }
+
+  runTracker();

@@ -6,9 +6,7 @@ void stopSteppers() {
   while (stepperRA.isRunning() || stepperDEC.isRunning()) {
     stepperRA.run();
     stepperDEC.run();
-    if (tracking == 1) {
-      stepperTRK.runSpeed();
-    }
+    runTracker();
   }
 }
 
@@ -31,18 +29,14 @@ bool stopStepper(int mask, bool useRA) {
       while (stepperRA.isRunning()) {
         stepperRA.run();
         stepperDEC.run();
-        if (tracking == 1) {
-          stepperTRK.runSpeed();
-        }
+        runTracker();
       }
     }
     else {
       while (stepperDEC.isRunning()) {
         stepperRA.run();
         stepperDEC.run();
-        if (tracking == 1) {
-          stepperTRK.runSpeed();
-        }
+        runTracker();
       }
     }
 
@@ -65,14 +59,12 @@ void moveSteppersToTarget() {
   while (stepperDEC.distanceToGo() != 0 || stepperRA.distanceToGo() != 0) {
     stepperRA.run();
     stepperDEC.run();
-    
-    // If we're tracking we should run the TRK stepper (same one at slow speed)
-    if (tracking == 1) {
-      stepperTRK.runSpeed();
-    }
+
+    // Run the TRK stepper (same one at slow speed)
+    runTracker();
 
     if (display <= 0) {
-      lcd.setCursor(0, 1);
+      lcdMenu.setCursor(0, 1);
       String disp = "";
       if (decTotal > 0)              {
         float decDist = 100.0 - 100.0 * abs(stepperDEC.distanceToGo()) / decTotal;
@@ -99,13 +91,12 @@ void moveSteppersToTargetAsync() {
   if (stepperDEC.isRunning() || stepperRA.isRunning()) {
     stepperRA.run();
     stepperDEC.run();
-    // If we're not moving RA we should run the TRK stepper (same one at slow speed)
-    if (stepperRA.distanceToGo() == 0) {
-      stepperTRK.runSpeed();
-    }
+
+    // Run the TRK stepper (same one at slow speed)
+    runTracker();
 
     if (controlDisplay <= 0) {
-      lcd.setCursor(0, 1);
+      lcdMenu.setCursor(0, 1);
       String disp ;
       if ((totalDECMove == 0) || (totalRAMove == 0)) {
         disp = String(format("D:%l R:%l", stepperDEC.currentPosition(), stepperRA.currentPosition()));

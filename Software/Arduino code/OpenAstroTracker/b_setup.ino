@@ -71,8 +71,5 @@ void setup() {
   lcd.print("     " + version);
   delay(1750);
 
-  // Start on the CTRL menu (until guided startup)
-  lcdMenu.setActive(Control_Menu);
-  lcd.setCursor(0, 0);
-  lcdMenu.updateDisplay();
+  
 }

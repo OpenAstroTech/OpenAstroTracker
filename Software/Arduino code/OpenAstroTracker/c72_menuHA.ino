@@ -19,21 +19,23 @@ void processHAKeys(int key) {
       }
       break;
 
-    case btnSELECT: {
-        HATime = DayTime(0, 0, 0);
-      }
-      break;
-
     case btnLEFT: {
         HAselect = adjustWrap(HAselect, 1, 0, 1);
       }
       break;
 
+    case btnSELECT: 
     case btnRIGHT: {
         EEPROM.update(1, HATime.getHours());
         EEPROM.update(2, HATime.getMinutes());
 
-        lcdMenu.setNextActive();
+        if (startupState == StartupWaitForHACompletion) {
+          startupState = StartupHAConfirmed;
+          inStartup = true;
+        }
+        else {
+          lcdMenu.setNextActive();
+        }
       }
       break;
   }

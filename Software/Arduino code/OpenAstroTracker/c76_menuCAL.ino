@@ -23,11 +23,7 @@ void processCalibrationKeys(int key) {
         speedcalibration = speed + inputcal / 10000;
       }
       break;
-
-    case btnLEFT: {
-      }
-      break;
-
+      
     case btnRIGHT: {
         lcdMenu.setNextActive();
       }

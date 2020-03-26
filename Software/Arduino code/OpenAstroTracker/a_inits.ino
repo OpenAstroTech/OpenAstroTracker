@@ -55,6 +55,8 @@ int adc_key_in  = 0;         // The analog value of the keys
 
 String inString = "";
 
+bool inStartup = true;       // Start with a guided startup
+
 int calDelay = 150;          // The current delay when changing calibration value. The longer a button is depressed, the samller this gets.
 
 bool waitForButtonRelease = false; // When a button is pressed should we wait for its release before another loop?
