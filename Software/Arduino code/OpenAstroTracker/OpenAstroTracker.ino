@@ -14,7 +14,7 @@
              
   =======================================================================================================================================
 */
-String version = "V1.4.2";
+String version = "V1.4.3";
 
 boolean north = true;    // change this to 'false' if youre in the southern hemisphere
 
@@ -38,7 +38,7 @@ float RAStepperLimit = 15500;         // Going much more than this each directio
 
 // These are for 47N, so they will need adjustment if you're a lot away from that. 
 // You can use the CTRL menu to find the limits and place them here. I moved it 
-// down until my lens was horizontal. Not the DEC number. Then move it up until 
+// down until my lens was horizontal. Note the DEC number. Then move it up until 
 // the lens is horizontal and note that number. Put those here. Always watch your 
 // tracker and hit RESET if it approaches a dangerous area.
 float DECStepperDownLimit = 10000;    // Going much more than this will make the lens collide with the ring

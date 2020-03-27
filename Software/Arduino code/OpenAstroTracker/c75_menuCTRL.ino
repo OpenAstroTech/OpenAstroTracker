@@ -8,7 +8,7 @@ void processControlKeys(int key) {
   if (!inControlMode ) {
     if (key == btnSELECT) {
       inControlMode = true;
-      Serial.println("CTRL: Reset totals!");
+      stopSteppers();
       totalDECMove = 0;
       totalRAMove = 0;
     } else if (key == btnRIGHT) {
