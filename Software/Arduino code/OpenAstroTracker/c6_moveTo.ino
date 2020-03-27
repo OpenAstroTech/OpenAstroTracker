@@ -51,7 +51,7 @@ bool stopStepper(int mask, bool useRA) {
 // Displays a percentage progress
 void moveSteppersToTarget() {
 
-  int displaySkip = 400;  // Update the LCD every 400 iterations (perf issue)
+  int displaySkip = 800;  // Update the LCD every 400 iterations (perf issue)
   int display = 0;
 
   float decTotal = 1.0f * abs(stepperDEC.distanceToGo());
@@ -114,7 +114,7 @@ void moveSteppersToTargetAsync() {
       }
 
       lcdMenu.printMenu(disp);
-      controlDisplay  = 250; // Update the LCD every 250 iterations (perf issue)
+      controlDisplay  = 500; // Update the LCD every 250 iterations (perf issue)
     }
     controlDisplay --;
   }
