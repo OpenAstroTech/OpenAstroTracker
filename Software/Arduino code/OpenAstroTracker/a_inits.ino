@@ -41,6 +41,7 @@ LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 #define Calibration_Menu 5
 #define Control_Menu 6
 #define Home_Menu 7
+#define POI_Menu 8
 
 // Stepper control for RA and DEV. 
 // TRK is used for live tracking and runs in parallel with RA.

@@ -7,6 +7,7 @@
       switch (lcdMenu.getActive()) {
         case RA_Menu: printRASubmenu(); break;
         case DEC_Menu: printDECSubmenu(); break;
+        case POI_Menu: printPOISubmenu(); break;
         case HA_Menu: printHASubmenu(); break;
         case Home_Menu: printHomeSubmenu(); break;
         case Polaris_Menu: printPolarisSubmenu(); break;

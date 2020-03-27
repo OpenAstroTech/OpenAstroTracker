@@ -53,6 +53,7 @@ void setup() {
   // Create the menu items
   lcdMenu.addItem("RAs", RA_Menu);
   lcdMenu.addItem("DEC", DEC_Menu);
+  lcdMenu.addItem("POI", POI_Menu);
   lcdMenu.addItem("HOME", Home_Menu);
   lcdMenu.addItem("HA", HA_Menu);
   if (north) {

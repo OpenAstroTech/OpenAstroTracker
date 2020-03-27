@@ -1,7 +1,7 @@
 /*
   =======================================================================================================================================
 
-    Version 1.4.2
+    Version 1.4.4
 
     1. Connect your Arduino, under tools choose "Arduino Uno", set the right Port and set "Arduino ISP" as the Programmer.
     2. Hit upload (Ctrl-U)
@@ -14,7 +14,7 @@
              
   =======================================================================================================================================
 */
-String version = "V1.4.3";
+String version = "V1.4.4";
 
 boolean north = true;    // change this to 'false' if youre in the southern hemisphere
 

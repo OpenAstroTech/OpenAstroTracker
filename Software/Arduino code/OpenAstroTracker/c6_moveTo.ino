@@ -119,3 +119,12 @@ void moveSteppersToTargetAsync() {
     controlDisplay --;
   }
 }
+
+void ShowStatusMessage(String message) {
+  lcdMenu.setCursor(0, 1);
+  lcdMenu.printMenu(message);
+  long now = millis();
+  while (millis() - now < 750) {
+    runTracker();
+  }
+}

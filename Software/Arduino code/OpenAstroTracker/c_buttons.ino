@@ -22,6 +22,9 @@ void loop() {
         handleDECandRACalculations();
         processDECKeys(lcd_key);
         break;
+      case POI_Menu:
+        processPOIKeys(lcd_key);
+        break;
       case Home_Menu:
         processHomeKeys(lcd_key);
         break;
