@@ -14,7 +14,7 @@
              
   =======================================================================================================================================
 */
-String version = "V1.4.4";
+String version = "V1.4.5";
 
 boolean north = true;    // change this to 'false' if youre in the southern hemisphere
 
@@ -58,3 +58,6 @@ int s = 25;
 
 // Uncomment this to support the heating menu
 //#define SUPPORT_HEATING
+
+// Uncomment to run a key diagnostic
+// #define LCD_BUTTON_TEST
