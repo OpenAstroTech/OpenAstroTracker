@@ -128,8 +128,8 @@ int RAheat = 0;   // Are we heating the RA stepper?
 int DECheat = 0;  // Are we heating the DEC stepper?
 
 //Stellarium
-char current_RA[9];
-char current_DEC[10];
+char current_RA[10];
+char current_DEC[12];
 int HAh_save;
 int HAm_save;
 float slew_RA;

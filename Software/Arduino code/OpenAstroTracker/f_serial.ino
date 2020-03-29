@@ -1,92 +1,172 @@
+struct SerialCommands {
+  String command;
+  int commandId;
+};
+
+#define PC_START 1
+#define PC_STOP 2
+#define MOVE_TO_RA 3
+#define MOVE_TO_DEC  4
+#define MOVE_UP 5
+#define MOVE_DOWN 6
+#define MOVE_LEFT 7
+#define MOVE_RIGHT 8
+
+SerialCommands supportedCommands[] = {
+  { "START", PC_START  },
+  { "STOP", PC_STOP  },
+  { "SRA", MOVE_TO_RA  },
+  { "SDEC", MOVE_TO_DEC },
+  { "UP", MOVE_UP },
+  { "DOWN", MOVE_DOWN },
+  { "LEFT", MOVE_LEFT },
+  { "RIGHT", MOVE_RIGHT },
+};
+
 void serialEvent() {
 
-  while (stepperGUIDE.distanceToGo() != 0) tracking = 0;
+  if (stepperGUIDE.distanceToGo() != 0) tracking = 0;
 
   while (Serial.available() > 0) {
 
-
     String inCmd = Serial.readStringUntil('#');
-    /*lcd.setCursor(0, 0);
-      lcd.print(inCmd);*/
     logString += inCmd + "\n\r";
 
+    int cmdSep = inCmd.indexOf('|');
+    if (cmdSep >= 0) {
+      // Our own protocol format. Currently only setting RA and DEC and manual slew is supported.
+      // So available formats are:
+      //     arg,arg,arg|CMD
+      // OR
+      //     |CMD
 
+      String command = inCmd.substring(cmdSep + 1);
+      int commandId = -1;
+      for (int i = 0; i < sizeof(supportedCommands) / sizeof(supportedCommands[0]); i++)
+      {
+        if (supportedCommands[i].command == command) {
+          commandId = supportedCommands[i].commandId;
+          break;
+        }
+      }
 
-    if (inCmd.indexOf('S') > 0) {
-      int rh = inCmd.indexOf('\a');
-      String a = inCmd.substring(0, rh);
-      int RaH = a.toInt();
+      String argString = inCmd.substring(0, cmdSep);
+      int args[3];
+      int argIndex = 0;
 
-      int rm = inCmd.indexOf('\b');
-      String b = inCmd.substring(rh + 1, rm);
-      int RaM = b.toInt();
+      // Check for arguments
+      while (argString.length() > 0 ) {
+        int commaPos = argString.indexOf(',');
+        if (commaPos == -1) {
+          args[argIndex++] = argString.toInt();
+          argString = "";
+        }
+        else {
+          args[argIndex++] = argString.substring(0, commaPos).toInt();
+          argString = argString.substring(commaPos + 1);
+        }
+      }
 
-      int rs = inCmd.indexOf('\f');
-      String c = inCmd.substring(rm + 1, rs);
-      int RaS = c.toInt();
+      switch (commandId)
+      {
+        // SRA command - Set RA time
+        case MOVE_TO_RA : {
+            if (argIndex == 3)
+            {
+              RATime.set(args[0], args[1], args[2]);
+              doCalculations();
+              lcdMenu.setCursor(0, 1);
+              sprintf(current_RA, "%02d:%02d:%02d", RADisplayTime.getHours(), RADisplayTime.getMinutes(), RADisplayTime.getSeconds());
+              lcdMenu.printMenu("RA : " + String(current_RA));
+              //ShowStatusMessage();
+              handleDECandRACalculations();
+              startMoveSteppersToTargetAsync() ;
+            }
+          }
+          break;
 
-      RATime.set(RaH, RaH, RaS);
+        case MOVE_TO_DEC : {
+            if (argIndex == 3) {
+              degreeDEC = args[0] + (north ? -90 : 90);
+              minDEC = args[1];
+              secDEC = args[2];
+              doCalculations();
+              lcdMenu.setCursor(0, 1);
+              lcdMenu.printMenuArg("DEC: %d%c %d%c %d%s", printdegDEC, 0, minDEC, 1, secDEC, "\"");
+              //ShowStatusMessage();
+              handleDECandRACalculations();
+              startMoveSteppersToTargetAsync() ;
+            }
+          }
+          break;
 
-      //lcd.clear();
-      //lcd.print(moveRA);
-      //lcd.print(minRA);
-      //lcd.print(secRA);
+        case PC_START : {
+            // START command - Go to PC Control
+            pcControl = true;
+            lcd.clear();
+            lcd.setCursor(0, 0);
+            lcd.print("PC CONTROL");
+            lcd.setCursor(0, 1);
+          }
+          break;
+
+        case PC_STOP: {
+            // STOP command - exit PC Control
+            pcControl = false;
+            lcd.clear();
+          }
+          break;
+
+        case MOVE_RIGHT: {
+            // R command - Move RA stepper right
+            if (argIndex == 1) {
+              //tracking = 0;
+              stepperRA.move(args[0]);
+              //stepperRA.runToPosition();
+              //tracking = 1;
+            }
+          }
+          break;
+
+        case MOVE_LEFT: {
+            // L command - Move RA stepper left
+            if (argIndex == 1) {
+              //tracking = 0;
+              stepperRA.move(-args[0]);
+              //stepperRA.runToPosition();
+              //tracking = 1;
+            }
+          }
+          break;
+
+        case MOVE_DOWN: {
+            // DOWN command - Move DEC stepper down
+            if (argIndex == 1) {
+              stepperDEC.setMaxSpeed(250);
+              stepperDEC.setAcceleration(600);
+              stepperDEC.move(args[0]);
+              //stepperDEC.runToPosition();
+            }
+          }
+          break;
+
+        case MOVE_UP: {
+            // UP command - Move DEC stepper up
+            if (argIndex == 1) {
+              stepperDEC.setMaxSpeed(250);
+              stepperDEC.setAcceleration(600);
+              stepperDEC.move(-args[0]);
+              //stepperDEC.runToPosition();
+            }
+          }
+          break;
+
+        default:
+          break;
+      }
     }
 
-
-
-    if (inCmd.indexOf("R") > 0) {
-      int r = inCmd.indexOf('\a');
-      String a = inCmd.substring(0, r);
-      int amount = a.toInt();
-      tracking = 0;
-      stepperRA.move(amount);
-      stepperRA.runToPosition();
-      tracking = 1;
-    }
-
-    if (inCmd.indexOf("L") > 0) {
-      tracking = 0;
-      int l = inCmd.indexOf('\a');
-      String a = inCmd.substring(0, l);
-      int amount = a.toInt();
-
-      stepperRA.move(-amount);
-      stepperRA.runToPosition();
-      tracking = 1;
-    }
-    if (inCmd.indexOf("UP") > 0) {
-      int u = inCmd.indexOf('\a');
-      String a = inCmd.substring(0, u);
-      int amount = a.toInt();
-      stepperDEC.setMaxSpeed(250);
-      stepperDEC.setAcceleration(600);
-      stepperDEC.move(-amount);
-      stepperDEC.runToPosition();
-    }
-    if (inCmd.indexOf("DOWN") > 0) {
-      int d = inCmd.indexOf('\a');
-      String a = inCmd.substring(0, d);
-      int amount = a.toInt();
-      stepperDEC.setMaxSpeed(250);
-      stepperDEC.setAcceleration(600);
-      stepperDEC.move(amount);
-      stepperDEC.runToPosition();
-    }
-    if (inCmd == "START") {
-      pcControl = true;
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("PC CONTROL");
-      lcd.setCursor(0, 1);
-      //lcd.print(amount);
-    }
-
-    if (inCmd == "STOP") {
-      pcControl = false;
-      lcd.clear();
-    }
-
+    // I command - toggle pulse guiding
     if (inCmd == "I")
     {
       if (isPulseGuiding)
@@ -193,7 +273,8 @@ void serialEvent() {
       Serial.print("#");
       //inCmd = "";
     }
-    if (inCmd.indexOf("Sr") > 0) {
+
+    if (inCmd.indexOf(":Sr") >= 0) {
       String x = inCmd.substring(3);
       int RaH = x.toInt();
       String y = inCmd.substring(7);
@@ -252,7 +333,14 @@ void serialEvent() {
         stepperDEC.run();
       }
     }
-    loop();
 
+    runTracker();
+    doCalculations();
+
+    // Dont let it grow forever. When it gets over 3K cut it down to 2K. This might wreak 
+    // havoc with heap fragmentation, so we might need to put the logString building 
+    // behind a #ifdef DEBUG since that's really only what it's needed for.
+    if (logString.length() > 3000)    {
+      logString = logString.substring(logString.length() -1000);
+    }
   }
-}
