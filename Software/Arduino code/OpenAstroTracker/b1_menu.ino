@@ -94,9 +94,14 @@ class LcdMenu {
       _activeId = id;
     }
 
-    // Pass throu utility function
+    // Pass thru utility function
     void setCursor(int col, int row) {
       _lcd->setCursor(col, row);
+    }
+
+    // Pass thru utility function
+    void clear() {
+      _lcd->clear();
     }
 
     // Go to the next menu item from currently active one
