@@ -57,7 +57,6 @@ void handleMeadeSetInfo(String inCmd) {
     Serial.print("0");
     return;
   }
-  Serial.println("[" + inCmd + "]");
   if (inCmd[0] == 'd') {
     // Set DEC
     int sgn = inCmd[1] == '+' ? 1 : -1;
@@ -451,7 +450,7 @@ void serialEvent() {
       minDEC += slew_DECm;
       secDEC += slew_DECs;
       Serial.print("1");
-      slew_DEC = (slew_DECd * float(DECsteps) + slew_DECm * (float(DECsteps) / float(60)) + slew_DECs * (float(DECsteps) / float(3600))) / 2;
+      slew_DEC = (slew_DECd * float(DECStepsPerDegree) + slew_DECm * (float(DECStepsPerDegree) / float(60)) + slew_DECs * (float(DECStepsPerDegree) / float(3600))) / 2;
 
       stepperDEC.moveTo(slew_DEC);
       //inCmd = "";

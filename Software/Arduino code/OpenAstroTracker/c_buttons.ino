@@ -31,10 +31,10 @@ void loop() {
 
   lcd_key = read_LCD_buttons();
 
-  trackingspeed = ((((335.1417 / 288.0) * RevSteps) / 3590)) - 1 + float(speedcalibration);
+  trackingspeed = ((((335.1417 / 288.0) * StepsPerRevolution) / 3590)) - 1 + float(speedcalibration);
   stepperTRK.setSpeed(trackingspeed);
 
-  if (inSerialControl ) {
+  if (inSerialControl) {
     serialLoop();
   }
   else {

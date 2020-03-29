@@ -7,15 +7,15 @@ void handleDECandRACalculations()
     hourPos = hourPos - 24;
   }
 
-  // How many steps moves the RA ring one hour along (15degrees?)
-  stepsPerHour = (float(RAsteps) / 288.0) * RevSteps;
+  // How many steps moves the RA ring one hour along (15degrees?) No idea what 288 is?
+  stepsPerHour = (float(RAStepsPerDegree) / 288.0) * StepsPerRevolution;
 
-  // Where do ww want to move RA to?
+  // Where do we want to move RA to? Why divided by 2?
   float moveRA = hourPos * stepsPerHour / 2;
 
   // Where do we want to move DEC to?
   // the variable degreeDEC is 0deg for the celestial pole (90deg), and goes negative only.
-  moveDEC = (degreeDEC * float(DECsteps) + minDEC * (float(DECsteps) / 60.0f) + secDEC * (float(DECsteps) / 3600.0f));
+  moveDEC = (degreeDEC * float(DECStepsPerDegree) + minDEC * (float(DECStepsPerDegree) / 60.0f) + secDEC * (float(DECStepsPerDegree) / 3600.0f));
 
   // We can move 6 hours in either direction. Outside of that we need to flip directions.
   float RALimit = (6.0f * stepsPerHour / 2);

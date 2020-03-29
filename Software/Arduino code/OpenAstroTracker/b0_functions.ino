@@ -16,7 +16,7 @@ int adjustWrap(int current, int adjustBy, int minVal, int maxVal)
   current += adjustBy;
   if (current > maxVal) current -= (maxVal + 1 - minVal);
   if (current < minVal) current += (maxVal + 1 - minVal
-  );
+                                     );
   return current;
 }
 
@@ -80,7 +80,7 @@ void logv(const char* input, ...) {
   Serial.println(formatArg(input, argp));
   Serial.flush();
   va_end(argp);
-  
+
 }
 
 String format(const char* input, ...) {
@@ -152,4 +152,4 @@ String formatArg(const char* input, va_list args) {
   *p = '\0';
   return String(achBuffer);
 }
-#endif 
+#endif
