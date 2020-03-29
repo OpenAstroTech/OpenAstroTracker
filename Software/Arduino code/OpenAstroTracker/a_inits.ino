@@ -43,7 +43,7 @@ LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 #define Home_Menu 7
 #define POI_Menu 8
 
-// Stepper control for RA and DEV. 
+// Stepper control for RA and DEV.
 // TRK is used for live tracking and runs in parallel with RA.
 // GUIDE is used for Stellarium control
 AccelStepper stepperRA(FULLSTEP, motorPin1, motorPin3, motorPin2, motorPin4);
@@ -51,12 +51,16 @@ AccelStepper stepperDEC(HALFSTEP, motorPin11, motorPin13, motorPin12, motorPin14
 AccelStepper stepperTRK(HALFSTEP, motorPin1, motorPin3, motorPin2, motorPin4);     //yes, this is the same motor as stepperRA, dont ask why
 AccelStepper stepperGUIDE(HALFSTEP, motorPin1, motorPin3, motorPin2, motorPin4);
 
-int lcd_key     = 0;         // The current key state 
+int lcd_key     = 0;         // The current key state
 int adc_key_in  = 0;         // The analog value of the keys
 
 String inString = "";
 
 bool inStartup = true;       // Start with a guided startup
+
+bool inSerialControl = false; // When the serial port is in control
+bool serialIsSlewing = false; // When the serial port is slewing the tracker
+
 
 int calDelay = 150;          // The current delay when changing calibration value. The longer a button is depressed, the samller this gets.
 

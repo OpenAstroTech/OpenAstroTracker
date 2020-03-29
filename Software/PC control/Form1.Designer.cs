@@ -31,8 +31,9 @@
 			this.cbPorts = new System.Windows.Forms.ComboBox();
 			this.button1 = new System.Windows.Forms.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.labelRA = new System.Windows.Forms.Label();
+			this.label7 = new System.Windows.Forms.Label();
 			this.btnGetCurrent = new System.Windows.Forms.Button();
-			this.comboBox2 = new System.Windows.Forms.ComboBox();
 			this.udDecSeconds = new System.Windows.Forms.NumericUpDown();
 			this.udRASeconds = new System.Windows.Forms.NumericUpDown();
 			this.udDecMinutes = new System.Windows.Forms.NumericUpDown();
@@ -47,6 +48,7 @@
 			this.label6 = new System.Windows.Forms.Label();
 			this.label5 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
+			this.label8 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -57,6 +59,7 @@
 			this.btnManualLeft = new System.Windows.Forms.Button();
 			this.btnManualDown = new System.Windows.Forms.Button();
 			this.btnManualUp = new System.Windows.Forms.Button();
+			this.labelDEC = new System.Windows.Forms.Label();
 			this.groupBox1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.udDecSeconds)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.udRASeconds)).BeginInit();
@@ -93,8 +96,10 @@
 			// 
 			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox1.Controls.Add(this.labelDEC);
+			this.groupBox1.Controls.Add(this.labelRA);
+			this.groupBox1.Controls.Add(this.label7);
 			this.groupBox1.Controls.Add(this.btnGetCurrent);
-			this.groupBox1.Controls.Add(this.comboBox2);
 			this.groupBox1.Controls.Add(this.udDecSeconds);
 			this.groupBox1.Controls.Add(this.udRASeconds);
 			this.groupBox1.Controls.Add(this.udDecMinutes);
@@ -109,6 +114,7 @@
 			this.groupBox1.Controls.Add(this.label6);
 			this.groupBox1.Controls.Add(this.label5);
 			this.groupBox1.Controls.Add(this.label3);
+			this.groupBox1.Controls.Add(this.label8);
 			this.groupBox1.Controls.Add(this.label2);
 			this.groupBox1.Controls.Add(this.label1);
 			this.groupBox1.Location = new System.Drawing.Point(8, 7);
@@ -120,6 +126,26 @@
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Coordinates";
 			// 
+			// labelRA
+			// 
+			this.labelRA.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.labelRA.Location = new System.Drawing.Point(124, 96);
+			this.labelRA.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+			this.labelRA.Name = "labelRA";
+			this.labelRA.Size = new System.Drawing.Size(68, 17);
+			this.labelRA.TabIndex = 26;
+			this.labelRA.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// label7
+			// 
+			this.label7.AutoSize = true;
+			this.label7.Location = new System.Drawing.Point(101, 98);
+			this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+			this.label7.Name = "label7";
+			this.label7.Size = new System.Drawing.Size(22, 13);
+			this.label7.TabIndex = 26;
+			this.label7.Text = "RA";
+			// 
 			// btnGetCurrent
 			// 
 			this.btnGetCurrent.Location = new System.Drawing.Point(4, 92);
@@ -129,17 +155,7 @@
 			this.btnGetCurrent.TabIndex = 5;
 			this.btnGetCurrent.Text = "Get current";
 			this.btnGetCurrent.UseVisualStyleBackColor = true;
-			// 
-			// comboBox2
-			// 
-			this.comboBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.comboBox2.FormattingEnabled = true;
-			this.comboBox2.Location = new System.Drawing.Point(90, 95);
-			this.comboBox2.Margin = new System.Windows.Forms.Padding(2);
-			this.comboBox2.Name = "comboBox2";
-			this.comboBox2.Size = new System.Drawing.Size(267, 21);
-			this.comboBox2.TabIndex = 3;
+			this.btnGetCurrent.Click += new System.EventHandler(this.btnGetCurrent_Click);
 			// 
 			// udDecSeconds
 			// 
@@ -305,6 +321,16 @@
 			this.label3.TabIndex = 5;
 			this.label3.Text = "h";
 			// 
+			// label8
+			// 
+			this.label8.AutoSize = true;
+			this.label8.Location = new System.Drawing.Point(212, 98);
+			this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+			this.label8.Name = "label8";
+			this.label8.Size = new System.Drawing.Size(29, 13);
+			this.label8.TabIndex = 1;
+			this.label8.Text = "DEC";
+			// 
 			// label2
 			// 
 			this.label2.AutoSize = true;
@@ -438,6 +464,16 @@
 			this.btnManualUp.UseVisualStyleBackColor = true;
 			this.btnManualUp.Click += new System.EventHandler(this.btnManualUp_Click);
 			// 
+			// labelDEC
+			// 
+			this.labelDEC.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.labelDEC.Location = new System.Drawing.Point(245, 96);
+			this.labelDEC.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+			this.labelDEC.Name = "labelDEC";
+			this.labelDEC.Size = new System.Drawing.Size(68, 17);
+			this.labelDEC.TabIndex = 26;
+			this.labelDEC.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -499,7 +535,10 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Button btnGetCurrent;
-        private System.Windows.Forms.ComboBox comboBox2;
-    }
+		private System.Windows.Forms.Label labelRA;
+		private System.Windows.Forms.Label label7;
+		private System.Windows.Forms.Label label8;
+		private System.Windows.Forms.Label labelDEC;
+	}
 }
 

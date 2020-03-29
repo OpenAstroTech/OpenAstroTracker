@@ -54,7 +54,7 @@ namespace OpenAstroTracker_Control
 				Thread.Sleep(500);
 				port.Open();
 				Thread.Sleep(500);
-				port.Write("|START#");
+				port.Write(":I#");
 				button1.Text = "Disconnect";
 				enableControls();
 				isConnected = true;
@@ -68,7 +68,7 @@ namespace OpenAstroTracker_Control
 		private void disconnectFromArduino()
 		{
 			isConnected = false;
-			port.Write("|STOP#");
+			port.Write(":Qq#");
 			button1.Text = "Connect";
 			disableControls();
 			Thread.Sleep(500);
@@ -128,7 +128,7 @@ namespace OpenAstroTracker_Control
 			if (!isConnected)
 				return;
 
-			port.Write(udRAHours.Value + "," + udRAMinutes.Value + "," + udRASeconds.Value + "|SRA#");
+			port.Write(string.Format(":Sr{0:00}:{1:00}:{2:00}#", udRAHours.Value, udRAMinutes.Value, udRASeconds.Value));
 		}
 
 		private void btnDecMove_Click(object sender, EventArgs e)
@@ -136,7 +136,7 @@ namespace OpenAstroTracker_Control
 			if (!isConnected)
 				return;
 
-			port.Write(udDecDegrees.Value + "," + udDecMinutes.Value + "," + udDecSeconds.Value + "|SDEC#");
+			port.Write(string.Format(":Sd{0:00}:{1:00}:{2:00}#", udDecDegrees.Value, udDecMinutes.Value, udDecSeconds.Value));
 		}
 
 		private void btnManualUp_Click(object sender, EventArgs e)
@@ -144,7 +144,7 @@ namespace OpenAstroTracker_Control
 			if (!isConnected)
 				return;
 
-			port.Write(udManualSteps.Value + "|UP#");
+			port.Write(udManualSteps.Value + ":Mn#");
 		}
 
 		private void btnManualLeft_Click(object sender, EventArgs e)
@@ -152,7 +152,7 @@ namespace OpenAstroTracker_Control
 			if (!isConnected)
 				return;
 
-			port.Write(udManualSteps.Value + "|LEFT#");
+			port.Write(udManualSteps.Value + ":Mw#");
 		}
 
 		private void btnManualRight_Click(object sender, EventArgs e)
@@ -160,7 +160,7 @@ namespace OpenAstroTracker_Control
 			if (!isConnected)
 				return;
 
-			port.Write(udManualSteps.Value + "|RIGHT#");
+			port.Write(udManualSteps.Value + ":Me#");
 		}
 
 		private void btnManualDown_Click(object sender, EventArgs e)
@@ -168,7 +168,19 @@ namespace OpenAstroTracker_Control
 			if (!isConnected)
 				return;
 
-			port.Write(udManualSteps.Value + "|DOWN#");
+			port.Write(udManualSteps.Value + ":Ms#");
+		}
+
+		private void btnGetCurrent_Click(object sender, EventArgs e)
+		{
+			// This needs to be rewritten as event driven 
+
+			//port.Write(udManualSteps.Value + ":Gd#");
+			//Thread.Sleep(500);
+			//labelDEC.Text = port.ReadTo("#");
+			//port.Write(udManualSteps.Value + ":Gr#");
+			//Thread.Sleep(500);
+			//labelRA.Text = port.ReadTo("#");
 		}
 	}
 }
