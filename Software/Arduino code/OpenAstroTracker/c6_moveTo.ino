@@ -79,6 +79,10 @@ void moveSteppersToTarget() {
     }
     display--;
   }
+
+  // Update resting position
+  String disp = "D:" + String(stepperDEC.currentPosition()) + " R:" + String( stepperRA.currentPosition());
+  lcdMenu.printMenu(disp);
 }
 
 void startMoveSteppersToTargetAsync() {
@@ -117,6 +121,12 @@ void moveSteppersToTargetAsync() {
       controlDisplay  = 500; // Update the LCD every 250 iterations (perf issue)
     }
     controlDisplay --;
+  }
+  else if (controlDisplay != 499)  {
+    // Make sure we do one last update when the steppers have stopped.
+    String disp = "D:" + String(stepperDEC.currentPosition()) + " R:" + String( stepperRA.currentPosition());
+    lcdMenu.printMenu(disp);
+    controlDisplay = 499;
   }
 }
 

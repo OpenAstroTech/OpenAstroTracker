@@ -1,20 +1,20 @@
 /*
   =======================================================================================================================================
 
-    Version 1.4.4
+    Version 1.5.10
 
     1. Connect your Arduino, under tools choose "Arduino Uno", set the right Port and set "Arduino ISP" as the Programmer.
     2. Hit upload (Ctrl-U)
 
     You might need to download the "AccelStepper" library by Mike McCauley
 
-    Authors: /u/intercipere  
+    Authors: /u/intercipere
              /u/clutchplate
              /u/EorEquis
-             
+
   =======================================================================================================================================
 */
-String version = "V1.4.5";
+String version = "V1.5.10";
 
 boolean north = true;    // change this to 'false' if youre in the southern hemisphere
 
@@ -32,14 +32,14 @@ int RAacceleration = 600;   // these cheap steppers unprecice
 int DECspeed = 800;
 int DECacceleration = 400;
 
-// Define some stepper limits to prevent physical damage to the tracker. This assumes that the home 
+// Define some stepper limits to prevent physical damage to the tracker. This assumes that the home
 // point (zero point) has been correctly set to be pointing at the celestial pole.
 float RAStepperLimit = 15500;         // Going much more than this each direction will make the ring fall off the bearings.
 
-// These are for 47N, so they will need adjustment if you're a lot away from that. 
-// You can use the CTRL menu to find the limits and place them here. I moved it 
-// down until my lens was horizontal. Note the DEC number. Then move it up until 
-// the lens is horizontal and note that number. Put those here. Always watch your 
+// These are for 47N, so they will need adjustment if you're a lot away from that.
+// You can use the CTRL menu to find the limits and place them here. I moved it
+// down until my lens was horizontal. Note the DEC number. Then move it up until
+// the lens is horizontal and note that number. Put those here. Always watch your
 // tracker and hit RESET if it approaches a dangerous area.
 float DECStepperDownLimit = 10000;    // Going much more than this will make the lens collide with the ring
 float DECStepperUpLimit = -22000;     // Going much more than this is going below the horizon.

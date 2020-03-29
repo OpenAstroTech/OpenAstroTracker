@@ -1,162 +1,186 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.IO.Ports;
+using System.Threading;
 
 namespace OpenAstroTracker_Control
 {
-    public partial class Form1 : Form
-    {
-        bool isConnected = false;
-        String[] ports;
-        SerialPort port;
+	public partial class Form1 : Form
+	{
+		bool isConnected = false;
+		String[] ports;
+		SerialPort port;
 
-        public Form1()
-        {
-            InitializeComponent();
-            disableControls();
-            getAvailableComPorts();
+		public Form1()
+		{
+			InitializeComponent();
+			disableControls();
+			getAvailableComPorts();
 
-            foreach (string port in ports)
-            {
-                cbPorts.Items.Add(port);
-                Console.WriteLine(port);
-                if (ports[0] != null)
-                {
-                    cbPorts.SelectedItem = ports[0];
-                }
-            }
-        }
+			foreach (string port in ports)
+			{
+				cbPorts.Items.Add(port);
+				Console.WriteLine(port);
+				if (ports[0] != null)
+				{
+					cbPorts.SelectedItem = ports[0];
+				}
+			}
+		}
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            if (!isConnected)
-            {
-                connectToArduino();
-            }
-            else
-            {
-                disconnectFromArduino();
-            }
-        }
+		private void button1_Click(object sender, EventArgs e)
+		{
+			if (!isConnected)
+			{
+				connectToArduino();
+			}
+			else
+			{
+				disconnectFromArduino();
+			}
+		}
 
-        void getAvailableComPorts()
-        {
-            ports = SerialPort.GetPortNames();
-        }
+		void getAvailableComPorts()
+		{
+			ports = SerialPort.GetPortNames();
+		}
 
-        private void connectToArduino()
-        {
-            isConnected = true;
-            string selectedPort = cbPorts.GetItemText(cbPorts.SelectedItem);
-            port = new SerialPort(selectedPort, 57600, Parity.None, 8, StopBits.One);
-            port.Open();
-            port.Write("START#");
-            button1.Text = "Disconnect";
-            enableControls();
-        }
-        private void disconnectFromArduino()
-        {
-            isConnected = false;
-            port.Write("STOP#");
-            port.Close();
-            button1.Text = "Connect";
-            disableControls();
-            //resetDefaults();
-        }
+		private void connectToArduino()
+		{
+			try
+			{
+				string selectedPort = cbPorts.GetItemText(cbPorts.SelectedItem);
+				port = new SerialPort(selectedPort, 9600, Parity.None, 8, StopBits.One);
+				Thread.Sleep(500);
+				port.Open();
+				Thread.Sleep(500);
+				port.Write(":I#");
+				button1.Text = "Disconnect";
+				enableControls();
+				isConnected = true;
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Unable to connect. " + ex.Message, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
 
-        private void enableControls()
-        {
-            btnManualUp.Enabled = true;
-            btnManualDown.Enabled = true;
-            btnManualLeft.Enabled = true;
-            btnManualRight.Enabled = true;
+		private void disconnectFromArduino()
+		{
+			isConnected = false;
+			port.Write(":Qq#");
+			button1.Text = "Connect";
+			disableControls();
+			Thread.Sleep(500);
+			port.Close();
+			//resetDefaults();
+		}
 
-            btnRAMove.Enabled = true;
-            btnDecMove.Enabled = true;            
+		private void enableControls()
+		{
+			btnManualUp.Enabled = true;
+			btnManualDown.Enabled = true;
+			btnManualLeft.Enabled = true;
+			btnManualRight.Enabled = true;
 
-            udManualSteps.Enabled = true;
+			btnRAMove.Enabled = true;
+			btnDecMove.Enabled = true;
 
-            udRAHours.Enabled = true;
-            udRAMinutes.Enabled = true;
-            udRASeconds.Enabled = true;
+			udManualSteps.Enabled = true;
 
-            udDecSeconds.Enabled = true;
-            udDecMinutes.Enabled = true;
-            udDecDegrees.Enabled = true;
-        }
+			udRAHours.Enabled = true;
+			udRAMinutes.Enabled = true;
+			udRASeconds.Enabled = true;
 
-        private void disableControls()
-        {
-            btnManualUp.Enabled = false;
-            btnManualDown.Enabled = false;
-            btnManualLeft.Enabled = false;
-            btnManualRight.Enabled = false;
+			udDecSeconds.Enabled = true;
+			udDecMinutes.Enabled = true;
+			udDecDegrees.Enabled = true;
+		}
 
-            btnRAMove.Enabled = false;
-            btnDecMove.Enabled = false;
+		private void disableControls()
+		{
+			btnManualUp.Enabled = false;
+			btnManualDown.Enabled = false;
+			btnManualLeft.Enabled = false;
+			btnManualRight.Enabled = false;
 
-            udManualSteps.Enabled = false;
+			btnRAMove.Enabled = false;
+			btnDecMove.Enabled = false;
 
-            udRAHours.Enabled = false;
-            udRAMinutes.Enabled = false;
-            udRASeconds.Enabled = false;
+			udManualSteps.Enabled = false;
 
-            udDecSeconds.Enabled = false;
-            udDecMinutes.Enabled = false;
-            udDecDegrees.Enabled = false;
-        }      
+			udRAHours.Enabled = false;
+			udRAMinutes.Enabled = false;
+			udRASeconds.Enabled = false;
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
+			udDecSeconds.Enabled = false;
+			udDecMinutes.Enabled = false;
+			udDecDegrees.Enabled = false;
+		}
 
-        }
+		private void Form1_Load(object sender, EventArgs e)
+		{
 
-        private void btnRAMove_Click(object sender, EventArgs e)
-        {
-            if (!isConnected)
-                return;
+		}
 
-            port.Write(udRAHours.Value + "\a" + udRAMinutes.Value + "\b" + udRASeconds.Value + "\f" + "S");
-        }
+		private void btnRAMove_Click(object sender, EventArgs e)
+		{
+			if (!isConnected)
+				return;
 
-        private void btnDecMove_Click(object sender, EventArgs e)
-        {
-            if (!isConnected)
-                return;
+			port.Write(string.Format(":Sr{0:00}:{1:00}:{2:00}#", udRAHours.Value, udRAMinutes.Value, udRASeconds.Value));
+		}
 
-            // move command missing here
-        }
+		private void btnDecMove_Click(object sender, EventArgs e)
+		{
+			if (!isConnected)
+				return;
 
-        private void btnManualUp_Click(object sender, EventArgs e)
-        {
-            if (!isConnected)
-                return;
+			port.Write(string.Format(":Sd{0:00}:{1:00}:{2:00}#", udDecDegrees.Value, udDecMinutes.Value, udDecSeconds.Value));
+		}
 
-            port.Write(udManualSteps.Value + "\a" + "UP#");
-        }
+		private void btnManualUp_Click(object sender, EventArgs e)
+		{
+			if (!isConnected)
+				return;
 
-        private void btnManualLeft_Click(object sender, EventArgs e)
-        {
-            if (!isConnected)
-                return;
+			port.Write(udManualSteps.Value + ":Mn#");
+		}
 
-            port.Write(udManualSteps.Value + "\a" + "L#");
-        }
+		private void btnManualLeft_Click(object sender, EventArgs e)
+		{
+			if (!isConnected)
+				return;
 
-        private void btnManualRight_Click(object sender, EventArgs e)
-        {
-            if (!isConnected)
-                return;
+			port.Write(udManualSteps.Value + ":Mw#");
+		}
 
-            port.Write(udManualSteps.Value + "\a" + "R#");
-        }
+		private void btnManualRight_Click(object sender, EventArgs e)
+		{
+			if (!isConnected)
+				return;
 
-        private void btnManualDown_Click(object sender, EventArgs e)
-        {
-            if (!isConnected)
-                return;
+			port.Write(udManualSteps.Value + ":Me#");
+		}
 
-            port.Write(udManualSteps.Value + "\a" + "DOWN#");
-        }
-    }
+		private void btnManualDown_Click(object sender, EventArgs e)
+		{
+			if (!isConnected)
+				return;
+
+			port.Write(udManualSteps.Value + ":Ms#");
+		}
+
+		private void btnGetCurrent_Click(object sender, EventArgs e)
+		{
+			// This needs to be rewritten as event driven 
+
+			//port.Write(udManualSteps.Value + ":Gd#");
+			//Thread.Sleep(500);
+			//labelDEC.Text = port.ReadTo("#");
+			//port.Write(udManualSteps.Value + ":Gr#");
+			//Thread.Sleep(500);
+			//labelRA.Text = port.ReadTo("#");
+		}
+	}
 }
