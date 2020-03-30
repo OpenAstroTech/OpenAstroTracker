@@ -11,7 +11,7 @@ DayTime HACorrection;
 void setup() {
 
   //Serial.begin(38400);
-  Serial.begin(9600);
+  Serial.begin(57600);
   //BT.begin(9600);
 
 #ifdef DEBUG_MODE

@@ -30,9 +30,10 @@ void handleMeadeGetInfo(String inCmd) {
     case 'V' : {
         if (cmdTwo == 'N') {
           Serial.print(version);
+          Serial.print("#");
         }
         else if (cmdTwo == 'P') {
-          Serial.print("OpenAstroTracker");
+          Serial.print("OpenAstroTracker#");
         }
       }
       break;

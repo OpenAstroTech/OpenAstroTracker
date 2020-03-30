@@ -72,6 +72,7 @@ Public Class Telescope
     Private astroUtilities As AstroUtils ' Private variable to hold an AstroUtils object to provide the Range method
     Private TL As TraceLogger ' Private variable to hold the trace logger object (creates a diagnostic log file with information that you specify)
     Private objSerial As ASCOM.Utilities.Serial
+    Private isParked As Boolean = False
 
     '
     ' Constructor - Must be public for COM registration!
@@ -120,14 +121,30 @@ Public Class Telescope
 
     Public ReadOnly Property SupportedActions() As ArrayList Implements ITelescopeV3.SupportedActions
         Get
-            TL.LogMessage("SupportedActions Get", "Returning empty arraylist")
-            Return New ArrayList()
+            Dim actionList As New ArrayList
+            actionList.Add("Telescope:getFirmwareVer")
+            TL.LogMessage("SupportedActions Get", "Returning arraylist of " + actionList.Count.ToString + " item(s)")
+            Return actionList
+            '            Return New ArrayList()
         End Get
     End Property
 
     Public Function Action(ByVal ActionName As String, ByVal ActionParameters As String) As String Implements ITelescopeV3.Action
         ' We may throw heater control into here, if we ever get there.
-        Throw New ActionNotImplementedException("Action " & ActionName & " is not supported by this driver")
+        Dim suppAct As ArrayList = SupportedActions()
+        If suppAct.Contains(ActionName) Then
+            Dim retVal As String = "255"        ' Default error code
+            Select Case ActionName
+                Case "Telescope:getFirmwareVer"
+                    retVal = CommandString(":GVP")                  ' Get firmware name
+                    retVal = retVal + " " + CommandString(":GVN")   ' Get firmware version number
+                    TL.LogMessage("Action(" + ActionName + ", " + ActionParameters + ")", retVal)
+            End Select
+            Return retVal
+        Else
+            Throw New ActionNotImplementedException("Action " & ActionName & " is not supported by this driver")
+        End If
+
     End Function
 
     Public Sub CommandBlind(ByVal Command As String, Optional ByVal Raw As Boolean = False) Implements ITelescopeV3.CommandBlind
@@ -140,8 +157,9 @@ Public Class Telescope
         End If
         Try
             objSerial.Transmit(Command)
+            TL.LogMessage("CommandBlind", "Transmitted " & Command)
         Catch ex As Exception
-            ' TODO : Handle Exceptions
+            TL.LogMessage("CommandBlind(" + Command + ")", "Error : " + ex.Message)
         Finally
             webMutex.ReleaseMutex()
         End Try
@@ -168,14 +186,21 @@ Public Class Telescope
         End If
         Try
             objSerial.Transmit(Command)
-            If Command.Substring(1, 1) <> "S" Then
-                response = objSerial.ReceiveTerminated("#")
-                response = response.Replace("#", "")
-            Else
-                response = objSerial.ReceiveCounted(1)
-            End If
+            TL.LogMessage("CommandString", "Transmitted " & Command)
+            Dim cmdGroup As String = Command.Substring(1, 1)
+            Select Case cmdGroup
+                Case "S"
+                    response = objSerial.ReceiveCounted(1)
+                Case "M"
+                    response = objSerial.ReceiveCounted(1)
+                Case Else
+                    response = objSerial.ReceiveTerminated("#")
+                    response = response.Replace("#", "")
+            End Select
+            TL.LogMessage("CommandString", "Received " & response)
             Return response
         Catch ex As Exception
+            TL.LogMessage("CommandString(" + Command + ")", ex.Message)
             Return "255"
         Finally
             webMutex.ReleaseMutex()
@@ -199,7 +224,7 @@ Public Class Telescope
                     portNum = Right(comPort, Len(comPort) - 3)
                     objSerial = New ASCOM.Utilities.Serial
                     objSerial.Port = CInt(portNum)
-                    objSerial.Speed = SerialSpeed.ps9600
+                    objSerial.Speed = SerialSpeed.ps57600
                     objSerial.Connected = True
                     Thread.Sleep(2000)      ' Disgusting hack to work around arduino resetting when connected.
                     ' I don't know of any way to poll and see if the reset has completed
@@ -331,8 +356,8 @@ Public Class Telescope
         Get
             'Must be implemented, must not throw a PropertyNotImplementedException.
             'If the telescope cannot be parked, then AtPark must always return False.
-            TL.LogMessage("AtPark", "Get - " & False.ToString())
-            Return False
+            TL.LogMessage("AtPark", "Get - " & isParked.ToString())
+            Return isParked
         End Get
     End Property
 
@@ -376,8 +401,8 @@ Public Class Telescope
 
     Public ReadOnly Property CanPark() As Boolean Implements ITelescopeV3.CanPark
         Get
-            TL.LogMessage("CanPark", "Get - " & False.ToString())
-            Return False
+            TL.LogMessage("CanPark", "Get - " & True.ToString())
+            Return True
         End Get
     End Property
 
@@ -474,8 +499,8 @@ Public Class Telescope
 
     Public ReadOnly Property CanUnpark() As Boolean Implements ITelescopeV3.CanUnpark
         Get
-            TL.LogMessage("CanUnpark", "Get - " & False.ToString())
-            Return False
+            TL.LogMessage("CanUnpark", "Get - " & True.ToString())
+            Return True
         End Get
     End Property
 
@@ -572,8 +597,10 @@ Public Class Telescope
     End Sub
 
     Public Sub Park() Implements ITelescopeV3.Park
-        TL.LogMessage("Park", "Not implemented")
-        Throw New ASCOM.MethodNotImplementedException("Park")
+        TL.LogMessage("Park", "Park requested")
+        CommandBlind(":hP")
+        ' CommandBlind(":Q")
+        isParked = True
     End Sub
 
     Public Sub PulseGuide(Direction As GuideDirections, Duration As Integer) Implements ITelescopeV3.PulseGuide
@@ -698,21 +725,30 @@ Public Class Telescope
     End Sub
 
     Public Sub SlewToCoordinates(RightAscension As Double, Declination As Double) Implements ITelescopeV3.SlewToCoordinates
-        TL.LogMessage("SlewToCoordinates", "RA " + RightAscension.ToString + ", Dec " + Declination.ToString)
-        Dim strRAcmd = ":Sr" + utilities.HoursToHMS(RightAscension, ":", ":")
-        Dim strDeccmd = utilities.DegreesToDMS(Declination, "*", ":")
-        If Declination < 0 Then
-            strDeccmd = "-" + strDeccmd
-        Else
-            strDeccmd = "+" + strDeccmd
-        End If
-        strDeccmd = ":Sd" + strDeccmd
-        If CommandString(strRAcmd) = "1" Then
-            If CommandString(strDeccmd) = "1" Then
-                CommandString(":MS")
+        If Not AtPark Then
+            TL.LogMessage("SlewToCoordinates", "RA " + RightAscension.ToString + ", Dec " + Declination.ToString)
+            Dim strRAcmd = ":Sr" + utilities.HoursToHMS(RightAscension, ":", ":")
+            Dim strDeccmd = utilities.DegreesToDMS(Declination, "*", ":")
+            If Declination < 0 Then
+                strDeccmd = "-" + strDeccmd
+            Else
+                strDeccmd = "+" + strDeccmd
             End If
+            strDeccmd = ":Sd" + strDeccmd
+            TL.LogMessage("SlewToCoordinatesRACmd", strRAcmd)
+            TL.LogMessage("SlewToCoordinatesDecCmd", strDeccmd)
+            If CommandString(strRAcmd) = "1" Then
+                If CommandString(strDeccmd) = "1" Then
+                    CommandString(":MS")
+                End If
 
+            End If
+        Else
+            TL.LogMessage("SlewToCoordinates", "Parked")
+            Throw New ASCOM.ParkedException("SlewToCoordinates")
         End If
+
+
     End Sub
 
     Public Sub SlewToCoordinatesAsync(RightAscension As Double, Declination As Double) Implements ITelescopeV3.SlewToCoordinatesAsync
@@ -826,8 +862,8 @@ Public Class Telescope
     End Property
 
     Public Sub Unpark() Implements ITelescopeV3.Unpark
-        TL.LogMessage("Unpark", "Not implemented")
-        Throw New ASCOM.MethodNotImplementedException("Unpark")
+        TL.LogMessage("Unpark", "Unparked mount")
+        isParked = False
     End Sub
 
 #End Region
