@@ -14,18 +14,29 @@
 
   =======================================================================================================================================
 */
-String version = "V1.5.10";
+String version = "V1.5.11";
 
 boolean north = true;    // change this to 'false' if youre in the southern hemisphere
 
 float speed = 1.000;    // Use this value to slightly increase or decrese tracking speed. The values from the "CAL" menu will be added to this.
 
-int RAsteps = 330;      // adjust this value to calibrate RA movement
-int DECsteps = 163;
+
+// Belt moves 40mm for one rev (2mm pitch, 20 teeth).
+// RA wheel is 2 x Pi x 180mm circumference which is 1130.97mm
+// One RA revolution needs 28.27 (1131mm/40mm) stepper revolutions
+// which means 115814 steps (28.27 x 4096) moves 360 degrees
+// So 321.7 steps/ degree (115814 / 360)
+int RAStepsPerDegree = 330;      // adjust this value to calibrate RA movement
+
+// Belt moves 40mm for one rev (2mm pitch, 20 teeth).
+// DEC wheel is 2 x Pi x 90mm circumference which is 565.5mm
+// So 14.13 stepper revs (14.13 x 4096 = 57906 steps) moves 360degrees
+// So 160.85 steps/ degree (57906/360)
+int DECStepsPerDegree = 163;     // Number of steps needed to move DEC motor 1 degree.
 
 // This is how many steps your 28BYJ-48 stepper needs for a full rotation. It is almost always 4096.
 // This code drives the steppers in halfstep mode
-float RevSteps = 4096;
+float StepsPerRevolution = 4096;
 
 int RAspeed = 400;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. High speeds tend to make
 int RAacceleration = 600;   // these cheap steppers unprecice
