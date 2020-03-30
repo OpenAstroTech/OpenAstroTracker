@@ -2,7 +2,7 @@ void processCalibrationKeys(int key) {
   switch (key) {
     case btnUP: {
         inputcal += 1;  //0.0001;
-        speedcalibration = speed + inputcal / 10000;
+        speedCalibration = speed + inputcal / 10000;
         delay(calDelay);
         calDelay = max(5, 0.96 * calDelay);
         waitForButtonRelease = false;
@@ -11,7 +11,7 @@ void processCalibrationKeys(int key) {
 
     case btnDOWN: {
         inputcal -= 1 ; //0.0001;
-        speedcalibration = speed + inputcal / 10000;
+        speedCalibration = speed + inputcal / 10000;
         delay(calDelay);
         calDelay = max(5, 0.96 * calDelay);
         waitForButtonRelease = false;
@@ -20,7 +20,7 @@ void processCalibrationKeys(int key) {
 
     case btnSELECT: {
         EEPROM.update(0, inputcal);
-        speedcalibration = speed + inputcal / 10000;
+        speedCalibration = speed + inputcal / 10000;
       }
       break;
 
@@ -39,6 +39,6 @@ void processCalibrationKeys(int key) {
 
 void printCalibrationSubmenu() {
   lcd.print("Speed:");
-  lcd.print(speedcalibration, 4);
+  lcd.print(speedCalibration, 4);
   lcd.print("        ");
 }

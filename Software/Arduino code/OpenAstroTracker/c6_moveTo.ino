@@ -1,3 +1,33 @@
+
+void displayStepperPosition() {
+  lcdMenu.setCursor(0, 1);
+  String disp ;
+  if (totalDECMove > 0)              {
+    float decDist = 100.0 - 100.0 * abs(stepperDEC.distanceToGo()) / totalDECMove;
+    disp = "DEC:" + String((int)floor(decDist)) + "% ";
+  }
+  else {
+    disp = "D:" + String(stepperDEC.currentPosition());
+  }
+  if (totalRAMove > 0) {
+    float raDist = 100.0 - 100.0 * abs(stepperRA.distanceToGo()) / totalRAMove;
+    disp = disp + "RA:" + String((int)floor(raDist)) + "%  ";
+  }
+  else {
+    disp = disp + " R:" + String(stepperRA.currentPosition());
+  }
+
+  lcdMenu.printMenu(disp);
+}
+
+void displayStepperPositionThrottled() {
+  if (displaySkipsLeft <= 0) {
+    displayStepperPosition();
+    displaySkipsLeft = displayLoopsToSkip;
+  }
+  displaySkipsLeft--;
+}
+
 // Stop the steppers, allowing their decelerations to process (Blocking)
 void stopSteppers() {
   // Is it running?
@@ -7,6 +37,7 @@ void stopSteppers() {
     stepperRA.run();
     stepperDEC.run();
     runTracker();
+    displayStepperPositionThrottled();
   }
 }
 
@@ -30,6 +61,7 @@ bool stopStepper(int mask, bool useRA) {
         stepperRA.run();
         stepperDEC.run();
         runTracker();
+        displayStepperPositionThrottled();
       }
     }
     else {
@@ -37,6 +69,7 @@ bool stopStepper(int mask, bool useRA) {
         stepperRA.run();
         stepperDEC.run();
         runTracker();
+        displayStepperPositionThrottled();
       }
     }
 
@@ -51,9 +84,6 @@ bool stopStepper(int mask, bool useRA) {
 // Displays a percentage progress
 void moveSteppersToTarget() {
 
-  int displaySkip = 800;  // Update the LCD every 400 iterations (perf issue)
-  int display = 0;
-
   float decTotal = 1.0f * abs(stepperDEC.distanceToGo());
   float raTotal = 1.0f * abs(stepperRA.distanceToGo());
   while (stepperDEC.distanceToGo() != 0 || stepperRA.distanceToGo() != 0) {
@@ -63,26 +93,11 @@ void moveSteppersToTarget() {
     // Run the TRK stepper (same one at slow speed)
     runTracker();
 
-    if (display <= 0) {
-      lcdMenu.setCursor(0, 1);
-      String disp = "";
-      if (decTotal > 0)              {
-        float decDist = 100.0 - 100.0 * abs(stepperDEC.distanceToGo()) / decTotal;
-        disp = disp + "DEC:" + String( (int)floor(decDist)) + "% ";
-      }
-      if (raTotal > 0) {
-        float raDist = 100.0 - 100.0 * abs(stepperRA.distanceToGo()) / raTotal;
-        disp = disp + "RA:" + String((int)floor(raDist)) + "%";
-      }
-      lcdMenu.printMenu(disp);
-      display = displaySkip;
-    }
-    display--;
+    displayStepperPositionThrottled();
   }
 
   // Update resting position
-  String disp = "D:" + String(stepperDEC.currentPosition()) + " R:" + String( stepperRA.currentPosition());
-  lcdMenu.printMenu(disp);
+  displayStepperPosition();
 }
 
 void startMoveSteppersToTargetAsync() {
@@ -91,43 +106,23 @@ void startMoveSteppersToTargetAsync() {
 }
 
 // Move stepper motors to target (non-blocking)
-void moveSteppersToTargetAsync() {
+bool moveSteppersToTargetAsync() {
+  bool stillRunning = false;
   if (stepperDEC.isRunning() || stepperRA.isRunning()) {
+    stillRunning = true;
     stepperRA.run();
     stepperDEC.run();
 
     // Run the TRK stepper (same one at slow speed)
     runTracker();
-
-    if (controlDisplay <= 0) {
-      lcdMenu.setCursor(0, 1);
-      String disp ;
-      if ((totalDECMove == 0) || (totalRAMove == 0)) {
-        disp = "D:" + String(stepperDEC.currentPosition()) + " R:" + String( stepperRA.currentPosition());
-      }
-      else {
-        disp = "";
-        if (totalDECMove > 0)              {
-          float decDist = 100.0 - 100.0 * abs(stepperDEC.distanceToGo()) / totalDECMove;
-          disp = disp + "DEC:" + String((int)floor(decDist)) + "% ";
-        }
-        if (totalRAMove > 0) {
-          float raDist = 100.0 - 100.0 * abs(stepperRA.distanceToGo()) / totalRAMove;
-          disp = disp + "RA:" + String((int)floor(raDist)) + "%  ";
-        }
-      }
-
-      lcdMenu.printMenu(disp);
-      controlDisplay  = 500; // Update the LCD every 250 iterations (perf issue)
-    }
-    controlDisplay --;
+    displayStepperPositionThrottled();
   }
-  else if (controlDisplay != 499)  {
+  else {
     // Make sure we do one last update when the steppers have stopped.
-    String disp = "D:" + String(stepperDEC.currentPosition()) + " R:" + String( stepperRA.currentPosition());
-    lcdMenu.printMenu(disp);
-    controlDisplay = 499;
+    displayStepperPosition();
   }
+
+  return stillRunning;
 }
 
 void ShowStatusMessage(String message) {

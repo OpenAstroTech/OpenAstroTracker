@@ -28,6 +28,10 @@ void processHAKeys(int key) {
     case btnRIGHT: {
         EEPROM.update(1, HATime.getHours());
         EEPROM.update(2, HATime.getMinutes());
+        HACorrection.set(HATime);
+        HACorrection.addTime(-h, -m, -s);
+
+        lastHAset = millis();
 
         if (startupState == StartupWaitForHACompletion) {
           startupState = StartupHAConfirmed;

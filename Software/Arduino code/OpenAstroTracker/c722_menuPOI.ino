@@ -11,6 +11,7 @@ struct PointOfInterest {
 PointOfInterest pointOfInterest[] = {
   //    Name (15chars)    RA (hms)     DEC (dms)
   //  012345678901234
+  { ">Polaris        ",  2, 57, 56,   89, 21,  2 },
   { ">Big Dipper     ", 12, 16, 26,   56, 55,  7 },
   { ">M31 Andromeda  ",  0, 43, 52,   41, 22, 53 },
   { ">M81 Bodes Galxy",  9, 57, 13,   68, 58,  1 },
@@ -34,8 +35,6 @@ void processPOIKeys(int key) {
 
           // Calculate the target stepper positions
           handleDECandRACalculations();
-
-          Serial.println(degreeDEC);
 
           if (isUnreachable) {
             ShowStatusMessage("Unreachable...");
@@ -74,8 +73,7 @@ void processPOIKeys(int key) {
 
   lastKey = key;
   if (poiMoving) {
-    moveSteppersToTargetAsync();
-    if (!stepperRA.isRunning() && !stepperDEC.isRunning()) {
+    if (!moveSteppersToTargetAsync()) {
       poiMoving = false;
     }
   }
