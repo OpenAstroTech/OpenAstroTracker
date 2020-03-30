@@ -19,7 +19,7 @@ class DayTime {
       secs = other.secs;
     }
 
-    DayTime(int m, int h, int s) {
+    DayTime(int h, int m, int s) {
       hours = h;
       mins = m;
       secs = s;
@@ -92,7 +92,7 @@ class DayTime {
     }
 
     // Add seconds, wrapping minutes and hours if needed
-    void addSeconds(int deltaSecs) {
+    void addSeconds(long deltaSecs) {
       secs += deltaSecs;
       while (secs > 59) {
         secs -= 60;
@@ -118,6 +118,14 @@ class DayTime {
       addSeconds(other.getSeconds());
       addMinutes(other.getMinutes());
       addHours(other.getHours());
+    }
+
+    // Subtract another time, wrapping seconds, minutes and hours if needed
+    void subtractTime(const DayTime& other)
+    {
+      addSeconds(-other.getSeconds());
+      addMinutes(-other.getMinutes());
+      addHours(-other.getHours());
     }
 
     // Convert to a standard string (like 14:45:06)

@@ -31,10 +31,14 @@ void loop() {
 
   lcd_key = read_LCD_buttons();
 
-  trackingspeed = ((((335.1417 / 288.0) * StepsPerRevolution) / 3590)) - 1 + float(speedcalibration);
-  stepperTRK.setSpeed(trackingspeed);
-
   if (inSerialControl) {
+    if (lcd_key == btnSELECT) {
+      quitSerialOnNextButtonRelease = true;
+    }
+    else if ((lcd_key == btnNONE) && quitSerialOnNextButtonRelease)  {
+      handleMeadeQuit("q#");
+      quitSerialOnNextButtonRelease = false;
+    }
     serialLoop();
   }
   else {
@@ -63,9 +67,6 @@ void loop() {
         case HA_Menu:
           processHAKeys(lcd_key);
           break;
-        case Polaris_Menu:
-          processPolarisKeys(lcd_key);
-          break;
         case Heat_Menu:
           processHeatKeys(lcd_key);
           break;
@@ -74,6 +75,9 @@ void loop() {
           break;
         case Calibration_Menu:
           processCalibrationKeys(lcd_key);
+          break;
+        case Status_Menu:
+          processStatusKeys(lcd_key);
           break;
       }
     }
@@ -85,39 +89,28 @@ void loop() {
       }
     }
 
-    runTracker();
     doCalculations();
+    runTracker();
 
-    if (!pcControl) {
+    lcd.setCursor(0, 1);
 
-      lcd.setCursor(0, 1);
-
-      if (inStartup) {
-        prinStartupMenu();
-      }
-      else {
-        switch (lcdMenu.getActive()) {
-          case RA_Menu: printRASubmenu(); break;
-          case DEC_Menu: printDECSubmenu(); break;
-          case POI_Menu: printPOISubmenu(); break;
-          case HA_Menu: printHASubmenu(); break;
-          case Home_Menu: printHomeSubmenu(); break;
-          case Polaris_Menu: printPolarisSubmenu(); break;
-          case Heat_Menu: printHeatSubmenu(); break;
-          case Control_Menu: printControlSubmenu(); break;
-          case Calibration_Menu: printCalibrationSubmenu(); break;
-        }
-      }
-
-      //tracking menu  ----------------------
-      /*if (lcdMenu.getActive() == TRK_Menu) {
-        lcd.print("Tracking ON OFF");
-        lcd.print("         ");
-        }*/
-    } else {
-      moveSteppersToTargetAsync();
+    if (inStartup) {
+      prinStartupMenu();
     }
-
-    BTin();
+    else {
+      switch (lcdMenu.getActive()) {
+        case RA_Menu: printRASubmenu(); break;
+        case DEC_Menu: printDECSubmenu(); break;
+        case POI_Menu: printPOISubmenu(); break;
+        case HA_Menu: printHASubmenu(); break;
+        case Home_Menu: printHomeSubmenu(); break;
+        case Heat_Menu: printHeatSubmenu(); break;
+        case Control_Menu: printControlSubmenu(); break;
+        case Calibration_Menu: printCalibrationSubmenu(); break;
+        case Status_Menu: printStatusSubmenu(); break;
+      }
+    }
   }
+
+  BTin();
 }

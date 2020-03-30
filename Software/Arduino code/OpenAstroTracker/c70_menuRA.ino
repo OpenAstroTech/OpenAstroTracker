@@ -199,7 +199,7 @@ void printRASubmenu()
 
     //lcd.print(int(diamCorrection));   //for debugging
     //lcd.print("");
-    //lcd.print(trackingspeed);
+    //lcd.print(trackingSpeed);
     //lcd.print("   ");
   }
 

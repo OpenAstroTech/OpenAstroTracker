@@ -30,10 +30,9 @@ void handleMeadeGetInfo(String inCmd) {
     case 'V' : {
         if (cmdTwo == 'N') {
           Serial.print(version);
-          Serial.print("#");
         }
         else if (cmdTwo == 'P') {
-          Serial.print("OpenAstroTracker#");
+          Serial.print("OpenAstroTracker");
         }
       }
       break;
@@ -58,8 +57,6 @@ void handleMeadeSetInfo(String inCmd) {
     Serial.print("0");
     return;
   }
-  // Handy for troubleshooting, but breaks ASCOM
-  //Serial.println("[" + inCmd + "]");
   if (inCmd[0] == 'd') {
     // Set DEC
     int sgn = inCmd[1] == '+' ? 1 : -1;
@@ -71,9 +68,8 @@ void handleMeadeSetInfo(String inCmd) {
       secDEC =  inCmd.substring(8, 10).toInt();
       doCalculations();
       handleDECandRACalculations();
-      Serial.println(isUnreachable ? "0" : "1");
-    } else
-    {
+      Serial.print(isUnreachable ? "0" : "1");
+    } else  {
       // Did not understand the coordinate
       Serial.print("0");
     }
@@ -84,13 +80,22 @@ void handleMeadeSetInfo(String inCmd) {
       int hRA = inCmd.substring(1, 3).toInt();
       int minRA = inCmd.substring(4, 6).toInt();
       int secRA = inCmd.substring(7, 9).toInt();
+
       RATime.set(hRA, minRA, secRA);
+      RATime.subtractTime(HACorrection);
       doCalculations();
       handleDECandRACalculations();
       Serial.print(isUnreachable ? "0" : "1");
     } else
       // Did not understand the coordinate
       Serial.print("0");
+  } else if (inCmd[0] == 'H') {
+    // Set HA
+    int hHA = inCmd.substring(1, 3).toInt();
+    int minHA = inCmd.substring(4, 6).toInt();
+    HATime.set(hHA, minHA, 0);
+    HACorrection.set(HATime);
+    HACorrection.addTime(-h, -m, -s);
   }
 }
 
@@ -99,8 +104,7 @@ void handleMeadeSetInfo(String inCmd) {
 /////////////////////////////
 void handleMeadeMovement(String inCmd) {
   if (inCmd[0] == 'S') {
-    Serial.print(0);    // ASCOM will expect response per Meade protocol definition
-                        // We aren't calculating invalid requests yet, so returns 0 for now.
+    Serial.print("0");
     startSlewing();
   }
 }
@@ -111,7 +115,9 @@ void handleMeadeMovement(String inCmd) {
 void handleMeadeHome(String inCmd) {
   if (inCmd[0] == 'P') {
     stopSteppers();
-    stepperRA.moveTo(0);
+
+    // TRK stepper is half-stepped so we divide the steps by two to get full steps, which is what RA is stepped at.
+    stepperRA.moveTo(0 - stepperTRK.currentPosition() / 2);
     stepperDEC.moveTo(0);
     serialIsSlewing = true;
     startMoveSteppersToTargetAsync();
@@ -123,14 +129,16 @@ void handleMeadeHome(String inCmd) {
 /////////////////////////////
 void handleMeadeQuit(String inCmd) {
 
-  stopSteppers();
-  serialIsSlewing = false;
+  // Hard quit extension stops motors
   if ((inCmd.length() > 0) && (inCmd[0] == 'q'))  {
-    inSerialControl = false;
-
-    lcdMenu.setCursor(0, 0);
-    lcdMenu.updateDisplay();
+    stopSteppers();
   }
+
+  serialIsSlewing = false;
+  inSerialControl = false;
+
+  lcdMenu.setCursor(0, 0);
+  lcdMenu.updateDisplay();
 }
 
 ////////////////////////////////////////////////
@@ -139,8 +147,7 @@ void serialLoop()
 {
   runTracker();
   if (serialIsSlewing) {
-    moveSteppersToTargetAsync();
-    if (!stepperRA.isRunning() && !stepperDEC.isRunning()) {
+    if (!moveSteppersToTargetAsync()) {
       serialIsSlewing = false;
     }
   }
@@ -476,8 +483,8 @@ void serialEvent() {
       }
       }
     */
-    runTracker();
     doCalculations();
+    runTracker();
   }
 
   // Dont let logString grow forever. When it gets over 3K cut it down to 2K. This might wreak

@@ -6,6 +6,7 @@ LcdMenu lcdMenu(&lcd, 16);
 DayTime RATime;
 DayTime RADisplayTime;
 DayTime HATime;
+DayTime HACorrection;
 
 void setup() {
 
@@ -43,27 +44,28 @@ void setup() {
 
   // Read persisted values
   inputcal = EEPROM.read(0);
-  speedcalibration = speed + inputcal / 10000;
+  speedCalibration = speed + inputcal / 10000;
   HATime = DayTime(EEPROM.read(1), EEPROM.read(2), 0);
-
+  HACorrection.set(HATime);
+  HACorrection.addTime(-h, -m, -s);
+  lastHAset = millis();
+  
 #ifdef DEBUG_MODE
   logv("HATime = %s", HATime.ToString().c_str());
 #endif
 
   // Create the menu items
-  lcdMenu.addItem("RAs", RA_Menu);
+  lcdMenu.addItem("RA", RA_Menu);
   lcdMenu.addItem("DEC", DEC_Menu);
   lcdMenu.addItem("POI", POI_Menu);
   lcdMenu.addItem("HOME", Home_Menu);
   lcdMenu.addItem("HA", HA_Menu);
-  if (north) {
-    lcdMenu.addItem("POL", Polaris_Menu);
-  }
 #ifdef SUPPORT_HEATING
-  lcdMenu.addItem("HEAT", Heat_Menu);
+  lcdMenu.addItem("HEA", Heat_Menu);
 #endif
   lcdMenu.addItem("CTRL", Control_Menu);
   lcdMenu.addItem("CAL", Calibration_Menu);
+  lcdMenu.addItem("INFO", Status_Menu);
 
   // Show a splash screen
   lcd.setCursor(0, 0);
@@ -71,4 +73,7 @@ void setup() {
   lcd.setCursor(0, 1);
   lcd.print("     " + version);
   delay(1750);
+
+  doCalculations();
+  stepperTRK.setSpeed(trackingSpeed);
 }

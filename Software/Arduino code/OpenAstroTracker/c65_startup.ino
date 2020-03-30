@@ -1,3 +1,6 @@
+//////////////////////////////////////////////////////////////
+// This file contains the Starup 'wizard' that guides you through initial setup
+
 #define StartupIsPointedAtPole 1
 #define StartupSetHATime 4
 #define StartupWaitForHACompletion 6
@@ -12,7 +15,6 @@
 
 int startupState = StartupIsPointedAtPole;
 int isAtPole = NO;
-
 
 void startupIsCompleted() {
   startupState = StartupCompleted;

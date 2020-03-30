@@ -46,8 +46,7 @@ void processDECKeys(int key) {
   }
 
   if (movingToTarget) {
-    moveSteppersToTargetAsync();
-    if (!stepperRA.isRunning() && !stepperDEC.isRunning()) {
+    if (!moveSteppersToTargetAsync()) {
       movingToTarget = false;
     }
   }

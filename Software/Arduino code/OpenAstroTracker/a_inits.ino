@@ -36,86 +36,87 @@ LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 #define RA_Menu 0
 #define DEC_Menu 1
 #define HA_Menu 2
-#define Polaris_Menu 3
 #define Heat_Menu 4
 #define Calibration_Menu 5
 #define Control_Menu 6
 #define Home_Menu 7
 #define POI_Menu 8
+#define Status_Menu 9
 
 // Stepper control for RA and DEV.
 // TRK is used for live tracking and runs in parallel with RA.
 // GUIDE is used for Stellarium control
 AccelStepper stepperRA(FULLSTEP, motorPin1, motorPin3, motorPin2, motorPin4);
 AccelStepper stepperDEC(HALFSTEP, motorPin11, motorPin13, motorPin12, motorPin14);
-AccelStepper stepperTRK(HALFSTEP, motorPin1, motorPin3, motorPin2, motorPin4);     //yes, this is the same motor as stepperRA, dont ask why
-AccelStepper stepperGUIDE(HALFSTEP, motorPin1, motorPin3, motorPin2, motorPin4);
 
-int lcd_key     = 0;         // The current key state
-int adc_key_in  = 0;         // The analog value of the keys
+// Use another AccelStepper to run the RA motor as well. This instance tracks earths rotation.
+AccelStepper stepperTRK(HALFSTEP, motorPin1, motorPin3, motorPin2, motorPin4);
+
+// Use another AccelStepper to run the RA motor as well for use with Stellarium... hmmmm....
+AccelStepper stepperGUIDE(HALFSTEP, motorPin1, motorPin3, motorPin2, motorPin4);
 
 String inString = "";
 
-bool inStartup = true;       // Start with a guided startup
+bool inStartup = true;        // Start with a guided startup
 
+// Serial control variables
 bool inSerialControl = false; // When the serial port is in control
 bool serialIsSlewing = false; // When the serial port is slewing the tracker
+bool quitSerialOnNextButtonRelease = false; // Used to detect SELECT button to quit Serial mode.
+String logString;
+boolean isPulseGuiding = true;
 
+// Display related variables
+int displayLoopsToSkip = 400;  // Update the LCD every 400 iterations (perf issue)
+int displaySkipsLeft = 0;    // How many loop cycles left before updating the display
+float totalDECMove = 0;      // The number of DEC steps we asked for
+float totalRAMove = 0;
+int leftArrow = 3;           // LCD special chars
+int rightArrow = 4;          // LCD special chars
 
-int calDelay = 150;          // The current delay when changing calibration value. The longer a button is depressed, the samller this gets.
-
-bool waitForButtonRelease = false; // When a button is pressed should we wait for its release before another loop?
+// Calibration variables
+float inputcal;              // calibration variable set form as integer. Added to speed after dividing by 10000
+float speedCalibration;      // speed calibration factor
+int calDelay = 150;          // The current delay in ms when changing calibration value. The longer a button is depressed, the smaller this gets.
 
 // Variables for use in the CONTROL menu
+bool inControlMode = false;  // Is manual control enabled
 int StateMaskDEC = 0x0011;   // Is the DEC stepper running?
 int StateMaskUp = 0x0001;    // Is the DEC stepper moving upwards?
 int StateMaskDown = 0x0010;  // Is the DEC stepper moving downwards?
 int StateMaskRA = 0x1100;    // Is the RA stepper running?
 int StateMaskLeft = 0x0100;  // Is the RA stepper moving left (CW)?
 int StateMaskRight = 0x1000; // Is the RA stepper moving right (CCW)?
-
 int controlState = 0x0000;   // The current state of the steppers (combination of above values)
-int controlDisplay = 0;      // How many loop cycles left before updating the display
-bool inControlMode = false;  // Is manual control enabled
 
+// Main loop variables
+int lcd_key     = 0;         // The current key state
+int adc_key_in  = 0;         // The analog value of the keys
+bool waitForButtonRelease = false; // When a button is pressed should we wait for its release before another loop?
 int lastKey = btnNONE;       // The key state when we last came through the loop
 
-float totalDECMove = 0;      // The number of DEC steps we asked for
-float totalRAMove = 0;
+// Global variables
 bool isUnreachable = false;
 
-//String inCmd;
-//String inputString = "";
-//String commandString = "";
-//boolean isConnected = false;
-
-String logString;
-//boolean stringComplete = false;
-//unsigned long timeWait;
-boolean isPulseGuiding = true;
-
 unsigned long Zeit;
-float stepsPerHour;
 
+// Stepper motor variables
+float stepsPerHour;           // How many steps does the RA stepper need to make to move 15 degrees (1 hour of earths rotation)
+float trackingSpeed;          // At what speed does the RA stepper need to run to match earths rotation (steps/sec)
+int tracking = 1;             // Are we tracking earths rotation?
+
+// PC Control variables.
 boolean pcControl = false;
-int currentSecs;
-int currentMins;
-float inputcal;
-float speedcalibration;
+
 int direction_old = 1;
 int direction_new;
 
-int hPolarisPosition;
-int mPolarisPosition;
 
-int tracking = 1;
-float trackingspeed;
-
-// RA stuff
+// RA variables
 float moveRA;
 int RAselect;
 
-//DEC stuff
+// DEC variables
 int degreeDEC;
 int minDEC;
 int secDEC;
@@ -123,15 +124,16 @@ float moveDEC;
 int DECselect;
 int printdegDEC;
 
-//Hour stuff
+// HA variables
 int HAselect;
+unsigned long lastHAset = 0;
 
-// HEAT menu settings
+// HEAT menu variables
 int heatselect;   // Which stepper are we changing?
 int RAheat = 0;   // Are we heating the RA stepper?
 int DECheat = 0;  // Are we heating the DEC stepper?
 
-//Stellarium
+// Stellarium variables
 char current_RA[10];
 char current_DEC[12];
 int HAh_save;
@@ -139,10 +141,8 @@ int HAm_save;
 float slew_RA;
 float slew_DEC;
 
-// LCD special chars
-int leftArrow = 3;
-int rightArrow = 4;
 
+// LCD Character bitmaps
 byte DegreesBitmap[8] = {
   B01100,
   B10010,
