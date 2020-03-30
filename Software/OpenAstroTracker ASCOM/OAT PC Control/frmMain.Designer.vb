@@ -29,6 +29,8 @@ Partial Class frmMain
         Me.buttonChoose = New System.Windows.Forms.Button()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
+        Me.btnPark = New System.Windows.Forms.Button()
+        Me.btnHalt = New System.Windows.Forms.Button()
         Me.btnSlewAsync = New System.Windows.Forms.Button()
         Me.btnSlewSync = New System.Windows.Forms.Button()
         Me.Label8 = New System.Windows.Forms.Label()
@@ -47,6 +49,7 @@ Partial Class frmMain
         Me.nud_RAh = New System.Windows.Forms.NumericUpDown()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
+        Me.lblVersion = New System.Windows.Forms.Label()
         Me.Label11 = New System.Windows.Forms.Label()
         Me.Label12 = New System.Windows.Forms.Label()
         Me.txtTargetDec = New System.Windows.Forms.TextBox()
@@ -56,9 +59,6 @@ Partial Class frmMain
         Me.txtMountDec = New System.Windows.Forms.TextBox()
         Me.txtMountRA = New System.Windows.Forms.TextBox()
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
-        Me.btnHalt = New System.Windows.Forms.Button()
-        Me.btnPark = New System.Windows.Forms.Button()
-        Me.lblVersion = New System.Windows.Forms.Label()
         Me.ToolTipPark = New System.Windows.Forms.ToolTip(Me.components)
         Me.ToolTipSlew = New System.Windows.Forms.ToolTip(Me.components)
         Me.ToolTipSlewAsync = New System.Windows.Forms.ToolTip(Me.components)
@@ -141,6 +141,28 @@ Partial Class frmMain
         Me.GroupBox2.TabIndex = 7
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "Slew to Target"
+        '
+        'btnPark
+        '
+        Me.btnPark.Location = New System.Drawing.Point(117, 118)
+        Me.btnPark.Name = "btnPark"
+        Me.btnPark.Size = New System.Drawing.Size(96, 23)
+        Me.btnPark.TabIndex = 17
+        Me.btnPark.Text = "Park"
+        Me.ToolTipPark.SetToolTip(Me.btnPark, "Returns mount to home position, and stops motors.  (NOTE : Motors do not currentl" & _
+        "y stop!)")
+        Me.btnPark.UseVisualStyleBackColor = True
+        '
+        'btnHalt
+        '
+        Me.btnHalt.Enabled = False
+        Me.btnHalt.Location = New System.Drawing.Point(117, 89)
+        Me.btnHalt.Name = "btnHalt"
+        Me.btnHalt.Size = New System.Drawing.Size(96, 23)
+        Me.btnHalt.TabIndex = 16
+        Me.btnHalt.Text = "Halt"
+        Me.ToolTipHalt.SetToolTip(Me.btnHalt, "Stops all mount movement." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Currently unreliable, pay attention!")
+        Me.btnHalt.UseVisualStyleBackColor = True
         '
         'btnSlewAsync
         '
@@ -311,6 +333,15 @@ Partial Class frmMain
         Me.GroupBox4.TabStop = False
         Me.GroupBox4.Text = "Mount Information"
         '
+        'lblVersion
+        '
+        Me.lblVersion.AutoSize = True
+        Me.lblVersion.Location = New System.Drawing.Point(214, 24)
+        Me.lblVersion.Name = "lblVersion"
+        Me.lblVersion.Size = New System.Drawing.Size(134, 13)
+        Me.lblVersion.TabIndex = 9
+        Me.lblVersion.Text = "OpenAstroTracker V0.0.00"
+        '
         'Label11
         '
         Me.Label11.AutoSize = True
@@ -381,38 +412,7 @@ Partial Class frmMain
         '
         'Timer1
         '
-        Me.Timer1.Interval = 1000
-        '
-        'btnHalt
-        '
-        Me.btnHalt.Enabled = False
-        Me.btnHalt.Location = New System.Drawing.Point(117, 89)
-        Me.btnHalt.Name = "btnHalt"
-        Me.btnHalt.Size = New System.Drawing.Size(96, 23)
-        Me.btnHalt.TabIndex = 16
-        Me.btnHalt.Text = "Halt"
-        Me.ToolTipHalt.SetToolTip(Me.btnHalt, "Stops all mount movement." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Currently unreliable, pay attention!")
-        Me.btnHalt.UseVisualStyleBackColor = True
-        '
-        'btnPark
-        '
-        Me.btnPark.Location = New System.Drawing.Point(117, 118)
-        Me.btnPark.Name = "btnPark"
-        Me.btnPark.Size = New System.Drawing.Size(96, 23)
-        Me.btnPark.TabIndex = 17
-        Me.btnPark.Text = "Park"
-        Me.ToolTipPark.SetToolTip(Me.btnPark, "Returns mount to home position, and stops motors.  (NOTE : Motors do not currentl" & _
-        "y stop!)")
-        Me.btnPark.UseVisualStyleBackColor = True
-        '
-        'lblVersion
-        '
-        Me.lblVersion.AutoSize = True
-        Me.lblVersion.Location = New System.Drawing.Point(214, 24)
-        Me.lblVersion.Name = "lblVersion"
-        Me.lblVersion.Size = New System.Drawing.Size(134, 13)
-        Me.lblVersion.TabIndex = 9
-        Me.lblVersion.Text = "OpenAstroTracker V0.0.00"
+        Me.Timer1.Interval = 500
         '
         'ToolTipPark
         '

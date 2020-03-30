@@ -40,7 +40,7 @@ Public Class frmMain
 
             lblVersion.Text = driver.Action("Telescope:getFirmwareVer","")
 
-            'Timer1.Enabled = True
+            Timer1.Enabled = True
         End If
         SetUIState()
 

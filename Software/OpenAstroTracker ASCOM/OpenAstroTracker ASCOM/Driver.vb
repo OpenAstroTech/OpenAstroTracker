@@ -74,6 +74,8 @@ Public Class Telescope
     Private objSerial As ASCOM.Utilities.Serial
     Private isParked As Boolean = False
 
+    Dim mutexBlind As Mutex, mutexCommand As Mutex
+
     '
     ' Constructor - Must be public for COM registration!
     '
@@ -149,9 +151,8 @@ Public Class Telescope
 
     Public Sub CommandBlind(ByVal Command As String, Optional ByVal Raw As Boolean = False) Implements ITelescopeV3.CommandBlind
         CheckConnected("CommandBlind")
-        Dim webMutex As Mutex   ' Very simple multithreading for now.
-        webMutex = New Mutex(False, "RRMutex")
-        webMutex.WaitOne()
+        mutexBlind = New Mutex(False, "CommMutex")
+        mutexBlind.WaitOne()
         If Not Raw Then
             Command = Command + "#"
         End If
@@ -161,7 +162,7 @@ Public Class Telescope
         Catch ex As Exception
             TL.LogMessage("CommandBlind(" + Command + ")", "Error : " + ex.Message)
         Finally
-            webMutex.ReleaseMutex()
+            mutexBlind.ReleaseMutex()
         End Try
     End Sub
 
@@ -178,9 +179,8 @@ Public Class Telescope
         Implements ITelescopeV3.CommandString
         Dim response As String
         CheckConnected("CommandString")
-        Dim webMutex As Mutex   ' Very simple multithreading for now.
-        webMutex = New Mutex(False, "RRMutex")
-        webMutex.WaitOne()
+        mutexCommand = New Mutex(False, "CommMutex")
+        mutexCommand.WaitOne()
         If Not Raw Then
             Command = Command + "#"
         End If
@@ -203,7 +203,7 @@ Public Class Telescope
             TL.LogMessage("CommandString(" + Command + ")", ex.Message)
             Return "255"
         Finally
-            webMutex.ReleaseMutex()
+            mutexCommand.ReleaseMutex()
         End Try
     End Function
 
@@ -728,7 +728,7 @@ Public Class Telescope
         If Not AtPark Then
             TL.LogMessage("SlewToCoordinates", "RA " + RightAscension.ToString + ", Dec " + Declination.ToString)
             Dim strRAcmd = ":Sr" + utilities.HoursToHMS(RightAscension, ":", ":")
-            Dim strDeccmd = utilities.DegreesToDMS(Declination, "*", ":")
+            Dim strDeccmd = utilities.DegreesToDMS(Declination, "*", ":", "")
             If Declination < 0 Then
                 strDeccmd = "-" + strDeccmd
             Else
