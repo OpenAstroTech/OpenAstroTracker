@@ -48,6 +48,10 @@ Partial Class frmMain
         Me.nud_RAs = New System.Windows.Forms.NumericUpDown()
         Me.nud_RAh = New System.Windows.Forms.NumericUpDown()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
+        Me.btnEast = New System.Windows.Forms.Button()
+        Me.btnWest = New System.Windows.Forms.Button()
+        Me.btnSouth = New System.Windows.Forms.Button()
+        Me.btnNorth = New System.Windows.Forms.Button()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
         Me.lblVersion = New System.Windows.Forms.Label()
         Me.Label11 = New System.Windows.Forms.Label()
@@ -63,6 +67,7 @@ Partial Class frmMain
         Me.ToolTipSlew = New System.Windows.Forms.ToolTip(Me.components)
         Me.ToolTipSlewAsync = New System.Windows.Forms.ToolTip(Me.components)
         Me.ToolTipHalt = New System.Windows.Forms.ToolTip(Me.components)
+        Me.ToolTipSlewAxis = New System.Windows.Forms.ToolTip(Me.components)
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         CType(Me.nud_Decm, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -71,6 +76,7 @@ Partial Class frmMain
         CType(Me.nud_RAm, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.nud_RAs, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.nud_RAh, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox3.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -144,6 +150,7 @@ Partial Class frmMain
         '
         'btnPark
         '
+        Me.btnPark.Enabled = False
         Me.btnPark.Location = New System.Drawing.Point(117, 118)
         Me.btnPark.Name = "btnPark"
         Me.btnPark.Size = New System.Drawing.Size(96, 23)
@@ -177,6 +184,7 @@ Partial Class frmMain
         '
         'btnSlewSync
         '
+        Me.btnSlewSync.Enabled = False
         Me.btnSlewSync.Location = New System.Drawing.Point(14, 89)
         Me.btnSlewSync.Name = "btnSlewSync"
         Me.btnSlewSync.Size = New System.Drawing.Size(96, 23)
@@ -308,12 +316,72 @@ Partial Class frmMain
         '
         'GroupBox3
         '
+        Me.GroupBox3.Controls.Add(Me.btnEast)
+        Me.GroupBox3.Controls.Add(Me.btnWest)
+        Me.GroupBox3.Controls.Add(Me.btnSouth)
+        Me.GroupBox3.Controls.Add(Me.btnNorth)
         Me.GroupBox3.Location = New System.Drawing.Point(12, 198)
         Me.GroupBox3.Name = "GroupBox3"
         Me.GroupBox3.Size = New System.Drawing.Size(361, 180)
         Me.GroupBox3.TabIndex = 8
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Manual Slew"
+        '
+        'btnEast
+        '
+        Me.btnEast.Enabled = False
+        Me.btnEast.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnEast.Location = New System.Drawing.Point(195, 49)
+        Me.btnEast.Name = "btnEast"
+        Me.btnEast.Size = New System.Drawing.Size(28, 23)
+        Me.btnEast.TabIndex = 3
+        Me.btnEast.Text = "E"
+        Me.ToolTipSlewAxis.SetToolTip(Me.btnEast, "Slew in the direction indicated." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "The mount will move in the direction indicate" & _
+        "d as long as the" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "button remains pressed.  Releasing the button will stop" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "the s" & _
+        "lew." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Not yet implemented.")
+        Me.btnEast.UseVisualStyleBackColor = True
+        '
+        'btnWest
+        '
+        Me.btnWest.Enabled = False
+        Me.btnWest.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnWest.Location = New System.Drawing.Point(124, 49)
+        Me.btnWest.Name = "btnWest"
+        Me.btnWest.Size = New System.Drawing.Size(28, 23)
+        Me.btnWest.TabIndex = 2
+        Me.btnWest.Text = "W"
+        Me.ToolTipSlewAxis.SetToolTip(Me.btnWest, "Slew in the direction indicated." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "The mount will move in the direction indicate" & _
+        "d as long as the" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "button remains pressed.  Releasing the button will stop" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "the s" & _
+        "lew." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Not yet implemented.")
+        Me.btnWest.UseVisualStyleBackColor = True
+        '
+        'btnSouth
+        '
+        Me.btnSouth.Enabled = False
+        Me.btnSouth.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnSouth.Location = New System.Drawing.Point(161, 78)
+        Me.btnSouth.Name = "btnSouth"
+        Me.btnSouth.Size = New System.Drawing.Size(28, 23)
+        Me.btnSouth.TabIndex = 1
+        Me.btnSouth.Text = "S"
+        Me.ToolTipSlewAxis.SetToolTip(Me.btnSouth, "Slew in the direction indicated." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "The mount will move in the direction indicate" & _
+        "d as long as the" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "button remains pressed.  Releasing the button will stop" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "the s" & _
+        "lew." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Not yet implemented.")
+        Me.btnSouth.UseVisualStyleBackColor = True
+        '
+        'btnNorth
+        '
+        Me.btnNorth.Enabled = False
+        Me.btnNorth.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnNorth.Location = New System.Drawing.Point(161, 19)
+        Me.btnNorth.Name = "btnNorth"
+        Me.btnNorth.Size = New System.Drawing.Size(28, 23)
+        Me.btnNorth.TabIndex = 0
+        Me.btnNorth.Text = "N"
+        Me.ToolTipSlewAxis.SetToolTip(Me.btnNorth, "Slew in the direction indicated." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "The mount will move in the direction indicate" & _
+        "d as long as the" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "button remains pressed.  Releasing the button will stop" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "the s" & _
+        "lew." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Not yet implemented.")
+        Me.btnNorth.UseVisualStyleBackColor = True
         '
         'GroupBox4
         '
@@ -430,6 +498,10 @@ Partial Class frmMain
         '
         Me.ToolTipHalt.ToolTipTitle = "Halt"
         '
+        'ToolTipSlewAxis
+        '
+        Me.ToolTipSlewAxis.ToolTipTitle = "Manual Slew"
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -450,6 +522,7 @@ Partial Class frmMain
         CType(Me.nud_RAm, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.nud_RAs, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.nud_RAh, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.GroupBox3.ResumeLayout(False)
         Me.GroupBox4.ResumeLayout(False)
         Me.GroupBox4.PerformLayout()
         Me.ResumeLayout(False)
@@ -494,5 +567,10 @@ Partial Class frmMain
     Friend WithEvents ToolTipHalt As System.Windows.Forms.ToolTip
     Friend WithEvents ToolTipSlewAsync As System.Windows.Forms.ToolTip
     Friend WithEvents ToolTipSlew As System.Windows.Forms.ToolTip
+    Friend WithEvents btnEast As System.Windows.Forms.Button
+    Friend WithEvents btnWest As System.Windows.Forms.Button
+    Friend WithEvents btnSouth As System.Windows.Forms.Button
+    Friend WithEvents btnNorth As System.Windows.Forms.Button
+    Friend WithEvents ToolTipSlewAxis As System.Windows.Forms.ToolTip
 
 End Class

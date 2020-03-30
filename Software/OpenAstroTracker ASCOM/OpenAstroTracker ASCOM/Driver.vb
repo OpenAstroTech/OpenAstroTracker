@@ -127,12 +127,10 @@ Public Class Telescope
             actionList.Add("Telescope:getFirmwareVer")
             TL.LogMessage("SupportedActions Get", "Returning arraylist of " + actionList.Count.ToString + " item(s)")
             Return actionList
-            '            Return New ArrayList()
         End Get
     End Property
 
     Public Function Action(ByVal ActionName As String, ByVal ActionParameters As String) As String Implements ITelescopeV3.Action
-        ' We may throw heater control into here, if we ever get there.
         Dim suppAct As ArrayList = SupportedActions()
         If suppAct.Contains(ActionName) Then
             Dim retVal As String = "255"        ' Default error code
@@ -213,7 +211,7 @@ Public Class Telescope
             Return IsConnected
         End Get
         Set(value As Boolean)
-            '            TL.LogMessage("Connected Set", value.ToString())
+
             If value = IsConnected Then
                 Return
             End If
@@ -228,7 +226,7 @@ Public Class Telescope
                     objSerial.Connected = True
                     Thread.Sleep(2000)      ' Disgusting hack to work around arduino resetting when connected.
                     ' I don't know of any way to poll and see if the reset has completed
-                    CommandBlind(":I")
+                    CommandBlind(":I")      ' OAT's command for entering PC Control mode
                     TL.LogMessage("Connected Set", "Connecting to port " + comPort)
 
                 Catch ex As Exception
@@ -238,7 +236,7 @@ Public Class Telescope
             Else
 
                 Try
-                    CommandBlind(":Qq")
+                    CommandBlind(":Qq")     ' OAT's command for exiting PC Control mode
                     Thread.Sleep(1000)
                     objSerial.Connected = False
                     connectedState = False
@@ -264,7 +262,6 @@ Public Class Telescope
     Public ReadOnly Property DriverInfo As String Implements ITelescopeV3.DriverInfo
         Get
             Dim m_version As Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
-            ' TODO customise this driver description
             Dim s_driverInfo As String = "OpenAstroTracker ASCOM driver version: " + m_version.Major.ToString() + "." + m_version.Minor.ToString() + "." + m_version.Build.ToString()
             TL.LogMessage("DriverInfo Get", s_driverInfo)
             Return s_driverInfo
@@ -309,16 +306,14 @@ Public Class Telescope
 
 #Region "ITelescope Implementation"
     Public Sub AbortSlew() Implements ITelescopeV3.AbortSlew
-        'TODO : We really should be able to abort
-        TL.LogMessage("AbortSlew", "Not implemented")
-        Throw New ASCOM.MethodNotImplementedException("AbortSlew")
+        CommandBlind(":Q")
+        TL.LogMessage("AbortSlew", ":Q# Issued")
     End Sub
 
     Public ReadOnly Property AlignmentMode() As AlignmentModes Implements ITelescopeV3.AlignmentMode
         Get
             TL.LogMessage("AlignmentMode Get", "1")
-            Return 1
-            ' Throw New ASCOM.PropertyNotImplementedException("AlignmentMode", False)
+            Return 1        ' 1 is "Polar (equatorial) mount other than German equatorial." from AlignmentModes Enumeration
         End Get
     End Property
 
@@ -357,7 +352,7 @@ Public Class Telescope
             'Must be implemented, must not throw a PropertyNotImplementedException.
             'If the telescope cannot be parked, then AtPark must always return False.
             TL.LogMessage("AtPark", "Get - " & isParked.ToString())
-            Return isParked
+            Return isParked     ' Custom boolean we added to track parked state
         End Get
     End Property
 
@@ -407,6 +402,7 @@ Public Class Telescope
     End Property
 
     Public ReadOnly Property CanPulseGuide() As Boolean Implements ITelescopeV3.CanPulseGuide
+        ' This will be true as we get around to pulse guiding
         Get
             TL.LogMessage("CanPulseGuide", "Get - " & False.ToString())
             Return False
@@ -428,6 +424,7 @@ Public Class Telescope
     End Property
 
     Public ReadOnly Property CanSetPark() As Boolean Implements ITelescopeV3.CanSetPark
+        'ToDo  We should allow this
         Get
             TL.LogMessage("CanSetPark", "Get - " & False.ToString())
             Return False
@@ -463,6 +460,7 @@ Public Class Telescope
     End Property
 
     Public ReadOnly Property CanSlewAltAz() As Boolean Implements ITelescopeV3.CanSlewAltAz
+        ' TODO - AltAz slewing
         Get
             TL.LogMessage("CanSlewAltAz", "Get - " & False.ToString())
             Return False
@@ -477,9 +475,10 @@ Public Class Telescope
     End Property
 
     Public ReadOnly Property CanSlewAsync() As Boolean Implements ITelescopeV3.CanSlewAsync
+        ' TODO - Async Slewing
         Get
-            TL.LogMessage("CanSlewAsync", "Get - " & True.ToString())
-            Return True
+            TL.LogMessage("CanSlewAsync", "Get - " & False.ToString())
+            Return False
         End Get
     End Property
 
@@ -543,6 +542,7 @@ Public Class Telescope
     End Property
 
     Public ReadOnly Property EquatorialSystem() As EquatorialCoordinateType Implements ITelescopeV3.EquatorialSystem
+        'TODO : Determine if we're using JNow or J2000, or can use both.  Work on this.
         Get
             Dim equatorialSystem__1 As EquatorialCoordinateType = EquatorialCoordinateType.equTopocentric
             TL.LogMessage("DeclinationRate", "Get - " & equatorialSystem__1.ToString())
@@ -592,6 +592,7 @@ Public Class Telescope
     End Property
 
     Public Sub MoveAxis(Axis As TelescopeAxes, Rate As Double) Implements ITelescopeV3.MoveAxis
+        'TODO This is coming
         TL.LogMessage("MoveAxis", "Not implemented")
         Throw New ASCOM.MethodNotImplementedException("MoveAxis")
     End Sub
@@ -599,7 +600,7 @@ Public Class Telescope
     Public Sub Park() Implements ITelescopeV3.Park
         TL.LogMessage("Park", "Park requested")
         CommandBlind(":hP")
-        ' CommandBlind(":Q")
+        ' CommandBlind(":Q")        --  TODO We need to be able to send this, but serial code is broke and disconnects.  Issue #5 at ClutchplateDude/OpenAstroTracker
         isParked = True
     End Sub
 
@@ -647,6 +648,7 @@ Public Class Telescope
     End Property
 
     Public ReadOnly Property SiderealTime() As Double Implements ITelescopeV3.SiderealTime
+        ' ToDo - Does this do what I think it does?  If so LatLong just became handy for calculating Hour Angle of Polaris
         Get
             ' now using novas 3.1
             Dim lst As Double = 0.0
@@ -682,6 +684,7 @@ Public Class Telescope
     End Property
 
     Public Property SiteLatitude() As Double Implements ITelescopeV3.SiteLatitude
+        ' ToDo Can we handle this entirely here, wihtout bothering the mount?
         Get
             TL.LogMessage("SiteLatitude Get", "Not implemented")
             Throw New ASCOM.PropertyNotImplementedException("SiteLatitude", False)
@@ -693,6 +696,7 @@ Public Class Telescope
     End Property
 
     Public Property SiteLongitude() As Double Implements ITelescopeV3.SiteLongitude
+        ' ToDo Can we handle this entirely here, wihtout bothering the mount?
         Get
             TL.LogMessage("SiteLongitude Get", "Not implemented")
             Throw New ASCOM.PropertyNotImplementedException("SiteLongitude", False)
@@ -725,6 +729,7 @@ Public Class Telescope
     End Sub
 
     Public Sub SlewToCoordinates(RightAscension As Double, Declination As Double) Implements ITelescopeV3.SlewToCoordinates
+
         If Not AtPark Then
             TL.LogMessage("SlewToCoordinates", "RA " + RightAscension.ToString + ", Dec " + Declination.ToString)
             Dim strRAcmd = ":Sr" + utilities.HoursToHMS(RightAscension, ":", ":")
@@ -757,6 +762,7 @@ Public Class Telescope
     End Sub
 
     Public Sub SlewToTarget() Implements ITelescopeV3.SlewToTarget
+        ' When do we want to use slew to target?
         TL.LogMessage("SlewToTarget", "Not implemented")
         Throw New ASCOM.MethodNotImplementedException("SlewToTarget")
     End Sub
@@ -767,6 +773,7 @@ Public Class Telescope
     End Sub
 
     Public ReadOnly Property Slewing() As Boolean Implements ITelescopeV3.Slewing
+        'ToDo - We need this, part of implementing Async Slewing
         Get
             TL.LogMessage("Slewing Get", "Not implemented")
             Throw New ASCOM.PropertyNotImplementedException("Slewing", False)
@@ -805,7 +812,7 @@ Public Class Telescope
     Public Property TargetRightAscension() As Double Implements ITelescopeV3.TargetRightAscension
         Get
             Dim rightAscension__t As Double = 0.0
-            Dim targetRA As String = CommandString(":Gr")   ' TODO : Change this to :GR once implemented in firmware
+            Dim targetRA As String = CommandString(":Gr")
             TL.LogMessage("TargetRightAscension", "Get - " + targetRA)
             rightAscension__t = utilities.HMSToHours(targetRA)
             Return rightAscension__t
@@ -818,6 +825,7 @@ Public Class Telescope
 
     Public Property Tracking() As Boolean Implements ITelescopeV3.Tracking
         Get
+            'ToDo - Handle this
             Dim tracking__1 As Boolean = True
             TL.LogMessage("Tracking", "Get - " & tracking__1.ToString())
             Return tracking__1
@@ -851,6 +859,7 @@ Public Class Telescope
     End Property
 
     Public Property UTCDate() As DateTime Implements ITelescopeV3.UTCDate
+        ' ToDo - Can we handle this without bothering the mount?
         Get
             Dim utcDate__1 As DateTime = DateTime.UtcNow
             TL.LogMessage("UTCDate", String.Format("Get - {0}", utcDate__1))

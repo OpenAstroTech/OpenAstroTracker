@@ -60,6 +60,8 @@ Public Class frmMain
         buttonConnect.Enabled = Not String.IsNullOrEmpty(My.Settings.DriverId)
         buttonChoose.Enabled = Not IsConnected
         buttonConnect.Text = IIf(IsConnected, "Disconnect", "Connect")
+        btnPark.Enabled = IsConnected
+        btnSlewSync.Enabled = IsConnected
     End Sub
 
     ''' <summary>
