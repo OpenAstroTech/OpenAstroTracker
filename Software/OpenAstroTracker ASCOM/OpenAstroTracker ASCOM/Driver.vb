@@ -132,10 +132,19 @@ Public Class Telescope
 
     Public Sub CommandBlind(ByVal Command As String, Optional ByVal Raw As Boolean = False) Implements ITelescopeV3.CommandBlind
         CheckConnected("CommandBlind")
-        ' Call CommandString and return as soon as it finishes
-        Me.CommandString(Command, Raw)
-        ' or
-        Throw New MethodNotImplementedException("CommandBlind")
+        Dim webMutex As Mutex   ' Very simple multithreading for now.
+        webMutex = New Mutex(False, "RRMutex")
+        webMutex.WaitOne()
+        If Not Raw Then
+            Command = Command + "#"
+        End If
+        Try
+            objSerial.Transmit(Command)
+        Catch ex As Exception
+            ' TODO : Handle Exceptions
+        Finally
+            webMutex.ReleaseMutex()
+        End Try
     End Sub
 
     Public Function CommandBool(ByVal Command As String, Optional ByVal Raw As Boolean = False) As Boolean _
@@ -149,23 +158,28 @@ Public Class Telescope
 
     Public Function CommandString(ByVal Command As String, Optional ByVal Raw As Boolean = False) As String _
         Implements ITelescopeV3.CommandString
+        Dim response As String
         CheckConnected("CommandString")
         Dim webMutex As Mutex   ' Very simple multithreading for now.
         webMutex = New Mutex(False, "RRMutex")
         webMutex.WaitOne()
+        If Not Raw Then
+            Command = Command + "#"
+        End If
         Try
-            Dim response As String
-            CheckConnected("CommandString")
             objSerial.Transmit(Command)
-            response = objSerial.ReceiveTerminated("#")
-            response = response.Replace("#", "")
+            If Command.Substring(1, 1) <> "S" Then
+                response = objSerial.ReceiveTerminated("#")
+                response = response.Replace("#", "")
+            Else
+                response = objSerial.ReceiveCounted(1)
+            End If
             Return response
         Catch ex As Exception
             Return "255"
+        Finally
+            webMutex.ReleaseMutex()
         End Try
-
-        webMutex.ReleaseMutex()
-
     End Function
 
     Public Property Connected() As Boolean Implements ITelescopeV3.Connected
@@ -174,23 +188,41 @@ Public Class Telescope
             Return IsConnected
         End Get
         Set(value As Boolean)
-            TL.LogMessage("Connected Set", value.ToString())
+            '            TL.LogMessage("Connected Set", value.ToString())
             If value = IsConnected Then
                 Return
             End If
 
             If value Then
-                connectedState = True
-                TL.LogMessage("Connected Set", "Connecting to port " + comPort)
-                portNum = Right(comPort, Len(comPort) - 3)
-                objSerial = New ASCOM.Utilities.Serial
-                objSerial.Port = CInt(portNum)
-                objSerial.Speed = SerialSpeed.ps9600
-                objSerial.Connected = True
+                Try
+                    connectedState = True
+                    portNum = Right(comPort, Len(comPort) - 3)
+                    objSerial = New ASCOM.Utilities.Serial
+                    objSerial.Port = CInt(portNum)
+                    objSerial.Speed = SerialSpeed.ps9600
+                    objSerial.Connected = True
+                    Thread.Sleep(2000)      ' Disgusting hack to work around arduino resetting when connected.
+                    ' I don't know of any way to poll and see if the reset has completed
+                    CommandBlind(":I")
+                    TL.LogMessage("Connected Set", "Connecting to port " + comPort)
+
+                Catch ex As Exception
+                    TL.LogMessage("Connected Set", "Error Connecting to port " + comPort + " - " + ex.Message)
+                End Try
+
             Else
-                connectedState = False
-                TL.LogMessage("Connected Set", "Disconnecting from port " + comPort)
-                ' TODO disconnect from the device
+
+                Try
+                    CommandBlind(":Qq")
+                    Thread.Sleep(1000)
+                    objSerial.Connected = False
+                    connectedState = False
+                    TL.LogMessage("Connected Set", "Disconnecting from port " + comPort)
+
+                Catch ex As Exception
+                    TL.LogMessage("Connected Set", "Error Disconnecting from port " + comPort + " - " + ex.Message)
+                End Try
+
             End If
         End Set
     End Property
@@ -421,8 +453,8 @@ Public Class Telescope
 
     Public ReadOnly Property CanSlewAsync() As Boolean Implements ITelescopeV3.CanSlewAsync
         Get
-            TL.LogMessage("CanSlewAsync", "Get - " & False.ToString())
-            Return False
+            TL.LogMessage("CanSlewAsync", "Get - " & True.ToString())
+            Return True
         End Get
     End Property
 
@@ -450,7 +482,9 @@ Public Class Telescope
     Public ReadOnly Property Declination() As Double Implements ITelescopeV3.Declination
         Get
             Dim declination__1 As Double = 0.0
-            TL.LogMessage("Declination", "Get - " & utilities.DegreesToDMS(declination__1, ":", ":"))
+            Dim scopeDec As String = CommandString(":Gd")   ' TODO : Change this to :GD once implemented in firmware
+            TL.LogMessage("Declination", "Get - " & scopeDec)
+            declination__1 = utilities.DMSToDegrees(scopeDec)
             Return declination__1
         End Get
     End Property
@@ -550,7 +584,9 @@ Public Class Telescope
     Public ReadOnly Property RightAscension() As Double Implements ITelescopeV3.RightAscension
         Get
             Dim rightAscension__1 As Double = 0.0
-            TL.LogMessage("RightAscension", "Get - " & utilities.HoursToHMS(rightAscension__1))
+            Dim scopeRA As String = CommandString(":Gr")   ' TODO : Change this to :GR once implemented in firmware
+            TL.LogMessage("RightAscension", "Get - " + scopeRA)
+            rightAscension__1 = utilities.HMSToHours(scopeRA)
             Return rightAscension__1
         End Get
     End Property
@@ -662,8 +698,21 @@ Public Class Telescope
     End Sub
 
     Public Sub SlewToCoordinates(RightAscension As Double, Declination As Double) Implements ITelescopeV3.SlewToCoordinates
-        TL.LogMessage("SlewToCoordinates", "Not implemented")
-        Throw New ASCOM.MethodNotImplementedException("SlewToCoordinates")
+        TL.LogMessage("SlewToCoordinates", "RA " + RightAscension.ToString + ", Dec " + Declination.ToString)
+        Dim strRAcmd = ":Sr" + utilities.HoursToHMS(RightAscension, ":", ":")
+        Dim strDeccmd = utilities.DegreesToDMS(Declination, "*", ":")
+        If Declination < 0 Then
+            strDeccmd = "-" + strDeccmd
+        Else
+            strDeccmd = "+" + strDeccmd
+        End If
+        strDeccmd = ":Sd" + strDeccmd
+        If CommandString(strRAcmd) = "1" Then
+            If CommandString(strDeccmd) = "1" Then
+                CommandString(":MS")
+            End If
+
+        End If
     End Sub
 
     Public Sub SlewToCoordinatesAsync(RightAscension As Double, Declination As Double) Implements ITelescopeV3.SlewToCoordinatesAsync
@@ -705,8 +754,11 @@ Public Class Telescope
 
     Public Property TargetDeclination() As Double Implements ITelescopeV3.TargetDeclination
         Get
-            TL.LogMessage("TargetDeclination Get", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("TargetDeclination", False)
+            Dim declination__t As Double = 0.0
+            Dim targetDec As String = CommandString(":Gd")
+            TL.LogMessage("TargetDeclination", "Get - " & targetDec)
+            declination__t = utilities.DMSToDegrees(targetDec)
+            Return declination__t
         End Get
         Set(value As Double)
             TL.LogMessage("TargetDeclination Set", "Not implemented")
@@ -716,8 +768,11 @@ Public Class Telescope
 
     Public Property TargetRightAscension() As Double Implements ITelescopeV3.TargetRightAscension
         Get
-            TL.LogMessage("TargetRightAscension Get", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("TargetRightAscension", False)
+            Dim rightAscension__t As Double = 0.0
+            Dim targetRA As String = CommandString(":Gr")   ' TODO : Change this to :GR once implemented in firmware
+            TL.LogMessage("TargetRightAscension", "Get - " + targetRA)
+            rightAscension__t = utilities.HMSToHours(targetRA)
+            Return rightAscension__t
         End Get
         Set(value As Double)
             TL.LogMessage("TargetRightAscension Set", "Not implemented")

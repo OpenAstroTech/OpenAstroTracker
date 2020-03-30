@@ -30,9 +30,10 @@ void handleMeadeGetInfo(String inCmd) {
     case 'V' : {
         if (cmdTwo == 'N') {
           Serial.print(version);
+          Serial.print("#");
         }
         else if (cmdTwo == 'P') {
-          Serial.print("OpenAstroTracker");
+          Serial.print("OpenAstroTracker#");
         }
       }
       break;
@@ -57,7 +58,9 @@ void handleMeadeSetInfo(String inCmd) {
     Serial.print("0");
     return;
   }
-  Serial.println("[" + inCmd + "]");
+  // Handy for troubleshooting, but breaks ASCOM
+  //Serial.println("[" + inCmd + "]");
+  
   if (inCmd[0] == 'd') {
     // Set DEC
     int sgn = inCmd[1] == '+' ? 1 : -1;
@@ -97,7 +100,8 @@ void handleMeadeSetInfo(String inCmd) {
 /////////////////////////////
 void handleMeadeMovement(String inCmd) {
   if (inCmd[0] == 'S') {
-
+    Serial.print(0);    // ASCOM will expect response per Meade protocol definition
+                        // We aren't calculating invalid requests yet, so returns 0 for now.
     startSlewing();
   }
 }
