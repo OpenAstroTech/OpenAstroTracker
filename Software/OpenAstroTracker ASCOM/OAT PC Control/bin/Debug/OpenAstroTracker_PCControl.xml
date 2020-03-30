@@ -1,0 +1,48 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+OpenAstroTracker_PCControl
+</name>
+</assembly>
+<members>
+<member name="P:ASCOM.OpenAstroTracker.My.Resources.Resources.ResourceManager">
+	<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member><member name="P:ASCOM.OpenAstroTracker.My.Resources.Resources.Culture">
+	<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member><member name="T:ASCOM.OpenAstroTracker.My.Resources.Resources">
+	<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member><member name="M:ASCOM.OpenAstroTracker.frmMain.buttonChoose_Click(System.Object,System.EventArgs)">
+	<summary>
+ This event is where the driver is choosen. The device ID will be saved in the settings.
+ </summary>
+	<param name="sender">The source of the event.</param>
+	<param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
+</member><member name="M:ASCOM.OpenAstroTracker.frmMain.buttonConnect_Click(System.Object,System.EventArgs)">
+	<summary>
+ Connects to the device to be tested.
+ </summary>
+	<param name="sender">The source of the event.</param>
+	<param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
+</member><member name="M:ASCOM.OpenAstroTracker.frmMain.SetUIState">
+	<summary>
+ Sets the state of the UI depending on the device state
+ </summary>
+</member><member name="P:ASCOM.OpenAstroTracker.frmMain.IsConnected">
+	<summary>
+ Gets a value indicating whether this instance is connected.
+ </summary>
+	<value>
+		<c>true</c> if this instance is connected; otherwise, <c>false</c>.
+ 
+ </value>
+</member>
+</members>
+</doc>
