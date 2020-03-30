@@ -117,6 +117,36 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <metadata name="ToolTipPark.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>106, 17</value>
+  </metadata>
+  <metadata name="ToolTipHalt.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>488, 17</value>
+  </metadata>
+  <metadata name="ToolTipSlewAsync.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>339, 17</value>
+  </metadata>
+  <data name="btnSlewAsync.ToolTip" xml:space="preserve">
+    <value>Slews the mount to the selected coordinates.
+
+This is an asynchronous call, meaning control returns to the application
+immediately, without waiting for a response from the mount.
+
+This functionality is not yet implemented.
+</value>
+  </data>
+  <metadata name="ToolTipSlew.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>222, 17</value>
+  </metadata>
+  <data name="btnSlewSync.ToolTip" xml:space="preserve">
+    <value>Slews the mount to the selected coordinates.
+
+This is a synchronous call, meaning control does not 
+return to the application until the mount returns a response.
+
+This will likely change in near future to block until
+slew is finished.</value>
+  </data>
   <metadata name="Timer1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>

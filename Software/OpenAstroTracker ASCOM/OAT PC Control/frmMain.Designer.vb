@@ -23,6 +23,7 @@ Partial Class frmMain
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
         Me.labelDriverId = New System.Windows.Forms.Label()
         Me.buttonConnect = New System.Windows.Forms.Button()
         Me.buttonChoose = New System.Windows.Forms.Button()
@@ -55,6 +56,13 @@ Partial Class frmMain
         Me.txtMountDec = New System.Windows.Forms.TextBox()
         Me.txtMountRA = New System.Windows.Forms.TextBox()
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
+        Me.btnHalt = New System.Windows.Forms.Button()
+        Me.btnPark = New System.Windows.Forms.Button()
+        Me.lblVersion = New System.Windows.Forms.Label()
+        Me.ToolTipPark = New System.Windows.Forms.ToolTip(Me.components)
+        Me.ToolTipSlew = New System.Windows.Forms.ToolTip(Me.components)
+        Me.ToolTipSlewAsync = New System.Windows.Forms.ToolTip(Me.components)
+        Me.ToolTipHalt = New System.Windows.Forms.ToolTip(Me.components)
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         CType(Me.nud_Decm, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -109,6 +117,8 @@ Partial Class frmMain
         '
         'GroupBox2
         '
+        Me.GroupBox2.Controls.Add(Me.btnPark)
+        Me.GroupBox2.Controls.Add(Me.btnHalt)
         Me.GroupBox2.Controls.Add(Me.btnSlewAsync)
         Me.GroupBox2.Controls.Add(Me.btnSlewSync)
         Me.GroupBox2.Controls.Add(Me.Label8)
@@ -135,20 +145,22 @@ Partial Class frmMain
         'btnSlewAsync
         '
         Me.btnSlewAsync.Enabled = False
-        Me.btnSlewAsync.Location = New System.Drawing.Point(39, 118)
+        Me.btnSlewAsync.Location = New System.Drawing.Point(14, 116)
         Me.btnSlewAsync.Name = "btnSlewAsync"
         Me.btnSlewAsync.Size = New System.Drawing.Size(96, 23)
         Me.btnSlewAsync.TabIndex = 15
         Me.btnSlewAsync.Text = "Slew (Async)"
+        Me.ToolTipSlewAsync.SetToolTip(Me.btnSlewAsync, resources.GetString("btnSlewAsync.ToolTip"))
         Me.btnSlewAsync.UseVisualStyleBackColor = True
         '
         'btnSlewSync
         '
-        Me.btnSlewSync.Location = New System.Drawing.Point(39, 89)
+        Me.btnSlewSync.Location = New System.Drawing.Point(14, 89)
         Me.btnSlewSync.Name = "btnSlewSync"
         Me.btnSlewSync.Size = New System.Drawing.Size(96, 23)
         Me.btnSlewSync.TabIndex = 14
         Me.btnSlewSync.Text = "Slew"
+        Me.ToolTipSlew.SetToolTip(Me.btnSlewSync, resources.GetString("btnSlewSync.ToolTip"))
         Me.btnSlewSync.UseVisualStyleBackColor = True
         '
         'Label8
@@ -283,6 +295,7 @@ Partial Class frmMain
         '
         'GroupBox4
         '
+        Me.GroupBox4.Controls.Add(Me.lblVersion)
         Me.GroupBox4.Controls.Add(Me.Label11)
         Me.GroupBox4.Controls.Add(Me.Label12)
         Me.GroupBox4.Controls.Add(Me.txtTargetDec)
@@ -322,14 +335,14 @@ Partial Class frmMain
         '
         Me.txtTargetDec.Location = New System.Drawing.Point(85, 101)
         Me.txtTargetDec.Name = "txtTargetDec"
-        Me.txtTargetDec.Size = New System.Drawing.Size(146, 20)
+        Me.txtTargetDec.Size = New System.Drawing.Size(95, 20)
         Me.txtTargetDec.TabIndex = 6
         '
         'txtTargetRA
         '
         Me.txtTargetRA.Location = New System.Drawing.Point(85, 75)
         Me.txtTargetRA.Name = "txtTargetRA"
-        Me.txtTargetRA.Size = New System.Drawing.Size(146, 20)
+        Me.txtTargetRA.Size = New System.Drawing.Size(95, 20)
         Me.txtTargetRA.TabIndex = 5
         '
         'Label2
@@ -356,19 +369,66 @@ Partial Class frmMain
         '
         Me.txtMountDec.Location = New System.Drawing.Point(85, 50)
         Me.txtMountDec.Name = "txtMountDec"
-        Me.txtMountDec.Size = New System.Drawing.Size(146, 20)
+        Me.txtMountDec.Size = New System.Drawing.Size(95, 20)
         Me.txtMountDec.TabIndex = 2
         '
         'txtMountRA
         '
         Me.txtMountRA.Location = New System.Drawing.Point(85, 24)
         Me.txtMountRA.Name = "txtMountRA"
-        Me.txtMountRA.Size = New System.Drawing.Size(146, 20)
+        Me.txtMountRA.Size = New System.Drawing.Size(95, 20)
         Me.txtMountRA.TabIndex = 0
         '
         'Timer1
         '
         Me.Timer1.Interval = 1000
+        '
+        'btnHalt
+        '
+        Me.btnHalt.Enabled = False
+        Me.btnHalt.Location = New System.Drawing.Point(117, 89)
+        Me.btnHalt.Name = "btnHalt"
+        Me.btnHalt.Size = New System.Drawing.Size(96, 23)
+        Me.btnHalt.TabIndex = 16
+        Me.btnHalt.Text = "Halt"
+        Me.ToolTipHalt.SetToolTip(Me.btnHalt, "Stops all mount movement." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Currently unreliable, pay attention!")
+        Me.btnHalt.UseVisualStyleBackColor = True
+        '
+        'btnPark
+        '
+        Me.btnPark.Location = New System.Drawing.Point(117, 118)
+        Me.btnPark.Name = "btnPark"
+        Me.btnPark.Size = New System.Drawing.Size(96, 23)
+        Me.btnPark.TabIndex = 17
+        Me.btnPark.Text = "Park"
+        Me.ToolTipPark.SetToolTip(Me.btnPark, "Returns mount to home position, and stops motors.  (NOTE : Motors do not currentl" & _
+        "y stop!)")
+        Me.btnPark.UseVisualStyleBackColor = True
+        '
+        'lblVersion
+        '
+        Me.lblVersion.AutoSize = True
+        Me.lblVersion.Location = New System.Drawing.Point(214, 24)
+        Me.lblVersion.Name = "lblVersion"
+        Me.lblVersion.Size = New System.Drawing.Size(134, 13)
+        Me.lblVersion.TabIndex = 9
+        Me.lblVersion.Text = "OpenAstroTracker V0.0.00"
+        '
+        'ToolTipPark
+        '
+        Me.ToolTipPark.ToolTipTitle = "Park the Mount"
+        '
+        'ToolTipSlew
+        '
+        Me.ToolTipSlew.ToolTipTitle = "Slew (Synchronous)"
+        '
+        'ToolTipSlewAsync
+        '
+        Me.ToolTipSlewAsync.ToolTipTitle = "Slew (Asynchronous)"
+        '
+        'ToolTipHalt
+        '
+        Me.ToolTipHalt.ToolTipTitle = "Halt"
         '
         'frmMain
         '
@@ -380,7 +440,7 @@ Partial Class frmMain
         Me.Controls.Add(Me.GroupBox2)
         Me.Controls.Add(Me.GroupBox1)
         Me.Name = "frmMain"
-        Me.Text = "OpenAstroTracker PC Control - ASCOM"
+        Me.Text = "OpenAstroTracker ASCOM PC Control - v0.1.0b"
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox2.ResumeLayout(False)
         Me.GroupBox2.PerformLayout()
@@ -427,5 +487,12 @@ Partial Class frmMain
     Friend WithEvents txtTargetDec As System.Windows.Forms.TextBox
     Friend WithEvents txtTargetRA As System.Windows.Forms.TextBox
     Friend WithEvents Timer1 As System.Windows.Forms.Timer
+    Friend WithEvents btnHalt As System.Windows.Forms.Button
+    Friend WithEvents btnPark As System.Windows.Forms.Button
+    Friend WithEvents lblVersion As System.Windows.Forms.Label
+    Friend WithEvents ToolTipPark As System.Windows.Forms.ToolTip
+    Friend WithEvents ToolTipHalt As System.Windows.Forms.ToolTip
+    Friend WithEvents ToolTipSlewAsync As System.Windows.Forms.ToolTip
+    Friend WithEvents ToolTipSlew As System.Windows.Forms.ToolTip
 
 End Class

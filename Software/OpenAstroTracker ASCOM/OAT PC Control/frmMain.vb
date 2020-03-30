@@ -30,16 +30,17 @@ Public Class frmMain
             driver.Connected = True
             updateValues()
 
-            'nud_Decd.Value = CInt(txtMountDec.Text.Substring(0, 2))
-            'nud_Decm.Value = CInt(txtMountDec.Text.Substring(4, 2))
-            'nud_Decs.Value = CInt(txtMountDec.Text.Substring(8, 2))
+            nud_Decd.Value = CInt(txtMountDec.Text.Substring(0, 2))
+            nud_Decm.Value = CInt(txtMountDec.Text.Substring(4, 2))
+            nud_Decs.Value = CInt(txtMountDec.Text.Substring(8, 2))
 
-            'nud_RAh.Value = CInt(txtMountRA.Text.Substring(0, 2))
-            'nud_RAm.Value = CInt(txtMountRA.Text.Substring(4, 2))
-            'nud_RAs.Value = CInt(txtMountRA.Text.Substring(8, 2))
+            nud_RAh.Value = CInt(txtMountRA.Text.Substring(0, 2))
+            nud_RAm.Value = CInt(txtMountRA.Text.Substring(4, 2))
+            nud_RAs.Value = CInt(txtMountRA.Text.Substring(8, 2))
 
+            lblVersion.Text = driver.Action("Telescope:getFirmwareVer","")
 
-            ' Timer1.Enabled = True
+            'Timer1.Enabled = True
         End If
         SetUIState()
 
@@ -145,5 +146,19 @@ Public Class frmMain
 
     Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
         updateValues()
+    End Sub
+
+    Private Sub btnPark_Click(sender As Object, e As EventArgs) Handles btnPark.Click
+        If btnPark.Text = "Park" Then
+            driver.Park()
+            btnPark.Text = "Unpark"
+            btnSlewSync.Enabled = False
+            btnHalt.Enabled = False
+        Else
+            driver.Unpark()
+            btnPark.Text = "Park"
+            btnSlewSync.Enabled = True
+            btnHalt.Enabled = True
+        End If
     End Sub
 End Class
