@@ -54,14 +54,6 @@ void processDECKeys(int key) {
 
 void printDECSubmenu() {
   if (!movingToTarget) {
-    if (DECselect == 0) {
-      lcdMenu.printMenuArg(">%d%c %d%c %d%s", printdegDEC, 0, minDEC, 1, secDEC, "\"");
-    }
-    if (DECselect == 1) {
-      lcdMenu.printMenuArg(" %d%c>%d%c %d%s", printdegDEC, 0, minDEC, 1, secDEC, "\"");
-    }
-    if (DECselect == 2) {
-      lcdMenu.printMenuArg(" %d%c %d%c>%d%s", printdegDEC, 0, minDEC, 1, secDEC, "\"");
-    }
+    lcdMenu.printMenu(formatDEC(printdegDEC, minDEC, secDEC, DECselect));
   }
 }

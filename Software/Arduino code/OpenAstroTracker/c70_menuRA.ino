@@ -191,25 +191,5 @@ void processRAKeys(int key)
 
 void printRASubmenu()
 {
-
-  //Serial.println("HA:" + HATime.ToString() + "  HA(corr):" + HACorrection.ToString() + "  RA:" + RATime.ToString() + "  RA(corr):" + RADisplayTime.ToString());
-  if (RAselect == 0)
-  {
-    lcdMenu.printMenuArg(">%dh %dm %ds", RADisplayTime.getHours(), RADisplayTime.getMinutes(), RADisplayTime.getSeconds());
-
-    //lcd.print(int(diamCorrection));   //for debugging
-    //lcd.print("");
-    //lcd.print(trackingSpeed);
-    //lcd.print("   ");
-  }
-
-  if (RAselect == 1)
-  {
-    lcdMenu.printMenuArg(" %dh>%dm %ds", RADisplayTime.getHours(), RADisplayTime.getMinutes(), RADisplayTime.getSeconds());
-  }
-
-  if (RAselect == 2)
-  {
-    lcdMenu.printMenuArg(" %dh %dm>%ds", RADisplayTime.getHours(), RADisplayTime.getMinutes(), RADisplayTime.getSeconds());
-  }
+  lcdMenu.printMenu(formatRA(&RADisplayTime, RAselect));
 }

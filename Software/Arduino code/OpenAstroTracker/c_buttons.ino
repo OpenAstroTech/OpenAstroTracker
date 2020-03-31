@@ -92,7 +92,7 @@ void loop() {
     doCalculations();
     runTracker();
 
-    lcd.setCursor(0, 1);
+    lcdMenu.setCursor(0, 1);
 
     if (inStartup) {
       prinStartupMenu();
