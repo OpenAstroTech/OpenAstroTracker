@@ -9,7 +9,6 @@
 #define HALFSTEP 8
 #define FULLSTEP 4
 
-LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 //SoftwareSerial BT(10,11);
 
 // RA Motor pins
@@ -134,47 +133,12 @@ int RAheat = 0;   // Are we heating the RA stepper?
 int DECheat = 0;  // Are we heating the DEC stepper?
 
 // Stellarium variables
-char current_RA[10];
-char current_DEC[12];
+char current_RA[16];
+char current_DEC[16];
 int HAh_save;
 int HAm_save;
 float slew_RA;
 float slew_DEC;
-
-
-// LCD Character bitmaps
-byte DegreesBitmap[8] = {
-  B01100,
-  B10010,
-  B10010,
-  B01100,
-  B00000,
-  B00000,
-  B00000,
-  B00000
-};
-
-byte MinutesBitmap[] = {
-  B10000,
-  B10000,
-  B10000,
-  B00000,
-  B00000,
-  B00000,
-  B00000,
-  B00000
-};
-
-byte SecondsBitmap[] = {
-  B10100,
-  B10100,
-  B10100,
-  B00000,
-  B00000,
-  B00000,
-  B00000,
-  B00000
-};
 
 //debugging
 String inBT;

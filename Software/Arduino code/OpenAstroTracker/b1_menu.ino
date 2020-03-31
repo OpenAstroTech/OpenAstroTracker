@@ -40,24 +40,32 @@ class LcdMenu {
     int _longestDisplay;   // The number of characters in the longest menu item
     int _columns;          // The number of columns in the LCD display
 
+    int _degrees = 1;
+    int _minutes = 2;
     int _leftArrow = 3;
     int _rightArrow = 4;
     int _upArrow = 5;
     int _downArrow = 6;
 
   public:
-    // Create a new menu, using the given LCD screen and using the given number of LCD display columns
-    LcdMenu(LiquidCrystal* lcd, int cols) {
+    // Create a new menu, using the given number of LCD display columns and rows
+    LcdMenu(int cols, int rows) {
+      _lcd = new LiquidCrystal(8, 9, 4, 5, 6, 7);
+      _lcd->begin(cols, rows);
+
       _activeId = 0;
-      _lcd = lcd;
       _firstItem = NULL;
       _lastItem = NULL;
       _longestDisplay = 0;
       _columns = cols;
-      lcd->createChar(_leftArrow, LeftArr);
-      lcd->createChar(_rightArrow, RightArr);
-      lcd->createChar(_upArrow, UpArr);
-      lcd->createChar(_downArrow, DownArr);
+
+      // Create special characters for degrees and arrows
+      _lcd->createChar(_degrees, DegreesBitmap);
+      _lcd->createChar(_minutes, MinutesBitmap);
+      _lcd->createChar(_leftArrow, LeftArrowBitmap);
+      _lcd->createChar(_rightArrow, RightArrowBitmap);
+      _lcd->createChar(_upArrow, UpArrowBitmap);
+      _lcd->createChar(_downArrow, DownArrowBitmap);
     }
 
     // Find a menu item by its ID
@@ -169,6 +177,7 @@ class LcdMenu {
 
       // Display the actual menu string
       String displayString = menuString.substring(offsetIntoString, offsetIntoString + _columns);
+
       // Pad the end with spaces so the display is cleared when getting to the last item(s).
       while (displayString.length() < _columns) {
         displayString += " ";
@@ -187,17 +196,17 @@ class LcdMenu {
           leastCount++;
           if (*i == '>') {
             _lcd->write(_rightArrow);
-          }
-          else if (*i == '<') {
+          } else if (*i == '<') {
             _lcd->write(_leftArrow);
-          }
-          else if (*i == '^') {
+          } else if (*i == '^') {
             _lcd->write(_upArrow);
-          }
-          else if (*i == '~') {
+          } else if (*i == '~') {
             _lcd->write(_downArrow);
-          }
-          else {
+          } else if (*i == '@') {
+            _lcd->write(_degrees);
+          } else if (*i == '\'') {
+            _lcd->write(_minutes);
+          } else {
             _lcd->print(*i);
           }
           continue;
@@ -245,6 +254,12 @@ class LcdMenu {
         else if (line[i] == '~') {
           _lcd->write(_downArrow);
         }
+        else if (line[i] == '@') {
+          _lcd->write(_degrees);
+        }
+        else if (line[i] == '\'') {
+          _lcd->write(_minutes);
+        }
         else {
           _lcd->print(line[i]);
         }
@@ -258,7 +273,7 @@ class LcdMenu {
     }
 
     // The right arrow bitmap
-    byte RightArr[8] = {
+    byte RightArrowBitmap[8] = {
       B00000,
       B01000,
       B01100,
@@ -270,7 +285,7 @@ class LcdMenu {
     };
 
     // The left arrow bitmap
-    byte LeftArr[8] = {
+    byte LeftArrowBitmap[8] = {
       B00000,
       B00010,
       B00110,
@@ -281,7 +296,7 @@ class LcdMenu {
       B00000
     };
 
-    byte UpArr[8] = {
+    byte UpArrowBitmap[8] = {
       B00100,
       B01110,
       B11111,
@@ -292,7 +307,7 @@ class LcdMenu {
       B00100
     };
 
-    byte DownArr[8] = {
+    byte DownArrowBitmap[8] = {
       B000100,
       B000100,
       B000100,
@@ -301,5 +316,27 @@ class LcdMenu {
       B011111,
       B001110,
       B000100
+    };
+
+    byte DegreesBitmap[8] = {
+      B01100,
+      B10010,
+      B10010,
+      B01100,
+      B00000,
+      B00000,
+      B00000,
+      B00000
+    };
+
+    byte MinutesBitmap[8] = {
+      B01000,
+      B01000,
+      B01000,
+      B00000,
+      B00000,
+      B00000,
+      B00000,
+      B00000
     };
 };

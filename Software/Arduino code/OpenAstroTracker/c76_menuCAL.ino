@@ -38,7 +38,5 @@ void processCalibrationKeys(int key) {
 }
 
 void printCalibrationSubmenu() {
-  lcd.print("Speed:");
-  lcd.print(speedCalibration, 4);
-  lcd.print("        ");
+  lcdMenu.printMenuArg("SpdFctr: %s", String(speedCalibration, 4).c_str());
 }

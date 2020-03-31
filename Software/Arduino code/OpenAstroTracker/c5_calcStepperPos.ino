@@ -29,7 +29,6 @@ void handleDECandRACalculations()
     float oldRA = moveRA;
     moveRA -= long(12.0f * stepsPerHour / 2);
     moveDEC = -moveDEC;
-    //Serial.println(format("> %s HRPos: %f  MoveRA: %f   newMoveRA: %f    RALimit: %f", RATime.ToString().c_str(), hourPos, oldRA, moveRA, RALimit));
   }
   // If we reach the limit in the negative direction...
   else if (moveRA < -RALimit) {
@@ -37,9 +36,6 @@ void handleDECandRACalculations()
     float oldRA = moveRA;
     moveRA += long(12.0f * stepsPerHour / 2);
     moveDEC = -moveDEC;
-    //Serial.println(format("< %s HRPos: %f  MoveRA: %f   newMoveRA: %f    RALimit: %f", RATime.ToString().c_str(), hourPos, oldRA, moveRA, RALimit));
-  } else {
-    //Serial.println(format("= %s HRPos: %f  MoveRA: %f   newMoveRA: %f    RALimit: %f", RATime.ToString().c_str(), hourPos, moveRA, moveRA, RALimit));
   }
 
   float targetRA = clamp(-moveRA, -RAStepperLimit, RAStepperLimit);
@@ -70,8 +66,10 @@ void doCalculations() {
   // What are these magic numbers??? 335.14? 288? 3590?
   //trackingSpeed = ((((335.1417 / 288.0) * StepsPerRevolution) / 3590)) - 1 + float(speedCalibration);
   
-  // The tracker simply needs to rotate at 15degrees/hour
-  trackingSpeed  = speedCalibration * RAStepsPerDegree * 15.0f / 3600.0f;
+  // The tracker simply needs to rotate at 15degrees/hour, adjusted for sidereal 
+  // time (i.e. the 15degrees is per 23h56m04s. 3590/3600 is the same ratio).
+  // And multiplied by 2 because TRK stepper is halfstepped, whereas RA stepper is fullstepped.
+  trackingSpeed  = speedCalibration * 2 * RAStepsPerDegree * 15.0f / 3590.0f;
   stepperTRK.setSpeed(trackingSpeed);
 
   RADisplayTime.set(RATime);

@@ -14,12 +14,13 @@
 
   =======================================================================================================================================
 */
-String version = "V1.5.20";
+String version = "V1.5.21";
 
 boolean north = true;    // change this to 'false' if youre in the southern hemisphere
 
 float speed = 1.000;    // Use this value to slightly increase or decrese tracking speed. The values from the "CAL" menu will be added to this.
 
+// The radius of the surface that the belt runs on (in V1 of the ring) was 168.24mm.
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
 // RA wheel is 2 x PI x 168.24mm circumference = 1057.1mm
 // One RA revolution needs 26.43 (1057.1mm / 40mm) stepper revolutions
@@ -35,7 +36,7 @@ int RAStepsPerDegree = 300;      // adjust this value to calibrate RA movement
 int DECStepsPerDegree = 161;     // Number of steps needed to move DEC motor 1 degree.
 
 // This is how many steps your 28BYJ-48 stepper needs for a full rotation. It is almost always 4096.
-// This code drives the steppers in halfstep mode
+// This code drives the steppers in halfstep mode for TRK and DEC, and full step for RA
 float StepsPerRevolution = 4096;
 
 int RAspeed = 400;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. High speeds tend to make
@@ -65,10 +66,10 @@ int s = 25;
 // The same could be done for the DEC coordinates but they dont change significantly for the next 5 years
 
 // Comment this out to save some code space
-//#define DEBUG_MODE
+// #define DEBUG_MODE
 
 // Uncomment this to support the heating menu
-//#define SUPPORT_HEATING
+// #define SUPPORT_HEATING
 
 // Uncomment to run a key diagnostic
 // #define LCD_BUTTON_TEST

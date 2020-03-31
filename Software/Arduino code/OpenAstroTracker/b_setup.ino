@@ -1,6 +1,5 @@
-
-// Create the menu variable
-LcdMenu lcdMenu(&lcd, 16);
+// Create the LCD menu variable and initialize the LCD (16x2 characters)
+LcdMenu lcdMenu(16, 2);
 
 // Create the variables to track RA time, RA display time and HA time
 DayTime RATime;
@@ -17,14 +16,6 @@ void setup() {
 #ifdef DEBUG_MODE
   log("Hello World!");
 #endif
-
-  // Initialize the LCD (16x2 characters)
-  lcd.begin(16, 2);
-
-  // Create special characters for degrees, minutes, seconds
-  lcd.createChar(0, DegreesBitmap);
-  lcd.createChar(1, MinutesBitmap);
-  lcd.createChar(2, SecondsBitmap);
 
   // Not sure if this is neeeded
   pinMode(A1, OUTPUT);
@@ -49,7 +40,7 @@ void setup() {
   HACorrection.set(HATime);
   HACorrection.addTime(-h, -m, -s);
   lastHAset = millis();
-  
+
 #ifdef DEBUG_MODE
   logv("HATime = %s", HATime.ToString().c_str());
 #endif
@@ -68,10 +59,10 @@ void setup() {
   lcdMenu.addItem("INFO", Status_Menu);
 
   // Show a splash screen
-  lcd.setCursor(0, 0);
-  lcd.print("OpenAstroTracker");
-  lcd.setCursor(0, 1);
-  lcd.print("     " + version);
+  lcdMenu.setCursor(0, 0);
+  lcdMenu.printMenu("OpenAstroTracker");
+  lcdMenu.setCursor(0, 1);
+  lcdMenu.printMenu("     " + version);
   delay(1750);
 
   doCalculations();

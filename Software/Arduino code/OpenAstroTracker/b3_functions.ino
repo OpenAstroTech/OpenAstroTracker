@@ -15,8 +15,7 @@ int adjustWrap(int current, int adjustBy, int minVal, int maxVal)
 {
   current += adjustBy;
   if (current > maxVal) current -= (maxVal + 1 - minVal);
-  if (current < minVal) current += (maxVal + 1 - minVal
-                                     );
+  if (current < minVal) current += (maxVal + 1 - minVal);
   return current;
 }
 
@@ -82,6 +81,9 @@ void logv(const char* input, ...) {
   va_end(argp);
 
 }
+//String formatRA(DayTime ratime) {
+//  return String(ratime.ToString());
+//}
 
 String format(const char* input, ...) {
   va_list argp;
@@ -153,3 +155,23 @@ String formatArg(const char* input, va_list args) {
   return String(achBuffer);
 }
 #endif
+
+String formatRA(DayTime* ratime, int act = -1); // The Arduino IDEs auto generation does not handle custom datatypes 
+String formatRA(DayTime* ratime, int act = -1) {
+  sprintf(current_RA, " %02dh %02dm %02ds", ratime->getHours(), ratime->getMinutes(), ratime->getSeconds());
+  switch (act){
+    case 0: current_RA[0]='>'; break;
+    case 1: current_RA[4]='>'; break;
+    case 2: current_RA[8]='>'; break;
+  }
+  return String(current_RA);
+}
+String formatDEC(int degree, int minute, int second, int act = -1) {
+  sprintf(current_DEC, "%c%02d@ %02d' %02d\"", degree > 0 ? '+' : '-', int(fabs(degree)), minute, second);
+  switch (act){
+    case 0: current_DEC[0]='>'; break;
+    case 1: current_DEC[4]='>'; break;
+    case 2: current_DEC[8]='>'; break;
+  }
+  return String(current_DEC);
+}

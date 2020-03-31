@@ -1,5 +1,6 @@
 int infoIndex = 0;
 int maxInfoIndex = 3;
+int stepVsTime = 0;
 
 void processStatusKeys(int key) {
   switch (key) {
@@ -13,8 +14,9 @@ void processStatusKeys(int key) {
       }
       break;
 
-    case btnSELECT: {
-      }
+    case btnSELECT:
+    case btnLEFT:
+      stepVsTime = 1 - stepVsTime;
       break;
 
     case btnRIGHT: {
@@ -32,15 +34,28 @@ void printStatusSubmenu() {
   switch (infoIndex)
   {
     case 0: {
-        lcdMenu.printMenu("RA:  " + String(stepperRA.currentPosition()));
+        if (stepVsTime == 0) {
+          lcdMenu.printMenu("RA Stpr: " + String(stepperRA.currentPosition()));
+        } else {
+          lcdMenu.printMenu("RA: " + formatRA(&RADisplayTime));
+        }
       }
       break;
     case 1: {
-        lcdMenu.printMenu("DEC: " + String(stepperDEC.currentPosition()));
+        if (stepVsTime == 0) {
+          lcdMenu.printMenu("DEC Stpr:" + String(stepperDEC.currentPosition()));
+        } else {
+          lcdMenu.printMenu("DEC: " + formatDEC(printdegDEC, minDEC, secDEC));
+        }
       }
       break;
     case 2: {
-        lcdMenu.printMenu("TRK: " + String(stepperTRK.currentPosition()));
+        if (stepVsTime == 0) {
+          lcdMenu.printMenu("TRK Stpr:" + String(stepperTRK.currentPosition()));
+        }
+        else {
+          lcdMenu.printMenu("TRK Spd:" + String(trackingSpeed, 6));
+        }
       }
       break;
     case 3: {

@@ -130,8 +130,8 @@ void handleMeadeHome(String inCmd) {
 /////////////////////////////
 void handleMeadeQuit(String inCmd) {
 
-  // Hard quit extension stops motors
-  if ((inCmd.length() > 0) && (inCmd[0] == 'q'))  {
+  // Hard quit extension stops motors for :Q# command, but not for :Qq#
+  if ((inCmd.length() == 0) || (inCmd[0] != 'q'))  {
     stopSteppers();
   }
 
@@ -253,17 +253,17 @@ void serialEvent() {
       case PC_START : {
       // START command - Go to PC Control
       pcControl = true;
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("PC CONTROL");
-      lcd.setCursor(0, 1);
+      lcdMenu.clear();
+      lcdMenu.setCursor(0, 0);
+      lcdMenu.print("PC CONTROL");
+      lcdMenu.setCursor(0, 1);
       }
       break;
 
       case PC_STOP: {
       // STOP command - exit PC Control
       pcControl = false;
-      lcd.clear();
+      lcdMenu.clear();
       }
       break;
 
