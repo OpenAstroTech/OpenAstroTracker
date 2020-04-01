@@ -1,6 +1,6 @@
-int infoIndex = 0;
-int maxInfoIndex = 3;
-int stepVsTime = 0;
+byte infoIndex = 0;
+byte maxInfoIndex = 3;
+byte stepVsTime = 0;
 
 void processStatusKeys(int key) {
   switch (key) {
@@ -52,9 +52,10 @@ void printStatusSubmenu() {
     case 2: {
         if (stepVsTime == 0) {
           lcdMenu.printMenu("TRK Stpr:" + String(stepperTRK.currentPosition()));
-        }
-        else {
-          lcdMenu.printMenu("TRK Spd:" + String(trackingSpeed, 6));
+        } else {
+          sprintf(scratchBuffer, "TRK Spd:");
+          dtostrf(trackingSpeed, 8, 6, &scratchBuffer[8]);
+          lcdMenu.printMenu(scratchBuffer);
         }
       }
       break;

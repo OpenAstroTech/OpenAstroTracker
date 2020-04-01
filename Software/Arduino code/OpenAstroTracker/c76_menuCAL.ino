@@ -38,5 +38,7 @@ void processCalibrationKeys(int key) {
 }
 
 void printCalibrationSubmenu() {
-  lcdMenu.printMenuArg("SpdFctr: %s", String(speedCalibration, 4).c_str());
+  sprintf(scratchBuffer, "SpdFctr: ");
+  dtostrf(speedCalibration, 6, 4, &scratchBuffer[9]);
+  lcdMenu.printMenu(scratchBuffer);
 }

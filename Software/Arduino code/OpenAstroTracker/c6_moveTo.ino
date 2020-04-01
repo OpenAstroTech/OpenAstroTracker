@@ -4,14 +4,17 @@ void displayStepperPosition() {
   String disp ;
   if (totalDECMove > 0)              {
     float decDist = 100.0 - 100.0 * abs(stepperDEC.distanceToGo()) / totalDECMove;
-    disp = "DEC:" + String((int)floor(decDist)) + "% ";
+    sprintf(scratchBuffer, "DEC: %d%%", (int)decDist);
+    //disp = "DEC:" + String((int)floor(decDist)) + "% ";
+    disp = String(scratchBuffer);
   }
   else {
     disp = "D:" + String(stepperDEC.currentPosition());
   }
   if (totalRAMove > 0) {
     float raDist = 100.0 - 100.0 * abs(stepperRA.distanceToGo()) / totalRAMove;
-    disp = disp + "RA:" + String((int)floor(raDist)) + "%  ";
+    sprintf(scratchBuffer, "RA: %d%%", (int)raDist);
+    disp = disp + String(scratchBuffer);
   }
   else {
     disp = disp + " R:" + String(stepperRA.currentPosition());
@@ -21,11 +24,11 @@ void displayStepperPosition() {
 }
 
 void displayStepperPositionThrottled() {
-  if (displaySkipsLeft <= 0) {
+  long elapsed = millis() - lastDisplayUpdate;
+  if (elapsed > DISPLAY_UPDATE_TIME) {
     displayStepperPosition();
-    displaySkipsLeft = displayLoopsToSkip;
+    lastDisplayUpdate = millis();
   }
-  displaySkipsLeft--;
 }
 
 // Stop the steppers, allowing their decelerations to process (Blocking)
@@ -43,7 +46,7 @@ void stopSteppers() {
 
 // Stop one of the steppers, allowing its decelerations to process and update controlState (Blocking)
 // This function is meant for use by the CTRL menu
-bool stopStepper(int mask, bool useRA) {
+bool stopStepper(byte mask, bool useRA) {
   // Is it running?
   if (controlState & mask)
   {

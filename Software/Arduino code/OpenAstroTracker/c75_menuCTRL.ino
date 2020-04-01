@@ -122,12 +122,8 @@ void printControlSubmenu() {
   }
   else if (confirmZeroPoint) {
     String disp = " Yes  No  ";
-    disp.setCharAt(setZeroPoint ? 0 : 5, '>');
-    disp.setCharAt(setZeroPoint ? 4 : 8, '<');
+    disp.setCharAt(setZeroPoint ? 0 : 5, GREATER_THAN);
+    disp.setCharAt(setZeroPoint ? 4 : 8, LESS_THAN);
     lcdMenu.printMenu(disp);
-  } else {
-    if (!stepperDEC.isRunning() && !stepperRA.isRunning()) {
-      lcdMenu.printMenu("D:" + String(stepperDEC.currentPosition()) + " R:" + stepperRA.currentPosition());
-    }
   }
 }
