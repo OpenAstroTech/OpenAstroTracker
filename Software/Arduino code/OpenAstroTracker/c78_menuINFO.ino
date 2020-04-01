@@ -1,5 +1,5 @@
 byte infoIndex = 0;
-byte maxInfoIndex = 3;
+byte maxInfoIndex = 4;
 byte stepVsTime = 0;
 
 void processStatusKeys(int key) {
@@ -60,6 +60,16 @@ void printStatusSubmenu() {
       }
       break;
     case 3: {
+        long now=millis();
+        long msPerDay = 60L * 60 * 24 * 1000;
+        int days = (int)(now / msPerDay);
+        now -= days * msPerDay;
+        DayTime elapsed(now);
+        sprintf(scratchBuffer,"Up: %dd %02d:%02d:%02d",days,elapsed.getHours(),elapsed.getMinutes(),elapsed.getSeconds());
+        lcdMenu.printMenu(scratchBuffer);
+      }
+      break;
+    case 4: {
         lcdMenu.printMenu("Firmw.: " + version);
       }
       break;
