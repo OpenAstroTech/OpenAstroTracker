@@ -1,6 +1,8 @@
+bool parking = false;
 
 void startSlewing() {
   serialIsSlewing = true;
+  parking = false;
   doCalculations();
   handleDECandRACalculations();
   startMoveSteppersToTargetAsync();
@@ -44,6 +46,22 @@ void handleMeadeGetInfo(String inCmd) {
       break;
     case 'd': {
         sprintf(scratchBuffer, "%c%02d*%02d'%02d#", printdegDEC > 0 ? '+' : '-', int(fabs(printdegDEC)), int(minDEC), int(secDEC));
+        Serial.print(scratchBuffer);
+      }
+      break;
+    case 'R': {
+        DayTime dt(currentRA());
+        dt.addTime(HACorrection);
+        sprintf(scratchBuffer, "%02d:%02d:%02d#", dt.getHours(), dt.getMinutes(), dt.getSeconds());
+        Serial.print(scratchBuffer);
+      }
+      break;
+
+    case 'D': {
+        float dec = currentDEC();
+        DayTime dt(dec);
+        int degree = dt.getHours() + (north ? 90 : -90);
+        sprintf(scratchBuffer, "%c%02d*%02d'%02d#", degree > 0 ? '+' : '-', int(fabs(degree)), dt.getMinutes(), dt.getSeconds());
         Serial.print(scratchBuffer);
       }
       break;
@@ -97,6 +115,7 @@ void handleMeadeSetInfo(String inCmd) {
     HATime.set(hHA, minHA, 0);
     HACorrection.set(HATime);
     HACorrection.addTime(-h, -m, -s);
+    Serial.print("0");
   }
 }
 
@@ -114,13 +133,11 @@ void handleMeadeMovement(String inCmd) {
 // HOME
 /////////////////////////////
 void handleMeadeHome(String inCmd) {
-  if (inCmd[0] == 'P') {
-    stopSteppers();
-
-    // TRK stepper is half-stepped so we divide the steps by two to get full steps, which is what RA is stepped at.
-    stepperRA.moveTo(0 - stepperTRK.currentPosition() / 2);
-    stepperDEC.moveTo(0);
+  if (inCmd[0] == 'P') {  // Park
     serialIsSlewing = true;
+    slewingToHome = true;
+    parking = true;
+    moveToHomePositionsAsync();
     startMoveSteppersToTargetAsync();
   }
 }
@@ -149,6 +166,13 @@ void serialLoop()
   runTracker();
   if (serialIsSlewing) {
     if (!moveSteppersToTargetAsync()) {
+      if (slewingToHome) {
+        moveToHomePositionCompleted();
+        slewingToHome = false;
+        if (parking){
+          tracking = 0;
+        }
+      }
       serialIsSlewing = false;
     }
   }
@@ -157,8 +181,6 @@ void serialLoop()
 //////////////////////////////////////////////////
 // Event that is triggered when the serial port receives data.
 void serialEvent() {
-
-  if (stepperGUIDE.distanceToGo() != 0) tracking = 0;
 
   // Implement Meade protocol
   while (Serial.available() > 0) {
@@ -181,309 +203,6 @@ void serialEvent() {
       }
     }
 
-    /*
-      int cmdSep = inCmd.indexOf(' | ');
-      if (cmdSep >= 0) {
-      // Our own protocol format. Currently only setting RA and DEC and manual slew is supported.
-      // So available formats are:
-      //     arg,arg,arg|CMD
-      // OR
-      //     |CMD
-
-      String command = inCmd.substring(cmdSep + 1);
-      int commandId = -1;
-      for (int i = 0; i < sizeof(supportedCommands) / sizeof(supportedCommands[0]); i++)
-      {
-      if (supportedCommands[i].command == command) {
-      commandId = supportedCommands[i].commandId;
-      break;
-      }
-      }
-
-      String argString = inCmd.substring(0, cmdSep);
-      int args[3];
-      int argIndex = 0;
-
-      // Check for arguments
-      while (argString.length() > 0 ) {
-      int commaPos = argString.indexOf(', ');
-      if (commaPos == -1) {
-      args[argIndex++] = argString.toInt();
-      argString = "";
-      }
-      else {
-      args[argIndex++] = argString.substring(0, commaPos).toInt();
-      argString = argString.substring(commaPos + 1);
-      }
-      }
-
-      switch (commandId)
-      {
-      // SRA command - Set RA time
-      case MOVE_TO_RA : {
-      if (argIndex == 3)
-      {
-      RATime.set(args[0], args[1], args[2]);
-      doCalculations();
-      lcdMenu.setCursor(0, 1);
-      sprintf(scratchBuffer, "%02d:%02d:%02d", RADisplayTime.getHours(), RADisplayTime.getMinutes(), RADisplayTime.getSeconds());
-      lcdMenu.printMenu("RA : " + String(scratchBuffer));
-      //ShowStatusMessage();
-      handleDECandRACalculations();
-      startMoveSteppersToTargetAsync() ;
-      }
-      }
-      break;
-
-      case MOVE_TO_DEC : {
-      if (argIndex == 3) {
-      degreeDEC = args[0] + (north ? -90 : 90);
-      minDEC = args[1];
-      secDEC = args[2];
-      doCalculations();
-      lcdMenu.setCursor(0, 1);
-      lcdMenu.printMenuArg("DEC: %d%c %d%c %d%s", printdegDEC, 0, minDEC, 1, secDEC, "\"");
-      //ShowStatusMessage();
-      handleDECandRACalculations();
-      startMoveSteppersToTargetAsync() ;
-      }
-      }
-      break;
-
-      case PC_START : {
-      // START command - Go to PC Control
-      pcControl = true;
-      lcdMenu.clear();
-      lcdMenu.setCursor(0, 0);
-      lcdMenu.print("PC CONTROL");
-      lcdMenu.setCursor(0, 1);
-      }
-      break;
-
-      case PC_STOP: {
-      // STOP command - exit PC Control
-      pcControl = false;
-      lcdMenu.clear();
-      }
-      break;
-
-      case MOVE_RIGHT: {
-      // R command - Move RA stepper right
-      if (argIndex == 1) {
-      //tracking = 0;
-      stepperRA.move(args[0]);
-      //stepperRA.runToPosition();
-      //tracking = 1;
-      }
-      }
-      break;
-
-      case MOVE_LEFT: {
-      // L command - Move RA stepper left
-      if (argIndex == 1) {
-      //tracking = 0;
-      stepperRA.move(-args[0]);
-      //stepperRA.runToPosition();
-      //tracking = 1;
-      }
-      }
-      break;
-
-      case MOVE_DOWN: {
-      // DOWN command - Move DEC stepper down
-      if (argIndex == 1) {
-      stepperDEC.setMaxSpeed(250);
-      stepperDEC.setAcceleration(600);
-      stepperDEC.move(args[0]);
-      //stepperDEC.runToPosition();
-      }
-      }
-      break;
-
-      case MOVE_UP: {
-      // UP command - Move DEC stepper up
-      if (argIndex == 1) {
-      stepperDEC.setMaxSpeed(250);
-      stepperDEC.setAcceleration(600);
-      stepperDEC.move(-args[0]);
-      //stepperDEC.runToPosition();
-      }
-      }
-      break;
-
-      default:
-      break;
-      }
-      }
-
-      // I command - toggle pulse guiding
-      if (inCmd == "I")
-      {
-      if (isPulseGuiding)
-      {
-      Serial.println("TRUE#");
-      }
-      else
-      {
-      Serial.println("FALSE#");
-      }
-      }
-
-
-
-      if (inCmd == "E") //RA + EAST
-      {
-      inCmd = "";
-
-      while (inCmd.toInt() == 0) {
-      tracking = 0;
-      direction_new = 1;
-
-      inCmd = Serial.readStringUntil('#');
-
-      stepperTRK.setSpeed(50);
-      stepperTRK.move(2);
-      stepperTRK.runToPosition();
-      tracking = 1;
-      logString += inCmd + "\n\r";
-      }
-      }
-
-      if (inCmd == "W") //RA - WEST
-      {
-      inCmd = "";
-
-      while (inCmd.toInt() == 0) {
-      tracking = 0;
-      direction_new = 0;
-
-
-      inCmd = Serial.readStringUntil('#');
-
-      stepperTRK.setAcceleration(2000);
-      stepperTRK.setMaxSpeed(800);
-      stepperTRK.setSpeed(800);
-      stepperTRK.move(-12);
-      stepperTRK.runToPosition();
-      stepperTRK.move(10);
-      stepperTRK.runToPosition();
-      tracking = 1;
-      logString += inCmd + "\n\r";
-      }
-      }
-
-      if (inCmd == "U") //DEC + NORTH
-      {
-      inCmd = "";
-
-      while (inCmd.toInt() == 0)
-      inCmd = Serial.readStringUntil('#');
-
-      logString += inCmd + "\n\r";
-
-      stepperDEC.move(-1);
-      stepperDEC.runToPosition();
-      }
-      if (inCmd == "D") //DEC - SOUTH
-      {
-      inCmd = "";
-
-      while (inCmd.toInt() == 0)
-      inCmd = Serial.readStringUntil('#');
-
-      logString += inCmd + "\n\r";
-
-      stepperDEC.move(1);
-      stepperDEC.runToPosition();
-      }
-      if (inCmd == "N") {
-
-      isPulseGuiding = false;
-      }
-
-      if (inCmd == "L")  {
-      Serial.println(logString);
-      logString = "";
-      }
-
-
-      // Stellarium stuff--------------------------------------------------
-
-      if (inCmd == ":GR") {
-      sprintf(scratchBuffer, "%02d:%02d:%02d", RADisplayTime.getHours(), RADisplayTime.getMinutes(), RADisplayTime.getSeconds());
-      Serial.print(scratchBuffer);
-      Serial.print("#");
-      //inCmd = "";
-      }
-
-      if (inCmd == ":GD") {
-      sprintf(scratchBuffer, "%c%02d*%02d:%02d", ' + ', int(printdegDEC), int(minDEC), int(secDEC));
-      Serial.print(scratchBuffer);
-      //Serial.print("+80*00#");
-      Serial.print("#");
-      //inCmd = "";
-      }
-
-      if (inCmd.indexOf(":Sr") >= 0) {
-      String x = inCmd.substring(3);
-      int RaH = x.toInt();
-      String y = inCmd.substring(7);
-      int RaM = y.toInt();
-      String z = inCmd.substring(10);
-      int RaS = z.toInt();
-
-      int slew_RAh = (RaH - RADisplayTime.getHours());
-      int slew_RAm = (RaM - RADisplayTime.getMinutes());
-      int slew_RAs = (RaS - RADisplayTime.getSeconds());
-
-      RATime.addTime(slew_RAh, slew_RAm, slew_RAs);
-
-      Serial.print("1");
-      slew_RA = (slew_RAh * stepsPerHour + slew_RAm * (stepsPerHour / 60) + slew_RAs * (stepsPerHour / 3600)) / 2;
-
-      stepperRA.moveTo(slew_RA);
-      //inCmd = "";
-      //slew();
-      }
-      if (inCmd.indexOf(":Sd") >= 0) {
-      //int s = inCmd.indexOf ("Sd");
-      String x = inCmd.substring(4);
-      int DECd = x.toInt();
-      String y = inCmd.substring(8);
-      int DECm = y.toInt();
-      String z = inCmd.substring(11);
-      int DECs = z.toInt();
-
-      int slew_DECd = (printdegDEC - DECd);
-      int slew_DECm = (DECm - minDEC);
-      int slew_DECs = (DECs - secDEC);
-
-      degreeDEC += slew_DECd;
-      minDEC += slew_DECm;
-      secDEC += slew_DECs;
-      Serial.print("1");
-      slew_DEC = (slew_DECd * float(DECStepsPerDegree) + slew_DECm * (float(DECStepsPerDegree) / float(60)) + slew_DECs * (float(DECStepsPerDegree) / float(3600))) / 2;
-
-      stepperDEC.moveTo(slew_DEC);
-      //inCmd = "";
-      //slew();
-      }
-      if (inCmd == ":MS") {
-      Serial.print(0);
-      inCmd = "";
-      while (stepperRA.distanceToGo() != 0  && stepperDEC.distanceToGo() == 0) {
-      stepperRA.run();
-      }
-      while (stepperDEC.distanceToGo() != 0 && stepperRA.distanceToGo() == 0) {
-      stepperDEC.run();
-
-      }
-      while (stepperDEC.distanceToGo() != 0 || stepperRA.distanceToGo() != 0) {
-      stepperRA.run();
-      stepperDEC.run();
-      }
-      }
-    */
     doCalculations();
     runTracker();
   }

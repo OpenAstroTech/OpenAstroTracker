@@ -1,4 +1,3 @@
-bool movingToTarget = false;
 
 void processDECKeys(int key) {
 

@@ -1,3 +1,78 @@
+bool movingToTarget = false;
+
+void processRAKeys(int key)
+{
+  switch (key)
+  {
+    case btnUP:
+      {
+        if (RAselect == 0)
+          RATime.addHours(1);
+        if (RAselect == 1)
+          RATime.addMinutes(1);
+        if (RAselect == 2)
+          RATime.addSeconds(1);
+
+        // slow down key repetitions
+        delay(150);
+        waitForButtonRelease = false;
+      }
+      break;
+
+    case btnDOWN:
+      {
+        if (RAselect == 0)
+          RATime.addHours(-1);
+        if (RAselect == 1)
+          RATime.addMinutes(-1);
+        if (RAselect == 2)
+          RATime.addSeconds(-1);
+
+        // slow down key repetitions
+        delay(150);
+        waitForButtonRelease = false;
+      }
+      break;
+
+    case btnLEFT:
+      {
+        RAselect = adjustWrap(RAselect, 1, 0, 2);
+      }
+      break;
+
+    case btnSELECT:
+      {
+        if (movingToTarget) {
+          stopSteppers();
+        }
+        else {
+          startMoveSteppersToTargetAsync();
+        }
+        movingToTarget = !movingToTarget ;
+      }
+      break;
+
+    case btnRIGHT:
+      {
+        lcdMenu.setNextActive();
+      }
+      break;
+  }
+
+  if (movingToTarget) {
+    if (!moveSteppersToTargetAsync()) {
+      movingToTarget = false;
+    }
+  }
+}
+
+void printRASubmenu() {
+  if (!movingToTarget) {
+    lcdMenu.printMenu(formatRA(&RADisplayTime, RAselect));
+  }
+}
+
+
 /*
   WIP for complete OO-ification of code.
 
@@ -134,62 +209,3 @@
     }
   };
 */
-
-void processRAKeys(int key)
-{
-  switch (key)
-  {
-    case btnUP:
-      {
-        if (RAselect == 0)
-          RATime.addHours(1);
-        if (RAselect == 1)
-          RATime.addMinutes(1);
-        if (RAselect == 2)
-          RATime.addSeconds(1);
-
-        // slow down key repetitions
-        delay(150);
-        waitForButtonRelease = false;
-      }
-      break;
-
-    case btnDOWN:
-      {
-        if (RAselect == 0)
-          RATime.addHours(-1);
-        if (RAselect == 1)
-          RATime.addMinutes(-1);
-        if (RAselect == 2)
-          RATime.addSeconds(-1);
-
-        // slow down key repetitions
-        delay(150);
-        waitForButtonRelease = false;
-      }
-      break;
-
-    case btnLEFT:
-      {
-        RAselect = adjustWrap(RAselect, 1, 0, 2);
-      }
-      break;
-
-    case btnSELECT:
-      {
-        moveSteppersToTarget();
-      }
-      break;
-
-    case btnRIGHT:
-      {
-        lcdMenu.setNextActive();
-      }
-      break;
-  }
-}
-
-void printRASubmenu()
-{
-  lcdMenu.printMenu(formatRA(&RADisplayTime, RAselect));
-}

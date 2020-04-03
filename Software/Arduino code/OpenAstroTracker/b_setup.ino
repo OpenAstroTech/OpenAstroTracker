@@ -30,8 +30,6 @@ void setup() {
   stepperDEC.setAcceleration(DECacceleration);
   stepperTRK.setMaxSpeed(10);
   stepperTRK.setAcceleration(2500);
-  stepperGUIDE.setMaxSpeed(50);
-  stepperGUIDE.setAcceleration(100);
 
   // Read persisted values
   inputcal = EEPROM.read(0);

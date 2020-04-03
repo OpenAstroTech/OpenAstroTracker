@@ -1,11 +1,43 @@
 
+float currentRA() {
+  float targetRA = RATime.getTotalHours();
+  // Serial.print("TargetRA: " + String(targetRA, 4));
+  if (!stepperRA.isRunning()) {
+    return targetRA;
+  }
+  float degreesToGo = 1.0 * stepperRA.distanceToGo() / RAStepsPerDegree;
+  // Serial.print("  Deg2Go: " + String(degreesToGo , 4));
+  float hoursToGo = degreesToGo / 15.0;
+  // Serial.print("  Hrs2Go: " + String(hoursToGo , 4));
+  float currentHour = targetRA - hoursToGo;
+  // Serial.println("  CurHrs: " + String(currentHour, 4));
+  return currentHour;
+}
+
+float currentDEC() {
+  float targetDEC = 1.0 * degreeDEC + minDEC / 60.0 + secDEC / 3600.0;
+  // Serial.print("TargetDEC: " + String(targetDEC, 4));
+  if (!stepperDEC.isRunning()) {
+    return targetDEC;
+  }
+  float degreesToGo = 1.0 * stepperDEC.distanceToGo() / DECStepsPerDegree;
+  // Serial.print("  Deg2Go: " + String(degreesToGo , 4));
+  float currentDegree = targetDEC - degreesToGo;
+  // Serial.println("  CurDeg: " + String(currentDegree, 4));
+  return currentDegree;
+}
+
 void displayStepperPosition() {
   lcdMenu.setCursor(0, 1);
   String disp ;
-  if (totalDECMove > 0)              {
+  if (totalDECMove > 0) {
     float decDist = 100.0 - 100.0 * abs(stepperDEC.distanceToGo()) / totalDECMove;
-    sprintf(scratchBuffer, "DEC: %d%%", (int)decDist);
-    //disp = "DEC:" + String((int)floor(decDist)) + "% ";
+    // float dec = currentDEC();
+    // DayTime dt(dec);
+    // int degree = dt.getHours() + (north ? 90 : -90);
+    // Serial.println("DEC: " + String(dec, 4) + " DT: " + String(degree) + " " + String(dt.getMinutes()) + " " + String(dt.getSeconds()));
+    // sprintf(scratchBuffer, "D: %02d@%02d'%02d\" %d%%", degree, dt.getMinutes(), dt.getSeconds(), (int)decDist);
+    sprintf(scratchBuffer, "D: %d%%", (int)decDist);
     disp = String(scratchBuffer);
   }
   else {
@@ -13,7 +45,12 @@ void displayStepperPosition() {
   }
   if (totalRAMove > 0) {
     float raDist = 100.0 - 100.0 * abs(stepperRA.distanceToGo()) / totalRAMove;
-    sprintf(scratchBuffer, "RA: %d%%", (int)raDist);
+    // float ra = currentRA();
+    // DayTime dt(ra);
+    // dt.addTime(HACorrection);
+    // Serial.println("RA: " + String(ra, 4) + " DT: " + dt.ToString());
+    // sprintf(scratchBuffer, "R: %02d@%02d'%02d\" %d%%", dt.getHours(), dt.getMinutes(), dt.getSeconds(), (int)raDist);
+    sprintf(scratchBuffer, "R: %d%%", (int)raDist);
     disp = disp + String(scratchBuffer);
   }
   else {
@@ -108,7 +145,9 @@ void startMoveSteppersToTargetAsync() {
   totalRAMove = 1.0f * abs(stepperRA.distanceToGo());
 }
 
-// Move stepper motors to target (non-blocking)
+// Move stepper motors to target (non-blocking).
+// Returns true if the motor is still running.
+// Returns false when the motors are stopped (reached target).
 bool moveSteppersToTargetAsync() {
   bool stillRunning = false;
   if (stepperDEC.isRunning() || stepperRA.isRunning()) {
