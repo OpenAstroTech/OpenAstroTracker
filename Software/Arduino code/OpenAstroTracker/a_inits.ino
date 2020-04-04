@@ -56,9 +56,6 @@ AccelStepper stepperDEC(HALFSTEP, motorPin11, motorPin13, motorPin12, motorPin14
 // Use another AccelStepper to run the RA motor as well. This instance tracks earths rotation.
 AccelStepper stepperTRK(HALFSTEP, motorPin1, motorPin3, motorPin2, motorPin4);
 
-// Use another AccelStepper to run the RA motor as well for use with Stellarium... hmmmm....
-AccelStepper stepperGUIDE(HALFSTEP, motorPin1, motorPin3, motorPin2, motorPin4);
-
 String inString = "";
 
 bool inStartup = true;        // Start with a guided startup
@@ -66,6 +63,7 @@ bool inStartup = true;        // Start with a guided startup
 // Serial control variables
 bool inSerialControl = false; // When the serial port is in control
 bool serialIsSlewing = false; // When the serial port is slewing the tracker
+bool slewingToHome = false;   // When the serial port is slewing to home/park.
 bool quitSerialOnNextButtonRelease = false; // Used to detect SELECT button to quit Serial mode.
 String logString;
 boolean isPulseGuiding = true;

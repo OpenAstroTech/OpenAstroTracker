@@ -24,6 +24,7 @@ void processControlKeys(int key) {
         // Leaving Control Menu, so set stepper motor positions to zero.
         stepperRA.setCurrentPosition(0);
         stepperDEC.setCurrentPosition(0);
+        stepperTRK.setCurrentPosition(0);
       }
 
       // Set flag to prevent resetting zero point when moving over the menu items

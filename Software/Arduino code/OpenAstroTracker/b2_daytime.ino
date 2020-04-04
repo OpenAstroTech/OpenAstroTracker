@@ -35,6 +35,14 @@ class DayTime {
       hours = (int)(ms % 24);
     }
 
+    DayTime(float timeInHours) {
+      hours = floor(timeInHours);
+      timeInHours = (timeInHours - hours) * 60;
+      mins = floor(timeInHours);
+      timeInHours = (timeInHours - mins) * 60;
+      secs = floor(timeInHours);
+    }
+
     int getHours() {
       return hours;
     }
