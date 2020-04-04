@@ -78,5 +78,5 @@ int s = 25;
 // #define LCD_BUTTON_TEST
 
 
-// Started at 26044 and 1362
+// Started at 25672 and 1312  -- with f_serial
 // finished at 23830 and 1111 -- without f_serial.
