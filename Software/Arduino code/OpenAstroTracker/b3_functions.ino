@@ -72,106 +72,24 @@ void log(String input) {
   Serial.println(input);
   Serial.flush();
 }
-
-void logv(const char* input, ...) {
-  va_list argp;
-  va_start(argp, input);
-  Serial.println(formatArg(input, argp));
-  Serial.flush();
-  va_end(argp);
-
-}
-//String formatRA(DayTime ratime) {
-//  return String(ratime.ToString());
-//}
-
-String format(const char* input, ...) {
-  va_list argp;
-  va_start(argp, input);
-  String ret = formatArg(input, argp);
-  va_end(argp);
-  return ret;
-}
-
-String formatArg(const char* input, va_list args) {
-  char achBuffer[255];
-  char*p = achBuffer;
-
-  for (const char* i = input; *i != 0; i++) {
-    if (*i != '%') {
-      *p++ = *i;
-      continue;
-    }
-    i++;
-    switch (*i) {
-      case '%': {
-          *p++ = '%';
-        }
-        break;
-
-      case 'c': {
-          char *ch = va_arg(args, char*);
-          *p++ = *ch;
-        }
-        break;
-
-      case 's': {
-          char* s = va_arg(args, char*);
-          strcpy(p, s);
-          p += strlen(s);
-        }
-        break;
-
-      case 'd': {
-          String s = String((int)va_arg(args, int));
-          strcpy(p, s.c_str());
-          p += s.length();
-        }
-        break;
-
-      case 'l': {
-          String s = String((long)va_arg(args, long));
-          strcpy(p, s.c_str());
-          p += s.length();
-        }
-        break;
-
-      case 'f': {
-          float num = (float)va_arg(args, double);
-          String s = String(num, 4);
-          strcpy(p, s.c_str());
-          p += s.length();
-        }
-        break;
-
-      default: {
-          *p++ = *i;
-        }
-        break;
-    }
-  }
-
-  *p = '\0';
-  return String(achBuffer);
-}
 #endif
 
-String formatRA(DayTime* ratime, int act = -1); // The Arduino IDEs auto generation does not handle custom datatypes 
+String formatRA(DayTime* ratime, int act = -1); // The Arduino IDEs auto generation does not handle custom datatypes
 String formatRA(DayTime* ratime, int act = -1) {
-  sprintf(current_RA, " %02dh %02dm %02ds", ratime->getHours(), ratime->getMinutes(), ratime->getSeconds());
-  switch (act){
-    case 0: current_RA[0]='>'; break;
-    case 1: current_RA[4]='>'; break;
-    case 2: current_RA[8]='>'; break;
+  sprintf(scratchBuffer, " %02dh %02dm %02ds", ratime->getHours(), ratime->getMinutes(), ratime->getSeconds());
+  switch (act) {
+    case 0: scratchBuffer[0] = GREATER_THAN; break;
+    case 1: scratchBuffer[4] = GREATER_THAN; break;
+    case 2: scratchBuffer[8] = GREATER_THAN; break;
   }
-  return String(current_RA);
+  return String(scratchBuffer);
 }
 String formatDEC(int degree, int minute, int second, int act = -1) {
-  sprintf(current_DEC, "%c%02d@ %02d' %02d\"", degree > 0 ? '+' : '-', int(fabs(degree)), minute, second);
-  switch (act){
-    case 0: current_DEC[0]='>'; break;
-    case 1: current_DEC[4]='>'; break;
-    case 2: current_DEC[8]='>'; break;
+  sprintf(scratchBuffer, "%c%02d@ %02d' %02d\"", degree > 0 ? '+' : '-', int(fabs(degree)), minute, second);
+  switch (act) {
+    case 0: scratchBuffer[0] = GREATER_THAN; break;
+    case 1: scratchBuffer[4] = GREATER_THAN; break;
+    case 2: scratchBuffer[8] = GREATER_THAN; break;
   }
-  return String(current_DEC);
+  return String(scratchBuffer);
 }

@@ -25,6 +25,16 @@ class DayTime {
       secs = s;
     }
 
+    // From milliseconds. Does not handle days!
+    DayTime(long ms) {
+      ms /= 1000; // seconds
+      secs = (int)(ms % 60);
+      ms = (ms - secs) / 60;
+      mins = (int)(ms % 60);
+      ms = (ms - mins) / 60;
+      hours = (int)(ms % 24);
+    }
+
     int getHours() {
       return hours;
     }

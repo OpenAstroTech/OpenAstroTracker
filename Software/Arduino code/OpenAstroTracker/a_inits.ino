@@ -1,10 +1,9 @@
 // If you really want to look through this code, i apologise for my terrible coding
 //#include <SoftwareSerial.h>
-#include <stdarg.h>
 #include <EEPROM.h>
 #include <AccelStepper.h>
 #include <LiquidCrystal.h>
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
 
 #define HALFSTEP 8
 #define FULLSTEP 4
@@ -42,6 +41,12 @@
 #define POI_Menu 8
 #define Status_Menu 9
 
+// How many menu items at most?
+#define MAXMENUITEMS 10
+
+#define LESS_THAN 0x3C
+#define GREATER_THAN 0x3E
+
 // Stepper control for RA and DEV.
 // TRK is used for live tracking and runs in parallel with RA.
 // GUIDE is used for Stellarium control
@@ -66,12 +71,10 @@ String logString;
 boolean isPulseGuiding = true;
 
 // Display related variables
-int displayLoopsToSkip = 400;  // Update the LCD every 400 iterations (perf issue)
-int displaySkipsLeft = 0;    // How many loop cycles left before updating the display
+#define DISPLAY_UPDATE_TIME 150 // Every how many milliseconds to update the RA and DEC coordinates while (slewing)
+long lastDisplayUpdate = 0;  // The time when we last updated RA and DEC coordinates (while slewing)
 float totalDECMove = 0;      // The number of DEC steps we asked for
 float totalRAMove = 0;
-int leftArrow = 3;           // LCD special chars
-int rightArrow = 4;          // LCD special chars
 
 // Calibration variables
 float inputcal;              // calibration variable set form as integer. Added to speed after dividing by 10000
@@ -79,14 +82,14 @@ float speedCalibration;      // speed calibration factor
 int calDelay = 150;          // The current delay in ms when changing calibration value. The longer a button is depressed, the smaller this gets.
 
 // Variables for use in the CONTROL menu
-bool inControlMode = false;  // Is manual control enabled
-int StateMaskDEC = 0x0011;   // Is the DEC stepper running?
-int StateMaskUp = 0x0001;    // Is the DEC stepper moving upwards?
-int StateMaskDown = 0x0010;  // Is the DEC stepper moving downwards?
-int StateMaskRA = 0x1100;    // Is the RA stepper running?
-int StateMaskLeft = 0x0100;  // Is the RA stepper moving left (CW)?
-int StateMaskRight = 0x1000; // Is the RA stepper moving right (CCW)?
-int controlState = 0x0000;   // The current state of the steppers (combination of above values)
+bool inControlMode  = false;  // Is manual control enabled
+byte StateMaskDEC   = B0011;   // Is the DEC stepper running?
+byte StateMaskUp    = B0001;    // Is the DEC stepper moving upwards?
+byte StateMaskDown  = B0010;  // Is the DEC stepper moving downwards?
+byte StateMaskRA    = B1100;    // Is the RA stepper running?
+byte StateMaskLeft  = B0100;  // Is the RA stepper moving left (CW)?
+byte StateMaskRight = B1000; // Is the RA stepper moving right (CCW)?
+byte controlState   = B0000;   // The current state of the steppers (combination of above values)
 
 // Main loop variables
 int lcd_key     = 0;         // The current key state
@@ -96,6 +99,7 @@ int lastKey = btnNONE;       // The key state when we last came through the loop
 
 // Global variables
 bool isUnreachable = false;
+char scratchBuffer[32];
 
 unsigned long Zeit;
 
@@ -133,8 +137,6 @@ int RAheat = 0;   // Are we heating the RA stepper?
 int DECheat = 0;  // Are we heating the DEC stepper?
 
 // Stellarium variables
-char current_RA[16];
-char current_DEC[16];
 int HAh_save;
 int HAm_save;
 float slew_RA;

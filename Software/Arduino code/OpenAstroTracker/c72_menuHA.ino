@@ -46,10 +46,7 @@ void processHAKeys(int key) {
 }
 
 void printHASubmenu() {
-  if (HAselect == 0) {
-    lcdMenu.printMenuArg(">%dh %dm", HATime.getHours(), HATime.getMinutes());
-  }
-  if (HAselect == 1) {
-    lcdMenu.printMenuArg(" %dh>%dm", HATime.getHours(), HATime.getMinutes());
-  }
+  sprintf(scratchBuffer, " %02dh %02dm", HATime.getHours(), HATime.getMinutes());
+  scratchBuffer[HAselect * 4] = '>';
+  lcdMenu.printMenu(scratchBuffer);
 }

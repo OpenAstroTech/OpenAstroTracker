@@ -1,11 +1,11 @@
 struct PointOfInterest {
   char* pDisplay;
-  int hourRA;
-  int minRA;
-  int secRA;
-  int degreeDEC;
-  int minDEC;
-  int secDEC;
+  byte hourRA;
+  byte minRA;
+  byte secRA;
+  byte degreeDEC;
+  byte minDEC;
+  byte secDEC;
 };
 
 PointOfInterest pointOfInterest[] = {
@@ -29,7 +29,7 @@ void processPOIKeys(int key) {
           stopSteppers();
           PointOfInterest* poi = &pointOfInterest[currentPOI];
           RATime.set(poi->hourRA, poi->minRA, poi->secRA);
-          degreeDEC = poi->degreeDEC - (north ? 90 : -90); // iternal DEC degree is 0 at celestial poles
+          degreeDEC = poi->degreeDEC - (north ? 90 : -90); // internal DEC degree is 0 at celestial poles
           minDEC = poi->minDEC;
           secDEC = poi->secDEC;
 

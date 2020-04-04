@@ -38,13 +38,13 @@ void handleMeadeGetInfo(String inCmd) {
       }
       break;
     case 'r': {
-        sprintf(current_RA, "%02d:%02d:%02d#", RADisplayTime.getHours(), RADisplayTime.getMinutes(), RADisplayTime.getSeconds());
-        Serial.print(current_RA);
+        sprintf(scratchBuffer, "%02d:%02d:%02d#", RADisplayTime.getHours(), RADisplayTime.getMinutes(), RADisplayTime.getSeconds());
+        Serial.print(scratchBuffer);
       }
       break;
     case 'd': {
-        sprintf(current_DEC, "%c%02d*%02d'%02d#", printdegDEC > 0 ? '+' : '-', int(fabs(printdegDEC)), int(minDEC), int(secDEC));
-        Serial.print(current_DEC);
+        sprintf(scratchBuffer, "%c%02d*%02d'%02d#", printdegDEC > 0 ? '+' : '-', int(fabs(printdegDEC)), int(minDEC), int(secDEC));
+        Serial.print(scratchBuffer);
       }
       break;
   }
@@ -129,17 +129,17 @@ void handleMeadeHome(String inCmd) {
 // QUIT
 /////////////////////////////
 void handleMeadeQuit(String inCmd) {
-
-  // Hard quit extension stops motors for :Q# command, but not for :Qq#
+  // :Q# stops a motors - remains in Control mode
+  // :Qq# command does not stop motors, but quits Control mode
   if ((inCmd.length() == 0) || (inCmd[0] != 'q'))  {
     stopSteppers();
+  } else {
+    inSerialControl = false;
+    lcdMenu.setCursor(0, 0);
+    lcdMenu.updateDisplay();
   }
 
   serialIsSlewing = false;
-  inSerialControl = false;
-
-  lcdMenu.setCursor(0, 0);
-  lcdMenu.updateDisplay();
 }
 
 ////////////////////////////////////////////////
@@ -226,8 +226,8 @@ void serialEvent() {
       RATime.set(args[0], args[1], args[2]);
       doCalculations();
       lcdMenu.setCursor(0, 1);
-      sprintf(current_RA, "%02d:%02d:%02d", RADisplayTime.getHours(), RADisplayTime.getMinutes(), RADisplayTime.getSeconds());
-      lcdMenu.printMenu("RA : " + String(current_RA));
+      sprintf(scratchBuffer, "%02d:%02d:%02d", RADisplayTime.getHours(), RADisplayTime.getMinutes(), RADisplayTime.getSeconds());
+      lcdMenu.printMenu("RA : " + String(scratchBuffer));
       //ShowStatusMessage();
       handleDECandRACalculations();
       startMoveSteppersToTargetAsync() ;
@@ -410,15 +410,15 @@ void serialEvent() {
       // Stellarium stuff--------------------------------------------------
 
       if (inCmd == ":GR") {
-      sprintf(current_RA, "%02d:%02d:%02d", RADisplayTime.getHours(), RADisplayTime.getMinutes(), RADisplayTime.getSeconds());
-      Serial.print(current_RA);
+      sprintf(scratchBuffer, "%02d:%02d:%02d", RADisplayTime.getHours(), RADisplayTime.getMinutes(), RADisplayTime.getSeconds());
+      Serial.print(scratchBuffer);
       Serial.print("#");
       //inCmd = "";
       }
 
       if (inCmd == ":GD") {
-      sprintf(current_DEC, "%c%02d*%02d:%02d", ' + ', int(printdegDEC), int(minDEC), int(secDEC));
-      Serial.print(current_DEC);
+      sprintf(scratchBuffer, "%c%02d*%02d:%02d", ' + ', int(printdegDEC), int(minDEC), int(secDEC));
+      Serial.print(scratchBuffer);
       //Serial.print("+80*00#");
       Serial.print("#");
       //inCmd = "";

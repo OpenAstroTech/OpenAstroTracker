@@ -14,7 +14,7 @@
 
   =======================================================================================================================================
 */
-String version = "V1.5.21";
+String version = "V1.5.23";
 
 boolean north = true;    // change this to 'false' if youre in the southern hemisphere
 
