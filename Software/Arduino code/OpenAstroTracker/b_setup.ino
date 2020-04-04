@@ -1,11 +1,13 @@
 // Create the LCD menu variable and initialize the LCD (16x2 characters)
-LcdMenu lcdMenu(16, 2);
+LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 
 // Create the variables to track RA time, RA display time and HA time
-DayTime RATime;
-DayTime RADisplayTime;
-DayTime HATime;
-DayTime HACorrection;
+//DayTime RATime;
+//DayTime RADisplayTime;
+//DayTime HATime;
+//DayTime HACorrection;
+
+Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
 
 void setup() {
 
@@ -13,9 +15,12 @@ void setup() {
   Serial.begin(57600);
   //BT.begin(9600);
 
-#ifdef DEBUG_MODE
-  log("Hello World!");
-#endif
+  // Show a splash screen
+  lcdMenu.setCursor(0, 0);
+  lcdMenu.printMenu("OpenAstroTracker");
+  lcdMenu.setCursor(0, 1);
+  lcdMenu.printMenu("     " + version);
+  unsigned long now = millis();
 
   // Not sure if this is neeeded
   pinMode(A1, OUTPUT);
@@ -23,27 +28,24 @@ void setup() {
   pinMode(A3, OUTPUT);
   pinMode(A4, OUTPUT);
 
-  // Configure stepper limits
-  stepperRA.setMaxSpeed(RAspeed);
-  stepperRA.setAcceleration(RAacceleration);
-  stepperDEC.setMaxSpeed(DECspeed);
-  stepperDEC.setAcceleration(DECacceleration);
-  stepperTRK.setMaxSpeed(10);
-  stepperTRK.setAcceleration(2500);
+  // Configure the mount
+  // Set the global HA correction
+  mount.setHACorrection(h, m, s);
+  
+  // Set the stepper motor parameters
+  mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);
+  mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
 
-  // Read persisted values
+  // Read persisted values adn set in mount
   inputcal = EEPROM.read(0);
-  speedCalibration = speed + inputcal / 10000;
-  HATime = DayTime(EEPROM.read(1), EEPROM.read(2), 0);
-  HACorrection.set(HATime);
-  HACorrection.addTime(-h, -m, -s);
-  lastHAset = millis();
+  DayTime haTime = DayTime(EEPROM.read(1), EEPROM.read(2), 0);
+  mount.setSpeedCalibration(speed + inputcal / 10000);
+  mount.setHA(haTime);
+  
+  // Start the tracker.
+  mount.startSlewing(TRACKING);
 
-#ifdef DEBUG_MODE
-  logv("HATime = %s", HATime.ToString().c_str());
-#endif
-
-  // Create the menu items
+  // Create the LCD top-level menu items
   lcdMenu.addItem("RA", RA_Menu);
   lcdMenu.addItem("DEC", DEC_Menu);
   lcdMenu.addItem("POI", POI_Menu);
@@ -56,13 +58,7 @@ void setup() {
   lcdMenu.addItem("CAL", Calibration_Menu);
   lcdMenu.addItem("INFO", Status_Menu);
 
-  // Show a splash screen
-  lcdMenu.setCursor(0, 0);
-  lcdMenu.printMenu("OpenAstroTracker");
-  lcdMenu.setCursor(0, 1);
-  lcdMenu.printMenu("     " + version);
-  delay(1750);
-
-  doCalculations();
-  stepperTRK.setSpeed(trackingSpeed);
+  while (millis()-now <750){
+    mount.loop();
+  }
 }

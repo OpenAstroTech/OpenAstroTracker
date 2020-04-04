@@ -1,4 +1,3 @@
-bool movingToTarget = false;
 
 void processRAKeys(int key)
 {
@@ -6,12 +5,9 @@ void processRAKeys(int key)
   {
     case btnUP:
       {
-        if (RAselect == 0)
-          RATime.addHours(1);
-        if (RAselect == 1)
-          RATime.addMinutes(1);
-        if (RAselect == 2)
-          RATime.addSeconds(1);
+        if (RAselect == 0) mount.targetRA().addHours(1);
+        if (RAselect == 1) mount.targetRA().addMinutes(1);
+        if (RAselect == 2) mount.targetRA().addSeconds(1);
 
         // slow down key repetitions
         delay(150);
@@ -21,12 +17,9 @@ void processRAKeys(int key)
 
     case btnDOWN:
       {
-        if (RAselect == 0)
-          RATime.addHours(-1);
-        if (RAselect == 1)
-          RATime.addMinutes(-1);
-        if (RAselect == 2)
-          RATime.addSeconds(-1);
+        if (RAselect == 0) mount.targetRA().addHours(-1);
+        if (RAselect == 1) mount.targetRA().addMinutes(-1);
+        if (RAselect == 2) mount.targetRA().addSeconds(-1);
 
         // slow down key repetitions
         delay(150);
@@ -40,15 +33,13 @@ void processRAKeys(int key)
       }
       break;
 
-    case btnSELECT:
-      {
-        if (movingToTarget) {
-          stopSteppers();
+    case btnSELECT: {
+        if (mount.isSlewingRAorDEC()) {
+          mount.stopSlewing(ALL_DIRECTIONS);
+          mount.waitUntilStopped(ALL_DIRECTIONS);
         }
-        else {
-          startMoveSteppersToTargetAsync();
-        }
-        movingToTarget = !movingToTarget ;
+
+        mount.startSlewingToTarget();
       }
       break;
 
@@ -58,17 +49,11 @@ void processRAKeys(int key)
       }
       break;
   }
-
-  if (movingToTarget) {
-    if (!moveSteppersToTargetAsync()) {
-      movingToTarget = false;
-    }
-  }
 }
 
 void printRASubmenu() {
-  if (!movingToTarget) {
-    lcdMenu.printMenu(formatRA(&RADisplayTime, RAselect));
+  if (mount.isSlewingIdle()) {
+    lcdMenu.printMenu(mount.RAString(LCDMENU_STRING | TARGET_STRING, RAselect));
   }
 }
 

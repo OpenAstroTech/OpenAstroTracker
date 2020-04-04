@@ -27,8 +27,10 @@ void loop() {
 
 #endif
 
-  lcdMenu.setCursor(0, 1);
+  // Give the mount a time slice to do its thing...
+  mount.loop();
 
+  lcdMenu.setCursor(0, 1);
   lcd_key = read_LCD_buttons();
 
   if (inSerialControl) {
@@ -36,10 +38,10 @@ void loop() {
       quitSerialOnNextButtonRelease = true;
     }
     else if ((lcd_key == btnNONE) && quitSerialOnNextButtonRelease)  {
-      handleMeadeQuit("q#");
+      //      handleMeadeQuit("q#");
       quitSerialOnNextButtonRelease = false;
     }
-    serialLoop();
+    //    serialLoop();
   }
   else {
     waitForButtonRelease = true;
@@ -51,11 +53,9 @@ void loop() {
     else {
       switch (lcdMenu.getActive()) {
         case RA_Menu:
-          handleDECandRACalculations();
           processRAKeys(lcd_key);
           break;
         case DEC_Menu:
-          handleDECandRACalculations();
           processDECKeys(lcd_key);
           break;
         case POI_Menu:
@@ -85,12 +85,9 @@ void loop() {
     if (waitForButtonRelease && (lcd_key != btnNONE)) {
       while (read_LCD_buttons() != btnNONE) {
         // Make sure tracker can still run while fiddling with menus....
-        runTracker();
+        mount.loop();
       }
     }
-
-    doCalculations();
-    runTracker();
 
     lcdMenu.setCursor(0, 1);
 

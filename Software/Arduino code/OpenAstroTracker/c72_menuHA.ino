@@ -1,8 +1,11 @@
 void processHAKeys(int key) {
   switch (key) {
     case btnUP: {
-        if (HAselect == 0) HATime.addHours(1);
-        if (HAselect == 1) HATime.addMinutes(1);
+        DayTime ha(mount.HA());
+        if (HAselect == 0) ha.addHours(1);
+        if (HAselect == 1) ha.addMinutes(1);
+        mount.setHA(ha);
+
         // slow down key repetitions
         delay(150);
         waitForButtonRelease = false;
@@ -10,8 +13,10 @@ void processHAKeys(int key) {
       break;
 
     case btnDOWN: {
-        if (HAselect == 0) HATime.addHours(-1);
-        if (HAselect == 1) HATime.addMinutes(-1);
+        DayTime ha(mount.HA());
+        if (HAselect == 0) ha.addHours(-1);
+        if (HAselect == 1) ha.addMinutes(-1);
+        mount.setHA(ha);
 
         // slow down key repetitions
         delay(150);
@@ -26,12 +31,8 @@ void processHAKeys(int key) {
 
     case btnSELECT:
     case btnRIGHT: {
-        EEPROM.update(1, HATime.getHours());
-        EEPROM.update(2, HATime.getMinutes());
-        HACorrection.set(HATime);
-        HACorrection.addTime(-h, -m, -s);
-
-        lastHAset = millis();
+        EEPROM.update(1, mount.HA().getHours());
+        EEPROM.update(2, mount.HA().getMinutes());
 
         if (startupState == StartupWaitForHACompletion) {
           startupState = StartupHAConfirmed;
@@ -46,7 +47,8 @@ void processHAKeys(int key) {
 }
 
 void printHASubmenu() {
-  sprintf(scratchBuffer, " %02dh %02dm", HATime.getHours(), HATime.getMinutes());
+  char scratchBuffer[20];
+  sprintf(scratchBuffer, " %02dh %02dm", mount.HA().getHours(), mount.HA().getMinutes());
   scratchBuffer[HAselect * 4] = '>';
   lcdMenu.printMenu(scratchBuffer);
 }

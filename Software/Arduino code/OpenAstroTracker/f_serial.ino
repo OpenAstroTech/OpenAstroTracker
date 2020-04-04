@@ -1,3 +1,9 @@
+/*
+ * 
+
+// Serial control variables
+bool serialIsSlewing = false; // When the serial port is slewing the tracker
+bool slewingToHome = false;   // When the serial port is slewing to home/park.
 bool parking = false;
 
 void startSlewing() {
@@ -214,3 +220,4 @@ void serialEvent() {
     logString = logString.substring(1000);
   }
 }
+*/

@@ -26,28 +26,11 @@ void processPOIKeys(int key) {
   switch (key) {
     case btnSELECT: {
         if (lastKey != btnSELECT) {
-          stopSteppers();
+          mount.stopSlewing(ALL_DIRECTIONS);
           PointOfInterest* poi = &pointOfInterest[currentPOI];
-          RATime.set(poi->hourRA, poi->minRA, poi->secRA);
-          degreeDEC = poi->degreeDEC - (north ? 90 : -90); // internal DEC degree is 0 at celestial poles
-          minDEC = poi->minDEC;
-          secDEC = poi->secDEC;
-
-          // Calculate the target stepper positions
-          handleDECandRACalculations();
-
-          if (isUnreachable) {
-            ShowStatusMessage("Unreachable...");
-          }
-          else {
-            // Calculate total steps needed
-            startMoveSteppersToTargetAsync();
-            if (!stepperRA.isRunning() && !stepperDEC.isRunning()) {
-              ShowStatusMessage("Already there..");
-            } else {
-              poiMoving = true;
-            }
-          }
+          mount.targetRA().set(poi->hourRA, poi->minRA, poi->secRA);
+          mount.targetDEC().set(poi->degreeDEC - (NORTHERN_HEMISPHERE ? 90 : -90), poi->minDEC, poi->secDEC); // internal DEC degree is 0 at celestial poles
+          mount.startSlewingToTarget();
         }
       }
       break;
@@ -64,25 +47,16 @@ void processPOIKeys(int key) {
       break;
 
     case btnRIGHT: {
-        stopSteppers();
-        poiMoving = false;
         lcdMenu.setNextActive();
       }
       break;
   }
 
   lastKey = key;
-  if (poiMoving) {
-    if (!moveSteppersToTargetAsync()) {
-      poiMoving = false;
-    }
-  }
 }
 
 void printPOISubmenu() {
-  if (poiMoving) {
-  }
-  else {
+  if (mount.isSlewingIdle()) {
     lcdMenu.printMenu(pointOfInterest[currentPOI].pDisplay);
   }
 }

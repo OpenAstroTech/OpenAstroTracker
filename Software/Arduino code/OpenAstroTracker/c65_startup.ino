@@ -22,7 +22,6 @@ void startupIsCompleted() {
 
   // Start on the RA menu
   lcdMenu.setActive(RA_Menu);
-  lcdMenu.setCursor(0, 0);
   lcdMenu.updateDisplay();
 }
 
@@ -64,7 +63,6 @@ void processStartupKeys(int key) {
         lcdMenu.printMenu("Set current HA");
         lcdMenu.setActive(HA_Menu);
         startupState = StartupWaitForHACompletion;
-
       }
       break;
 

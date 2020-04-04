@@ -14,9 +14,9 @@
 
   =======================================================================================================================================
 */
-String version = "V1.5.24";
+String version = "V1.6.00";
 
-boolean north = true;    // change this to 'false' if youre in the southern hemisphere
+// See NORTHERN_HEMISPHERE in Globals.h if you not in the northern hemisphere
 
 // The radius of the surface that the belt runs on (in V1 of the ring) was 168.24mm.
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
@@ -71,7 +71,12 @@ int s = 25;
 // #define DEBUG_MODE
 
 // Uncomment this to support the heating menu
+// NOTE: Heating is currently not supported!
 // #define SUPPORT_HEATING
 
 // Uncomment to run a key diagnostic
 // #define LCD_BUTTON_TEST
+
+
+// Started at 26044 and 1362
+// finished at 23830 and 1111 -- without f_serial.
