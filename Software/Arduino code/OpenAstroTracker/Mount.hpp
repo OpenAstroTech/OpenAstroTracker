@@ -45,6 +45,7 @@ class Mount {
     void setHA(const DayTime & haTime);
     const DayTime& HA() const;
     void setHACorrection(int h, int m, int s);
+    DayTime getHACorrection();
 
     // Get a reference to the target RA value.
     DayTime& targetRA();
@@ -82,10 +83,12 @@ class Mount {
     // Block until the motors specified (NORTH, EAST, TRACKING, etc.) are stopped
     void waitUntilStopped(byte direction);
 
+    // Same as Arduino delay() but keeps the tracker going.
+    void delay(int ms);
 
     // What is the state of the mount
     byte mountStatus();
-#ifdef DEBUG
+#ifdef DEBUG_MODE
     String mountStatusString();
 #endif
 
@@ -121,7 +124,7 @@ class Mount {
 
   private:
     LcdMenu* _lcdMenu;
-    int  _stepsPerRAHour;
+    int  _stepsPerRADegree;
     int _stepsPerDECDegree;
     long _lastHASet;
     DayTime _HAAdjust;
@@ -142,7 +145,7 @@ class Mount {
     float _trackingSpeedCalibration;
     unsigned long _lastDisplayUpdate;
     byte _mountStatus;
-    char scratchBuffer[32];
+    char scratchBuffer[24];
     bool _stepperWasRunning;
 };
 

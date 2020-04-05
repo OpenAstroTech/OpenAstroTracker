@@ -1,49 +1,52 @@
-void processHAKeys(int key) {
-  switch (key) {
-    case btnUP: {
-        DayTime ha(mount.HA());
-        if (HAselect == 0) ha.addHours(1);
-        if (HAselect == 1) ha.addMinutes(1);
-        mount.setHA(ha);
+bool processHAKeys() {
+  byte key;
+  bool waitForRelease = true;
+  if (lcdButtons.currentState() == btnUP)  {
+    DayTime ha(mount.HA());
+    if (HAselect == 0) ha.addHours(1);
+    if (HAselect == 1) ha.addMinutes(1);
+    mount.setHA(ha);
 
-        // slow down key repetitions
-        delay(150);
-        waitForButtonRelease = false;
-      }
-      break;
-
-    case btnDOWN: {
-        DayTime ha(mount.HA());
-        if (HAselect == 0) ha.addHours(-1);
-        if (HAselect == 1) ha.addMinutes(-1);
-        mount.setHA(ha);
-
-        // slow down key repetitions
-        delay(150);
-        waitForButtonRelease = false;
-      }
-      break;
-
-    case btnLEFT: {
-        HAselect = adjustWrap(HAselect, 1, 0, 1);
-      }
-      break;
-
-    case btnSELECT:
-    case btnRIGHT: {
-        EEPROM.update(1, mount.HA().getHours());
-        EEPROM.update(2, mount.HA().getMinutes());
-
-        if (startupState == StartupWaitForHACompletion) {
-          startupState = StartupHAConfirmed;
-          inStartup = true;
-        }
-        else {
-          lcdMenu.setNextActive();
-        }
-      }
-      break;
+    // slow down key repetitions
+    mount.delay(200);
+    waitForRelease = false;
   }
+  else if (lcdButtons.currentState() == btnDOWN)  {
+    DayTime ha(mount.HA());
+    if (HAselect == 0) ha.addHours(-1);
+    if (HAselect == 1) ha.addMinutes(-1);
+    mount.setHA(ha);
+
+    // slow down key repetitions
+    mount.delay(200);
+    waitForRelease = false;
+  } 
+  else if (lcdButtons.keyChanged(key)) {
+    switch (key) {
+
+      case btnLEFT: {
+          HAselect = adjustWrap(HAselect, 1, 0, 1);
+        }
+        break;
+
+      case btnSELECT:
+      case btnRIGHT: {
+          EEPROM.update(1, mount.HA().getHours());
+          EEPROM.update(2, mount.HA().getMinutes());
+
+          if (startupState == StartupWaitForHACompletion) {
+            startupState = StartupHAConfirmed;
+            inStartup = true;
+          }
+          else {
+            lcdMenu.setNextActive();
+          }
+        }
+        break;
+    }
+  }
+
+  return waitForRelease;
 }
 
 void printHASubmenu() {

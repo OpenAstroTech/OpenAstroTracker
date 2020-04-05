@@ -14,7 +14,7 @@
 
   =======================================================================================================================================
 */
-String version = "V1.6.00";
+String version = "V1.6.01";
 
 // See NORTHERN_HEMISPHERE in Globals.h if you not in the northern hemisphere
 
@@ -22,11 +22,13 @@ String version = "V1.6.00";
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
 // RA wheel is 2 x PI x 168.24mm (V2:180mm) circumference = 1057.1mm (V2:1131mm)
 // One RA revolution needs 26.43 (1057.1mm / 40mm) stepper revolutions (V2: 28.27 (1131mm/40mm))
-// Which means 108245 steps (26.43 x 4096) moves 360 degrees (V2: 115812 steps (28.27 x 4096)
+// Which means 108245 steps (26.43 x 4096) moves 360 degrees (V2: 115812 steps (28.27 x 4096))
 // So there are 300.1 steps/degree (108245 / 360)  (V2: 322 (115812 / 360))
+// Theoretical RA tracking speed is 1.246586 (300 x 14.95903 / 3600) (V2 : 1.333800 (322 x 14.95903 / 3600) steps/sec
 
 int RAStepsPerDegree = 300;      // V1 Ring has a ridge that the belt runs on and the ring runs on the bearings
-// int RAStepsPerDegree = 322;      // V2 Ring has belt in a groove and runs on bearings
+// int RAStepsPerDegree = 322;      // V2 Ring has belt in a groove and belt runs on bearings
+
 
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
 // DEC wheel is 2 x PI x 90mm circumference which is 565.5mm
@@ -68,7 +70,7 @@ int s = 25;
 // The same could be done for the DEC coordinates but they dont change significantly for the next 5 years
 
 // Comment this out to save some code space
-// #define DEBUG_MODE
+#define DEBUG_MODE
 
 // Uncomment this to support the heating menu
 // NOTE: Heating is currently not supported!
@@ -80,3 +82,4 @@ int s = 25;
 
 // Started at 25672 and 1312  -- with f_serial
 // finished at 23830 and 1111 -- without f_serial.
+// finished at 23740 and 1117 -- Keyboard class, bug fixes, without f_serial.

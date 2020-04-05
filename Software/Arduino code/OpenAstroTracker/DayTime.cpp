@@ -28,7 +28,7 @@ DayTime::DayTime(long ms) {
   ms = (ms - secs) / 60;
   mins = (int)(ms % 60);
   ms = (ms - mins) / 60;
-  hours = (int)(ms % hourWrap);
+  hours = (int)ms ;
 }
 
 DayTime::DayTime(float timeInHours) {
@@ -73,23 +73,31 @@ void DayTime::set(int h, int m, int s) {
   hours = h;
   mins = m;
   secs = s;
+  checkHours();
 }
 
 void DayTime::set(const DayTime& other) {
   hours = other.hours;
   mins = other.mins;
   secs = other.secs;
+  checkHours();
 }
 
 // Add hours, wrapping days (which are not tracked)
 void DayTime::addHours(int deltaHours) {
   hours += deltaHours;
+  checkHours();
+}
+
+void DayTime::checkHours() {
+  Serial.println("DtIn: "+String(hours));
   while (hours >= hourWrap) {
     hours  -= hourWrap;
   }
   while (hours < 0) {
     hours += hourWrap;
   }
+  Serial.println("DtOut: "+String(hours));
 }
 
 // Add minutes, wrapping hours if needed
@@ -175,16 +183,12 @@ String DayTime::ToString()
 
 
 DegreeTime::DegreeTime(): DayTime() {
-  hourWrap = 90;
+  hourWrap = 180;
 }
 
-DegreeTime::DegreeTime(const DegreeTime& other): DayTime(other) {}
+DegreeTime::DegreeTime(const DegreeTime& other): DayTime(other) { }
 DegreeTime::DegreeTime(int h, int m, int s) : DayTime(h, m, s) { }
-DegreeTime::DegreeTime(float inDegrees) : DayTime(inDegrees) {}
-
-void DegreeTime::addHours(int deltaHours) {
-  hours = NORTHERN_HEMISPHERE ? adjustClamp(hours, deltaHours, -180, 0) : adjustClamp(hours, deltaHours, 0, 180);
-}
+DegreeTime::DegreeTime(float inDegrees) : DayTime(inDegrees) { }
 
 void DegreeTime::addDegrees(int deltaDegrees) {
   addHours(deltaDegrees);
@@ -200,4 +204,16 @@ int DegreeTime::getPrintDegrees() {
 
 float DegreeTime::getTotalDegrees() {
   return getTotalHours();
+}
+
+void DegreeTime::checkHours() {
+  if (NORTHERN_HEMISPHERE) {
+    Serial.println("DgIn: "+String(hours));
+    if (hours > 0) hours = 0;
+    if (hours < -180) hours = -180;
+    Serial.println("DgOut: "+String(hours));
+  } else {
+    if (hours > 180) hours = 180;
+    if (hours < 0) hours = 0;
+  }
 }

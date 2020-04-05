@@ -34,19 +34,20 @@ char* formatStringsDEC[] = {
 
 char* formatStringsRA[] = {
   "",
-  " %02d@ %02d' %02d\"",    // LCD Menu w/ cursor
+  " %02dh %02dm %02ds",     // LCD Menu w/ cursor
   "%02d:%02d:%02d#",        // Meade
   "%02dh %02dm %02ds",      // Print
-  "%02d@%02d'%02d\"",       // LCD display only
+  "%02dh%02dm%02ds",        // LCD display only
 };
 
+const float siderealDegreesInHour = 14.95902778;
 /////////////////////////////////
 //
 // CTOR
 //
 /////////////////////////////////
-Mount::Mount(int stepsPerRAHour, int stepsPerDECDegree, LcdMenu* lcdMenu) {
-  _stepsPerRAHour = stepsPerRAHour;
+Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
+  _stepsPerRADegree = stepsPerRADegree;
   _stepsPerDECDegree = stepsPerDECDegree;
   _lcdMenu = lcdMenu;
   _mountStatus = 0;
@@ -94,8 +95,8 @@ void Mount::setSpeedCalibration(float val) {
   _trackingSpeedCalibration = val;
 
   // The tracker simply needs to rotate at 15degrees/hour, adjusted for sidereal
-  // time (i.e. the 15degrees is per 23h56m04s. 86164s/86400 = 0.99726852. 3590/3600 is the same ratio).
-  _trackingSpeed = _trackingSpeedCalibration * _stepsPerRAHour * 14.95903 / 3600.0f;
+  // time (i.e. the 15degrees is per 23h56m04s. 86164s/86400 = 0.99726852. 3590/3600 is the same ratio) So we only go 15 x 0.99726852 in an hour.
+  _trackingSpeed = _trackingSpeedCalibration * _stepsPerRADegree * siderealDegreesInHour / 3600.0f;
 }
 
 /////////////////////////////////
@@ -119,6 +120,14 @@ void Mount::setHACorrection(int h, int m, int s) {
   _HAAdjust.set(h, m, s);
 }
 
+/////////////////////////////////
+//
+// getHACorrection
+//
+/////////////////////////////////
+DayTime Mount::getHACorrection() {
+  return _HAAdjust;
+}
 /////////////////////////////////
 //
 // HA
@@ -155,18 +164,11 @@ DegreeTime& Mount::targetDEC() {
 /////////////////////////////////
 // Get current RA value.
 const DayTime Mount::currentRA() const {
-  float targetRA = _targetRA.getTotalHours();
-  // Serial.print("TargetRA: " + String(targetRA, 4));
-  if (!_stepperRA->isRunning()) {
-    return targetRA;
-  }
-  float degreesToGo = 1.0 * _stepperRA->distanceToGo() / _stepsPerRAHour;
-  // Serial.print("  Deg2Go: " + String(degreesToGo , 4));
-  float hoursToGo = degreesToGo / 15.0;
-  // Serial.print("  Hrs2Go: " + String(hoursToGo , 4));
-  float currentHour = targetRA - hoursToGo;
-  // Serial.println("  CurHrs: " + String(currentHour, 4));
-  return currentHour;
+  // there are twice as many steps since this motor is being half-stepped.
+  // It's negative because the motor coordinates increase CCW
+  float raPosDegrees = -2.0 * _stepperRA->currentPosition() / _stepsPerRADegree;
+  float raPos = raPosDegrees / siderealDegreesInHour;
+  return raPos;
 }
 
 /////////////////////////////////
@@ -176,16 +178,9 @@ const DayTime Mount::currentRA() const {
 /////////////////////////////////
 // Get current DEC value.
 const DegreeTime Mount::currentDEC() const {
-  float targetDEC = _targetDEC.getTotalDegrees();
-  // Serial.print("TargetDEC: " + String(targetDEC, 4));
-  if (!_stepperDEC->isRunning()) {
-    return targetDEC;
-  }
-  float degreesToGo = 1.0 * _stepperDEC->distanceToGo() / _stepsPerDECDegree;
-  // Serial.print("  Deg2Go: " + String(degreesToGo , 4));
-  float currentDegree = targetDEC - degreesToGo;
-  // Serial.println("  CurDeg: " + String(currentDegree, 4));
-  return currentDegree;
+  float decPosDegrees = 1.0 * _stepperDEC->currentPosition() / _stepsPerDECDegree;
+//  return NORTHERN_HEMISPHERE ? 90 - decPosDegrees : 90 + decPosDegrees ;
+  return decPosDegrees;
 }
 
 /////////////////////////////////
@@ -200,8 +195,8 @@ void Mount::startSlewingToTarget() {
   // Calculate new RA stepper target (and DEC)
   calculateRAandDECSteppers();
   _mountStatus |= STATUS_SLEWING | STATUS_SLEWING_TO_TARGET;
-  _totalDECMove = 1.0f * abs(_stepperDEC->distanceToGo());
-  _totalRAMove = 1.0f * abs(_stepperRA->distanceToGo());
+  _totalDECMove = 1.0f * _stepperDEC->distanceToGo();
+  _totalRAMove = 1.0f * _stepperRA->distanceToGo();
   // Serial.println("StSlew2Trgt: M " + String(_mountStatus) + " Totals: R" + String(_totalRAMove) + "D" + String(_totalDECMove));
 }
 
@@ -214,7 +209,7 @@ byte Mount::mountStatus() {
   return _mountStatus;
 }
 
-#ifdef DEBUG
+#ifdef DEBUG_MODE
 /////////////////////////////////
 //
 // mountStatusString
@@ -231,7 +226,7 @@ String Mount::mountStatusString() {
   if (_mountStatus & STATUS_SLEWING_FREE) disp += "FR ";
 
   if (_mountStatus & STATUS_SLEWING) {
-    byte slew = slewingStatus();
+    byte slew = slewStatus();
     if (slew & SLEWING_RA) disp += " SRA ";
     if (slew & SLEWING_DEC) disp += " SDEC ";
     if (slew & SLEWING_TRACKING) disp += " STRK ";
@@ -324,7 +319,7 @@ bool Mount::isParked() {
 // Starts manual slewing in one of eight directions or tracking
 /////////////////////////////////
 void Mount::startSlewing(int direction) {
-  // Serial.println("StrtSlew! " + String(direction));
+  //Serial.println("StrtSlew: > " + String(direction) + " " + mountStatusString());
   if (direction & TRACKING) {
     _stepperTRK->setSpeed(_trackingSpeed);
 
@@ -341,15 +336,15 @@ void Mount::startSlewing(int direction) {
       _mountStatus |= STATUS_SLEWING;
     }
     if (direction & EAST ) {
-      _stepperRA->moveTo(30000);
-      _mountStatus |= STATUS_SLEWING;
-    }
-    if (direction & WEST) {
       _stepperRA->moveTo(-30000);
       _mountStatus |= STATUS_SLEWING;
     }
+    if (direction & WEST) {
+      _stepperRA->moveTo(30000);
+      _mountStatus |= STATUS_SLEWING;
+    }
   }
-  // Serial.println("StrtSlew: M " + String(_mountStatus));
+  //Serial.println("StrtSlew: < " + mountStatusString());
 }
 
 /////////////////////////////////
@@ -359,30 +354,24 @@ void Mount::startSlewing(int direction) {
 // Stop manual slewing in one of two directions or Tracking. NS is the same. EW is the same
 /////////////////////////////////
 void Mount::stopSlewing(int direction) {
-  // Serial.println("StpSlw: " + String(direction));
+  //Serial.println("StopSlw: > " + String(direction) + " " + mountStatusString());
   if (direction & TRACKING) {
+    //Serial.println("StpSlw: TRK OFF");
     // Turn off tracking
     _mountStatus &= ~STATUS_TRACKING;
     _stepperTRK->stop();
-    // Serial.println("StpSlw: trk");
   }
 
   if ((direction & (NORTH | SOUTH)) != 0)  {
     _stepperDEC->stop();
-    // Serial.println("StpSlw: DEC " + String(_mountStatus));
+    //Serial.println("StpSlw: DEC OFF");
   }
   if ((direction & (WEST | EAST)) != 0)  {
     _stepperRA->stop();
-    // Serial.println("StpSlw: RA " + String(_mountStatus));
+    //Serial.println("StpSlw: RA OFF");
   }
 
-  //  // Serial.println("StopSlewing: Wait4Stop " + String(_mountStatus));
-  //  while (_stepperRA->isRunning() || _stepperDEC->isRunning() || (((_mountStatus & STATUS_TRACKING)==0) && _stepperTRK->isRunning())) {
-  //    // Serial.print("StopSlewing: ");
-  //    loop();
-  //  }
-
-  // Serial.println("StpSlw: ok " + String(_mountStatus));
+  //Serial.println("StpSlw: < " + mountStatusString());
 }
 
 /////////////////////////////////
@@ -396,7 +385,7 @@ void Mount::waitUntilStopped(byte direction) {
           || ((direction & (NORTH | SOUTH)) && _stepperDEC->isRunning())
           || ((direction & TRACKING) && (((_mountStatus & STATUS_TRACKING) == 0) && _stepperTRK->isRunning()))
         ) {
-    // Serial.print("W4Stp: ");
+    // //Serial.print("W4Stp: ");
     loop();
   }
 }
@@ -421,6 +410,19 @@ long Mount::getCurrentStepperPosition(int direction) {
 
 /////////////////////////////////
 //
+// delay
+//
+/////////////////////////////////
+void Mount::delay(int ms) {
+  long now = millis();
+  while (millis() - now < ms)
+  {
+    loop();
+  }
+}
+
+/////////////////////////////////
+//
 // loop
 //
 // Process any stepper movement. Must be called frequently
@@ -430,8 +432,8 @@ void Mount::loop() {
   bool decStillRunning = false;
 
   unsigned long now = millis();
-  if (now - _lastMountPrint > 25) {
-    // Serial.println(mountStatusString());
+  if (now - _lastMountPrint > 2500) {
+    //Serial.println(mountStatusString());
     _lastMountPrint = now;
   }
 
@@ -446,12 +448,10 @@ void Mount::loop() {
 
   if (_stepperDEC->isRunning()) {
     decStillRunning = true;
-    //    _stepperDEC->run();
   }
 
   if (_stepperRA->isRunning()) {
     raStillRunning = true;
-    //  _stepperRA->run();
   }
 
   if (raStillRunning || decStillRunning) {
@@ -462,9 +462,9 @@ void Mount::loop() {
     _mountStatus &= ~(STATUS_SLEWING | STATUS_SLEWING_TO_TARGET);
 
     if (_stepperWasRunning) {
-      // Serial.println("LP: MV DONE" );
       // Make sure we do one last update when the steppers have stopped.
       displayStepperPosition();
+      _lcdMenu->updateDisplay();
     }
   }
 
@@ -480,6 +480,7 @@ void Mount::setHome() {
   _stepperRA->setCurrentPosition(0);
   _stepperDEC->setCurrentPosition(0);
   _stepperTRK->setCurrentPosition(0);
+  startSlewing(TRACKING);
 }
 
 /////////////////////////////////
@@ -513,7 +514,7 @@ void Mount::setTargetToHome() {
 /////////////////////////////////
 float Mount::getSpeed(int direction) {
   if (direction & TRACKING) {
-    return _stepperTRK->speed();
+    return _trackingSpeed;
   }
   if (direction & (NORTH | SOUTH)) {
     return _stepperDEC->speed();
@@ -539,14 +540,14 @@ void Mount::calculateRAandDECSteppers() {
   }
 
   // How many steps moves the RA ring one sidereal hour along. One sidereal hour moves just shy of 15 degrees
-  float stepsPerSiderealHour = _stepsPerRAHour * 14.95903;
+  float stepsPerSiderealHour = _stepsPerRADegree * siderealDegreesInHour;
 
   // Where do we want to move RA to?
   float moveRA = hourPos * stepsPerSiderealHour  / 2;
 
   // Where do we want to move DEC to?
   // the variable targetDEC 0deg for the celestial pole (90deg), and goes negative only.
-  float moveDEC = _targetDEC.getTotalDegrees() * _stepsPerDECDegree;
+  float moveDEC = -_targetDEC.getTotalDegrees() * _stepsPerDECDegree;
 
   // We can move 6 hours in either direction. Outside of that we need to flip directions.
   float RALimit = (6.0f * stepsPerSiderealHour / 2);
@@ -593,36 +594,37 @@ void Mount::calculateRAandDECSteppers() {
 //
 /////////////////////////////////
 void Mount::displayStepperPosition() {
-  _lcdMenu->setCursor(0, 1);
   String disp ;
-  if (_totalDECMove > 0) {
-    float decDist = 100.0 - 100.0 * abs(_stepperDEC->distanceToGo()) / _totalDECMove;
-    // float dec = currentDEC();
-    // DayTime dt(dec);
-    // int degree = dt.getHours() + (north ? 90 : -90);
-    // Serial.println("DEC: " + String(dec, 4) + " DT: " + String(degree) + " " + String(dt.getMinutes()) + " " + String(dt.getSeconds()));
-    // sprintf(scratchBuffer, "D: %02d@%02d'%02d\" %d%%", degree, dt.getMinutes(), dt.getSeconds(), (int)decDist);
-    sprintf(scratchBuffer, "D: %d%%", (int)decDist);
-    disp = String(scratchBuffer);
-  }
-  else {
-    disp = "D:" + String(_stepperDEC->currentPosition());
-  }
-  if (_totalRAMove > 0) {
-    float raDist = 100.0 - 100.0 * abs(_stepperRA->distanceToGo()) / _totalRAMove;
-    // float ra = currentRA();
-    // DayTime dt(ra);
-    // dt.addTime(HACorrection);
-    // Serial.println("RA: " + String(ra, 4) + " DT: " + dt.ToString());
-    // sprintf(scratchBuffer, " R: %02d@%02d'%02d\" %d%%", dt.getHours(), dt.getMinutes(), dt.getSeconds(), (int)raDist);
-    sprintf(scratchBuffer, " R: %d%%", (int)raDist);
-    disp = disp + String(scratchBuffer);
-  }
-  else {
-    disp = disp + " R:" + String(_stepperRA->currentPosition());
-  }
+  if ((abs(_totalDECMove) > 0.001) && (abs(_totalRAMove) > 0.001)) {
+    float decDist = 100.0 - 100.0 * _stepperDEC->distanceToGo() / _totalDECMove;
+    float raDist = 100.0 - 100.0 * _stepperRA->distanceToGo() / _totalRAMove;
 
-  _lcdMenu->printMenu(disp);
+    sprintf(scratchBuffer, "D %s %d%%", DECString(LCD_STRING | CURRENT_STRING).c_str(), (int)decDist);
+    _lcdMenu->setCursor(0, 1);
+    _lcdMenu->printMenu(String(scratchBuffer));
+    sprintf(scratchBuffer, "R %s %d%%", RAString(LCD_STRING | CURRENT_STRING).c_str(), (int)raDist);
+    _lcdMenu->setCursor(0, 0);
+    _lcdMenu->printMenu(String(scratchBuffer));
+    return;
+  }
+  else if (abs(_totalDECMove) > 0.001) {
+    float decDist = 100.0 - 100.0 * _stepperDEC->distanceToGo() / _totalDECMove;
+    sprintf(scratchBuffer, "D %s %d%%", DECString(LCD_STRING | CURRENT_STRING).c_str(), (int)decDist);
+    _lcdMenu->setCursor(0, 1);
+    _lcdMenu->printMenu(String(scratchBuffer));
+  }
+  else if (abs(_totalRAMove) > 0.001) {
+    float raDist = 100.0 - 100.0 * _stepperRA->distanceToGo() / _totalRAMove;
+    sprintf(scratchBuffer, "R %s %d%%", RAString(LCD_STRING | CURRENT_STRING).c_str(), (int)raDist);
+    disp = disp + String(scratchBuffer);
+    _lcdMenu->setCursor(0, 1);
+    _lcdMenu->printMenu(String(scratchBuffer));
+  }
+  else {
+    disp = "R:" + String(_stepperRA->currentPosition()) + " D:" + String(_stepperDEC->currentPosition()) ;
+    _lcdMenu->setCursor(0, 1);
+    _lcdMenu->printMenu(disp);
+  }
 }
 
 /////////////////////////////////
@@ -645,10 +647,13 @@ void Mount::displayStepperPositionThrottled() {
 // Return a string of DEC in the given format. For LCDSTRING, active determines where the cursor is
 /////////////////////////////////
 String Mount::DECString(byte type, byte active) {
-  DegreeTime dec(currentDEC());
+  DegreeTime dec;
   if ((type & TARGET_STRING) == TARGET_STRING) {
     dec = DegreeTime(_targetDEC);
+  } else {
+    dec = DegreeTime (currentDEC());
   }
+  dec.checkHours();
 
   sprintf(scratchBuffer, formatStringsDEC[type & FORMAT_STRING_MASK], dec.getPrintDegrees() > 0 ? '+' : '-', int(fabs(dec.getPrintDegrees() )), dec.getMinutes() , dec.getSeconds());
   if ((type & FORMAT_STRING_MASK) == LCDMENU_STRING) {
@@ -666,25 +671,23 @@ String Mount::DECString(byte type, byte active) {
 // Return a string of DEC in the given format. For LCDSTRING, active determines where the cursor is
 String Mount::RAString(byte type, byte active) {
   //Serial.println("RA1: T" + String(type) + " A" + String(active));
-  DayTime ra(currentRA());
+  DayTime ra;
   //Serial.println("RA2:" + ra.ToString());
   if ((type & TARGET_STRING) == TARGET_STRING) {
     //Serial.println("RA3");
     ra = DayTime(_targetRA);
     //Serial.println("RA3A:" + ra.ToString());
+  } else {
+    ra = DayTime(currentRA());
   }
 
   //Serial.println("RA4:" + ra.ToString());
   DayTime raDisplay(ra);
   //Serial.println("RA5:" + raDisplay.ToString());
 
-  if (type & (LCDMENU_STRING | LCD_STRING | PRINT_STRING) != 0) {
-    //Serial.println("RA6:" + _HACorrection.ToString());
-    raDisplay.addTime(_HACorrection);
-    //Serial.println("RA6A:" + raDisplay.ToString());
-  }
-
-  //Serial.println("RA7:" + raDisplay.ToString());
+  //Serial.println("RA6:" + _HACorrection.ToString());
+  raDisplay.addTime(_HACorrection);
+  //Serial.println("RA6A:" + raDisplay.ToString());
 
   sprintf(scratchBuffer, formatStringsRA[type & FORMAT_STRING_MASK], raDisplay.getHours(), raDisplay.getMinutes() , raDisplay.getSeconds());
   //Serial.println("RA8:" + String(scratchBuffer));

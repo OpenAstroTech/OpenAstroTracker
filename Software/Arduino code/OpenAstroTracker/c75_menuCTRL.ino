@@ -1,108 +1,115 @@
-
 bool confirmZeroPoint = false;
 bool setZeroPoint = true;
 
-void processControlKeys(int key) {
+bool processControlKeys() {
+  byte key;
 
   // User must use SELECT to enter manual control.
   if (!inControlMode ) {
-    if (key == btnSELECT) {
-      inControlMode = true;
-      mount.stopSlewing(ALL_DIRECTIONS);
-    } else if (key == btnRIGHT) {
-      lcdMenu.setNextActive();
+    if (lcdButtons.keyChanged(key)) {
+      if (key == btnSELECT) {
+        inControlMode = true;
+        mount.stopSlewing(ALL_DIRECTIONS);
+      } else if (key == btnRIGHT) {
+        lcdMenu.setNextActive();
+      }
     }
-    return;
+    return true;
   }
 
   if (confirmZeroPoint) {
-    if (key == btnSELECT)
-    {
-      if (setZeroPoint) {
-        // Leaving Control Menu, so set stepper motor positions to zero.
-        mount.setHome();
-      }
+    if (lcdButtons.keyChanged(key)) {
+      if (key == btnSELECT) {
+        if (setZeroPoint) {
+          // Leaving Control Menu, so set stepper motor positions to zero.
+          mount.setHome();
+        }
 
-      // Set flag to prevent resetting zero point when moving over the menu items
-      inControlMode = false;
+        // Set flag to prevent resetting zero point when moving over the menu items
+        inControlMode = false;
 
-      if (startupState == StartupWaitForPoleCompletion) {
-        startupState = StartupPoleConfirmed;
-        inStartup = true;
-      }
-      else {
-        lcdMenu.setNextActive();
-      }
+        if (startupState == StartupWaitForPoleCompletion) {
+          startupState = StartupPoleConfirmed;
+          inStartup = true;
+        }
+        else {
+          lcdMenu.setNextActive();
+        }
 
-      confirmZeroPoint = false;
-      setZeroPoint = true;
-    } else if (key == btnLEFT) {
-      setZeroPoint = !setZeroPoint;
+        confirmZeroPoint = false;
+        setZeroPoint = true;
+      } else if (key == btnLEFT) {
+        setZeroPoint = !setZeroPoint;
+      }
     }
-
-    waitForButtonRelease = true;
-    return;
+    return true;
   }
 
-  waitForButtonRelease = false;
-  switch (key) {
-    case btnUP: {
-        if (lastKey != btnUP) {
+  if (lcdButtons.keyChanged(key)) {
+    //Serial.print("KEY CHANGE!");
+    switch (key) {
+      case btnUP: {
+          //Serial.print("KEY UP:");
           if (!mount.isSlewingDEC()) {
+            //Serial.println(" Go N");
             mount.startSlewing(NORTH);
           } else {
+            //Serial.println(" Stop NS");
             mount.stopSlewing(NORTH | SOUTH);
           }
         }
-      }
-      break;
+        break;
 
-    case btnDOWN: {
-        if (lastKey != btnDOWN) {
+      case btnDOWN: {
+          //Serial.print("KEY DN:");
           if (!mount.isSlewingDEC()) {
+            //Serial.println(" Go S");
             mount.startSlewing(SOUTH);
           } else {
+            //Serial.println(" Stop NS");
             mount.stopSlewing(NORTH | SOUTH);
           }
         }
-      }
-      break;
+        break;
 
-    case btnLEFT: {
-        if (lastKey != btnLEFT) {
+      case btnLEFT: {
+          //Serial.print("KEY LF:");
           if (!mount.isSlewingRA()) {
+            //Serial.println(" Go W");
             mount.startSlewing(WEST);
           } else {
+            //Serial.println(" Stop EW");
             mount.stopSlewing(EAST | WEST);
           }
         }
-      }
-      break;
+        break;
 
-    case btnRIGHT: {
-        if (lastKey != btnRIGHT) {
+      case btnRIGHT: {
+          //Serial.print("KEY RT:");
           if (!mount.isSlewingRA()) {
+            //Serial.println(" Go E");
             mount.startSlewing(EAST);
           } else {
+            //Serial.println(" Stop EW");
             mount.stopSlewing(EAST | WEST);
           }
         }
-      }
-      break;
+        break;
 
-    case btnSELECT: {
-        mount.stopSlewing(ALL_DIRECTIONS);
-        mount.waitUntilStopped(ALL_DIRECTIONS);
-        lcdMenu.setCursor(0, 0);
-        lcdMenu.printMenu("Set home point?");
-        confirmZeroPoint = true;
-        waitForButtonRelease = true;
-      }
-      break;
+      case btnSELECT: {
+          mount.stopSlewing(ALL_DIRECTIONS);
+          mount.waitUntilStopped(ALL_DIRECTIONS);
+          lcdMenu.setCursor(0, 0);
+          lcdMenu.printMenu("Set home point?");
+          confirmZeroPoint = true;
+        }
+        break;
+    }
   }
 
-  lastKey = key;
+  return true;
 }
+
 
 void printControlSubmenu() {
   if (!inControlMode ) {

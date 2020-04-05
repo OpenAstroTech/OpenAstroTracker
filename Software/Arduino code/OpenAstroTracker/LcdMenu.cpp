@@ -87,8 +87,8 @@ void LcdMenu::setNextActive() {
 // It also places the selector arrows around the active one.
 // It then sends the string to the LCD, keeping the selector arrows centered in the same place.
 void LcdMenu::updateDisplay() {
-  Serial.println("UD+");
-  Serial.flush();
+  //Serial.println("UD+");
+  //Serial.flush();
   _lcd.setCursor(0, 0);
   String menuString = "";
   byte offsetToActive = 0;
@@ -107,15 +107,15 @@ void LcdMenu::updateDisplay() {
     offset += strlen(scratchBuffer);
   }
 
-  Serial.println("UUD1: [" + menuString + "]");
-  Serial.flush();
+  //Serial.println("UUD1: [" + menuString + "]");
+  //Serial.flush();
 
   // Determine where to place the active menu item. (empty space around longest item divided by two).
   int margin = (_columns - (_longestDisplay)) / 2;
   int offsetIntoString = offsetToActive - margin;
 
-  Serial.println("UD1: " + String(margin) + " " + String(offsetToActive ) + " " + String(offsetIntoString ));;
-  Serial.flush();
+  //Serial.println("UD1: " + String(margin) + " " + String(offsetToActive ) + " " + String(offsetIntoString ));;
+  //Serial.flush();
 
   // Pad the front if we don't have enough to offset the string to the arrow locations (happens on first item(s))
   while (offsetIntoString < 0) {
@@ -123,22 +123,22 @@ void LcdMenu::updateDisplay() {
     offsetIntoString++;
   }
 
-  Serial.println("UD2a: " + String(margin) + " " + String(offsetToActive ) + " " + String(offsetIntoString ));;
-  Serial.println("UD2b: [" + menuString + "]");
-  Serial.flush();
+  //Serial.println("UD2a: " + String(margin) + " " + String(offsetToActive ) + " " + String(offsetIntoString ));;
+  //Serial.println("UD2b: [" + menuString + "]");
+  //Serial.flush();
 
   // Display the actual menu string
   String displayString = menuString.substring(offsetIntoString, offsetIntoString + _columns);
-  Serial.println("UD3: [" + displayString + "]");
-  Serial.flush();
+  //Serial.println("UD3: [" + displayString + "]");
+  //Serial.flush();
 
   // Pad the end with spaces so the display is cleared when getting to the last item(s).
   while (displayString.length() < _columns) {
     displayString += " ";
   }
 
-  Serial.println("UD4: [" + displayString + "]");
-  Serial.flush();
+  //Serial.println("UD4: [" + displayString + "]");
+  //Serial.flush();
 
   printMenu(displayString);
 

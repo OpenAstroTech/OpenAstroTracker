@@ -22,8 +22,8 @@
 
 // DEC Motor pins
 #define DECmotorPin1  15    // IN1 auf ULN2003 driver 2
-#define DECmotorPin2  16    // IN2 auf ULN2003 driver 2
-#define DECmotorPin3  17    // IN3 auf ULN2003 driver 2
+#define DECmotorPin2  17    // IN2 auf ULN2003 driver 2
+#define DECmotorPin3  16    // IN3 auf ULN2003 driver 2
 #define DECmotorPin4  18    // IN4 auf ULN2003 driver 2
 
 // Menu IDs
@@ -54,10 +54,6 @@ int calDelay = 150;          // The current delay in ms when changing calibratio
 
 //// Variables for use in the CONTROL menu
 bool inControlMode  = false;  // Is manual control enabled
-
-// Main loop variables
-bool waitForButtonRelease = false; // When a button is pressed should we wait for its release before another loop?
-int lastKey = btnNONE;       // The key state when we last came through the loop
 
 // Global variables
 bool isUnreachable = false;

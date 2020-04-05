@@ -57,6 +57,8 @@ class DayTime {
 
     // Convert to a standard string (like 14:45:06)
     String ToString();
+  //protected:
+    virtual void checkHours();
 };
 
 class DegreeTime : public DayTime {
@@ -65,9 +67,6 @@ class DegreeTime : public DayTime {
     DegreeTime(const DegreeTime& other);
     DegreeTime(int h, int m, int s);
     DegreeTime(float inDegrees);
-
-    // Override hours to not wrap, but clamp at +/- 90
-    virtual void addHours(int deltaHours);
 
     // Add degrees, clamp at 90
     void addDegrees(int deltaDegrees);
@@ -80,6 +79,11 @@ class DegreeTime : public DayTime {
 
     // Get total degrees
     float getTotalDegrees();
+  //protected:
+    virtual void checkHours() override;
+
+  private:
+    void clampDegrees();
 };
 
 #endif
