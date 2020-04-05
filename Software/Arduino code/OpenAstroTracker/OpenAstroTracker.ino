@@ -25,8 +25,8 @@ boolean north = true;    // change this to 'false' if youre in the southern hemi
 // Which means 108245 steps (26.43 x 4096) moves 360 degrees (V2: 115812 steps (28.27 x 4096)
 // So there are 300.1 steps/degree (108245 / 360)  (V2: 322 (115812 / 360))
 
-int RAStepsPerDegree = 300;      // V1 Ring has a ridge that the belt runs on and the ring runs on the bearings
-// int RAStepsPerDegree = 322;      // V2 Ring has belt in a groove and runs on bearings
+// int RAStepsPerDegree = 300;      // V1 Ring has a ridge that the belt runs on and the ring runs on the bearings
+int RAStepsPerDegree = 322;      // V2 Ring has belt in a groove and runs on bearings
 
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
 // DEC wheel is 2 x PI x 90mm circumference which is 565.5mm
