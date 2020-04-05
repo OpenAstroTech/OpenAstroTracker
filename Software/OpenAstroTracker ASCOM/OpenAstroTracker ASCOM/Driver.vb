@@ -506,7 +506,7 @@ Public Class Telescope
     Public ReadOnly Property Declination() As Double Implements ITelescopeV3.Declination
         Get
             Dim declination__1 As Double = 0.0
-            Dim scopeDec As String = CommandString(":Gd")   ' TODO : Change this to :GD once implemented in firmware
+            Dim scopeDec As String = CommandString(":GD")   ' TODO : Change this to :GD once implemented in firmware
             TL.LogMessage("Declination", "Get - " & scopeDec)
             declination__1 = utilities.DMSToDegrees(scopeDec)
             Return declination__1
@@ -612,7 +612,7 @@ Public Class Telescope
     Public ReadOnly Property RightAscension() As Double Implements ITelescopeV3.RightAscension
         Get
             Dim rightAscension__1 As Double = 0.0
-            Dim scopeRA As String = CommandString(":Gr")   ' TODO : Change this to :GR once implemented in firmware
+            Dim scopeRA As String = CommandString(":GR")   ' TODO : Change this to :GR once implemented in firmware
             TL.LogMessage("RightAscension", "Get - " + scopeRA)
             rightAscension__1 = utilities.HMSToHours(scopeRA)
             Return rightAscension__1
