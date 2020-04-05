@@ -70,7 +70,7 @@ int s = 25;
 // The same could be done for the DEC coordinates but they dont change significantly for the next 5 years
 
 // Comment this out to save some code space
-#define DEBUG_MODE
+// #define DEBUG_MODE
 
 // Uncomment this to support the heating menu
 // NOTE: Heating is currently not supported!

@@ -480,7 +480,7 @@ Partial Class frmMain
         '
         'Timer1
         '
-        Me.Timer1.Interval = 500
+        Me.Timer1.Interval = 2000
         '
         'ToolTipPark
         '
