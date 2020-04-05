@@ -1,13 +1,19 @@
-bool parking = false;
+/*
 
-void startSlewing() {
+
+  // Serial control variables
+  bool serialIsSlewing = false; // When the serial port is slewing the tracker
+  bool slewingToHome = false;   // When the serial port is slewing to home/park.
+  bool parking = false;
+
+  void startSlewing() {
   serialIsSlewing = true;
   parking = false;
   doCalculations();
   handleDECandRACalculations();
   startMoveSteppersToTargetAsync();
-}
-
+  }
+*/
 
 /////////////////////////////
 // INIT
@@ -40,29 +46,20 @@ void handleMeadeGetInfo(String inCmd) {
       }
       break;
     case 'r': {
-        sprintf(scratchBuffer, "%02d:%02d:%02d#", RADisplayTime.getHours(), RADisplayTime.getMinutes(), RADisplayTime.getSeconds());
-        Serial.print(scratchBuffer);
+        Serial.print(mount.RAString(MEADE_STRING | TARGET_STRING));
       }
       break;
     case 'd': {
-        sprintf(scratchBuffer, "%c%02d*%02d'%02d#", printdegDEC > 0 ? '+' : '-', int(fabs(printdegDEC)), int(minDEC), int(secDEC));
-        Serial.print(scratchBuffer);
+        Serial.print(mount.DECString(MEADE_STRING | TARGET_STRING));
       }
       break;
     case 'R': {
-        DayTime dt(currentRA());
-        dt.addTime(HACorrection);
-        sprintf(scratchBuffer, "%02d:%02d:%02d#", dt.getHours(), dt.getMinutes(), dt.getSeconds());
-        Serial.print(scratchBuffer);
+        Serial.print(mount.RAString(MEADE_STRING | CURRENT_STRING));
       }
       break;
 
     case 'D': {
-        float dec = currentDEC();
-        DayTime dt(dec);
-        int degree = dt.getHours() + (north ? 90 : -90);
-        sprintf(scratchBuffer, "%c%02d*%02d'%02d#", degree > 0 ? '+' : '-', int(fabs(degree)), dt.getMinutes(), dt.getSeconds());
-        Serial.print(scratchBuffer);
+        Serial.print(mount.DECString(MEADE_STRING | CURRENT_STRING));
       }
       break;
   }
@@ -82,12 +79,8 @@ void handleMeadeSetInfo(String inCmd) {
     if ((inCmd[4] == '*') && (inCmd[7] == ':') )
     {
       int deg = inCmd.substring(2, 4).toInt();
-      degreeDEC = sgn * deg + (north ? -90 : 90);
-      minDEC = inCmd.substring(5, 7).toInt();
-      secDEC =  inCmd.substring(8, 10).toInt();
-      doCalculations();
-      handleDECandRACalculations();
-      Serial.print(isUnreachable ? "0" : "1");
+      mount.targetDEC().set(sgn * deg + (NORTHERN_HEMISPHERE ? -90 : 90), inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
+      Serial.print("1");
     } else  {
       // Did not understand the coordinate
       Serial.print("0");
@@ -96,15 +89,10 @@ void handleMeadeSetInfo(String inCmd) {
     // Set RA
     if ((inCmd[3] == ':') && (inCmd[6] == ':') )
     {
-      int hRA = inCmd.substring(1, 3).toInt();
-      int minRA = inCmd.substring(4, 6).toInt();
-      int secRA = inCmd.substring(7, 9).toInt();
-
-      RATime.set(hRA, minRA, secRA);
-      RATime.subtractTime(HACorrection);
-      doCalculations();
-      handleDECandRACalculations();
-      Serial.print(isUnreachable ? "0" : "1");
+      mount.targetRA().set(inCmd.substring(1, 3).toInt(), inCmd.substring(4, 6).toInt(), inCmd.substring(7, 9).toInt());
+      mount.targetRA().addTime(mount.getHACorrection());
+      mount.targetRA().subtractTime(mount.HA());
+      Serial.print("1");
     } else
       // Did not understand the coordinate
       Serial.print("0");
@@ -112,9 +100,7 @@ void handleMeadeSetInfo(String inCmd) {
     // Set HA
     int hHA = inCmd.substring(1, 3).toInt();
     int minHA = inCmd.substring(4, 6).toInt();
-    HATime.set(hHA, minHA, 0);
-    HACorrection.set(HATime);
-    HACorrection.addTime(-h, -m, -s);
+    mount.setHA(DayTime(hHA, minHA, 0));
     Serial.print("0");
   }
 }
@@ -125,20 +111,20 @@ void handleMeadeSetInfo(String inCmd) {
 void handleMeadeMovement(String inCmd) {
   if (inCmd[0] == 'S') {
     Serial.print("0");
-    startSlewing();
+    mount.startSlewingToTarget();
   }
 }
 
 /////////////////////////////
-// HOME
+// PARK
 /////////////////////////////
 void handleMeadeHome(String inCmd) {
   if (inCmd[0] == 'P') {  // Park
-    serialIsSlewing = true;
-    slewingToHome = true;
-    parking = true;
-    moveToHomePositionsAsync();
-    startMoveSteppersToTargetAsync();
+    mount.setTargetToHome();
+    mount.startSlewingToTarget();
+    mount.waitUntilStopped(ALL_DIRECTIONS);
+    mount.setHome();
+    mount.stopSlewing(TRACKING);
   }
 }
 
@@ -149,33 +135,33 @@ void handleMeadeQuit(String inCmd) {
   // :Q# stops a motors - remains in Control mode
   // :Qq# command does not stop motors, but quits Control mode
   if ((inCmd.length() == 0) || (inCmd[0] != 'q'))  {
-    stopSteppers();
+    mount.stopSlewing(ALL_DIRECTIONS | TRACKING);
   } else {
     inSerialControl = false;
     lcdMenu.setCursor(0, 0);
     lcdMenu.updateDisplay();
+    mount.startSlewing(TRACKING);
   }
-
-  serialIsSlewing = false;
 }
 
 ////////////////////////////////////////////////
 // The main loop when under serial control
 void serialLoop()
 {
-  runTracker();
-  if (serialIsSlewing) {
-    if (!moveSteppersToTargetAsync()) {
-      if (slewingToHome) {
-        moveToHomePositionCompleted();
-        slewingToHome = false;
-        if (parking){
-          tracking = 0;
-        }
-      }
-      serialIsSlewing = false;
-    }
-  }
+  mount.loop();
+  //  runTracker();
+  //  if (serialIsSlewing) {
+  //    if (!moveSteppersToTargetAsync()) {
+  //      if (slewingToHome) {
+  //        moveToHomePositionCompleted();
+  //        slewingToHome = false;
+  //        if (parking){
+  //          tracking = 0;
+  //        }
+  //      }
+  //      serialIsSlewing = false;
+  //    }
+  //  }
 }
 
 //////////////////////////////////////////////////
@@ -202,15 +188,13 @@ void serialEvent() {
         case 'Q' : handleMeadeQuit(inCmd); break;
       }
     }
-
-    doCalculations();
-    runTracker();
+    mount.loop();
   }
 
-  // Dont let logString grow forever. When it gets over 3K cut it down to 2K. This might wreak
+  // Dont let logString grow forever. When it gets over 1K cut it down to 0.5K. This might wreak
   // havoc with heap fragmentation, so we might need to put the logString building
   // behind a #ifdef DEBUG since that's really only what it's needed for.
-  if (logString.length() > 3000)    {
-    logString = logString.substring(1000);
+  if (logString.length() > 1000)    {
+    logString = logString.substring(500);
   }
 }

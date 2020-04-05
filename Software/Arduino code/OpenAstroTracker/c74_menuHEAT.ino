@@ -1,5 +1,6 @@
-void processHeatKeys(int key) {
+bool processHeatKeys() {
 #ifdef SUPPORT_HEATING
+byte key;
   switch (key) {
     case btnUP:
     case btnDOWN:
@@ -54,6 +55,7 @@ void processHeatKeys(int key) {
       break;
   }
 #endif
+return true;
 }
 
 void printHeatSubmenu() {

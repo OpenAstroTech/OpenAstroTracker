@@ -1,17 +1,23 @@
 void BTin();
+int loopsOfSameKey = 0;
+int lastLoopKey = -1;
 
 void loop() {
+  byte lcd_key;
+  int adc_key_in;
+  
 #ifdef LCD_BUTTON_TEST
 
   lcdMenu.setCursor(0, 0);
   lcdMenu.printMenu("Key Diagnostic");
-  lcd_key = read_LCD_buttons();
+  int lcd_key = lcdButtons.currentState();
+  adc_key_in = lcdButtons.currentAnalogState();
 
   lcdMenu.setCursor(0, 1);
   char buf[128];
   sprintf(buf, "ADC:%4d >", adc_key_in);
   String state = String(buf);
-  switch (lcd_key )
+  switch (lcd_key)
   {
     case btnNONE: state += "None"; break;
     case btnSELECT: state += "Select"; break;
@@ -22,76 +28,96 @@ void loop() {
   }
 
   lcdMenu.printMenu(state);
+  if (lcd_key != lastKey) {
+    Serial.println(state);
+    lastKey = lcd_key;
+  }
 
   return;
 
 #endif
 
-  lcdMenu.setCursor(0, 1);
+  // Give the mount a time slice to do its thing...
+  mount.loop();
 
-  lcd_key = read_LCD_buttons();
+  lcdMenu.setCursor(0, 1);
+  //lcd_key = lcdButtons.currentKey();
 
   if (inSerialControl) {
-    if (lcd_key == btnSELECT) {
-      quitSerialOnNextButtonRelease = true;
+    if (lcdButtons.keyChanged(lcd_key)) {
+      if (lcd_key == btnSELECT) {
+        quitSerialOnNextButtonRelease = true;
+      }
+      if (lcd_key == btnDOWN) {
+        Serial.println("\n\r");
+        Serial.println(logString);
+      }
+      else if ((lcd_key == btnNONE) && quitSerialOnNextButtonRelease)  {
+        handleMeadeQuit("q#");
+        quitSerialOnNextButtonRelease = false;
+      }
+      serialLoop();
     }
-    else if ((lcd_key == btnNONE) && quitSerialOnNextButtonRelease)  {
-      handleMeadeQuit("q#");
-      quitSerialOnNextButtonRelease = false;
-    }
-    serialLoop();
   }
   else {
-    waitForButtonRelease = true;
+
+    bool waitForButtonRelease = false;
 
     // Handle the keys
     if (inStartup) {
-      processStartupKeys(lcd_key);
+      waitForButtonRelease = processStartupKeys();
     }
     else {
       switch (lcdMenu.getActive()) {
         case RA_Menu:
-          handleDECandRACalculations();
-          processRAKeys(lcd_key);
+          waitForButtonRelease = processRAKeys();
           break;
         case DEC_Menu:
-          handleDECandRACalculations();
-          processDECKeys(lcd_key);
+          waitForButtonRelease = processDECKeys();
           break;
         case POI_Menu:
-          processPOIKeys(lcd_key);
+          waitForButtonRelease = processPOIKeys();
           break;
         case Home_Menu:
-          processHomeKeys(lcd_key);
+          waitForButtonRelease = processHomeKeys();
           break;
         case HA_Menu:
-          processHAKeys(lcd_key);
+          waitForButtonRelease = processHAKeys();
           break;
         case Heat_Menu:
-          processHeatKeys(lcd_key);
-          break;
-        case Control_Menu:
-          processControlKeys(lcd_key);
+          waitForButtonRelease = processHeatKeys();
           break;
         case Calibration_Menu:
-          processCalibrationKeys(lcd_key);
+          waitForButtonRelease = processCalibrationKeys();
+          break;
+        case Control_Menu:
+          waitForButtonRelease = processControlKeys();
           break;
         case Status_Menu:
-          processStatusKeys(lcd_key);
+          waitForButtonRelease = processStatusKeys();
           break;
       }
     }
 
-    if (waitForButtonRelease && (lcd_key != btnNONE)) {
-      while (read_LCD_buttons() != btnNONE) {
-        // Make sure tracker can still run while fiddling with menus....
-        runTracker();
+    if (waitForButtonRelease) {
+      //Serial.print("Wait:");
+      if (lcdButtons.currentKey() != btnNONE) {
+        //Serial.println("KeyNotNone:");
+        do {
+          if (lcdButtons.currentKey() == btnNONE) {
+            //Serial.println("KeyIsNone:");
+            break;
+          }
+
+          // Make sure tracker can still run while fiddling with menus....
+          mount.loop();
+        }
+        while (true);
       }
+      //Serial.println("WaitOver:");
     }
 
-    doCalculations();
-    runTracker();
-
+    // Input handled, do output
     lcdMenu.setCursor(0, 1);
 
     if (inStartup) {
