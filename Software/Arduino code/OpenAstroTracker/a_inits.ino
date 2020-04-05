@@ -17,8 +17,8 @@
 // RA Motor pins
 #define RAmotorPin1  2    // IN1 auf ULN2003 driver 1    //  2 / 22
 #define RAmotorPin3  3    // IN2 auf ULN2003 driver 1    //  3 / 24
-#define RAmotorPin2  11    // IN3 auf ULN2003 driver 1   // 11 / 26
-#define RAmotorPin4  12    // IN4 auf ULN2003 driver 1   // 12 / 28
+#define RAmotorPin2  13    // IN3 auf ULN2003 driver 1   // 11 / 26
+#define RAmotorPin4  11    // IN4 auf ULN2003 driver 1   // 12 / 28
 
 // DEC Motor pins
 #define DECmotorPin1  15    // IN1 auf ULN2003 driver 2

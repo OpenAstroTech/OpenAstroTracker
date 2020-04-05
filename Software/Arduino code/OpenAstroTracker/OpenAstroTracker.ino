@@ -26,8 +26,8 @@ String version = "V1.6.01";
 // So there are 300.1 steps/degree (108245 / 360)  (V2: 322 (115812 / 360))
 // Theoretical RA tracking speed is 1.246586 (300 x 14.95903 / 3600) (V2 : 1.333800 (322 x 14.95903 / 3600) steps/sec
 
-int RAStepsPerDegree = 300;      // V1 Ring has a ridge that the belt runs on and the ring runs on the bearings
-// int RAStepsPerDegree = 322;      // V2 Ring has belt in a groove and belt runs on bearings
+// int RAStepsPerDegree = 300;      // V1 Ring has a ridge that the belt runs on and the ring runs on the bearings
+int RAStepsPerDegree = 322;      // V2 Ring has belt in a groove and belt runs on bearings
 
 
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
