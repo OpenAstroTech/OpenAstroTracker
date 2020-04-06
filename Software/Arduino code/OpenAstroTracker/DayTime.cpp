@@ -90,14 +90,12 @@ void DayTime::addHours(int deltaHours) {
 }
 
 void DayTime::checkHours() {
-  Serial.println("DtIn: "+String(hours));
   while (hours >= hourWrap) {
     hours  -= hourWrap;
   }
   while (hours < 0) {
     hours += hourWrap;
   }
-  Serial.println("DtOut: "+String(hours));
 }
 
 // Add minutes, wrapping hours if needed
@@ -208,10 +206,8 @@ float DegreeTime::getTotalDegrees() {
 
 void DegreeTime::checkHours() {
   if (NORTHERN_HEMISPHERE) {
-    Serial.println("DgIn: "+String(hours));
     if (hours > 0) hours = 0;
     if (hours < -180) hours = -180;
-    Serial.println("DgOut: "+String(hours));
   } else {
     if (hours > 180) hours = 180;
     if (hours < 0) hours = 0;

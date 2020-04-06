@@ -128,8 +128,15 @@ class Mount {
     int _stepsPerDECDegree;
     long _lastHASet;
     DayTime _HAAdjust;
+    
     DayTime _targetRA;
+    DayTime _currentRA;
+    long _currentRAStepperPosition;
+    
     DegreeTime _targetDEC;
+    DegreeTime _currentDEC;
+    long _currentDECStepperPosition;
+    
     float _totalDECMove;
     float _totalRAMove;
 

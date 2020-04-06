@@ -46,51 +46,38 @@ bool processControlKeys() {
   }
 
   if (lcdButtons.keyChanged(key)) {
-    //Serial.print("KEY CHANGE!");
     switch (key) {
       case btnUP: {
-          //Serial.print("KEY UP:");
           if (!mount.isSlewingDEC()) {
-            //Serial.println(" Go N");
             mount.startSlewing(NORTH);
           } else {
-            //Serial.println(" Stop NS");
             mount.stopSlewing(NORTH | SOUTH);
           }
         }
         break;
 
       case btnDOWN: {
-          //Serial.print("KEY DN:");
           if (!mount.isSlewingDEC()) {
-            //Serial.println(" Go S");
             mount.startSlewing(SOUTH);
           } else {
-            //Serial.println(" Stop NS");
             mount.stopSlewing(NORTH | SOUTH);
           }
         }
         break;
 
       case btnLEFT: {
-          //Serial.print("KEY LF:");
           if (!mount.isSlewingRA()) {
-            //Serial.println(" Go W");
             mount.startSlewing(WEST);
           } else {
-            //Serial.println(" Stop EW");
             mount.stopSlewing(EAST | WEST);
           }
         }
         break;
 
       case btnRIGHT: {
-          //Serial.print("KEY RT:");
           if (!mount.isSlewingRA()) {
-            //Serial.println(" Go E");
             mount.startSlewing(EAST);
           } else {
-            //Serial.println(" Stop EW");
             mount.stopSlewing(EAST | WEST);
           }
         }

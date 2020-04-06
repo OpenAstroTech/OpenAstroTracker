@@ -14,7 +14,7 @@
 
   =======================================================================================================================================
 */
-String version = "V1.6.01";
+String version = "V1.6.10";
 
 // See NORTHERN_HEMISPHERE in Globals.h if you not in the northern hemisphere
 
@@ -70,7 +70,7 @@ int s = 25;
 // The same could be done for the DEC coordinates but they dont change significantly for the next 5 years
 
 // Comment this out to save some code space
-#define DEBUG_MODE
+// #define DEBUG_MODE
 
 // Uncomment this to support the heating menu
 // NOTE: Heating is currently not supported!
@@ -78,8 +78,3 @@ int s = 25;
 
 // Uncomment to run a key diagnostic
 // #define LCD_BUTTON_TEST
-
-
-// Started at 25672 and 1312  -- with f_serial
-// finished at 23830 and 1111 -- without f_serial.
-// finished at 23740 and 1117 -- Keyboard class, bug fixes, without f_serial.

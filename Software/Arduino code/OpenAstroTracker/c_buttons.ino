@@ -100,12 +100,9 @@ void loop() {
     }
 
     if (waitForButtonRelease) {
-      //Serial.print("Wait:");
       if (lcdButtons.currentKey() != btnNONE) {
-        //Serial.println("KeyNotNone:");
         do {
           if (lcdButtons.currentKey() == btnNONE) {
-            //Serial.println("KeyIsNone:");
             break;
           }
 
@@ -114,7 +111,6 @@ void loop() {
         }
         while (true);
       }
-      //Serial.println("WaitOver:");
     }
 
     // Input handled, do output

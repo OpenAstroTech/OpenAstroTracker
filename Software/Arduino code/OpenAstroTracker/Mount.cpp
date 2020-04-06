@@ -164,11 +164,29 @@ DegreeTime& Mount::targetDEC() {
 /////////////////////////////////
 // Get current RA value.
 const DayTime Mount::currentRA() const {
-  // there are twice as many steps since this motor is being half-stepped.
-  // It's negative because the motor coordinates increase CCW
-  float raPosDegrees = -2.0 * _stepperRA->currentPosition() / _stepsPerRADegree;
-  float raPos = raPosDegrees / siderealDegreesInHour;
-  return raPos;
+  if (!isSlewingRA() ||  (_mountStatus & STATUS_SLEWING_TO_TARGET) == 0) return _currentRA;
+
+  // How many steps are needed between current and target
+  long deltaSteps = _stepperRA->targetPosition() - _currentRAStepperPosition;
+
+  // Calculate how far along (0..1) we are
+  float alongPathNormalized = 1.0 * (_stepperRA->currentPosition() - _currentRAStepperPosition) / deltaSteps;
+
+  float raT =  _targetRA.getTotalHours();
+  float raC =  _currentRA.getTotalHours();
+  float deltaT = raT - raC;
+
+  // If we're rolling over, take the short route. i.e. if the motor direction indicates 
+  // the other direction than the math, move the target beyond current in the right direction
+  if ( (raT < raC && (deltaSteps < 0)) || (raT > raC && (deltaSteps > 0))) {
+    raT += (deltaSteps < 0) ? 24 : -24;
+    deltaT = raT - raC;
+  }
+
+  // Move the RA along by wher we are, fractionally
+  raC += deltaT * alongPathNormalized;
+
+  return raC;
 }
 
 /////////////////////////////////
@@ -178,9 +196,19 @@ const DayTime Mount::currentRA() const {
 /////////////////////////////////
 // Get current DEC value.
 const DegreeTime Mount::currentDEC() const {
-  float decPosDegrees = 1.0 * _stepperDEC->currentPosition() / _stepsPerDECDegree;
-//  return NORTHERN_HEMISPHERE ? 90 - decPosDegrees : 90 + decPosDegrees ;
-  return decPosDegrees;
+  if (!isSlewingDEC() ||  (_mountStatus & STATUS_SLEWING_TO_TARGET) == 0) return _currentDEC;
+
+  // How many steps are needed between current and target
+  long deltaSteps = _stepperDEC->targetPosition() - _currentDECStepperPosition;
+
+  // Calculate how far along (0..1) we are
+  float alongPathNormalized = 1.0 * (_stepperDEC->currentPosition() - _currentDECStepperPosition) / deltaSteps;
+
+  float decT =  _targetDEC.getTotalDegrees();
+  float decC =  _currentDEC.getTotalDegrees();
+  float deltaT = decT - decC;
+  decC += deltaT * alongPathNormalized;
+  return decC;
 }
 
 /////////////////////////////////
@@ -193,11 +221,14 @@ const DegreeTime Mount::currentDEC() const {
 void Mount::startSlewingToTarget() {
   //Serial.println("StSlew2Trgt!");
   // Calculate new RA stepper target (and DEC)
+  _currentDECStepperPosition = _stepperDEC->currentPosition();
+  _currentRAStepperPosition = _stepperRA->currentPosition();
+
   calculateRAandDECSteppers();
+
   _mountStatus |= STATUS_SLEWING | STATUS_SLEWING_TO_TARGET;
   _totalDECMove = 1.0f * _stepperDEC->distanceToGo();
   _totalRAMove = 1.0f * _stepperRA->distanceToGo();
-  // Serial.println("StSlew2Trgt: M " + String(_mountStatus) + " Totals: R" + String(_totalRAMove) + "D" + String(_totalDECMove));
 }
 
 /////////////////////////////////
@@ -462,6 +493,12 @@ void Mount::loop() {
     _mountStatus &= ~(STATUS_SLEWING | STATUS_SLEWING_TO_TARGET);
 
     if (_stepperWasRunning) {
+      // Mount is at Target!
+      _currentRA = _targetRA;
+      _currentDEC = _targetDEC;
+      _currentDECStepperPosition = _stepperDEC->currentPosition();
+      _currentRAStepperPosition = _stepperRA->currentPosition();
+
       // Make sure we do one last update when the steppers have stopped.
       displayStepperPosition();
       _lcdMenu->updateDisplay();

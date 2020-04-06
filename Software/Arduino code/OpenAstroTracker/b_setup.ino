@@ -16,7 +16,9 @@ void setup() {
   Serial.begin(57600);
   //BT.begin(9600);
   
+#ifdef DEBUG_MODE
   Serial.println("Hello");
+#endif
   
   // Show a splash screen
   lcdMenu.setCursor(0, 0);
@@ -42,10 +44,13 @@ void setup() {
   // Read persisted values adn set in mount
   inputcal = EEPROM.read(0);
   DayTime haTime = DayTime(EEPROM.read(1), EEPROM.read(2), 0);
-  Serial.println("InputCal: " + String(inputcal));
   mount.setSpeedCalibration(speed + inputcal / 10000);
+#ifdef DEBUG_MODE
+  Serial.println("InputCal: " + String(inputcal));
   Serial.println("SpeedCal: " + String(mount.getSpeedCalibration(), 5));
   Serial.println("TRKSpeed: " + String(mount.getSpeed(TRACKING), 5));
+#endif
+
   mount.setHA(haTime);
 
   // Start the tracker.
@@ -67,5 +72,8 @@ void setup() {
   while (millis() - now < 750) {
     mount.loop();
   }
+#ifdef DEBUG_MODE
   Serial.println("SetupDone");
+#endif
+
 }
