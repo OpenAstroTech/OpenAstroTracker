@@ -1,7 +1,7 @@
 /*
   =======================================================================================================================================
 
-    Version 1.5.10
+    Version 1.6.11
 
     1. Connect your Arduino, under tools choose "Arduino Uno", set the right Port and set "Arduino ISP" as the Programmer.
     2. Hit upload (Ctrl-U)
@@ -14,7 +14,7 @@
 
   =======================================================================================================================================
 */
-String version = "V1.6.10";
+String version = "V1.6.11";
 
 // See NORTHERN_HEMISPHERE in Globals.h if you not in the northern hemisphere
 
