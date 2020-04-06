@@ -359,11 +359,11 @@ void Mount::startSlewing(int direction) {
   }
   else {
     if (direction & NORTH) {
-      _stepperDEC->moveTo(-30000);
+      _stepperDEC->moveTo(30000);
       _mountStatus |= STATUS_SLEWING;
     }
     if (direction & SOUTH ) {
-      _stepperDEC->moveTo(30000);
+      _stepperDEC->moveTo(-30000);
       _mountStatus |= STATUS_SLEWING;
     }
     if (direction & EAST ) {
