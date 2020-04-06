@@ -176,7 +176,7 @@ const DayTime Mount::currentRA() const {
   float raC =  _currentRA.getTotalHours();
   float deltaT = raT - raC;
 
-  // If we're rolling over, take the short route. i.e. if the motor direction indicates 
+  // If we're rolling over, take the short route. i.e. if the motor direction indicates
   // the other direction than the math, move the target beyond current in the right direction
   if ( (raT < raC && (deltaSteps < 0)) || (raT > raC && (deltaSteps > 0))) {
     raT += (deltaSteps < 0) ? 24 : -24;
@@ -498,6 +498,7 @@ void Mount::loop() {
       _currentDEC = _targetDEC;
       _currentDECStepperPosition = _stepperDEC->currentPosition();
       _currentRAStepperPosition = _stepperRA->currentPosition();
+      _totalDECMove = _totalRAMove = 0;
 
       // Make sure we do one last update when the steppers have stopped.
       displayStepperPosition();
