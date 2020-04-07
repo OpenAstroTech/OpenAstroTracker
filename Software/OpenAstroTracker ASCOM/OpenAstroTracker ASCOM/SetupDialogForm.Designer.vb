@@ -22,6 +22,7 @@ Partial Class SetupDialogForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.OK_Button = New System.Windows.Forms.Button()
         Me.Cancel_Button = New System.Windows.Forms.Button()
@@ -30,6 +31,11 @@ Partial Class SetupDialogForm
         Me.chkTrace = New System.Windows.Forms.CheckBox()
         Me.ComboBoxComPort = New System.Windows.Forms.ComboBox()
         Me.Label2 = New System.Windows.Forms.Label()
+        Me.txtLat = New System.Windows.Forms.TextBox()
+        Me.txtLong = New System.Windows.Forms.TextBox()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.TableLayoutPanel1.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -115,6 +121,46 @@ Partial Class SetupDialogForm
         Me.Label2.TabIndex = 10
         Me.Label2.Text = "ASCOM Trace Logging"
         '
+        'txtLat
+        '
+        Me.txtLat.Location = New System.Drawing.Point(187, 57)
+        Me.txtLat.Name = "txtLat"
+        Me.txtLat.Size = New System.Drawing.Size(84, 20)
+        Me.txtLat.TabIndex = 11
+        '
+        'txtLong
+        '
+        Me.txtLong.Location = New System.Drawing.Point(187, 83)
+        Me.txtLong.Name = "txtLong"
+        Me.txtLong.Size = New System.Drawing.Size(84, 20)
+        Me.txtLong.TabIndex = 12
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Location = New System.Drawing.Point(98, 86)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(75, 13)
+        Me.Label3.TabIndex = 13
+        Me.Label3.Text = "Site Longitude"
+        Me.ToolTip1.SetToolTip(Me.Label3, "Your observing longitude, entered as a decimal." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "E.G. -86.37" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Positive is Eas" & _
+        "t, Negative is West")
+        '
+        'Label4
+        '
+        Me.Label4.AutoSize = True
+        Me.Label4.Location = New System.Drawing.Point(107, 60)
+        Me.Label4.Name = "Label4"
+        Me.Label4.Size = New System.Drawing.Size(66, 13)
+        Me.Label4.TabIndex = 14
+        Me.Label4.Text = "Site Latitude"
+        Me.ToolTip1.SetToolTip(Me.Label4, "Your observing latitude, entered as a decimal." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "E.G. 36.48" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Positive is North" & _
+        ", Negative is South")
+        '
+        'ToolTip1
+        '
+        Me.ToolTip1.ToolTipTitle = "Site Location"
+        '
         'SetupDialogForm
         '
         Me.AcceptButton = Me.OK_Button
@@ -122,6 +168,10 @@ Partial Class SetupDialogForm
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.Cancel_Button
         Me.ClientSize = New System.Drawing.Size(359, 229)
+        Me.Controls.Add(Me.Label4)
+        Me.Controls.Add(Me.Label3)
+        Me.Controls.Add(Me.txtLong)
+        Me.Controls.Add(Me.txtLat)
         Me.Controls.Add(Me.Label2)
         Me.Controls.Add(Me.ComboBoxComPort)
         Me.Controls.Add(Me.chkTrace)
@@ -149,5 +199,10 @@ Partial Class SetupDialogForm
     Friend WithEvents chkTrace As System.Windows.Forms.CheckBox
     Friend WithEvents ComboBoxComPort As System.Windows.Forms.ComboBox
     Friend WithEvents Label2 As System.Windows.Forms.Label
+    Friend WithEvents txtLat As System.Windows.Forms.TextBox
+    Friend WithEvents txtLong As System.Windows.Forms.TextBox
+    Friend WithEvents Label3 As System.Windows.Forms.Label
+    Friend WithEvents ToolTip1 As System.Windows.Forms.ToolTip
+    Friend WithEvents Label4 As System.Windows.Forms.Label
 
 End Class

@@ -60,12 +60,19 @@ Public Class Telescope
 
     Friend Shared comPortProfileName As String = "COM Port" 'Constants used for Profile persistence
     Friend Shared traceStateProfileName As String = "Trace Level"
+    Friend Shared latitudeProfileName As String = "Latitude"
+    Friend Shared longitudeProfileName As String = "Longitude"
+
     Friend Shared comPortDefault As String = "COM1"
     Friend Shared traceStateDefault As String = "False"
+    Friend Shared latitudeDefault As Double = 39.8283
+    Friend Shared longitudeDefault As Double = -98.5795
 
     Friend Shared comPort As String ' Variables to hold the currrent device configuration
     Friend Shared portNum As String
     Friend Shared traceState As Boolean
+    Friend Shared latitude As Double
+    Friend Shared longitude As Double
 
     Private connectedState As Boolean ' Private variable to hold the connected state
     Private utilities As Util ' Private variable to hold an ASCOM Utilities object
@@ -73,8 +80,8 @@ Public Class Telescope
     Private TL As TraceLogger ' Private variable to hold the trace logger object (creates a diagnostic log file with information that you specify)
     Private objSerial As ASCOM.Utilities.Serial
     Private isParked As Boolean = False
-
     Dim mutexBlind As Mutex, mutexCommand As Mutex
+    ' Dim pierSide As Integer = 1
 
     '
     ' Constructor - Must be public for COM registration!
@@ -638,17 +645,33 @@ Public Class Telescope
 
     Public Property SideOfPier() As PierSide Implements ITelescopeV3.SideOfPier
         Get
-            TL.LogMessage("SideOfPier Get", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("SideOfPier", False)
+            Dim retVal As PierSide
+            If SiderealTime < 12 Then
+                If RightAscension >= SiderealTime And RightAscension <= SiderealTime + 12 Then
+                    retVal = PierSide.pierWest
+                Else
+                    retVal = PierSide.pierEast
+                End If
+            Else
+                If RightAscension <= SiderealTime And RightAscension >= SiderealTime - 12 Then
+                    retVal = PierSide.pierEast
+                Else
+                    retVal = PierSide.pierWest
+                End If
+            End If
+            TL.LogMessage("SideOfPier Get", retVal.ToString)
+            Return retVal
         End Get
         Set(value As PierSide)
-            TL.LogMessage("SideOfPier Set", "Not implemented")
+            '           TL.LogMessage("SideOfPier Set", value.ToString)
+            '          pierSide = value
+            TL.LogMessage("SideOfPier Set", "Not Implemented")
             Throw New ASCOM.PropertyNotImplementedException("SideOfPier", True)
         End Set
     End Property
 
     Public ReadOnly Property SiderealTime() As Double Implements ITelescopeV3.SiderealTime
-        ' ToDo - Does this do what I think it does?  If so LatLong just became handy for calculating Hour Angle of Polaris
+
         Get
             ' now using novas 3.1
             Dim lst As Double = 0.0
@@ -674,8 +697,10 @@ Public Class Telescope
 
     Public Property SiteElevation() As Double Implements ITelescopeV3.SiteElevation
         Get
-            TL.LogMessage("SiteElevation Get", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("SiteElevation", False)
+            TL.LogMessage("SiteElevation Get", "0 - Hardcoded")
+            ' Used by SiderealTIme
+            ' Throw New ASCOM.PropertyNotImplementedException("SiteElevation", False)
+            Return 0
         End Get
         Set(value As Double)
             TL.LogMessage("SiteElevation Set", "Not implemented")
@@ -686,8 +711,10 @@ Public Class Telescope
     Public Property SiteLatitude() As Double Implements ITelescopeV3.SiteLatitude
         ' ToDo Can we handle this entirely here, wihtout bothering the mount?
         Get
-            TL.LogMessage("SiteLatitude Get", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("SiteLatitude", False)
+            ' Used by SiderealTime
+            ' Throw New ASCOM.PropertyNotImplementedException("SiteLatitude", False)
+            TL.LogMessage("SiteLatitude Get", latitude.ToString)
+            Return latitude
         End Get
         Set(value As Double)
             TL.LogMessage("SiteLatitude Set", "Not implemented")
@@ -698,8 +725,10 @@ Public Class Telescope
     Public Property SiteLongitude() As Double Implements ITelescopeV3.SiteLongitude
         ' ToDo Can we handle this entirely here, wihtout bothering the mount?
         Get
-            TL.LogMessage("SiteLongitude Get", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("SiteLongitude", False)
+            ' We should be able to not implment this, but SGP (any others?) breaks if we don't.  Will confirm and log issue with MSS
+            ' Throw New ASCOM.PropertyNotImplementedException("SiteLongitude", False)
+            TL.LogMessage("SiteLongitude Get", longitude.ToString)
+            Return longitude
         End Get
         Set(value As Double)
             TL.LogMessage("SiteLongitude Set", "Not implemented")
@@ -939,6 +968,8 @@ Public Class Telescope
             driverProfile.DeviceType = "Telescope"
             traceState = Convert.ToBoolean(driverProfile.GetValue(driverID, traceStateProfileName, String.Empty, traceStateDefault))
             comPort = driverProfile.GetValue(driverID, comPortProfileName, String.Empty, comPortDefault)
+            latitude = driverProfile.GetValue(driverID, latitudeProfileName, String.Empty, latitudeDefault)
+            longitude = driverProfile.GetValue(driverID, longitudeProfileName, String.Empty, longitudeDefault)
         End Using
     End Sub
 
@@ -950,6 +981,8 @@ Public Class Telescope
             driverProfile.DeviceType = "Telescope"
             driverProfile.WriteValue(driverID, traceStateProfileName, traceState.ToString())
             driverProfile.WriteValue(driverID, comPortProfileName, comPort.ToString())
+            driverProfile.WriteValue(driverID, latitudeProfileName, latitude.ToString())
+            driverProfile.WriteValue(driverID, longitudeProfileName, longitude.ToString())
         End Using
 
     End Sub

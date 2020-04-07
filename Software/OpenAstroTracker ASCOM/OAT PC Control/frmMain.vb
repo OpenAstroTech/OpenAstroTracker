@@ -25,6 +25,14 @@ Public Class frmMain
         If (IsConnected) Then
             driver.Connected = False
             Timer1.Enabled = False
+            txtLat.Text = ""
+            txtLong.Text = ""
+            lblVersion.Text = ""
+            txtMountDec.Text = ""
+            txtMountRA.Text = ""
+            txtTargetDec.Text = ""
+            txtTargetRA.Text = ""
+
         Else
             driver = New ASCOM.DriverAccess.Telescope(My.Settings.DriverId)
             driver.Connected = True
@@ -39,6 +47,9 @@ Public Class frmMain
             nud_RAs.Value = CInt(txtMountRA.Text.Substring(8, 2))
 
             lblVersion.Text = driver.Action("Telescope:getFirmwareVer","")
+
+            txtLat.Text = driver.SiteLatitude.ToString
+            txtLong.Text = driver.SiteLongitude.ToString
 
             Timer1.Enabled = True
         End If

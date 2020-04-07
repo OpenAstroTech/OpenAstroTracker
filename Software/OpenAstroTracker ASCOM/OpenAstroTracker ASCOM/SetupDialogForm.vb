@@ -10,6 +10,9 @@ Public Class SetupDialogForm
         ' Persist new values of user settings to the ASCOM profile
         Telescope.comPort = ComboBoxComPort.SelectedItem ' Update the state variables with results from the dialogue
         Telescope.traceState = chkTrace.Checked
+        Telescope.latitude = CDbl(txtLat.Text)
+        Telescope.longitude = CDbl(txtLong.Text)
+
         Me.DialogResult = System.Windows.Forms.DialogResult.OK
         Me.Close()
     End Sub
@@ -45,6 +48,20 @@ Public Class SetupDialogForm
         ' select the current port if possible
         If ComboBoxComPort.Items.Contains(Telescope.comPort) Then
             ComboBoxComPort.SelectedItem = Telescope.comPort
+        End If
+        txtLat.Text = Telescope.latitude.ToString
+        txtLong.Text = Telescope.longitude.ToString
+    End Sub
+
+    Private Sub txtLat_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtLat.KeyPress
+        If Not Char.IsDigit(e.KeyChar) And Not Char.IsControl(e.KeyChar) And Not e.KeyChar = "." And Not e.KeyChar = "-" Then
+            e.Handled = True
+        End If
+    End Sub
+
+    Private Sub txtLong_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtLong.KeyPress
+        If Not Char.IsDigit(e.KeyChar) And Not Char.IsControl(e.KeyChar) And Not e.KeyChar = "." And Not e.KeyChar = "-" Then
+            e.Handled = True
         End If
     End Sub
 
