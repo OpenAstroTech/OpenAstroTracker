@@ -20,7 +20,7 @@ bool processHAKeys() {
     // slow down key repetitions
     mount.delay(200);
     waitForRelease = false;
-  } 
+  }
   else if (lcdButtons.keyChanged(key)) {
     switch (key) {
 
@@ -29,18 +29,20 @@ bool processHAKeys() {
         }
         break;
 
-      case btnSELECT:
-      case btnRIGHT: {
+      case btnSELECT: {
           EEPROM.update(1, mount.HA().getHours());
           EEPROM.update(2, mount.HA().getMinutes());
           lcdMenu.printMenu("Stored.");
           mount.delay(500);
-
           if (startupState == StartupWaitForHACompletion) {
             startupState = StartupHAConfirmed;
             inStartup = true;
           }
-          else {
+        }
+        break;
+
+      case btnRIGHT: {
+          if (startupState != StartupWaitForHACompletion) {
             lcdMenu.setNextActive();
           }
         }

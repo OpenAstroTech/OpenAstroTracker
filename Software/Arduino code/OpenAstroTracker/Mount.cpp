@@ -486,6 +486,13 @@ void Mount::loop() {
   }
 
   if (raStillRunning || decStillRunning) {
+    if (!raStillRunning) {
+      _currentRA = _targetRA;
+    }
+    if (!decStillRunning) {
+      _currentDEC = _targetDEC;
+    }
+
     //Serial.println("Loop: RA " + String(raStillRunning) + String(decStillRunning) );
     displayStepperPositionThrottled();
   }
