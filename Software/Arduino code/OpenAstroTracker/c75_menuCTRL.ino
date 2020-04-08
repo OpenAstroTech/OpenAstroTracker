@@ -28,11 +28,14 @@ bool processControlKeys() {
         // Set flag to prevent resetting zero point when moving over the menu items
         inControlMode = false;
 
+#ifdef SUPPORT_GUIDED_STARTUP
         if (startupState == StartupWaitForPoleCompletion) {
           startupState = StartupPoleConfirmed;
           inStartup = true;
         }
-        else {
+        else 
+#endif        
+        {
           lcdMenu.setNextActive();
         }
 

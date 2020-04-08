@@ -213,6 +213,49 @@ const DegreeTime Mount::currentDEC() const {
 
 /////////////////////////////////
 //
+// syncRA
+//
+/////////////////////////////////
+// Set the current RA position to be the given time. We do this by adjusting HA by the
+// difference between the current RA and the RA that we were told we were actually at.
+void Mount::syncRA(int hour, int minute, int second) {
+  // Given the display RA coordinates...
+  DayTime newRA = DayTime(hour, minute, second);
+
+  // ... convert to the system RA values
+  newRA.subtractTime(_HACorrection);
+
+  // Calculate the difference between the new system RA and the current system RA
+  DayTime deltaRA = DayTime(newRA);
+  deltaRA.subtractTime(_currentRA);
+
+  // Now add this difference to HA.
+  DayTime newHA = DayTime(_HATime);
+  newHA.addTime(deltaRA);
+  setHA(newHA);
+
+  float targetRA,targetDEC;
+  calculateRAandDECSteppers(targetRA,targetDEC);
+  _stepperRA->setCurrentPosition(targetRA);
+}
+
+/////////////////////////////////
+//
+// syncDEC
+//
+/////////////////////////////////
+// Set the current DEC position to be the given degrees (which are 0 .. -180 for Northern Hemisphere)
+void Mount::syncDEC(int degree, int minute, int second) {
+  Serial.println("SyncDEC: " + String(degree) + ":" + String(minute) + ":" + String(second));
+  _currentDEC = DegreeTime(degree, minute, second);
+  _targetDEC = _currentDEC;
+  float targetRA,targetDEC;
+  calculateRAandDECSteppers(targetRA,targetDEC);
+  _stepperDEC->setCurrentPosition(targetDEC);
+}
+
+/////////////////////////////////
+//
 // startSlewingToTarget
 //
 /////////////////////////////////
@@ -223,8 +266,9 @@ void Mount::startSlewingToTarget() {
   // Calculate new RA stepper target (and DEC)
   _currentDECStepperPosition = _stepperDEC->currentPosition();
   _currentRAStepperPosition = _stepperRA->currentPosition();
-
-  calculateRAandDECSteppers();
+  float targetRA,targetDEC;
+  calculateRAandDECSteppers(targetRA,targetDEC);
+  moveSteppersTo(targetRA,targetDEC);
 
   _mountStatus |= STATUS_SLEWING | STATUS_SLEWING_TO_TARGET;
   _totalDECMove = 1.0f * _stepperDEC->distanceToGo();
@@ -577,7 +621,7 @@ float Mount::getSpeed(int direction) {
 //
 // This code tells the steppers to what location to move to, given the select right ascension and declination
 /////////////////////////////////
-void Mount::calculateRAandDECSteppers() {
+void Mount::calculateRAandDECSteppers(float& targetRA, float &targetDEC) {
   float hourPos = _targetRA.getTotalHours();
   // Map [0 to 24] range to [-12 to +12] range
   if (hourPos > 12) {
@@ -614,8 +658,8 @@ void Mount::calculateRAandDECSteppers() {
 
   //    float targetRA = clamp(-moveRA, -RAStepperLimit, RAStepperLimit);
   //    float targetDEC = clamp(moveDEC, DECStepperUpLimit, DECStepperDownLimit);
-  float targetRA = -moveRA;
-  float targetDEC = moveDEC;
+  targetRA = -moveRA;
+  targetDEC = moveDEC;
 
   // Can we get there without physical issues? (not doing anything with this yet)
   //  isUnreachable = ((targetRA != -moveRA) || (targetDEC != moveDEC));
@@ -626,7 +670,8 @@ void Mount::calculateRAandDECSteppers() {
   //  if (stepperDEC.currentPosition() != (targetDEC)) {
   //    Serial.println("Moving DEC from " + String(stepperDEC.currentPosition()) + " to " + targetDEC);
   //  }
-
+}
+void Mount::moveSteppersTo(float targetRA, float targetDEC) {
   // Show time: tell the steppers where to go!
   _stepperRA->moveTo(targetRA);
   _stepperDEC->moveTo(targetDEC);

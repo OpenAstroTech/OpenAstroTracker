@@ -14,7 +14,7 @@
 
   =======================================================================================================================================
 */
-String version = "V1.6.15";
+String version = "V1.6.16";
 
 // See NORTHERN_HEMISPHERE in Globals.h if you not in the northern hemisphere
 
@@ -72,9 +72,39 @@ int s = 25;
 // Comment this out to save some code space
 // #define DEBUG_MODE
 
+// Uncomment to run a key diagnostic. No tracker functions are on at all.
+// #define LCD_BUTTON_TEST
+
+////////////////////////////////////////////////////////////////
+//
+// FEATURE SUPPORT SECTION
+//
+// Since the Arduino Uno has very little memory (32KB code, 2KB data) all features
+// stretch the Uno a little too far. So in order to save memory we allow you to enable 
+// and disable features to help manage memory usage.
+// If you run the tracker with an Arduino Mega, you can uncomment all the features.
+//
+// If you would like to drive your OAT mount with only the LCD Shield, 
+// you should comment out SUPPORT_SERIAL_CONTROL
+//
+// If you feel comfortable with configuring the OAT at startup manually, you should comment 
+// out SUPPORT_GUIDED_STARTUP (maybe after you've used it for a while you know what to do).
+//
+// The POI menu can take a little data memory and you may not need it. If not, you can comment
+// out SUPPORT_POINTS_OF_INTEREST
+//
+////////////////////////////////////////////////////////////////
+
+
 // Uncomment this to support the heating menu
 // NOTE: Heating is currently not supported!
 // #define SUPPORT_HEATING
 
-// Uncomment to run a key diagnostic
-// #define LCD_BUTTON_TEST
+// Uncomment to support Guided Startup 
+// #define SUPPORT_GUIDED_STARTUP
+
+// Uncomment to support Serial MEADE support
+#define SUPPORT_SERIAL_CONTROL
+
+// Uncomment to support POI menu. Since memory is running low, this can be disabled in lieu of serial support.
+#define SUPPORT_POINTS_OF_INTEREST

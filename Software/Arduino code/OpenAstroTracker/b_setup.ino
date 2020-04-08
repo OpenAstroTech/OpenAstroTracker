@@ -15,11 +15,11 @@ void setup() {
   //Serial.begin(38400);
   Serial.begin(57600);
   //BT.begin(9600);
-  
+
 #ifdef DEBUG_MODE
   Serial.println("Hello");
 #endif
-  
+
   // Show a splash screen
   lcdMenu.setCursor(0, 0);
   lcdMenu.printMenu("OpenAstroTracker");
@@ -59,7 +59,9 @@ void setup() {
   // Create the LCD top-level menu items
   lcdMenu.addItem("RA", RA_Menu);
   lcdMenu.addItem("DEC", DEC_Menu);
+#ifdef SUPPORT_POINTS_OF_INTEREST
   lcdMenu.addItem("POI", POI_Menu);
+#endif
   lcdMenu.addItem("HOME", Home_Menu);
   lcdMenu.addItem("HA", HA_Menu);
 #ifdef SUPPORT_HEATING
@@ -72,8 +74,11 @@ void setup() {
   while (millis() - now < 750) {
     mount.loop();
   }
+
+  lcdMenu.updateDisplay();
+  
 #ifdef DEBUG_MODE
   Serial.println("SetupDone");
 #endif
-
+  
 }

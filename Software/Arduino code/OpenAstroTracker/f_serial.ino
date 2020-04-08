@@ -1,19 +1,4 @@
-/*
-
-
-  // Serial control variables
-  bool serialIsSlewing = false; // When the serial port is slewing the tracker
-  bool slewingToHome = false;   // When the serial port is slewing to home/park.
-  bool parking = false;
-
-  void startSlewing() {
-  serialIsSlewing = true;
-  parking = false;
-  doCalculations();
-  handleDECandRACalculations();
-  startMoveSteppersToTargetAsync();
-  }
-*/
+#ifdef SUPPORT_SERIAL_CONTROL
 
 /////////////////////////////
 // INIT
@@ -73,8 +58,10 @@ void handleMeadeSetInfo(String inCmd) {
     Serial.print("0");
     return;
   }
-  if (inCmd[0] == 'd') {
+  if ((inCmd[0] == 'd') && (inCmd.length() == 10)) {
     // Set DEC
+    //   0123456789
+    // :Sd+84*03:02
     int sgn = inCmd[1] == '+' ? 1 : -1;
     if ((inCmd[4] == '*') && (inCmd[7] == ':') )
     {
@@ -85,8 +72,10 @@ void handleMeadeSetInfo(String inCmd) {
       // Did not understand the coordinate
       Serial.print("0");
     }
-  } else if (inCmd[0] == 'r') {
+  } else if (inCmd[0] == 'r' && (inCmd.length() == 9)) {
     // Set RA
+    //   012345678
+    // :Sr04:03:02
     if ((inCmd[3] == ':') && (inCmd[6] == ':') )
     {
       mount.targetRA().set(inCmd.substring(1, 3).toInt(), inCmd.substring(4, 6).toInt(), inCmd.substring(7, 9).toInt());
@@ -102,6 +91,21 @@ void handleMeadeSetInfo(String inCmd) {
     int minHA = inCmd.substring(4, 6).toInt();
     mount.setHA(DayTime(hHA, minHA, 0));
     Serial.print("0");
+  }
+  else if ((inCmd[0] == 'Y') && inCmd.length() == 19) {
+    // Sync RA, DEC - current position is teh given coordinate
+    //   0123456789012345678
+    // :SY+84*03:02.18:34:12
+    int sgn = inCmd[1] == '+' ? 1 : -1;
+    if ((inCmd[4] == '*') && (inCmd[7] == ':') && (inCmd[10] == '.') && (inCmd[13] == ':') && (inCmd[16] == ':')) {
+      int deg = inCmd.substring(2, 4).toInt();
+      mount.syncDEC(sgn * deg + (NORTHERN_HEMISPHERE ? -90 : 90), inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
+      mount.syncRA(inCmd.substring(11, 13).toInt(), inCmd.substring(14, 16).toInt(), inCmd.substring(17, 19).toInt());
+      Serial.print("1");
+    }
+    else {
+      Serial.print("0");
+    }
   }
 }
 
@@ -149,19 +153,6 @@ void handleMeadeQuit(String inCmd) {
 void serialLoop()
 {
   mount.loop();
-  //  runTracker();
-  //  if (serialIsSlewing) {
-  //    if (!moveSteppersToTargetAsync()) {
-  //      if (slewingToHome) {
-  //        moveToHomePositionCompleted();
-  //        slewingToHome = false;
-  //        if (parking){
-  //          tracking = 0;
-  //        }
-  //      }
-  //      serialIsSlewing = false;
-  //    }
-  //  }
 }
 
 //////////////////////////////////////////////////
@@ -198,3 +189,5 @@ void serialEvent() {
     logString = logString.substring(500);
   }
 }
+
+#endif

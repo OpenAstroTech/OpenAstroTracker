@@ -1,3 +1,4 @@
+#ifdef SUPPORT_POINTS_OF_INTEREST
 struct PointOfInterest {
   char* pDisplay;
   byte hourRA;
@@ -62,3 +63,4 @@ void printPOISubmenu() {
     lcdMenu.printMenu(pointOfInterest[currentPOI].pDisplay);
   }
 }
+#endif

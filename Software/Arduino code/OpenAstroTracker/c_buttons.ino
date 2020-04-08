@@ -5,7 +5,7 @@ int lastLoopKey = -1;
 void loop() {
   byte lcd_key;
   int adc_key_in;
-  
+
 #ifdef LCD_BUTTON_TEST
 
   lcdMenu.setCursor(0, 0);
@@ -43,6 +43,7 @@ void loop() {
   lcdMenu.setCursor(0, 1);
   //lcd_key = lcdButtons.currentKey();
 
+#ifdef SUPPORT_SERIAL_CONTROL
   if (inSerialControl) {
     if (lcdButtons.keyChanged(lcd_key)) {
       if (lcd_key == btnSELECT) {
@@ -59,15 +60,20 @@ void loop() {
       serialLoop();
     }
   }
-  else {
+  else
+#endif
+  {
 
     bool waitForButtonRelease = false;
 
     // Handle the keys
+#ifdef SUPPORT_GUIDED_STARTUP
     if (inStartup) {
       waitForButtonRelease = processStartupKeys();
     }
-    else {
+    else
+#endif
+    {
       switch (lcdMenu.getActive()) {
         case RA_Menu:
           waitForButtonRelease = processRAKeys();
@@ -75,18 +81,22 @@ void loop() {
         case DEC_Menu:
           waitForButtonRelease = processDECKeys();
           break;
+#ifdef SUPPORT_POINTS_OF_INTEREST
         case POI_Menu:
           waitForButtonRelease = processPOIKeys();
           break;
+#endif
         case Home_Menu:
           waitForButtonRelease = processHomeKeys();
           break;
         case HA_Menu:
           waitForButtonRelease = processHAKeys();
           break;
+#ifdef SUPPORT_HEATING
         case Heat_Menu:
           waitForButtonRelease = processHeatKeys();
           break;
+#endif
         case Calibration_Menu:
           waitForButtonRelease = processCalibrationKeys();
           break;
@@ -116,17 +126,24 @@ void loop() {
     // Input handled, do output
     lcdMenu.setCursor(0, 1);
 
+#ifdef SUPPORT_GUIDED_STARTUP
     if (inStartup) {
       prinStartupMenu();
     }
-    else {
+    else
+#endif
+    {
       switch (lcdMenu.getActive()) {
         case RA_Menu: printRASubmenu(); break;
         case DEC_Menu: printDECSubmenu(); break;
+#ifdef SUPPORT_POINTS_OF_INTEREST
         case POI_Menu: printPOISubmenu(); break;
+#endif
         case HA_Menu: printHASubmenu(); break;
         case Home_Menu: printHomeSubmenu(); break;
+#ifdef SUPPORT_HEATING
         case Heat_Menu: printHeatSubmenu(); break;
+#endif
         case Control_Menu: printControlSubmenu(); break;
         case Calibration_Menu: printCalibrationSubmenu(); break;
         case Status_Menu: printStatusSubmenu(); break;

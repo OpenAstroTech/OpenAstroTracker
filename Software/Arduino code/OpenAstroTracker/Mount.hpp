@@ -59,6 +59,12 @@ class Mount {
     // Get current DEC value.
     const DegreeTime currentDEC() const;
 
+    // Set the current RA position to be the given time
+    void syncRA(int hour, int minute, int second);
+
+    // Set the current DEC position to be the given degrees
+    void syncDEC(int degree, int minute, int second);
+
     float getSpeedCalibration();
 
     void setSpeedCalibration(float val);
@@ -114,10 +120,11 @@ class Mount {
     float getSpeed(int direction);
 
     void displayStepperPositionThrottled();
-  
+
   private:
-    void calculateRAandDECSteppers();
+    void calculateRAandDECSteppers(float& targetRA, float& targetDEC);
     void displayStepperPosition();
+    void moveSteppersTo(float targetRA, float targetDEC);
 
     // Returns NOT_SLEWING, SLEWING_DEC, SLEWING_RA, or SLEWING_BOTH. SLEWING_TRACKING is an overlaid bit.
     byte slewStatus();
@@ -128,15 +135,15 @@ class Mount {
     int _stepsPerDECDegree;
     long _lastHASet;
     DayTime _HAAdjust;
-    
+
     DayTime _targetRA;
     DayTime _currentRA;
     long _currentRAStepperPosition;
-    
+
     DegreeTime _targetDEC;
     DegreeTime _currentDEC;
     long _currentDECStepperPosition;
-    
+
     float _totalDECMove;
     float _totalRAMove;
 

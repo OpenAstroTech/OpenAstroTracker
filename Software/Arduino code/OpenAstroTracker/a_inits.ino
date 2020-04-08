@@ -40,7 +40,11 @@
 // How many menu items at most?
 #define MAXMENUITEMS 10
 
+#ifdef SUPPORT_GUIDED_STARTUP
 bool inStartup = true;        // Start with a guided startup
+#else
+bool inStartup = false;        // Start with a guided startup
+#endif
 
 // Serial control variables
 bool inSerialControl = false; // When the serial port is in control

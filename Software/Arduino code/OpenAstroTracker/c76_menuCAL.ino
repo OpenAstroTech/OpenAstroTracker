@@ -31,7 +31,7 @@ bool processCalibrationKeys() {
     else {
       calDelay = 150;
     }
-  } 
+  }
   else if (calState == POLAR_CALIBRATION_WAIT_HOME) {
     if (!mount.isSlewingRAorDEC()) {
       lcdMenu.updateDisplay();
@@ -79,6 +79,7 @@ bool processCalibrationKeys() {
 
       case HIGHLIGHT_POLAR:
         if (key == btnDOWN) calState = HIGHLIGHT_SPEED;
+        else if (key == btnUP) calState = HIGHLIGHT_SPEED;
         else if (key == btnSELECT) {
           calState = POLAR_CALIBRATION_WAIT;
 
@@ -92,6 +93,8 @@ bool processCalibrationKeys() {
           // Now set DEC to move to Polaris
           mount.targetDEC() = DegreeTime(89 - (NORTHERN_HEMISPHERE ? 90 : -90), 21, 3);
           mount.startSlewingToTarget();
+        } else if (key == btnRIGHT) {
+          lcdMenu.setNextActive();
         }
         break;
 
@@ -112,6 +115,7 @@ bool processCalibrationKeys() {
 
       case HIGHLIGHT_SPEED:
         if (key == btnDOWN) calState = HIGHLIGHT_POLAR;
+        if (key == btnUP) calState = HIGHLIGHT_POLAR;
         else if (key == btnSELECT) calState = SPEED_CALIBRATION;
         else if (key == btnRIGHT) {
           lcdMenu.setNextActive();
