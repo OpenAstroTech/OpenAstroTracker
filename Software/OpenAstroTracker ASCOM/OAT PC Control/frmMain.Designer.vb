@@ -73,6 +73,8 @@ Partial Class frmMain
         Me.Label14 = New System.Windows.Forms.Label()
         Me.txtLong = New System.Windows.Forms.TextBox()
         Me.txtLat = New System.Windows.Forms.TextBox()
+        Me.GroupBox6 = New System.Windows.Forms.GroupBox()
+        Me.Button1 = New System.Windows.Forms.Button()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         CType(Me.nud_Decm, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -84,6 +86,7 @@ Partial Class frmMain
         Me.GroupBox3.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
         Me.GroupBox5.SuspendLayout()
+        Me.GroupBox6.SuspendLayout()
         Me.SuspendLayout()
         '
         'labelDriverId
@@ -328,7 +331,7 @@ Partial Class frmMain
         Me.GroupBox3.Controls.Add(Me.btnNorth)
         Me.GroupBox3.Location = New System.Drawing.Point(12, 198)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(361, 180)
+        Me.GroupBox3.Size = New System.Drawing.Size(361, 117)
         Me.GroupBox3.TabIndex = 8
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Manual Slew"
@@ -553,11 +556,31 @@ Partial Class frmMain
         Me.txtLat.Size = New System.Drawing.Size(84, 20)
         Me.txtLat.TabIndex = 15
         '
+        'GroupBox6
+        '
+        Me.GroupBox6.Controls.Add(Me.Button1)
+        Me.GroupBox6.Location = New System.Drawing.Point(12, 321)
+        Me.GroupBox6.Name = "GroupBox6"
+        Me.GroupBox6.Size = New System.Drawing.Size(361, 57)
+        Me.GroupBox6.TabIndex = 11
+        Me.GroupBox6.TabStop = False
+        Me.GroupBox6.Text = "Debug Area"
+        '
+        'Button1
+        '
+        Me.Button1.Location = New System.Drawing.Point(91, 20)
+        Me.Button1.Name = "Button1"
+        Me.Button1.Size = New System.Drawing.Size(75, 23)
+        Me.Button1.TabIndex = 0
+        Me.Button1.Text = "Button1"
+        Me.Button1.UseVisualStyleBackColor = True
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(745, 391)
+        Me.Controls.Add(Me.GroupBox6)
         Me.Controls.Add(Me.GroupBox5)
         Me.Controls.Add(Me.GroupBox4)
         Me.Controls.Add(Me.GroupBox3)
@@ -579,6 +602,7 @@ Partial Class frmMain
         Me.GroupBox4.PerformLayout()
         Me.GroupBox5.ResumeLayout(False)
         Me.GroupBox5.PerformLayout()
+        Me.GroupBox6.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -631,5 +655,7 @@ Partial Class frmMain
     Friend WithEvents Label14 As System.Windows.Forms.Label
     Friend WithEvents txtLong As System.Windows.Forms.TextBox
     Friend WithEvents txtLat As System.Windows.Forms.TextBox
+    Friend WithEvents GroupBox6 As System.Windows.Forms.GroupBox
+    Friend WithEvents Button1 As System.Windows.Forms.Button
 
 End Class

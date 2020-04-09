@@ -81,7 +81,7 @@ Public Class Telescope
     Private objSerial As ASCOM.Utilities.Serial
     Private isParked As Boolean = False
     Dim mutexBlind As Mutex, mutexCommand As Mutex
-    ' Dim pierSide As Integer = 1
+    Private m_TrackingRates(-1) As DriveRates
 
     '
     ' Constructor - Must be public for COM registration!
@@ -313,8 +313,13 @@ Public Class Telescope
 
 #Region "ITelescope Implementation"
     Public Sub AbortSlew() Implements ITelescopeV3.AbortSlew
-        CommandBlind(":Q")
-        TL.LogMessage("AbortSlew", ":Q# Issued")
+        If Not AtPark Then
+            CommandBlind(":Q")
+            TL.LogMessage("AbortSlew", ":Q# Issued")
+        Else
+            Throw New ASCOM.ParkedException("AbortSlew")
+        End If
+
     End Sub
 
     Public ReadOnly Property AlignmentMode() As AlignmentModes Implements ITelescopeV3.AlignmentMode
@@ -758,31 +763,34 @@ Public Class Telescope
     End Sub
 
     Public Sub SlewToCoordinates(RightAscension As Double, Declination As Double) Implements ITelescopeV3.SlewToCoordinates
+        If RightAscension <= 24 And RightAscension >= 0 And Declination >= -90 And Declination <= 90 Then
 
-        If Not AtPark Then
-            TL.LogMessage("SlewToCoordinates", "RA " + RightAscension.ToString + ", Dec " + Declination.ToString)
-            Dim strRAcmd = ":Sr" + utilities.HoursToHMS(RightAscension, ":", ":")
-            Dim strDeccmd = utilities.DegreesToDMS(Declination, "*", ":", "")
-            If Declination < 0 Then
-                strDeccmd = "-" + strDeccmd
-            Else
-                strDeccmd = "+" + strDeccmd
-            End If
-            strDeccmd = ":Sd" + strDeccmd
-            TL.LogMessage("SlewToCoordinatesRACmd", strRAcmd)
-            TL.LogMessage("SlewToCoordinatesDecCmd", strDeccmd)
-            If CommandString(strRAcmd) = "1" Then
-                If CommandString(strDeccmd) = "1" Then
-                    CommandString(":MS")
+            If Not AtPark Then
+                TL.LogMessage("SlewToCoordinates", "RA " + RightAscension.ToString + ", Dec " + Declination.ToString)
+                Dim strRAcmd = ":Sr" + utilities.HoursToHMS(RightAscension, ":", ":")
+                Dim strDeccmd = utilities.DegreesToDMS(Declination, "*", ":", "")
+                If Declination < 0 Then
+                    strDeccmd = "-" + strDeccmd
+                Else
+                    strDeccmd = "+" + strDeccmd
                 End If
+                strDeccmd = ":Sd" + strDeccmd
+                TL.LogMessage("SlewToCoordinatesRACmd", strRAcmd)
+                TL.LogMessage("SlewToCoordinatesDecCmd", strDeccmd)
+                If CommandString(strRAcmd) = "1" Then
+                    If CommandString(strDeccmd) = "1" Then
+                        CommandString(":MS")
+                    End If
 
+                End If
+            Else
+                TL.LogMessage("SlewToCoordinates", "Parked")
+                Throw New ASCOM.ParkedException("SlewToCoordinates")
             End If
         Else
-            TL.LogMessage("SlewToCoordinates", "Parked")
-            Throw New ASCOM.ParkedException("SlewToCoordinates")
+            TL.LogMessage("SlewToCoordinates", "Invalid coordinates RA: " + RightAscension.ToString + ", Dec: " + Declination.ToString)
+            Throw New ASCOM.InvalidValueException("SlewToCoordinates")
         End If
-
-
     End Sub
 
     Public Sub SlewToCoordinatesAsync(RightAscension As Double, Declination As Double) Implements ITelescopeV3.SlewToCoordinatesAsync
@@ -797,7 +805,7 @@ Public Class Telescope
     End Sub
 
     Public Sub SlewToTargetAsync() Implements ITelescopeV3.SlewToTargetAsync
-        TL.LogMessage("    Public Sub SlewToTargetAsync() Implements ITelescopeV3.SlewToTargetAsync", "Not implemented")
+        TL.LogMessage("SlewToTargetAsync", "Not implemented")
         Throw New ASCOM.MethodNotImplementedException("SlewToTargetAsync")
     End Sub
 
@@ -867,8 +875,9 @@ Public Class Telescope
 
     Public Property TrackingRate() As DriveRates Implements ITelescopeV3.TrackingRate
         Get
-            TL.LogMessage("TrackingRate Get", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("TrackingRate", False)
+            TL.LogMessage("TrackingRate Get", DriveRates.driveSidereal.ToString)
+            Return DriveRates.driveSidereal
+            ' Throw New ASCOM.PropertyNotImplementedException("TrackingRate", False)
         End Get
         Set(value As DriveRates)
             TL.LogMessage("TrackingRate Set", "Not implemented")

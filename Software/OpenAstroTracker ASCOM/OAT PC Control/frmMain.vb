@@ -174,4 +174,10 @@ Public Class frmMain
             btnHalt.Enabled = True
         End If
     End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+
+        MsgBox(driver.TrackingRates.Count)
+
+    End Sub
 End Class
