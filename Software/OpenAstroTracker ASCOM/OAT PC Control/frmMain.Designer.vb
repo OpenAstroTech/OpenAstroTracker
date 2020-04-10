@@ -29,6 +29,8 @@ Partial Class frmMain
         Me.buttonChoose = New System.Windows.Forms.Button()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
+        Me.btnPark = New System.Windows.Forms.Button()
+        Me.btnHalt = New System.Windows.Forms.Button()
         Me.btnSlewAsync = New System.Windows.Forms.Button()
         Me.btnSlewSync = New System.Windows.Forms.Button()
         Me.Label8 = New System.Windows.Forms.Label()
@@ -46,7 +48,12 @@ Partial Class frmMain
         Me.nud_RAs = New System.Windows.Forms.NumericUpDown()
         Me.nud_RAh = New System.Windows.Forms.NumericUpDown()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
+        Me.btnEast = New System.Windows.Forms.Button()
+        Me.btnWest = New System.Windows.Forms.Button()
+        Me.btnSouth = New System.Windows.Forms.Button()
+        Me.btnNorth = New System.Windows.Forms.Button()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
+        Me.lblVersion = New System.Windows.Forms.Label()
         Me.Label11 = New System.Windows.Forms.Label()
         Me.Label12 = New System.Windows.Forms.Label()
         Me.txtTargetDec = New System.Windows.Forms.TextBox()
@@ -56,13 +63,18 @@ Partial Class frmMain
         Me.txtMountDec = New System.Windows.Forms.TextBox()
         Me.txtMountRA = New System.Windows.Forms.TextBox()
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
-        Me.btnHalt = New System.Windows.Forms.Button()
-        Me.btnPark = New System.Windows.Forms.Button()
-        Me.lblVersion = New System.Windows.Forms.Label()
         Me.ToolTipPark = New System.Windows.Forms.ToolTip(Me.components)
         Me.ToolTipSlew = New System.Windows.Forms.ToolTip(Me.components)
         Me.ToolTipSlewAsync = New System.Windows.Forms.ToolTip(Me.components)
         Me.ToolTipHalt = New System.Windows.Forms.ToolTip(Me.components)
+        Me.ToolTipSlewAxis = New System.Windows.Forms.ToolTip(Me.components)
+        Me.GroupBox5 = New System.Windows.Forms.GroupBox()
+        Me.Label13 = New System.Windows.Forms.Label()
+        Me.Label14 = New System.Windows.Forms.Label()
+        Me.txtLong = New System.Windows.Forms.TextBox()
+        Me.txtLat = New System.Windows.Forms.TextBox()
+        Me.GroupBox6 = New System.Windows.Forms.GroupBox()
+        Me.Button1 = New System.Windows.Forms.Button()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         CType(Me.nud_Decm, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -71,7 +83,10 @@ Partial Class frmMain
         CType(Me.nud_RAm, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.nud_RAs, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.nud_RAh, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox3.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
+        Me.GroupBox5.SuspendLayout()
+        Me.GroupBox6.SuspendLayout()
         Me.SuspendLayout()
         '
         'labelDriverId
@@ -142,6 +157,29 @@ Partial Class frmMain
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "Slew to Target"
         '
+        'btnPark
+        '
+        Me.btnPark.Enabled = False
+        Me.btnPark.Location = New System.Drawing.Point(117, 118)
+        Me.btnPark.Name = "btnPark"
+        Me.btnPark.Size = New System.Drawing.Size(96, 23)
+        Me.btnPark.TabIndex = 17
+        Me.btnPark.Text = "Park"
+        Me.ToolTipPark.SetToolTip(Me.btnPark, "Returns mount to home position, and stops motors.  (NOTE : Motors do not currentl" & _
+        "y stop!)")
+        Me.btnPark.UseVisualStyleBackColor = True
+        '
+        'btnHalt
+        '
+        Me.btnHalt.Enabled = False
+        Me.btnHalt.Location = New System.Drawing.Point(117, 89)
+        Me.btnHalt.Name = "btnHalt"
+        Me.btnHalt.Size = New System.Drawing.Size(96, 23)
+        Me.btnHalt.TabIndex = 16
+        Me.btnHalt.Text = "Halt"
+        Me.ToolTipHalt.SetToolTip(Me.btnHalt, "Stops all mount movement." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Currently unreliable, pay attention!")
+        Me.btnHalt.UseVisualStyleBackColor = True
+        '
         'btnSlewAsync
         '
         Me.btnSlewAsync.Enabled = False
@@ -155,6 +193,7 @@ Partial Class frmMain
         '
         'btnSlewSync
         '
+        Me.btnSlewSync.Enabled = False
         Me.btnSlewSync.Location = New System.Drawing.Point(14, 89)
         Me.btnSlewSync.Name = "btnSlewSync"
         Me.btnSlewSync.Size = New System.Drawing.Size(96, 23)
@@ -286,12 +325,72 @@ Partial Class frmMain
         '
         'GroupBox3
         '
+        Me.GroupBox3.Controls.Add(Me.btnEast)
+        Me.GroupBox3.Controls.Add(Me.btnWest)
+        Me.GroupBox3.Controls.Add(Me.btnSouth)
+        Me.GroupBox3.Controls.Add(Me.btnNorth)
         Me.GroupBox3.Location = New System.Drawing.Point(12, 198)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(361, 180)
+        Me.GroupBox3.Size = New System.Drawing.Size(361, 117)
         Me.GroupBox3.TabIndex = 8
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Manual Slew"
+        '
+        'btnEast
+        '
+        Me.btnEast.Enabled = False
+        Me.btnEast.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnEast.Location = New System.Drawing.Point(195, 49)
+        Me.btnEast.Name = "btnEast"
+        Me.btnEast.Size = New System.Drawing.Size(28, 23)
+        Me.btnEast.TabIndex = 3
+        Me.btnEast.Text = "E"
+        Me.ToolTipSlewAxis.SetToolTip(Me.btnEast, "Slew in the direction indicated." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "The mount will move in the direction indicate" & _
+        "d as long as the" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "button remains pressed.  Releasing the button will stop" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "the s" & _
+        "lew." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Not yet implemented.")
+        Me.btnEast.UseVisualStyleBackColor = True
+        '
+        'btnWest
+        '
+        Me.btnWest.Enabled = False
+        Me.btnWest.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnWest.Location = New System.Drawing.Point(124, 49)
+        Me.btnWest.Name = "btnWest"
+        Me.btnWest.Size = New System.Drawing.Size(28, 23)
+        Me.btnWest.TabIndex = 2
+        Me.btnWest.Text = "W"
+        Me.ToolTipSlewAxis.SetToolTip(Me.btnWest, "Slew in the direction indicated." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "The mount will move in the direction indicate" & _
+        "d as long as the" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "button remains pressed.  Releasing the button will stop" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "the s" & _
+        "lew." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Not yet implemented.")
+        Me.btnWest.UseVisualStyleBackColor = True
+        '
+        'btnSouth
+        '
+        Me.btnSouth.Enabled = False
+        Me.btnSouth.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnSouth.Location = New System.Drawing.Point(161, 78)
+        Me.btnSouth.Name = "btnSouth"
+        Me.btnSouth.Size = New System.Drawing.Size(28, 23)
+        Me.btnSouth.TabIndex = 1
+        Me.btnSouth.Text = "S"
+        Me.ToolTipSlewAxis.SetToolTip(Me.btnSouth, "Slew in the direction indicated." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "The mount will move in the direction indicate" & _
+        "d as long as the" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "button remains pressed.  Releasing the button will stop" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "the s" & _
+        "lew." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Not yet implemented.")
+        Me.btnSouth.UseVisualStyleBackColor = True
+        '
+        'btnNorth
+        '
+        Me.btnNorth.Enabled = False
+        Me.btnNorth.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnNorth.Location = New System.Drawing.Point(161, 19)
+        Me.btnNorth.Name = "btnNorth"
+        Me.btnNorth.Size = New System.Drawing.Size(28, 23)
+        Me.btnNorth.TabIndex = 0
+        Me.btnNorth.Text = "N"
+        Me.ToolTipSlewAxis.SetToolTip(Me.btnNorth, "Slew in the direction indicated." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "The mount will move in the direction indicate" & _
+        "d as long as the" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "button remains pressed.  Releasing the button will stop" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "the s" & _
+        "lew." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Not yet implemented.")
+        Me.btnNorth.UseVisualStyleBackColor = True
         '
         'GroupBox4
         '
@@ -304,12 +403,21 @@ Partial Class frmMain
         Me.GroupBox4.Controls.Add(Me.Label1)
         Me.GroupBox4.Controls.Add(Me.txtMountDec)
         Me.GroupBox4.Controls.Add(Me.txtMountRA)
-        Me.GroupBox4.Location = New System.Drawing.Point(379, 101)
+        Me.GroupBox4.Location = New System.Drawing.Point(379, 198)
         Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(354, 277)
+        Me.GroupBox4.Size = New System.Drawing.Size(354, 180)
         Me.GroupBox4.TabIndex = 9
         Me.GroupBox4.TabStop = False
-        Me.GroupBox4.Text = "Mount Information"
+        Me.GroupBox4.Text = "Current Mount Information"
+        '
+        'lblVersion
+        '
+        Me.lblVersion.AutoSize = True
+        Me.lblVersion.Location = New System.Drawing.Point(214, 24)
+        Me.lblVersion.Name = "lblVersion"
+        Me.lblVersion.Size = New System.Drawing.Size(134, 13)
+        Me.lblVersion.TabIndex = 9
+        Me.lblVersion.Text = "OpenAstroTracker V0.0.00"
         '
         'Label11
         '
@@ -381,38 +489,7 @@ Partial Class frmMain
         '
         'Timer1
         '
-        Me.Timer1.Interval = 1000
-        '
-        'btnHalt
-        '
-        Me.btnHalt.Enabled = False
-        Me.btnHalt.Location = New System.Drawing.Point(117, 89)
-        Me.btnHalt.Name = "btnHalt"
-        Me.btnHalt.Size = New System.Drawing.Size(96, 23)
-        Me.btnHalt.TabIndex = 16
-        Me.btnHalt.Text = "Halt"
-        Me.ToolTipHalt.SetToolTip(Me.btnHalt, "Stops all mount movement." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Currently unreliable, pay attention!")
-        Me.btnHalt.UseVisualStyleBackColor = True
-        '
-        'btnPark
-        '
-        Me.btnPark.Location = New System.Drawing.Point(117, 118)
-        Me.btnPark.Name = "btnPark"
-        Me.btnPark.Size = New System.Drawing.Size(96, 23)
-        Me.btnPark.TabIndex = 17
-        Me.btnPark.Text = "Park"
-        Me.ToolTipPark.SetToolTip(Me.btnPark, "Returns mount to home position, and stops motors.  (NOTE : Motors do not currentl" & _
-        "y stop!)")
-        Me.btnPark.UseVisualStyleBackColor = True
-        '
-        'lblVersion
-        '
-        Me.lblVersion.AutoSize = True
-        Me.lblVersion.Location = New System.Drawing.Point(214, 24)
-        Me.lblVersion.Name = "lblVersion"
-        Me.lblVersion.Size = New System.Drawing.Size(134, 13)
-        Me.lblVersion.TabIndex = 9
-        Me.lblVersion.Text = "OpenAstroTracker V0.0.00"
+        Me.Timer1.Interval = 2000
         '
         'ToolTipPark
         '
@@ -430,11 +507,81 @@ Partial Class frmMain
         '
         Me.ToolTipHalt.ToolTipTitle = "Halt"
         '
+        'ToolTipSlewAxis
+        '
+        Me.ToolTipSlewAxis.ToolTipTitle = "Manual Slew"
+        '
+        'GroupBox5
+        '
+        Me.GroupBox5.Controls.Add(Me.Label13)
+        Me.GroupBox5.Controls.Add(Me.Label14)
+        Me.GroupBox5.Controls.Add(Me.txtLong)
+        Me.GroupBox5.Controls.Add(Me.txtLat)
+        Me.GroupBox5.Location = New System.Drawing.Point(379, 101)
+        Me.GroupBox5.Name = "GroupBox5"
+        Me.GroupBox5.Size = New System.Drawing.Size(354, 91)
+        Me.GroupBox5.TabIndex = 10
+        Me.GroupBox5.TabStop = False
+        Me.GroupBox5.Text = "Site Information"
+        '
+        'Label13
+        '
+        Me.Label13.AutoSize = True
+        Me.Label13.Location = New System.Drawing.Point(24, 27)
+        Me.Label13.Name = "Label13"
+        Me.Label13.Size = New System.Drawing.Size(66, 13)
+        Me.Label13.TabIndex = 18
+        Me.Label13.Text = "Site Latitude"
+        '
+        'Label14
+        '
+        Me.Label14.AutoSize = True
+        Me.Label14.Location = New System.Drawing.Point(15, 53)
+        Me.Label14.Name = "Label14"
+        Me.Label14.Size = New System.Drawing.Size(75, 13)
+        Me.Label14.TabIndex = 17
+        Me.Label14.Text = "Site Longitude"
+        '
+        'txtLong
+        '
+        Me.txtLong.Location = New System.Drawing.Point(104, 50)
+        Me.txtLong.Name = "txtLong"
+        Me.txtLong.Size = New System.Drawing.Size(84, 20)
+        Me.txtLong.TabIndex = 16
+        '
+        'txtLat
+        '
+        Me.txtLat.Location = New System.Drawing.Point(104, 24)
+        Me.txtLat.Name = "txtLat"
+        Me.txtLat.Size = New System.Drawing.Size(84, 20)
+        Me.txtLat.TabIndex = 15
+        '
+        'GroupBox6
+        '
+        Me.GroupBox6.Controls.Add(Me.Button1)
+        Me.GroupBox6.Location = New System.Drawing.Point(12, 321)
+        Me.GroupBox6.Name = "GroupBox6"
+        Me.GroupBox6.Size = New System.Drawing.Size(361, 57)
+        Me.GroupBox6.TabIndex = 11
+        Me.GroupBox6.TabStop = False
+        Me.GroupBox6.Text = "Debug Area"
+        '
+        'Button1
+        '
+        Me.Button1.Location = New System.Drawing.Point(91, 20)
+        Me.Button1.Name = "Button1"
+        Me.Button1.Size = New System.Drawing.Size(75, 23)
+        Me.Button1.TabIndex = 0
+        Me.Button1.Text = "Button1"
+        Me.Button1.UseVisualStyleBackColor = True
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(745, 391)
+        Me.Controls.Add(Me.GroupBox6)
+        Me.Controls.Add(Me.GroupBox5)
         Me.Controls.Add(Me.GroupBox4)
         Me.Controls.Add(Me.GroupBox3)
         Me.Controls.Add(Me.GroupBox2)
@@ -450,8 +597,12 @@ Partial Class frmMain
         CType(Me.nud_RAm, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.nud_RAs, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.nud_RAh, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.GroupBox3.ResumeLayout(False)
         Me.GroupBox4.ResumeLayout(False)
         Me.GroupBox4.PerformLayout()
+        Me.GroupBox5.ResumeLayout(False)
+        Me.GroupBox5.PerformLayout()
+        Me.GroupBox6.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -494,5 +645,17 @@ Partial Class frmMain
     Friend WithEvents ToolTipHalt As System.Windows.Forms.ToolTip
     Friend WithEvents ToolTipSlewAsync As System.Windows.Forms.ToolTip
     Friend WithEvents ToolTipSlew As System.Windows.Forms.ToolTip
+    Friend WithEvents btnEast As System.Windows.Forms.Button
+    Friend WithEvents btnWest As System.Windows.Forms.Button
+    Friend WithEvents btnSouth As System.Windows.Forms.Button
+    Friend WithEvents btnNorth As System.Windows.Forms.Button
+    Friend WithEvents ToolTipSlewAxis As System.Windows.Forms.ToolTip
+    Friend WithEvents GroupBox5 As System.Windows.Forms.GroupBox
+    Friend WithEvents Label13 As System.Windows.Forms.Label
+    Friend WithEvents Label14 As System.Windows.Forms.Label
+    Friend WithEvents txtLong As System.Windows.Forms.TextBox
+    Friend WithEvents txtLat As System.Windows.Forms.TextBox
+    Friend WithEvents GroupBox6 As System.Windows.Forms.GroupBox
+    Friend WithEvents Button1 As System.Windows.Forms.Button
 
 End Class

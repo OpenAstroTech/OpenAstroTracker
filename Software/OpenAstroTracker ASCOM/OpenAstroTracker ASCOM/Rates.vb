@@ -157,7 +157,7 @@ Public Class TrackingRates
 
     Private m_TrackingRates(-1) As DriveRates           ' Empty array, but an array nonetheless
     ' This should make the enumerator thread safe.
-    Private ReadOnly pos As Threading.ThreadLocal(Of Integer)
+    Private ReadOnly pos As Threading.ThreadLocal(Of Integer) = New Threading.ThreadLocal(Of Integer)(Function() -1)
     Private ReadOnly lockObj As Object = New Object
 
     '

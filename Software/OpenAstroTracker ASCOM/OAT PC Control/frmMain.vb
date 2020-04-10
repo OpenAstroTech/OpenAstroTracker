@@ -25,6 +25,14 @@ Public Class frmMain
         If (IsConnected) Then
             driver.Connected = False
             Timer1.Enabled = False
+            txtLat.Text = ""
+            txtLong.Text = ""
+            lblVersion.Text = ""
+            txtMountDec.Text = ""
+            txtMountRA.Text = ""
+            txtTargetDec.Text = ""
+            txtTargetRA.Text = ""
+
         Else
             driver = New ASCOM.DriverAccess.Telescope(My.Settings.DriverId)
             driver.Connected = True
@@ -40,7 +48,10 @@ Public Class frmMain
 
             lblVersion.Text = driver.Action("Telescope:getFirmwareVer","")
 
-            'Timer1.Enabled = True
+            txtLat.Text = driver.SiteLatitude.ToString
+            txtLong.Text = driver.SiteLongitude.ToString
+
+            Timer1.Enabled = True
         End If
         SetUIState()
 
@@ -60,6 +71,8 @@ Public Class frmMain
         buttonConnect.Enabled = Not String.IsNullOrEmpty(My.Settings.DriverId)
         buttonChoose.Enabled = Not IsConnected
         buttonConnect.Text = IIf(IsConnected, "Disconnect", "Connect")
+        btnPark.Enabled = IsConnected
+        btnSlewSync.Enabled = IsConnected
     End Sub
 
     ''' <summary>
@@ -160,5 +173,11 @@ Public Class frmMain
             btnSlewSync.Enabled = True
             btnHalt.Enabled = True
         End If
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+
+        MsgBox(driver.TrackingRates.Count)
+
     End Sub
 End Class
