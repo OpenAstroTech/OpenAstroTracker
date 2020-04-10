@@ -15,15 +15,19 @@ bool processCalibrationKeys() {
   if (calState == SPEED_CALIBRATION)
   {
     if (lcdButtons.currentState() == btnUP)  {
-      inputcal += 1;  //0.0001;
-      mount.setSpeedCalibration(speed + inputcal / 10000);
+      if (inputcal < 32760) { // Don't overflow 16 bit signed
+        inputcal += 1;  //0.0001;
+        mount.setSpeedCalibration(speed + inputcal / 10000);
+      }
       mount.delay(calDelay);
       calDelay = max(5, 0.96 * calDelay);
       checkForKeyChange = false;
     }
     else if (lcdButtons.currentState() == btnDOWN)  {
-      inputcal -= 1 ; //0.0001;
-      mount.setSpeedCalibration(speed + inputcal / 10000);
+      if (inputcal > -32760) { // Don't overflow 16 bit signed
+        inputcal -= 1 ; //0.0001;
+        mount.setSpeedCalibration(speed + inputcal / 10000);
+      }
       mount.delay(calDelay);
       calDelay = max(5, 0.96 * calDelay);
       checkForKeyChange = false;
@@ -64,7 +68,9 @@ bool processCalibrationKeys() {
       case SPEED_CALIBRATION: {
           // UP and DOWN are handled above
           if (key == btnSELECT) {
-            EEPROM.update(0, inputcal);
+            int cal = floor(inputcal);
+            EEPROM.update(0, cal & 0x00FF);
+            EEPROM.update(3, (cal & 0xFF00) >> 8);
             mount.setSpeedCalibration(speed + inputcal / 10000);
             lcdMenu.printMenu("Stored.");
             mount.delay(500);

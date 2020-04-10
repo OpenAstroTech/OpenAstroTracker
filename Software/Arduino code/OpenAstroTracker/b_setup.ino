@@ -35,14 +35,14 @@ void setup() {
 
   // Configure the mount
   // Set the global HA correction
-  mount.setHACorrection(h, m, s);
+  mount.setHACorrection(PolarisRAHour, PolarisRAMinute, PolarisRASecond);
 
   // Set the stepper motor parameters
   mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);
   mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
 
-  // Read persisted values adn set in mount
-  inputcal = EEPROM.read(0);
+  // Read persisted values and set in mount
+  inputcal = EEPROM.read(0) + EEPROM.read(3) * 256;
   DayTime haTime = DayTime(EEPROM.read(1), EEPROM.read(2), 0);
   mount.setSpeedCalibration(speed + inputcal / 10000);
 #ifdef DEBUG_MODE
@@ -76,9 +76,9 @@ void setup() {
   }
 
   lcdMenu.updateDisplay();
-  
+
 #ifdef DEBUG_MODE
   Serial.println("SetupDone");
 #endif
-  
+
 }

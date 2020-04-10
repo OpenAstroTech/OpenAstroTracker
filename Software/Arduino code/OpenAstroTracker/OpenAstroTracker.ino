@@ -1,7 +1,7 @@
 /*
   =======================================================================================================================================
 
-    Version 1.6.15
+    Version 1.6.17
 
     1. Connect your Arduino, under tools choose "Arduino Uno", set the right Port and set "Arduino ISP" as the Programmer.
     2. Hit upload (Ctrl-U)
@@ -14,7 +14,7 @@
 
   =======================================================================================================================================
 */
-String version = "V1.6.16";
+String version = "V1.6.17";
 
 // See NORTHERN_HEMISPHERE in Globals.h if you not in the northern hemisphere
 
@@ -24,9 +24,9 @@ String version = "V1.6.16";
 // One RA revolution needs 26.43 (1057.1mm / 40mm) stepper revolutions (V2: 28.27 (1131mm/40mm))
 // Which means 108245 steps (26.43 x 4096) moves 360 degrees (V2: 115812 steps (28.27 x 4096))
 // So there are 300.1 steps/degree (108245 / 360)  (V2: 322 (115812 / 360))
-// Theoretical RA tracking speed is 1.246586 (300 x 14.95903 / 3600) (V2 : 1.333800 (322 x 14.95903 / 3600) steps/sec
-
-int RAStepsPerDegree = 300;      // V1 Ring has a ridge that the belt runs on and the ring runs on the bearings
+// Theoretically correct RA tracking speed is 1.246586 (300 x 14.95903 / 3600) (V2 : 1.333800 (322 x 14.95903 / 3600) steps/sec
+#error "Please uncomment one of the two following lines depending on which version of the RA ring you printed. And comment out this line."
+// int RAStepsPerDegree = 300;      // V1 Ring has a ridge on top of the ring that the belt runs on and the ring runs on the bearings
 // int RAStepsPerDegree = 322;      // V2 Ring has belt in a groove and belt runs on bearings
 
 
@@ -61,9 +61,9 @@ float DECStepperDownLimit = 10000;    // Going much more than this will make the
 float DECStepperUpLimit = -22000;     // Going much more than this is going below the horizon.
 
 // These values are needed to calculate the current position during initial alignment.
-int h = 21;
-int m = 2;
-int s = 25;
+int PolarisRAHour = 21;
+int PolarisRAMinute = 2;
+int PolarisRASecond = 25;
 // You get these values by calculating 24h minus the current (not J2000) RA of Polaris.
 // This changes slightly over weeks, so adjust every couple of months.
 // This value is from 27.Nov.19, I suggest next adjustment in mid 2020
