@@ -234,8 +234,8 @@ void Mount::syncRA(int hour, int minute, int second) {
   newHA.addTime(deltaRA);
   setHA(newHA);
 
-  float targetRA,targetDEC;
-  calculateRAandDECSteppers(targetRA,targetDEC);
+  float targetRA, targetDEC;
+  calculateRAandDECSteppers(targetRA, targetDEC);
   _stepperRA->setCurrentPosition(targetRA);
 }
 
@@ -246,11 +246,10 @@ void Mount::syncRA(int hour, int minute, int second) {
 /////////////////////////////////
 // Set the current DEC position to be the given degrees (which are 0 .. -180 for Northern Hemisphere)
 void Mount::syncDEC(int degree, int minute, int second) {
-  Serial.println("SyncDEC: " + String(degree) + ":" + String(minute) + ":" + String(second));
   _currentDEC = DegreeTime(degree, minute, second);
   _targetDEC = _currentDEC;
-  float targetRA,targetDEC;
-  calculateRAandDECSteppers(targetRA,targetDEC);
+  float targetRA, targetDEC;
+  calculateRAandDECSteppers(targetRA, targetDEC);
   _stepperDEC->setCurrentPosition(targetDEC);
 }
 
@@ -262,13 +261,12 @@ void Mount::syncDEC(int degree, int minute, int second) {
 // Calculates movement parameters and program steppers to move
 // there. Must call loop() frequently to actually move.
 void Mount::startSlewingToTarget() {
-  //Serial.println("StSlew2Trgt!");
   // Calculate new RA stepper target (and DEC)
   _currentDECStepperPosition = _stepperDEC->currentPosition();
   _currentRAStepperPosition = _stepperRA->currentPosition();
-  float targetRA,targetDEC;
-  calculateRAandDECSteppers(targetRA,targetDEC);
-  moveSteppersTo(targetRA,targetDEC);
+  float targetRA, targetDEC;
+  calculateRAandDECSteppers(targetRA, targetDEC);
+  moveSteppersTo(targetRA, targetDEC);
 
   _mountStatus |= STATUS_SLEWING | STATUS_SLEWING_TO_TARGET;
   _totalDECMove = 1.0f * _stepperDEC->distanceToGo();
@@ -394,7 +392,6 @@ bool Mount::isParked() {
 // Starts manual slewing in one of eight directions or tracking
 /////////////////////////////////
 void Mount::startSlewing(int direction) {
-  //Serial.println("StrtSlew: > " + String(direction) + " " + mountStatusString());
   if (direction & TRACKING) {
     _stepperTRK->setSpeed(_trackingSpeed);
 
@@ -419,7 +416,6 @@ void Mount::startSlewing(int direction) {
       _mountStatus |= STATUS_SLEWING;
     }
   }
-  //Serial.println("StrtSlew: < " + mountStatusString());
 }
 
 /////////////////////////////////
@@ -429,9 +425,7 @@ void Mount::startSlewing(int direction) {
 // Stop manual slewing in one of two directions or Tracking. NS is the same. EW is the same
 /////////////////////////////////
 void Mount::stopSlewing(int direction) {
-  //Serial.println("StopSlw: > " + String(direction) + " " + mountStatusString());
   if (direction & TRACKING) {
-    //Serial.println("StpSlw: TRK OFF");
     // Turn off tracking
     _mountStatus &= ~STATUS_TRACKING;
     _stepperTRK->stop();
@@ -439,14 +433,10 @@ void Mount::stopSlewing(int direction) {
 
   if ((direction & (NORTH | SOUTH)) != 0)  {
     _stepperDEC->stop();
-    //Serial.println("StpSlw: DEC OFF");
   }
   if ((direction & (WEST | EAST)) != 0)  {
     _stepperRA->stop();
-    //Serial.println("StpSlw: RA OFF");
   }
-
-  //Serial.println("StpSlw: < " + mountStatusString());
 }
 
 /////////////////////////////////
@@ -537,7 +527,6 @@ void Mount::loop() {
       _currentDEC = _targetDEC;
     }
 
-    //Serial.println("Loop: RA " + String(raStillRunning) + String(decStillRunning) );
     displayStepperPositionThrottled();
   }
   else {
@@ -553,7 +542,9 @@ void Mount::loop() {
 
       // Make sure we do one last update when the steppers have stopped.
       displayStepperPosition();
-      _lcdMenu->updateDisplay();
+      if (!inSerialControl) {
+        _lcdMenu->updateDisplay();
+      }
     }
   }
 
@@ -580,7 +571,6 @@ void Mount::setHome() {
 /////////////////////////////////
 void Mount::setTargetToHome() {
   float trackedSeconds = _stepperTRK->currentPosition() / _trackingSpeed; // steps/steps/s
-  // Serial.println("Pos: " + String(stepperTRK->currentPosition()) + " Secs:" + String(trackedSeconds , 3));
 
   // In order for RA coordinates to work correctly, we need to
   // offset HATime by elapsed time since last HA set and also
@@ -685,15 +675,16 @@ void Mount::moveSteppersTo(float targetRA, float targetDEC) {
 /////////////////////////////////
 void Mount::displayStepperPosition() {
   String disp ;
+
   if ((abs(_totalDECMove) > 0.001) && (abs(_totalRAMove) > 0.001)) {
     float decDist = 100.0 - 100.0 * _stepperDEC->distanceToGo() / _totalDECMove;
     float raDist = 100.0 - 100.0 * _stepperRA->distanceToGo() / _totalRAMove;
 
-    sprintf(scratchBuffer, "D %s %d%%", DECString(LCD_STRING | CURRENT_STRING).c_str(), (int)decDist);
-    _lcdMenu->setCursor(0, 1);
-    _lcdMenu->printMenu(String(scratchBuffer));
     sprintf(scratchBuffer, "R %s %d%%", RAString(LCD_STRING | CURRENT_STRING).c_str(), (int)raDist);
     _lcdMenu->setCursor(0, 0);
+    _lcdMenu->printMenu(String(scratchBuffer));
+    sprintf(scratchBuffer, "D %s %d%%", DECString(LCD_STRING | CURRENT_STRING).c_str(), (int)decDist);
+    _lcdMenu->setCursor(0, 1);
     _lcdMenu->printMenu(String(scratchBuffer));
     return;
   }
@@ -707,13 +698,35 @@ void Mount::displayStepperPosition() {
     float raDist = 100.0 - 100.0 * _stepperRA->distanceToGo() / _totalRAMove;
     sprintf(scratchBuffer, "R %s %d%%", RAString(LCD_STRING | CURRENT_STRING).c_str(), (int)raDist);
     disp = disp + String(scratchBuffer);
-    _lcdMenu->setCursor(0, 1);
+    _lcdMenu->setCursor(0, inSerialControl ? 0 : 1);
     _lcdMenu->printMenu(String(scratchBuffer));
   }
   else {
-    disp = "R:" + String(_stepperRA->currentPosition()) + " D:" + String(_stepperDEC->currentPosition()) ;
+#ifdef SUPPORT_SERIAL_CONTROL
+    if (inSerialControl) {
+      sprintf(scratchBuffer, " RA:  %s", RAString(LCD_STRING | CURRENT_STRING).c_str());
+      _lcdMenu->setCursor(0, 0);
+      _lcdMenu->printMenu(scratchBuffer);
+      sprintf(scratchBuffer, "DEC: %s", DECString(LCD_STRING | CURRENT_STRING).c_str());
+      _lcdMenu->setCursor(0, 1);
+      _lcdMenu->printMenu(scratchBuffer);
+    }
+    else {
+      disp = "R:" + String(_stepperRA->currentPosition());
+      _lcdMenu->setCursor(0, 1);
+      _lcdMenu->printMenu(disp);
+      disp = "D:" + String(_stepperDEC->currentPosition()) ;
+      _lcdMenu->setCursor(8, 1);
+      _lcdMenu->printMenu(disp);
+    }
+#else
+    disp = "R:" + String(_stepperRA->currentPosition());
     _lcdMenu->setCursor(0, 1);
     _lcdMenu->printMenu(disp);
+    disp = "D:" + String(_stepperDEC->currentPosition()) ;
+    _lcdMenu->setCursor(8, 1);
+    _lcdMenu->printMenu(disp);
+#endif
   }
 }
 
@@ -760,32 +773,19 @@ String Mount::DECString(byte type, byte active) {
 /////////////////////////////////
 // Return a string of DEC in the given format. For LCDSTRING, active determines where the cursor is
 String Mount::RAString(byte type, byte active) {
-  //Serial.println("RA1: T" + String(type) + " A" + String(active));
   DayTime ra;
-  //Serial.println("RA2:" + ra.ToString());
   if ((type & TARGET_STRING) == TARGET_STRING) {
-    //Serial.println("RA3");
     ra = DayTime(_targetRA);
-    //Serial.println("RA3A:" + ra.ToString());
   } else {
     ra = DayTime(currentRA());
   }
 
-  //Serial.println("RA4:" + ra.ToString());
   DayTime raDisplay(ra);
-  //Serial.println("RA5:" + raDisplay.ToString());
-
-  //Serial.println("RA6:" + _HACorrection.ToString());
   raDisplay.addTime(_HACorrection);
-  //Serial.println("RA6A:" + raDisplay.ToString());
 
   sprintf(scratchBuffer, formatStringsRA[type & FORMAT_STRING_MASK], raDisplay.getHours(), raDisplay.getMinutes() , raDisplay.getSeconds());
-  //Serial.println("RA8:" + String(scratchBuffer));
   if ((type & FORMAT_STRING_MASK) == LCDMENU_STRING) {
-    //Serial.println("RA9");
     scratchBuffer[active * 4] = '>';
-    //Serial.println("RA9A:" + String(scratchBuffer));
   }
-  //Serial.println("RAQ");
   return String (scratchBuffer);
 }

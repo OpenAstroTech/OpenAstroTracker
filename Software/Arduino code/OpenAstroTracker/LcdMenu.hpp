@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <LiquidCrystal.h>
+#include "Globals.h"
 
 // A single menu item (like RA, HEAT, POL, etc.)
 // The ID is just a number, it has no relevance for the order of the items

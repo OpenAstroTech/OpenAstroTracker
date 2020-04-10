@@ -2,6 +2,7 @@
 #define UTILITY_H_
 
 #include <Arduino.h>
+#include "Globals.h"
 
 // LCD shield buttons
 #define btnRIGHT  0
@@ -70,8 +71,6 @@ class LcdButtons {
           _newKey = _currentKey ;
         }
       }
-
-      //Serial.println("KBD: CK-" + String(_currentKey) + " LK-" + String(_lastKey) + " NK-" + String(_newKey) + " LNK-" + String(_lastNewKey));
     }
 
   private:

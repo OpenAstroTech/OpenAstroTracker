@@ -5,7 +5,6 @@
 /////////////////////////////
 void handleMeadeInit(String inCmd) {
   inSerialControl = true;
-  lcdMenu.clear();
   lcdMenu.setCursor(0, 0);
   lcdMenu.printMenu("Remote control");
   lcdMenu.setCursor(0, 1);
@@ -90,7 +89,7 @@ void handleMeadeSetInfo(String inCmd) {
     int hHA = inCmd.substring(1, 3).toInt();
     int minHA = inCmd.substring(4, 6).toInt();
     mount.setHA(DayTime(hHA, minHA, 0));
-    Serial.print("0");
+    Serial.print("1");
   }
   else if ((inCmd[0] == 'Y') && inCmd.length() == 19) {
     // Sync RA, DEC - current position is teh given coordinate
@@ -106,6 +105,9 @@ void handleMeadeSetInfo(String inCmd) {
     else {
       Serial.print("0");
     }
+  }
+  else {
+      Serial.print("0");
   }
 }
 
@@ -129,6 +131,7 @@ void handleMeadeHome(String inCmd) {
     mount.waitUntilStopped(ALL_DIRECTIONS);
     mount.setHome();
     mount.stopSlewing(TRACKING);
+    Serial.print("1");
   }
 }
 
@@ -140,6 +143,8 @@ void handleMeadeQuit(String inCmd) {
   // :Qq# command does not stop motors, but quits Control mode
   if ((inCmd.length() == 0) || (inCmd[0] != 'q'))  {
     mount.stopSlewing(ALL_DIRECTIONS | TRACKING);
+    mount.waitUntilStopped(ALL_DIRECTIONS);
+    Serial.print("1");
   } else {
     inSerialControl = false;
     lcdMenu.setCursor(0, 0);
@@ -153,6 +158,7 @@ void handleMeadeQuit(String inCmd) {
 void serialLoop()
 {
   mount.loop();
+  mount.displayStepperPositionThrottled();
 }
 
 //////////////////////////////////////////////////
@@ -163,7 +169,6 @@ void serialEvent() {
   while (Serial.available() > 0) {
 
     String inCmd = Serial.readStringUntil('#');
-    logString += inCmd + "\n\r";
 
     if (inCmd[0] = ':')
     {
@@ -180,13 +185,6 @@ void serialEvent() {
       }
     }
     mount.loop();
-  }
-
-  // Dont let logString grow forever. When it gets over 1K cut it down to 0.5K. This might wreak
-  // havoc with heap fragmentation, so we might need to put the logString building
-  // behind a #ifdef DEBUG since that's really only what it's needed for.
-  if (logString.length() > 1000)    {
-    logString = logString.substring(500);
   }
 }
 

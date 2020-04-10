@@ -58,7 +58,6 @@ bool processPOIKeys() {
 }
 
 void printPOISubmenu() {
-  //Serial.println("POI: "+String(mount.isSlewingIdle()));
   if (mount.isSlewingIdle()) {
     lcdMenu.printMenu(pointOfInterest[currentPOI].pDisplay);
   }

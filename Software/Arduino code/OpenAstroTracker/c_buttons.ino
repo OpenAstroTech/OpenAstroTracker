@@ -41,7 +41,6 @@ void loop() {
   mount.loop();
 
   lcdMenu.setCursor(0, 1);
-  //lcd_key = lcdButtons.currentKey();
 
 #ifdef SUPPORT_SERIAL_CONTROL
   if (inSerialControl) {
@@ -49,16 +48,12 @@ void loop() {
       if (lcd_key == btnSELECT) {
         quitSerialOnNextButtonRelease = true;
       }
-      if (lcd_key == btnDOWN) {
-        Serial.println("\n\r");
-        Serial.println(logString);
-      }
       else if ((lcd_key == btnNONE) && quitSerialOnNextButtonRelease)  {
         handleMeadeQuit("q#");
         quitSerialOnNextButtonRelease = false;
       }
-      serialLoop();
     }
+    serialLoop();
   }
   else
 #endif
@@ -133,20 +128,22 @@ void loop() {
     else
 #endif
     {
-      switch (lcdMenu.getActive()) {
-        case RA_Menu: printRASubmenu(); break;
-        case DEC_Menu: printDECSubmenu(); break;
+      if (!inSerialControl) {
+        switch (lcdMenu.getActive()) {
+          case RA_Menu: printRASubmenu(); break;
+          case DEC_Menu: printDECSubmenu(); break;
 #ifdef SUPPORT_POINTS_OF_INTEREST
-        case POI_Menu: printPOISubmenu(); break;
+          case POI_Menu: printPOISubmenu(); break;
 #endif
-        case HA_Menu: printHASubmenu(); break;
-        case Home_Menu: printHomeSubmenu(); break;
+          case HA_Menu: printHASubmenu(); break;
+          case Home_Menu: printHomeSubmenu(); break;
 #ifdef SUPPORT_HEATING
-        case Heat_Menu: printHeatSubmenu(); break;
+          case Heat_Menu: printHeatSubmenu(); break;
 #endif
-        case Control_Menu: printControlSubmenu(); break;
-        case Calibration_Menu: printCalibrationSubmenu(); break;
-        case Status_Menu: printStatusSubmenu(); break;
+          case Control_Menu: printControlSubmenu(); break;
+          case Calibration_Menu: printCalibrationSubmenu(); break;
+          case Status_Menu: printStatusSubmenu(); break;
+        }
       }
     }
   }
