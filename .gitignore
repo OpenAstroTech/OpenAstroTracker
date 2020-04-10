@@ -350,3 +350,5 @@ MigrationBackup/
 .ionide/
 
 Software/OpenAstroTracker ASCOM/OpenAstroTracker ASCOM/bin/
+
+Software/OpenAstroTracker ASCOM/OAT PC Control/bin/
