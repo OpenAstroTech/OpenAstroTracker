@@ -119,6 +119,8 @@ Public Class frmMain
     Private Sub updateValues()
         txtMountDec.Text = DblToDMS(driver.Declination).ToString
         txtMountRA.Text = DbltoHMS(driver.RightAscension).ToString
+        driver.TargetDeclination = driver.Declination
+        driver.TargetRightAscension = driver.RightAscension
         txtTargetDec.Text = DblToDMS(driver.TargetDeclination).ToString
         txtTargetRA.Text = DbltoHMS(driver.TargetRightAscension).ToString
 
