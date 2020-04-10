@@ -45,7 +45,7 @@ Public Class SetupDialogForm
         ' set the list of com ports to those that are currently available
         ComboBoxComPort.Items.Clear()
         ComboBoxComPort.Items.AddRange(System.IO.Ports.SerialPort.GetPortNames())       ' use System.IO because it's static
-        ' select the current port if possible
+        ' select the current port if possible...
         If ComboBoxComPort.Items.Contains(Telescope.comPort) Then
             ComboBoxComPort.SelectedItem = Telescope.comPort
         End If
