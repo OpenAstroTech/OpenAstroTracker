@@ -1,7 +1,7 @@
 /*
   =======================================================================================================================================
 
-    Version 1.6.17
+    Version 1.6.18
 
     1. Connect your Arduino, under tools choose "Arduino Uno", set the right Port and set "Arduino ISP" as the Programmer.
     2. Hit upload (Ctrl-U)
@@ -14,7 +14,7 @@
 
   =======================================================================================================================================
 */
-String version = "V1.6.17";
+String version = "V1.6.18";
 
 // See NORTHERN_HEMISPHERE in Globals.h if you not in the northern hemisphere
 
@@ -101,10 +101,10 @@ int PolarisRASecond = 25;
 // #define SUPPORT_HEATING
 
 // Uncomment to support Guided Startup 
-// #define SUPPORT_GUIDED_STARTUP
+#define SUPPORT_GUIDED_STARTUP
 
 // Uncomment to support Serial MEADE support
-#define SUPPORT_SERIAL_CONTROL
+// #define SUPPORT_SERIAL_CONTROL
 
 // Uncomment to support POI menu. Since memory is running low, this can be disabled in lieu of serial support.
 #define SUPPORT_POINTS_OF_INTEREST
