@@ -348,6 +348,8 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+Software/OpenAstroTracker ASCOM/OpenAstroTracker ASCOM/bin/
 Software/OpenAstroTracker ASCOM/OAT PC Control/bin
 Software/PC control/bin
 Software/OpenAstroTracker ASCOM/OpenAstroTracker ASCOM/bin
