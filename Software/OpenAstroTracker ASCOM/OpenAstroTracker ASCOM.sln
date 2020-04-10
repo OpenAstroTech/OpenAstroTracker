@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "OpenAstroTracker ASCOM", "OpenAstroTracker ASCOM\OpenAstroTracker ASCOM.vbproj", "{71BB4DA7-4092-416D-89FE-97CD15207371}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "OAT PC Control", "OAT PC Control\OAT PC Control.vbproj", "{D1747C8D-F0CC-4B20-A0E4-517EBA497FA4}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "OpenAstroTracker PC Control", "OAT PC Control\OpenAstroTracker PC Control.vbproj", "{B4C4A536-AC59-45B5-A27B-C54CA866F665}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,16 +27,16 @@ Global
 		{71BB4DA7-4092-416D-89FE-97CD15207371}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{71BB4DA7-4092-416D-89FE-97CD15207371}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{71BB4DA7-4092-416D-89FE-97CD15207371}.Release|x86.ActiveCfg = Release|Any CPU
-		{D1747C8D-F0CC-4B20-A0E4-517EBA497FA4}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{D1747C8D-F0CC-4B20-A0E4-517EBA497FA4}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{D1747C8D-F0CC-4B20-A0E4-517EBA497FA4}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{D1747C8D-F0CC-4B20-A0E4-517EBA497FA4}.Debug|x86.ActiveCfg = Debug|x86
-		{D1747C8D-F0CC-4B20-A0E4-517EBA497FA4}.Debug|x86.Build.0 = Debug|x86
-		{D1747C8D-F0CC-4B20-A0E4-517EBA497FA4}.Release|Any CPU.ActiveCfg = Release|x86
-		{D1747C8D-F0CC-4B20-A0E4-517EBA497FA4}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{D1747C8D-F0CC-4B20-A0E4-517EBA497FA4}.Release|Mixed Platforms.Build.0 = Release|x86
-		{D1747C8D-F0CC-4B20-A0E4-517EBA497FA4}.Release|x86.ActiveCfg = Release|x86
-		{D1747C8D-F0CC-4B20-A0E4-517EBA497FA4}.Release|x86.Build.0 = Release|x86
+		{B4C4A536-AC59-45B5-A27B-C54CA866F665}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{B4C4A536-AC59-45B5-A27B-C54CA866F665}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{B4C4A536-AC59-45B5-A27B-C54CA866F665}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{B4C4A536-AC59-45B5-A27B-C54CA866F665}.Debug|x86.ActiveCfg = Debug|x86
+		{B4C4A536-AC59-45B5-A27B-C54CA866F665}.Debug|x86.Build.0 = Debug|x86
+		{B4C4A536-AC59-45B5-A27B-C54CA866F665}.Release|Any CPU.ActiveCfg = Release|x86
+		{B4C4A536-AC59-45B5-A27B-C54CA866F665}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{B4C4A536-AC59-45B5-A27B-C54CA866F665}.Release|Mixed Platforms.Build.0 = Release|x86
+		{B4C4A536-AC59-45B5-A27B-C54CA866F665}.Release|x86.ActiveCfg = Release|x86
+		{B4C4A536-AC59-45B5-A27B-C54CA866F665}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
