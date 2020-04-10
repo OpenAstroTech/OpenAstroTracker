@@ -62,17 +62,20 @@ Public Class Telescope
     Friend Shared traceStateProfileName As String = "Trace Level"
     Friend Shared latitudeProfileName As String = "Latitude"
     Friend Shared longitudeProfileName As String = "Longitude"
+    Friend Shared elevationProfileName As String = "Elevation"
 
     Friend Shared comPortDefault As String = "COM1"
     Friend Shared traceStateDefault As String = "False"
     Friend Shared latitudeDefault As Double = 39.8283
     Friend Shared longitudeDefault As Double = -98.5795
+    Friend Shared elevationDefault As Integer = 1
 
     Friend Shared comPort As String ' Variables to hold the currrent device configuration
     Friend Shared portNum As String
     Friend Shared traceState As Boolean
     Friend Shared latitude As Double
     Friend Shared longitude As Double
+    Friend Shared elevation As Integer
 
     Private connectedState As Boolean ' Private variable to hold the connected state
     Private utilities As Util ' Private variable to hold an ASCOM Utilities object
@@ -80,8 +83,9 @@ Public Class Telescope
     Private TL As TraceLogger ' Private variable to hold the trace logger object (creates a diagnostic log file with information that you specify)
     Private objSerial As ASCOM.Utilities.Serial
     Private isParked As Boolean = False
+    Private targetRA As Double, targetDec As Double, targetRASet As Boolean = False, targetDecSet As Boolean = False
     Dim mutexBlind As Mutex, mutexCommand As Mutex
-    Private m_TrackingRates(-1) As DriveRates
+    ' Private m_TrackingRates(-1) As DriveRates
 
     '
     ' Constructor - Must be public for COM registration!
@@ -702,14 +706,16 @@ Public Class Telescope
 
     Public Property SiteElevation() As Double Implements ITelescopeV3.SiteElevation
         Get
-            TL.LogMessage("SiteElevation Get", "0 - Hardcoded")
-            ' Used by SiderealTIme
-            ' Throw New ASCOM.PropertyNotImplementedException("SiteElevation", False)
-            Return 0
+            TL.LogMessage("SiteElevation Get", elevation.ToString)
+            Return elevation
         End Get
         Set(value As Double)
-            TL.LogMessage("SiteElevation Set", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("SiteElevation", True)
+            If value >= -300 And value <= 10000 Then
+                TL.LogMessage("SiteElevation Set", value.ToString)
+                elevation = value
+            Else
+                Throw New ASCOM.InvalidValueException("SiteElevation")
+            End If
         End Set
     End Property
 
@@ -799,9 +805,7 @@ Public Class Telescope
     End Sub
 
     Public Sub SlewToTarget() Implements ITelescopeV3.SlewToTarget
-        ' When do we want to use slew to target?
-        TL.LogMessage("SlewToTarget", "Not implemented")
-        Throw New ASCOM.MethodNotImplementedException("SlewToTarget")
+        SlewToCoordinates(TargetRightAscension, TargetDeclination)
     End Sub
 
     Public Sub SlewToTargetAsync() Implements ITelescopeV3.SlewToTargetAsync
@@ -834,29 +838,59 @@ Public Class Telescope
 
     Public Property TargetDeclination() As Double Implements ITelescopeV3.TargetDeclination
         Get
-            Dim declination__t As Double = 0.0
-            Dim targetDec As String = CommandString(":Gd")
-            TL.LogMessage("TargetDeclination", "Get - " & targetDec)
-            declination__t = utilities.DMSToDegrees(targetDec)
-            Return declination__t
+            If targetDecSet Then
+                TL.LogMessage("TargetDeclination Get", targetDec.ToString)
+                Return targetDec
+            Else
+                TL.LogMessage("TargetDeclination Get", "Value not set")
+                Throw New ASCOM.ValueNotSetException("TargetDeclination")
+            End If
+            'Dim declination__t As Double = 0.0
+            'Dim targetDec As String = CommandString(":Gd")
+            'TL.LogMessage("TargetDeclination", "Get - " & targetDec)
+            'declination__t = utilities.DMSToDegrees(targetDec)
+            'Return declination__t
         End Get
         Set(value As Double)
-            TL.LogMessage("TargetDeclination Set", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("TargetDeclination", True)
+            If value >= -90 And value <= 90 Then
+                TL.LogMessage("TargetDeclination Set", value.ToString)
+                targetDec = value
+                targetDecSet = True
+            Else
+                TL.LogMessage("TargetDeclination Set", "Invalid Value " + value.ToString)
+                Throw New ASCOM.InvalidValueException("TargetDeclination")
+            End If
+            'TL.LogMessage("TargetDeclination Set", "Not implemented")
+            'Throw New ASCOM.PropertyNotImplementedException("TargetDeclination", True)
         End Set
     End Property
 
     Public Property TargetRightAscension() As Double Implements ITelescopeV3.TargetRightAscension
         Get
-            Dim rightAscension__t As Double = 0.0
-            Dim targetRA As String = CommandString(":Gr")
-            TL.LogMessage("TargetRightAscension", "Get - " + targetRA)
-            rightAscension__t = utilities.HMSToHours(targetRA)
-            Return rightAscension__t
+            If targetRASet Then
+                TL.LogMessage("TargetRightAscension Get", targetRA.ToString)
+                Return targetRA
+            Else
+                TL.LogMessage("TargetRightAscension Get", "Value not set")
+                Throw New ASCOM.ValueNotSetException("TargetRightAscension")
+            End If
+            'Dim rightAscension__t As Double = 0.0
+            'Dim targetRA As String = CommandString(":Gr")
+            'TL.LogMessage("TargetRightAscension", "Get - " + targetRA)
+            'rightAscension__t = utilities.HMSToHours(targetRA)
+            'Return rightAscension__t
         End Get
         Set(value As Double)
-            TL.LogMessage("TargetRightAscension Set", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("TargetRightAscension", True)
+            If value >= 0 And value <= 24 Then
+                TL.LogMessage("TargetRightAscension Set", value.ToString)
+                targetRA = value
+                targetRASet = True
+            Else
+                TL.LogMessage("TargetRightAscension Set", "Invalid Value " + value.ToString)
+                Throw New ASCOM.InvalidValueException("TargetRightAscension")
+            End If
+            'TL.LogMessage("TargetRightAscension Set", "Not implemented")
+            'Throw New ASCOM.PropertyNotImplementedException("TargetRightAscension", True)
         End Set
     End Property
 
@@ -979,6 +1013,7 @@ Public Class Telescope
             comPort = driverProfile.GetValue(driverID, comPortProfileName, String.Empty, comPortDefault)
             latitude = driverProfile.GetValue(driverID, latitudeProfileName, String.Empty, latitudeDefault)
             longitude = driverProfile.GetValue(driverID, longitudeProfileName, String.Empty, longitudeDefault)
+            elevation = driverProfile.GetValue(driverID, elevationProfileName, String.Empty, elevationDefault)
         End Using
     End Sub
 
@@ -992,6 +1027,7 @@ Public Class Telescope
             driverProfile.WriteValue(driverID, comPortProfileName, comPort.ToString())
             driverProfile.WriteValue(driverID, latitudeProfileName, latitude.ToString())
             driverProfile.WriteValue(driverID, longitudeProfileName, longitude.ToString())
+            driverProfile.WriteValue(driverID, elevationProfileName, elevation.ToString)
         End Using
 
     End Sub

@@ -12,7 +12,7 @@ Public Class SetupDialogForm
         Telescope.traceState = chkTrace.Checked
         Telescope.latitude = CDbl(txtLat.Text)
         Telescope.longitude = CDbl(txtLong.Text)
-
+        Telescope.elevation = CInt(txtElevation.Text)
         Me.DialogResult = System.Windows.Forms.DialogResult.OK
         Me.Close()
     End Sub
@@ -51,6 +51,7 @@ Public Class SetupDialogForm
         End If
         txtLat.Text = Telescope.latitude.ToString
         txtLong.Text = Telescope.longitude.ToString
+        txtElevation.Text = Telescope.elevation.ToString
     End Sub
 
     Private Sub txtLat_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtLat.KeyPress
@@ -65,4 +66,11 @@ Public Class SetupDialogForm
         End If
     End Sub
 
+    Private Sub txtElevation_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtElevation.KeyPress
+        If Not Char.IsDigit(e.KeyChar) And Not Char.IsControl(e.KeyChar) Then
+            e.Handled = True
+        End If
+    End Sub
+
+    
 End Class
