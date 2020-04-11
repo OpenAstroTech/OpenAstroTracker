@@ -102,7 +102,7 @@ Public Class Telescope
         astroUtilities = New AstroUtils 'Initialise new astro utiliites object
 
         'TODO: Implement your additional construction here
-
+        mutexCommand = New Mutex(False, "CommMutex")
         TL.LogMessage("Telescope", "Completed initialisation")
     End Sub
 
@@ -160,8 +160,8 @@ Public Class Telescope
 
     Public Sub CommandBlind(ByVal Command As String, Optional ByVal Raw As Boolean = False) Implements ITelescopeV3.CommandBlind
         CheckConnected("CommandBlind")
-        mutexBlind = New Mutex(False, "CommMutex")
-        mutexBlind.WaitOne()
+        mutexCommand.WaitOne()
+
         If Not Raw Then
             Command = Command + "#"
         End If
@@ -171,7 +171,7 @@ Public Class Telescope
         Catch ex As Exception
             TL.LogMessage("CommandBlind(" + Command + ")", "Error : " + ex.Message)
         Finally
-            mutexBlind.ReleaseMutex()
+            mutexCommand.ReleaseMutex()
         End Try
     End Sub
 
@@ -188,7 +188,6 @@ Public Class Telescope
         Implements ITelescopeV3.CommandString
         Dim response As String
         CheckConnected("CommandString")
-        mutexCommand = New Mutex(False, "CommMutex")
         mutexCommand.WaitOne()
         If Not Raw Then
             Command = Command + "#"
