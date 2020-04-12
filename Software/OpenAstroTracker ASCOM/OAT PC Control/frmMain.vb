@@ -27,7 +27,6 @@ Public Class frmMain
             Timer1.Enabled = False
             txtLat.Text = ""
             txtLong.Text = ""
-            lblVersion.Text = ""
             txtMountDec.Text = ""
             txtMountRA.Text = ""
             txtTargetDec.Text = ""
@@ -46,10 +45,11 @@ Public Class frmMain
             nud_RAm.Value = CInt(txtMountRA.Text.Substring(4, 2))
             nud_RAs.Value = CInt(txtMountRA.Text.Substring(8, 2))
 
-            lblVersion.Text = driver.Action("Telescope:getFirmwareVer","")
-
-            txtLat.Text = driver.SiteLatitude.ToString
-            txtLong.Text = driver.SiteLongitude.ToString
+            groupBoxInfo.Text = "Current Mount Information - " + driver.Action("Telescope:getFirmwareVer", "")
+            'txtPolRAJnow.Text = driver.Action("Telescope:getPolJNow", "")
+            'txtPolHA.Text = DbltoHMS(driver.SiderealTime - HMStoDbl(txtPolRAJnow.Text))
+            'txtLat.Text = driver.SiteLatitude.ToString
+            'txtLong.Text = driver.SiteLongitude.ToString
 
             Timer1.Enabled = True
         End If
@@ -117,6 +117,7 @@ Public Class frmMain
 
     End Sub
     Private Sub updateValues()
+
         txtMountDec.Text = DblToDMS(driver.Declination).ToString
         txtMountRA.Text = DbltoHMS(driver.RightAscension).ToString
         driver.TargetDeclination = driver.Declination
@@ -177,9 +178,11 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+    Private Sub Button1_Click(sender As Object, e As EventArgs)
 
         MsgBox(driver.TrackingRates.Count)
 
     End Sub
+
+    
 End Class

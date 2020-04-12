@@ -52,8 +52,7 @@ Partial Class frmMain
         Me.btnWest = New System.Windows.Forms.Button()
         Me.btnSouth = New System.Windows.Forms.Button()
         Me.btnNorth = New System.Windows.Forms.Button()
-        Me.GroupBox4 = New System.Windows.Forms.GroupBox()
-        Me.lblVersion = New System.Windows.Forms.Label()
+        Me.groupBoxInfo = New System.Windows.Forms.GroupBox()
         Me.Label11 = New System.Windows.Forms.Label()
         Me.Label12 = New System.Windows.Forms.Label()
         Me.txtTargetDec = New System.Windows.Forms.TextBox()
@@ -74,7 +73,12 @@ Partial Class frmMain
         Me.txtLong = New System.Windows.Forms.TextBox()
         Me.txtLat = New System.Windows.Forms.TextBox()
         Me.GroupBox6 = New System.Windows.Forms.GroupBox()
-        Me.Button1 = New System.Windows.Forms.Button()
+        Me.Label17 = New System.Windows.Forms.Label()
+        Me.txtPolHA = New System.Windows.Forms.TextBox()
+        Me.Label16 = New System.Windows.Forms.Label()
+        Me.txtPolRAJnow = New System.Windows.Forms.TextBox()
+        Me.Label15 = New System.Windows.Forms.Label()
+        Me.txtPolRAJ2000 = New System.Windows.Forms.TextBox()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         CType(Me.nud_Decm, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -84,7 +88,7 @@ Partial Class frmMain
         CType(Me.nud_RAs, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.nud_RAh, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox3.SuspendLayout()
-        Me.GroupBox4.SuspendLayout()
+        Me.groupBoxInfo.SuspendLayout()
         Me.GroupBox5.SuspendLayout()
         Me.GroupBox6.SuspendLayout()
         Me.SuspendLayout()
@@ -392,32 +396,22 @@ Partial Class frmMain
         "lew." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Not yet implemented.")
         Me.btnNorth.UseVisualStyleBackColor = True
         '
-        'GroupBox4
+        'groupBoxInfo
         '
-        Me.GroupBox4.Controls.Add(Me.lblVersion)
-        Me.GroupBox4.Controls.Add(Me.Label11)
-        Me.GroupBox4.Controls.Add(Me.Label12)
-        Me.GroupBox4.Controls.Add(Me.txtTargetDec)
-        Me.GroupBox4.Controls.Add(Me.txtTargetRA)
-        Me.GroupBox4.Controls.Add(Me.Label2)
-        Me.GroupBox4.Controls.Add(Me.Label1)
-        Me.GroupBox4.Controls.Add(Me.txtMountDec)
-        Me.GroupBox4.Controls.Add(Me.txtMountRA)
-        Me.GroupBox4.Location = New System.Drawing.Point(379, 198)
-        Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(354, 180)
-        Me.GroupBox4.TabIndex = 9
-        Me.GroupBox4.TabStop = False
-        Me.GroupBox4.Text = "Current Mount Information"
-        '
-        'lblVersion
-        '
-        Me.lblVersion.AutoSize = True
-        Me.lblVersion.Location = New System.Drawing.Point(214, 24)
-        Me.lblVersion.Name = "lblVersion"
-        Me.lblVersion.Size = New System.Drawing.Size(134, 13)
-        Me.lblVersion.TabIndex = 9
-        Me.lblVersion.Text = "OpenAstroTracker V0.0.00"
+        Me.groupBoxInfo.Controls.Add(Me.Label11)
+        Me.groupBoxInfo.Controls.Add(Me.Label12)
+        Me.groupBoxInfo.Controls.Add(Me.txtTargetDec)
+        Me.groupBoxInfo.Controls.Add(Me.txtTargetRA)
+        Me.groupBoxInfo.Controls.Add(Me.Label2)
+        Me.groupBoxInfo.Controls.Add(Me.Label1)
+        Me.groupBoxInfo.Controls.Add(Me.txtMountDec)
+        Me.groupBoxInfo.Controls.Add(Me.txtMountRA)
+        Me.groupBoxInfo.Location = New System.Drawing.Point(379, 198)
+        Me.groupBoxInfo.Name = "groupBoxInfo"
+        Me.groupBoxInfo.Size = New System.Drawing.Size(354, 222)
+        Me.groupBoxInfo.TabIndex = 9
+        Me.groupBoxInfo.TabStop = False
+        Me.groupBoxInfo.Text = "Current Mount Information - OpenAstroTracker V0.0.00"
         '
         'Label11
         '
@@ -558,31 +552,76 @@ Partial Class frmMain
         '
         'GroupBox6
         '
-        Me.GroupBox6.Controls.Add(Me.Button1)
+        Me.GroupBox6.Controls.Add(Me.Label17)
+        Me.GroupBox6.Controls.Add(Me.txtPolHA)
+        Me.GroupBox6.Controls.Add(Me.Label16)
+        Me.GroupBox6.Controls.Add(Me.txtPolRAJnow)
+        Me.GroupBox6.Controls.Add(Me.Label15)
+        Me.GroupBox6.Controls.Add(Me.txtPolRAJ2000)
         Me.GroupBox6.Location = New System.Drawing.Point(12, 321)
         Me.GroupBox6.Name = "GroupBox6"
-        Me.GroupBox6.Size = New System.Drawing.Size(361, 57)
+        Me.GroupBox6.Size = New System.Drawing.Size(361, 99)
         Me.GroupBox6.TabIndex = 11
         Me.GroupBox6.TabStop = False
         Me.GroupBox6.Text = "Debug Area"
         '
-        'Button1
+        'Label17
         '
-        Me.Button1.Location = New System.Drawing.Point(91, 20)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(75, 23)
-        Me.Button1.TabIndex = 0
-        Me.Button1.Text = "Button1"
-        Me.Button1.UseVisualStyleBackColor = True
+        Me.Label17.AutoSize = True
+        Me.Label17.Location = New System.Drawing.Point(113, 71)
+        Me.Label17.Name = "Label17"
+        Me.Label17.Size = New System.Drawing.Size(80, 13)
+        Me.Label17.TabIndex = 5
+        Me.Label17.Text = "Polaris HA Calc"
+        '
+        'txtPolHA
+        '
+        Me.txtPolHA.Location = New System.Drawing.Point(6, 71)
+        Me.txtPolHA.Name = "txtPolHA"
+        Me.txtPolHA.Size = New System.Drawing.Size(100, 20)
+        Me.txtPolHA.TabIndex = 4
+        '
+        'Label16
+        '
+        Me.Label16.AutoSize = True
+        Me.Label16.Location = New System.Drawing.Point(113, 45)
+        Me.Label16.Name = "Label16"
+        Me.Label16.Size = New System.Drawing.Size(86, 13)
+        Me.Label16.TabIndex = 3
+        Me.Label16.Text = "Polaris RA JNow"
+        '
+        'txtPolRAJnow
+        '
+        Me.txtPolRAJnow.Location = New System.Drawing.Point(6, 45)
+        Me.txtPolRAJnow.Name = "txtPolRAJnow"
+        Me.txtPolRAJnow.Size = New System.Drawing.Size(100, 20)
+        Me.txtPolRAJnow.TabIndex = 2
+        '
+        'Label15
+        '
+        Me.Label15.AutoSize = True
+        Me.Label15.Location = New System.Drawing.Point(113, 19)
+        Me.Label15.Name = "Label15"
+        Me.Label15.Size = New System.Drawing.Size(88, 13)
+        Me.Label15.TabIndex = 1
+        Me.Label15.Text = "Polaris RA J2000"
+        '
+        'txtPolRAJ2000
+        '
+        Me.txtPolRAJ2000.Location = New System.Drawing.Point(6, 19)
+        Me.txtPolRAJ2000.Name = "txtPolRAJ2000"
+        Me.txtPolRAJ2000.Size = New System.Drawing.Size(100, 20)
+        Me.txtPolRAJ2000.TabIndex = 0
+        Me.txtPolRAJ2000.Text = "02:31:51.12"
         '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(745, 391)
+        Me.ClientSize = New System.Drawing.Size(745, 432)
         Me.Controls.Add(Me.GroupBox6)
         Me.Controls.Add(Me.GroupBox5)
-        Me.Controls.Add(Me.GroupBox4)
+        Me.Controls.Add(Me.groupBoxInfo)
         Me.Controls.Add(Me.GroupBox3)
         Me.Controls.Add(Me.GroupBox2)
         Me.Controls.Add(Me.GroupBox1)
@@ -598,11 +637,12 @@ Partial Class frmMain
         CType(Me.nud_RAs, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.nud_RAh, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox3.ResumeLayout(False)
-        Me.GroupBox4.ResumeLayout(False)
-        Me.GroupBox4.PerformLayout()
+        Me.groupBoxInfo.ResumeLayout(False)
+        Me.groupBoxInfo.PerformLayout()
         Me.GroupBox5.ResumeLayout(False)
         Me.GroupBox5.PerformLayout()
         Me.GroupBox6.ResumeLayout(False)
+        Me.GroupBox6.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -628,7 +668,7 @@ Partial Class frmMain
     Friend WithEvents nud_RAs As System.Windows.Forms.NumericUpDown
     Friend WithEvents nud_RAh As System.Windows.Forms.NumericUpDown
     Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
-    Friend WithEvents GroupBox4 As System.Windows.Forms.GroupBox
+    Friend WithEvents groupBoxInfo As System.Windows.Forms.GroupBox
     Friend WithEvents Label2 As System.Windows.Forms.Label
     Friend WithEvents Label1 As System.Windows.Forms.Label
     Friend WithEvents txtMountDec As System.Windows.Forms.TextBox
@@ -640,7 +680,6 @@ Partial Class frmMain
     Friend WithEvents Timer1 As System.Windows.Forms.Timer
     Friend WithEvents btnHalt As System.Windows.Forms.Button
     Friend WithEvents btnPark As System.Windows.Forms.Button
-    Friend WithEvents lblVersion As System.Windows.Forms.Label
     Friend WithEvents ToolTipPark As System.Windows.Forms.ToolTip
     Friend WithEvents ToolTipHalt As System.Windows.Forms.ToolTip
     Friend WithEvents ToolTipSlewAsync As System.Windows.Forms.ToolTip
@@ -656,6 +695,11 @@ Partial Class frmMain
     Friend WithEvents txtLong As System.Windows.Forms.TextBox
     Friend WithEvents txtLat As System.Windows.Forms.TextBox
     Friend WithEvents GroupBox6 As System.Windows.Forms.GroupBox
-    Friend WithEvents Button1 As System.Windows.Forms.Button
+    Friend WithEvents Label17 As System.Windows.Forms.Label
+    Friend WithEvents txtPolHA As System.Windows.Forms.TextBox
+    Friend WithEvents Label16 As System.Windows.Forms.Label
+    Friend WithEvents txtPolRAJnow As System.Windows.Forms.TextBox
+    Friend WithEvents Label15 As System.Windows.Forms.Label
+    Friend WithEvents txtPolRAJ2000 As System.Windows.Forms.TextBox
 
 End Class
