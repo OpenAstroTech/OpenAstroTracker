@@ -81,7 +81,7 @@
 //      Where HH is hours, MM is minutes.
 //      Returns: 1 if successfully set, otherwise 0
 //
-// :SysDD*MM:SS.HH:MM:SS#
+// :SYsDD*MM:SS.HH:MM:SS#
 //      Synchronize Declination and Right Ascension.
 //      This tells the scope what it is currently pointing at.
 //      Where s is + or -, DD is degrees, HH is hours, MM is minutes, SS is seconds.
@@ -202,7 +202,7 @@ void handleMeadeGetInfo(String inCmd) {
 // SET INFO
 /////////////////////////////
 void handleMeadeSetInfo(String inCmd) {
-  if (inCmd.length() < 8) {
+  if (inCmd.length() < 6) {
     Serial.print("0");
     return;
   }
