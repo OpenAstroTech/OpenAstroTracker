@@ -46,6 +46,14 @@ void handleMeadeGetInfo(String inCmd) {
         Serial.print(mount.DECString(MEADE_STRING | CURRENT_STRING));
       }
       break;
+      
+    case 'I': {
+        if (cmdTwo == 'S') {
+          Serial.print(mount.isSlewingRAorDEC() ? "1" : "0");
+        }
+        Serial.print("0");
+      }
+      break;
   }
 }
 
@@ -107,7 +115,7 @@ void handleMeadeSetInfo(String inCmd) {
     }
   }
   else {
-      Serial.print("0");
+    Serial.print("0");
   }
 }
 
@@ -116,8 +124,11 @@ void handleMeadeSetInfo(String inCmd) {
 /////////////////////////////
 void handleMeadeMovement(String inCmd) {
   if (inCmd[0] == 'S') {
-    Serial.print("0");
     mount.startSlewingToTarget();
+    if ((inCmd.length() > 1) && (inCmd[1] == 'y'))    {
+      mount.waitUntilStopped(ALL_DIRECTIONS);  // Excludes TRK
+    }
+    Serial.print("1");
   }
 }
 
@@ -131,6 +142,10 @@ void handleMeadeHome(String inCmd) {
     mount.waitUntilStopped(ALL_DIRECTIONS);
     mount.setHome();
     mount.stopSlewing(TRACKING);
+    Serial.print("1");
+  }
+  else if (inCmd[0] == 'U') {  // Unpark
+    mount.startSlewing(TRACKING);
     Serial.print("1");
   }
 }
