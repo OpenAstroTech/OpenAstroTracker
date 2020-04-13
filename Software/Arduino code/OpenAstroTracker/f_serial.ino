@@ -1,5 +1,143 @@
 #ifdef SUPPORT_SERIAL_CONTROL
 
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+// Serial support
+//
+// The Serial protocol implemented her is the Meade protocol with some extensions.
+// The Meade protocol commands start with a colon and end with a hash.
+// The first letter determines the family of functions (G for Get, S for Set, M for Movement, etc.)
+//
+// The set of Meade features implemented are:
+//
+//------------------------------------------------------------------
+// INITIALIZE FAMILY
+//
+// :I#   - Initialize Scope
+//         This puts the Arduino in Serial Control Mode and displays RA on line 1 and
+//         DEC on line 2 of the display. Serial Control Mode can be ended manually by
+//         pressing the SELECT key, or programmatically with the :Qq# command.
+//         Returns: nothing
+//
+//------------------------------------------------------------------
+// GET FAMILY
+//
+// :GVP#
+//      Get the Product Name
+//      Returns: 'OpenAstroTracker'
+//
+// :GVN#
+//      Get the Firmware Version Number
+//      Returns: 'V1.major.minor' from OpenAstroTracker.ino
+//
+// :Gd#
+//      Get Target Declination
+//      Where s is + or -, DD is degrees, MM is minutes, SS is seconds.
+//      Returns: sDD*MM'SS
+//
+// :GD#
+//      Get Current Declination
+//      Where s is + or -, DD is degrees, MM is minutes, SS is seconds.
+//      Returns: sDD*MM'SS
+//
+// :Gr#
+//      Get Target Right Ascension
+//      Where HH is hour, MM is minutes, SS is seconds.
+//      Returns: HH:MM:SS
+//
+// :GR#
+//      Get Current Right Ascension
+//      Where HH is hour, MM is minutes, SS is seconds.
+//      Returns: HH:MM:SS
+//
+// -- GET Extensions --
+// :GIS#
+//      Get DEC or RA Slewing
+//      Returns: 1 if either RA or DEC is slewing. 0 if not.
+//
+// :GIT#
+//      Get Tracking
+//      Returns: 1 if tracking is on. 0 if not.
+//
+//------------------------------------------------------------------
+// SET FAMILY
+//
+// :SdsDD*MM:SS#
+//      Set Target Declination
+//      This sets the target DEC. Use a Movement command to slew there.
+//      Where s is + or -, DD is degrees, MM is minutes, SS is seconds.
+//      Returns: 1 if successfully set, otherwise 0
+//
+// :SrHH:MM:SS#
+//      Set Right Ascension
+//      This sets the target RA. Use a Movement command to slew there.
+//      Where HH is hours, MM is minutes, SS is seconds.
+//      Returns: 1 if successfully set, otherwise 0
+//
+// -- SET Extensions --
+// :SHHH:MM#
+//      Set Hour Time (HA)
+//      This sets the scopes HA.
+//      Where HH is hours, MM is minutes.
+//      Returns: 1 if successfully set, otherwise 0
+//
+// :SysDD*MM:SS.HH:MM:SS#
+//      Synchronize Declination and Right Ascension.
+//      This tells the scope what it is currently pointing at.
+//      Where s is + or -, DD is degrees, HH is hours, MM is minutes, SS is seconds.
+//      Returns: 1 if successfully set, otherwise 0
+//
+//------------------------------------------------------------------
+// MOVEMENT FAMILY
+//
+// :MS#
+//      Start Slew to Target (Asynchronously)
+//      This starts slewing the scope to the target RA and DEC coordinates and returns immediately.
+//      Returns: 1
+//
+// -- MOVEMENT Extensions --
+// :MSy#
+//      Slew to Target Synchronously
+//      This slews the scope to the target RA and DEC coordinates before returning.
+//      Returns: 1
+//
+// :MTs#
+//      Set Tracking mode
+//      This turns the scopes tracking mode on or off.
+//      Where s is 1 to turn on Tracking and 0 to turn it off.
+//      Returns: 1
+//
+//------------------------------------------------------------------
+// HOME FAMILY
+//
+// :hP#
+//      Park Scope and stop motors
+//      This slews the scope back to it's home position (RA ring centered, DEC
+//      at 90, basically pointing at celestial pole) and stops all movement (including tracking).
+//      Returns: 1 when the scope is parked.
+//
+// -- PARK Extensions --
+// :hU#
+//      Unpark Scope
+//      This currently simply turns on tracking.
+//      Returns: 1
+//
+//------------------------------------------------------------------
+// QUIT MOVEMENT FAMILY
+//
+// :Q#
+//      Stop all motors
+//      This stops all motors, including tracking. Note that deceleration curves are still followed.
+//      Returns: 1 when all motors have stopped.
+//
+// -- QUIT MOVEMENT Extensions --
+// :Qq#
+//      Disconnect, Quit Control mode
+//      This quits Serial Control mode and starts tracking.
+//      Returns: nothing
+//
+/////////////////////////////////////////////////////////////////////////////////////////
+
 /////////////////////////////
 // INIT
 /////////////////////////////
@@ -46,10 +184,13 @@ void handleMeadeGetInfo(String inCmd) {
         Serial.print(mount.DECString(MEADE_STRING | CURRENT_STRING));
       }
       break;
-      
+
     case 'I': {
         if (cmdTwo == 'S') {
           Serial.print(mount.isSlewingRAorDEC() ? "1" : "0");
+        }
+        else if (cmdTwo == 'T') {
+          Serial.print(mount.isSlewingTRK() ? "1" : "0");
         }
         Serial.print("0");
       }
@@ -130,10 +271,25 @@ void handleMeadeMovement(String inCmd) {
     }
     Serial.print("1");
   }
+  else if (inCmd[0] == 'T') {
+    if (inCmd.length() > 1) {
+      if (inCmd[1] == '1') {
+        mount.startSlewing(TRACKING);
+        Serial.print("1");
+      }
+      else if (inCmd[1] == '0')    {
+        mount.stopSlewing(TRACKING);
+        Serial.print("1");
+      }
+    }
+    else {
+      Serial.print("0");
+    }
+  }
 }
 
 /////////////////////////////
-// PARK
+// HOME
 /////////////////////////////
 void handleMeadeHome(String inCmd) {
   if (inCmd[0] == 'P') {  // Park

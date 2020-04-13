@@ -1,7 +1,7 @@
 /*
   =======================================================================================================================================
 
-    Version 1.6.20
+    Version 1.6.21
 
     1. Connect your Arduino, under tools choose "Arduino Uno", set the right Port and set "Arduino ISP" as the Programmer.
     2. Hit upload (Ctrl-U)
@@ -16,7 +16,7 @@
 */
 #include "Globals.h"
 
-String version = "V1.6.20";
+String version = "V1.6.21";
 
 ///////////////////////////////////////////////////////////////////////////
 // Please see the Globals.h file for configuration of the firmware.
