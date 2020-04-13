@@ -192,7 +192,7 @@ void handleMeadeGetInfo(String inCmd) {
         else if (cmdTwo == 'T') {
           Serial.print(mount.isSlewingTRK() ? "1" : "0");
         }
-        Serial.print("0");
+        Serial.print("#");
       }
       break;
   }
