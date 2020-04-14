@@ -96,10 +96,6 @@
 //      Returns: 1
 //
 // -- MOVEMENT Extensions --
-// :MSy#
-//      Slew to Target Synchronously
-//      This slews the scope to the target RA and DEC coordinates before returning.
-//      Returns: 1
 //
 // :MTs#
 //      Set Tracking mode
@@ -266,9 +262,6 @@ void handleMeadeSetInfo(String inCmd) {
 void handleMeadeMovement(String inCmd) {
   if (inCmd[0] == 'S') {
     mount.startSlewingToTarget();
-    if ((inCmd.length() > 1) && (inCmd[1] == 'y'))    {
-      mount.waitUntilStopped(ALL_DIRECTIONS);  // Excludes TRK
-    }
     Serial.print("1");
   }
   else if (inCmd[0] == 'T') {
@@ -293,11 +286,7 @@ void handleMeadeMovement(String inCmd) {
 /////////////////////////////
 void handleMeadeHome(String inCmd) {
   if (inCmd[0] == 'P') {  // Park
-    mount.setTargetToHome();
-    mount.startSlewingToTarget();
-    mount.waitUntilStopped(ALL_DIRECTIONS);
-    mount.setHome();
-    mount.stopSlewing(TRACKING);
+    mount.park();
     Serial.print("1");
   }
   else if (inCmd[0] == 'U') {  // Unpark
