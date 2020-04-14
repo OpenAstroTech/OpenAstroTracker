@@ -795,9 +795,7 @@ Public Class Telescope
                 TL.LogMessage("SlewToCoordinates", "RA " + RightAscension.ToString + ", Dec " + Declination.ToString)
                 Dim strRAcmd = ":Sr" + utilities.HoursToHMS(RightAscension, ":", ":")
                 Dim strDeccmd = utilities.DegreesToDMS(Declination, "*", ":", "")
-                If Declination < 0 Then
-                    strDeccmd = "-" + strDeccmd
-                Else
+                If Declination >= 0 Then
                     strDeccmd = "+" + strDeccmd
                 End If
                 strDeccmd = ":Sd" + strDeccmd
