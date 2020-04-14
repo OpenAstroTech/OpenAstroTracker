@@ -1,4 +1,4 @@
-OpenAstroTracker ASCOM driver 0.1.0 : 2020-04-12
+OpenAstroTracker ASCOM driver 0.1.2 : 2020-04-13
 
 The first release candidate of the OAT ASCOM Driver, to see how it performs on a new machine.
 

@@ -73,12 +73,16 @@ Partial Class frmMain
         Me.txtLong = New System.Windows.Forms.TextBox()
         Me.txtLat = New System.Windows.Forms.TextBox()
         Me.GroupBox6 = New System.Windows.Forms.GroupBox()
+        Me.lblFirmwareVersion = New System.Windows.Forms.Label()
         Me.Label17 = New System.Windows.Forms.Label()
-        Me.txtPolHA = New System.Windows.Forms.TextBox()
-        Me.Label16 = New System.Windows.Forms.Label()
-        Me.txtPolRAJnow = New System.Windows.Forms.TextBox()
         Me.Label15 = New System.Windows.Forms.Label()
-        Me.txtPolRAJ2000 = New System.Windows.Forms.TextBox()
+        Me.lblDriverVersion = New System.Windows.Forms.Label()
+        Me.txtTargetDec2000 = New System.Windows.Forms.TextBox()
+        Me.txtTargetRA2000 = New System.Windows.Forms.TextBox()
+        Me.txtMountDec2000 = New System.Windows.Forms.TextBox()
+        Me.txtMountRA2000 = New System.Windows.Forms.TextBox()
+        Me.Label16 = New System.Windows.Forms.Label()
+        Me.Label18 = New System.Windows.Forms.Label()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         CType(Me.nud_Decm, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -90,7 +94,6 @@ Partial Class frmMain
         Me.GroupBox3.SuspendLayout()
         Me.groupBoxInfo.SuspendLayout()
         Me.GroupBox5.SuspendLayout()
-        Me.GroupBox6.SuspendLayout()
         Me.SuspendLayout()
         '
         'labelDriverId
@@ -398,6 +401,16 @@ Partial Class frmMain
         '
         'groupBoxInfo
         '
+        Me.groupBoxInfo.Controls.Add(Me.Label18)
+        Me.groupBoxInfo.Controls.Add(Me.Label16)
+        Me.groupBoxInfo.Controls.Add(Me.txtTargetDec2000)
+        Me.groupBoxInfo.Controls.Add(Me.txtTargetRA2000)
+        Me.groupBoxInfo.Controls.Add(Me.txtMountDec2000)
+        Me.groupBoxInfo.Controls.Add(Me.txtMountRA2000)
+        Me.groupBoxInfo.Controls.Add(Me.Label15)
+        Me.groupBoxInfo.Controls.Add(Me.lblDriverVersion)
+        Me.groupBoxInfo.Controls.Add(Me.Label17)
+        Me.groupBoxInfo.Controls.Add(Me.lblFirmwareVersion)
         Me.groupBoxInfo.Controls.Add(Me.Label11)
         Me.groupBoxInfo.Controls.Add(Me.Label12)
         Me.groupBoxInfo.Controls.Add(Me.txtTargetDec)
@@ -411,12 +424,12 @@ Partial Class frmMain
         Me.groupBoxInfo.Size = New System.Drawing.Size(354, 222)
         Me.groupBoxInfo.TabIndex = 9
         Me.groupBoxInfo.TabStop = False
-        Me.groupBoxInfo.Text = "Current Mount Information - OpenAstroTracker V0.0.00"
+        Me.groupBoxInfo.Text = "Current Mount Information"
         '
         'Label11
         '
         Me.Label11.AutoSize = True
-        Me.Label11.Location = New System.Drawing.Point(19, 104)
+        Me.Label11.Location = New System.Drawing.Point(38, 186)
         Me.Label11.Name = "Label11"
         Me.Label11.Size = New System.Drawing.Size(61, 13)
         Me.Label11.TabIndex = 8
@@ -426,7 +439,7 @@ Partial Class frmMain
         'Label12
         '
         Me.Label12.AutoSize = True
-        Me.Label12.Location = New System.Drawing.Point(24, 78)
+        Me.Label12.Location = New System.Drawing.Point(43, 160)
         Me.Label12.Name = "Label12"
         Me.Label12.Size = New System.Drawing.Size(56, 13)
         Me.Label12.TabIndex = 7
@@ -435,14 +448,14 @@ Partial Class frmMain
         '
         'txtTargetDec
         '
-        Me.txtTargetDec.Location = New System.Drawing.Point(85, 101)
+        Me.txtTargetDec.Location = New System.Drawing.Point(107, 183)
         Me.txtTargetDec.Name = "txtTargetDec"
         Me.txtTargetDec.Size = New System.Drawing.Size(95, 20)
         Me.txtTargetDec.TabIndex = 6
         '
         'txtTargetRA
         '
-        Me.txtTargetRA.Location = New System.Drawing.Point(85, 75)
+        Me.txtTargetRA.Location = New System.Drawing.Point(107, 157)
         Me.txtTargetRA.Name = "txtTargetRA"
         Me.txtTargetRA.Size = New System.Drawing.Size(95, 20)
         Me.txtTargetRA.TabIndex = 5
@@ -450,7 +463,7 @@ Partial Class frmMain
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(19, 53)
+        Me.Label2.Location = New System.Drawing.Point(38, 135)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(60, 13)
         Me.Label2.TabIndex = 4
@@ -460,7 +473,7 @@ Partial Class frmMain
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(24, 27)
+        Me.Label1.Location = New System.Drawing.Point(43, 109)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(55, 13)
         Me.Label1.TabIndex = 3
@@ -469,14 +482,14 @@ Partial Class frmMain
         '
         'txtMountDec
         '
-        Me.txtMountDec.Location = New System.Drawing.Point(85, 50)
+        Me.txtMountDec.Location = New System.Drawing.Point(107, 132)
         Me.txtMountDec.Name = "txtMountDec"
         Me.txtMountDec.Size = New System.Drawing.Size(95, 20)
         Me.txtMountDec.TabIndex = 2
         '
         'txtMountRA
         '
-        Me.txtMountRA.Location = New System.Drawing.Point(85, 24)
+        Me.txtMountRA.Location = New System.Drawing.Point(107, 106)
         Me.txtMountRA.Name = "txtMountRA"
         Me.txtMountRA.Size = New System.Drawing.Size(95, 20)
         Me.txtMountRA.TabIndex = 0
@@ -552,12 +565,6 @@ Partial Class frmMain
         '
         'GroupBox6
         '
-        Me.GroupBox6.Controls.Add(Me.Label17)
-        Me.GroupBox6.Controls.Add(Me.txtPolHA)
-        Me.GroupBox6.Controls.Add(Me.Label16)
-        Me.GroupBox6.Controls.Add(Me.txtPolRAJnow)
-        Me.GroupBox6.Controls.Add(Me.Label15)
-        Me.GroupBox6.Controls.Add(Me.txtPolRAJ2000)
         Me.GroupBox6.Location = New System.Drawing.Point(12, 321)
         Me.GroupBox6.Name = "GroupBox6"
         Me.GroupBox6.Size = New System.Drawing.Size(361, 99)
@@ -565,54 +572,89 @@ Partial Class frmMain
         Me.GroupBox6.TabStop = False
         Me.GroupBox6.Text = "Debug Area"
         '
+        'lblFirmwareVersion
+        '
+        Me.lblFirmwareVersion.AutoSize = True
+        Me.lblFirmwareVersion.Location = New System.Drawing.Point(117, 24)
+        Me.lblFirmwareVersion.Name = "lblFirmwareVersion"
+        Me.lblFirmwareVersion.Size = New System.Drawing.Size(31, 13)
+        Me.lblFirmwareVersion.TabIndex = 9
+        Me.lblFirmwareVersion.Text = "0.0.0"
+        '
         'Label17
         '
         Me.Label17.AutoSize = True
-        Me.Label17.Location = New System.Drawing.Point(113, 71)
+        Me.Label17.Location = New System.Drawing.Point(24, 24)
         Me.Label17.Name = "Label17"
-        Me.Label17.Size = New System.Drawing.Size(80, 13)
-        Me.Label17.TabIndex = 5
-        Me.Label17.Text = "Polaris HA Calc"
-        '
-        'txtPolHA
-        '
-        Me.txtPolHA.Location = New System.Drawing.Point(6, 71)
-        Me.txtPolHA.Name = "txtPolHA"
-        Me.txtPolHA.Size = New System.Drawing.Size(100, 20)
-        Me.txtPolHA.TabIndex = 4
-        '
-        'Label16
-        '
-        Me.Label16.AutoSize = True
-        Me.Label16.Location = New System.Drawing.Point(113, 45)
-        Me.Label16.Name = "Label16"
-        Me.Label16.Size = New System.Drawing.Size(86, 13)
-        Me.Label16.TabIndex = 3
-        Me.Label16.Text = "Polaris RA JNow"
-        '
-        'txtPolRAJnow
-        '
-        Me.txtPolRAJnow.Location = New System.Drawing.Point(6, 45)
-        Me.txtPolRAJnow.Name = "txtPolRAJnow"
-        Me.txtPolRAJnow.Size = New System.Drawing.Size(100, 20)
-        Me.txtPolRAJnow.TabIndex = 2
+        Me.Label17.Size = New System.Drawing.Size(87, 13)
+        Me.Label17.TabIndex = 10
+        Me.Label17.Text = "Firmware Version"
+        Me.Label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'Label15
         '
         Me.Label15.AutoSize = True
-        Me.Label15.Location = New System.Drawing.Point(113, 19)
+        Me.Label15.Location = New System.Drawing.Point(38, 49)
         Me.Label15.Name = "Label15"
-        Me.Label15.Size = New System.Drawing.Size(88, 13)
-        Me.Label15.TabIndex = 1
-        Me.Label15.Text = "Polaris RA J2000"
+        Me.Label15.Size = New System.Drawing.Size(73, 13)
+        Me.Label15.TabIndex = 12
+        Me.Label15.Text = "Driver Version"
+        Me.Label15.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'txtPolRAJ2000
+        'lblDriverVersion
         '
-        Me.txtPolRAJ2000.Location = New System.Drawing.Point(6, 19)
-        Me.txtPolRAJ2000.Name = "txtPolRAJ2000"
-        Me.txtPolRAJ2000.Size = New System.Drawing.Size(100, 20)
-        Me.txtPolRAJ2000.TabIndex = 0
-        Me.txtPolRAJ2000.Text = "02:31:51.12"
+        Me.lblDriverVersion.AutoSize = True
+        Me.lblDriverVersion.Location = New System.Drawing.Point(117, 49)
+        Me.lblDriverVersion.Name = "lblDriverVersion"
+        Me.lblDriverVersion.Size = New System.Drawing.Size(31, 13)
+        Me.lblDriverVersion.TabIndex = 11
+        Me.lblDriverVersion.Text = "0.0.0"
+        '
+        'txtTargetDec2000
+        '
+        Me.txtTargetDec2000.Location = New System.Drawing.Point(208, 183)
+        Me.txtTargetDec2000.Name = "txtTargetDec2000"
+        Me.txtTargetDec2000.Size = New System.Drawing.Size(95, 20)
+        Me.txtTargetDec2000.TabIndex = 18
+        '
+        'txtTargetRA2000
+        '
+        Me.txtTargetRA2000.Location = New System.Drawing.Point(208, 157)
+        Me.txtTargetRA2000.Name = "txtTargetRA2000"
+        Me.txtTargetRA2000.Size = New System.Drawing.Size(95, 20)
+        Me.txtTargetRA2000.TabIndex = 17
+        '
+        'txtMountDec2000
+        '
+        Me.txtMountDec2000.Location = New System.Drawing.Point(208, 132)
+        Me.txtMountDec2000.Name = "txtMountDec2000"
+        Me.txtMountDec2000.Size = New System.Drawing.Size(95, 20)
+        Me.txtMountDec2000.TabIndex = 14
+        '
+        'txtMountRA2000
+        '
+        Me.txtMountRA2000.Location = New System.Drawing.Point(208, 106)
+        Me.txtMountRA2000.Name = "txtMountRA2000"
+        Me.txtMountRA2000.Size = New System.Drawing.Size(95, 20)
+        Me.txtMountRA2000.TabIndex = 13
+        '
+        'Label16
+        '
+        Me.Label16.AutoSize = True
+        Me.Label16.Location = New System.Drawing.Point(137, 83)
+        Me.Label16.Name = "Label16"
+        Me.Label16.Size = New System.Drawing.Size(34, 13)
+        Me.Label16.TabIndex = 19
+        Me.Label16.Text = "JNow"
+        '
+        'Label18
+        '
+        Me.Label18.AutoSize = True
+        Me.Label18.Location = New System.Drawing.Point(236, 83)
+        Me.Label18.Name = "Label18"
+        Me.Label18.Size = New System.Drawing.Size(36, 13)
+        Me.Label18.TabIndex = 20
+        Me.Label18.Text = "J2000"
         '
         'frmMain
         '
@@ -641,8 +683,6 @@ Partial Class frmMain
         Me.groupBoxInfo.PerformLayout()
         Me.GroupBox5.ResumeLayout(False)
         Me.GroupBox5.PerformLayout()
-        Me.GroupBox6.ResumeLayout(False)
-        Me.GroupBox6.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -695,11 +735,15 @@ Partial Class frmMain
     Friend WithEvents txtLong As System.Windows.Forms.TextBox
     Friend WithEvents txtLat As System.Windows.Forms.TextBox
     Friend WithEvents GroupBox6 As System.Windows.Forms.GroupBox
-    Friend WithEvents Label17 As System.Windows.Forms.Label
-    Friend WithEvents txtPolHA As System.Windows.Forms.TextBox
-    Friend WithEvents Label16 As System.Windows.Forms.Label
-    Friend WithEvents txtPolRAJnow As System.Windows.Forms.TextBox
     Friend WithEvents Label15 As System.Windows.Forms.Label
-    Friend WithEvents txtPolRAJ2000 As System.Windows.Forms.TextBox
+    Friend WithEvents lblDriverVersion As System.Windows.Forms.Label
+    Friend WithEvents Label17 As System.Windows.Forms.Label
+    Friend WithEvents lblFirmwareVersion As System.Windows.Forms.Label
+    Friend WithEvents Label18 As System.Windows.Forms.Label
+    Friend WithEvents Label16 As System.Windows.Forms.Label
+    Friend WithEvents txtTargetDec2000 As System.Windows.Forms.TextBox
+    Friend WithEvents txtTargetRA2000 As System.Windows.Forms.TextBox
+    Friend WithEvents txtMountDec2000 As System.Windows.Forms.TextBox
+    Friend WithEvents txtMountRA2000 As System.Windows.Forms.TextBox
 
 End Class

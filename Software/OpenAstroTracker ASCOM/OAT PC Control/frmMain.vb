@@ -33,25 +33,30 @@ Public Class frmMain
             txtTargetRA.Text = ""
 
         Else
-            driver = New ASCOM.DriverAccess.Telescope(My.Settings.DriverId)
-            driver.Connected = True
-            updateValues()
+            Try
+                driver = New ASCOM.DriverAccess.Telescope(My.Settings.DriverId)
+                driver.Connected = True
+            Catch ex As Exception
+                MsgBox(ex.Message.ToString)
+                driver.Connected = False
+            End Try
+            If IsConnected Then
+                updateValues()
 
-            nud_Decd.Value = CInt(txtMountDec.Text.Substring(0, 2))
-            nud_Decm.Value = CInt(txtMountDec.Text.Substring(4, 2))
-            nud_Decs.Value = CInt(txtMountDec.Text.Substring(8, 2))
+                nud_Decd.Value = CInt(txtMountDec.Text.Substring(0, 2))
+                nud_Decm.Value = CInt(txtMountDec.Text.Substring(4, 2))
+                nud_Decs.Value = CInt(txtMountDec.Text.Substring(8, 2))
 
-            nud_RAh.Value = CInt(txtMountRA.Text.Substring(0, 2))
-            nud_RAm.Value = CInt(txtMountRA.Text.Substring(4, 2))
-            nud_RAs.Value = CInt(txtMountRA.Text.Substring(8, 2))
+                nud_RAh.Value = CInt(txtMountRA.Text.Substring(0, 2))
+                nud_RAm.Value = CInt(txtMountRA.Text.Substring(4, 2))
+                nud_RAs.Value = CInt(txtMountRA.Text.Substring(8, 2))
 
-            groupBoxInfo.Text = "Current Mount Information - " + driver.Action("Telescope:getFirmwareVer", "")
-            'txtPolRAJnow.Text = driver.Action("Telescope:getPolJNow", "")
-            'txtPolHA.Text = DbltoHMS(driver.SiderealTime - HMStoDbl(txtPolRAJnow.Text))
-            'txtLat.Text = driver.SiteLatitude.ToString
-            'txtLong.Text = driver.SiteLongitude.ToString
+                lblDriverVersion.Text = driver.DriverVersion
+                lblFirmwareVersion.Text = driver.Action("Telescope:getFirmwareVer", "")
 
-            Timer1.Enabled = True
+
+                Timer1.Enabled = True
+            End If
         End If
         SetUIState()
 
@@ -94,11 +99,15 @@ Public Class frmMain
 
     Private Sub btnSlewSync_Click(sender As Object, e As EventArgs) Handles btnSlewSync.Click
         If IsConnected Then
-            TargetRA = HMStoDbl(nud_RAh.Value.ToString + ":" + nud_RAm.Value.ToString + ":" + nud_RAs.Value.ToString)
-            TargetDec = DMStoDbl(nud_Decd.Value.ToString + ":" + nud_Decm.Value.ToString + ":" + nud_Decs.Value.ToString)
-            txtTargetRA.Text = nud_RAh.Value.ToString + "H " + nud_RAm.Value.ToString + "' " + nud_RAs.Value.ToString + "''"
-            txtTargetDec.Text = nud_Decd.Value.ToString + "° " + nud_Decm.Value.ToString + "' " + nud_Decs.Value.ToString + "''"
-            driver.SlewToCoordinates(TargetRA, TargetDec)
+            Dim TargetRAHMS As String = nud_RAh.Value.ToString + ":" + nud_RAm.Value.ToString + ":" + nud_RAs.Value.ToString
+            Dim TargetDecDMS As String = nud_Decd.Value.ToString + ":" + nud_Decm.Value.ToString + ":" + nud_Decs.Value.ToString
+            driver.TargetRightAscension = HMStoDbl(TargetRAHMS)
+            driver.TargetDeclination = DMStoDbl(TargetDecDMS)
+
+            txtTargetRA.Text = DbltoHMS(driver.TargetRightAscension)
+            txtTargetDec.Text = DblToDMS(driver.TargetDeclination)
+
+            driver.SlewToTargetAsync()
 
             updateValues()
 
@@ -120,10 +129,22 @@ Public Class frmMain
 
         txtMountDec.Text = DblToDMS(driver.Declination).ToString
         txtMountRA.Text = DbltoHMS(driver.RightAscension).ToString
-        driver.TargetDeclination = driver.Declination
-        driver.TargetRightAscension = driver.RightAscension
-        txtTargetDec.Text = DblToDMS(driver.TargetDeclination).ToString
-        txtTargetRA.Text = DbltoHMS(driver.TargetRightAscension).ToString
+        Try
+            txtTargetDec.Text = DblToDMS(driver.TargetDeclination).ToString
+            txtTargetRA.Text = DbltoHMS(driver.TargetRightAscension).ToString
+            txtTargetRA2000.Text = driver.Action("Utility:JNowtoJ2000", driver.TargetRightAscension.ToString + "," + driver.TargetDeclination.ToString).Split("&")(0)
+            txtTargetDec2000.Text = driver.Action("Utility:JNowtoJ2000", driver.TargetRightAscension.ToString + "," + driver.TargetDeclination.ToString).Split("&")(1)
+        Catch ex As Exception
+            txtTargetDec.Text = DblToDMS(driver.Declination).ToString
+            txtTargetRA.Text = DbltoHMS(driver.RightAscension).ToString
+            txtTargetRA2000.Text = driver.Action("Utility:JNowtoJ2000", driver.RightAscension.ToString + "," + driver.Declination.ToString).Split("&")(0)
+            txtTargetDec2000.Text = driver.Action("Utility:JNowtoJ2000", driver.RightAscension.ToString + "," + driver.Declination.ToString).Split("&")(1)
+
+        End Try
+        txtLat.Text = driver.SiteLatitude
+        txtLong.Text = driver.SiteLongitude
+        txtMountRA2000.Text = driver.Action("Utility:JNowtoJ2000", driver.RightAscension.ToString + "," + driver.Declination.ToString).Split("&")(0)
+        txtMountDec2000.Text = driver.Action("Utility:JNowtoJ2000", driver.RightAscension.ToString + "," + driver.Declination.ToString).Split("&")(1)
 
     End Sub
     Private Function HMStoDbl(HMS As String) As Double
@@ -184,5 +205,5 @@ Public Class frmMain
 
     End Sub
 
-    
+ 
 End Class

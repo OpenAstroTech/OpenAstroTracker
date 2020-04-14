@@ -6,25 +6,11 @@ Imports System.Threading
 ' ASCOM Telescope driver for OpenAstroTracker
 '
 ' Implements:	ASCOM Telescope interface version: 1.0
-' Author:		(EOR) EorEquis@tristarobservatory.space
 '
-' Edit Log:
+' Driver ID : ASCOM.OpenAstroTracker.Telescope
 '
-' Date			Who	Vers	Description
-' -----------	---	-----	-------------------------------------------------------
-' 2020-03-28	EOR	0.0.1	Initial edit, from Telescope template
-' 2020-04-12	EOR	0.1.1	First release build, attempt to install
-' ---------------------------------------------------------------------------------
-'
-'
-' Your driver's ID is ASCOM.OpenAstroTracker.Telescope
-'
-' The Guid attribute sets the CLSID for ASCOM.DeviceName.Telescope
-' The ClassInterface/None addribute prevents an empty interface called
-' _Telescope from being created and used as the [default] interface
-'
-
 ' This definition is used to select code that's only applicable for one device type
+'
 #Const Device = "Telescope"
 
 Imports ASCOM
@@ -49,14 +35,12 @@ Public Class Telescope
     ' The ClassInterface/None addribute prevents an empty interface called
     ' _OpenAstroTracker from being created and used as the [default] interface
 
-    ' TODO Replace the not implemented exceptions with code to implement the function or
-    ' throw the appropriate ASCOM exception.
-    '
     Implements ITelescopeV3
 
     '
     ' Driver ID and descriptive string that shows in the Chooser
     '
+    Private Version As String = "0.1.2.2"
     Friend Shared driverID As String = "ASCOM.OpenAstroTracker.Telescope"
     Private Shared driverDescription As String = "OpenAstroTracker Telescope"
 
@@ -86,12 +70,12 @@ Public Class Telescope
     Private astroUtilities As AstroUtils ' Private variable to hold an AstroUtils object to provide the Range method
     Private TL As TraceLogger ' Private variable to hold the trace logger object (creates a diagnostic log file with information that you specify)
     Private objSerial As ASCOM.Utilities.Serial
-    Private transform As ASCOM.Astrometry.Transform.Transform
+    Public transform As ASCOM.Astrometry.Transform.Transform
+    Private connWait As Boolean = False     ' This is a lame hack to be able to transmit things w/ CommandString before we set connected to true.
 
     Private isParked As Boolean = False, isTracking As Boolean = True
     Private targetRA As Double, targetDec As Double, targetRASet As Boolean = False, targetDecSet As Boolean = False
     Dim mutexBlind As Mutex, mutexCommand As Mutex
-    ' Private m_TrackingRates(-1) As DriveRates
 
     '
     ' Constructor - Must be public for COM registration!
@@ -101,7 +85,7 @@ Public Class Telescope
         ReadProfile() ' Read device configuration from the ASCOM Profile store
         TL = New TraceLogger("", "OpenAstroTracker")
         TL.Enabled = traceState
-        TL.LogMessage("Telescope", "Starting initialisation")
+        TL.LogMessage("Telescope", "Starting initialization")
 
         connectedState = False ' Initialise connected to false
         utilities = New Util() ' Initialise util object
@@ -115,7 +99,7 @@ Public Class Telescope
         transform.SiteLatitude = SiteLatitude
         transform.SiteLongitude = SiteLongitude
         PolarisRAJNow = transform.RATopocentric
-        TL.LogMessage("Telescope", "Completed initialisation")
+        TL.LogMessage("Telescope", "Completed initialization")
     End Sub
 
     '
@@ -148,6 +132,7 @@ Public Class Telescope
         Get
             Dim actionList As New ArrayList
             actionList.Add("Telescope:getFirmwareVer")
+            actionList.Add("Utility:JNowtoJ2000")
             TL.LogMessage("SupportedActions Get", "Returning arraylist of " + actionList.Count.ToString + " item(s)")
             Return actionList
         End Get
@@ -161,6 +146,9 @@ Public Class Telescope
                 Case "Telescope:getFirmwareVer"
                     retVal = CommandString(":GVP")                  ' Get firmware name
                     retVal = retVal + " " + CommandString(":GVN")   ' Get firmware version number
+                Case "Utility:JNowtoJ2000"
+                    transform.SetTopocentric(CDbl(ActionParameters.Split(",")(0)), CDbl(ActionParameters.Split(",")(1)))
+                    retVal = utilities.HoursToHMS(transform.RAJ2000, ":", ":", String.Empty) + "&" + utilities.DegreesToDMS(transform.DecJ2000, "*", ":", String.Empty)
             End Select
             TL.LogMessage("Action(" + ActionName + ", " + ActionParameters + ")", retVal)
             Return retVal
@@ -171,7 +159,9 @@ Public Class Telescope
     End Function
 
     Public Sub CommandBlind(ByVal Command As String, Optional ByVal Raw As Boolean = False) Implements ITelescopeV3.CommandBlind
-        CheckConnected("CommandBlind")
+        If Not connWait Then
+            CheckConnected("CommandBlind")
+        End If
         mutexCommand.WaitOne()
 
         If Not Raw Then
@@ -198,7 +188,9 @@ Public Class Telescope
     Public Function CommandString(ByVal Command As String, Optional ByVal Raw As Boolean = False) As String _
         Implements ITelescopeV3.CommandString
         Dim response As String
-        CheckConnected("CommandString")
+        If Not connWait Then
+            CheckConnected("CommandString")
+        End If
         mutexCommand.WaitOne()
         If Not Raw Then
             Command = Command + "#"
@@ -241,12 +233,13 @@ Public Class Telescope
 
             If value Then
                 Try
-
-                    connectedState = True
+                    connWait = True
                     portNum = Right(comPort, Len(comPort) - 3)
                     objSerial = New ASCOM.Utilities.Serial
                     objSerial.Port = CInt(portNum)
                     objSerial.Speed = SerialSpeed.ps57600
+                    ' Default of 5s is too high.  THis will have to be managed, however, for synced commands that take longer (:hP most notably)
+                    objSerial.ReceiveTimeout = 2
                     objSerial.Connected = True
                     Thread.Sleep(2000)      ' Disgusting hack to work around arduino resetting when connected.
                     ' I don't know of any way to poll and see if the reset has completed
@@ -262,8 +255,10 @@ Public Class Telescope
                     End If
                     CommandString(":SY" + sign + utilities.DegreesToDMS(90, "*", ":", String.Empty) + "." + utilities.HoursToHMS(SiderealTime, ":", ":"), False)
                     TL.LogMessage("Connected Set", "Connecting to port " + comPort)
-
+                    connWait = False
+                    connectedState = True
                 Catch ex As Exception
+                    Throw New ASCOM.DriverException(ex.Message)
                     TL.LogMessage("Connected Set", "Error Connecting to port " + comPort + " - " + ex.Message)
                 End Try
 
@@ -295,8 +290,9 @@ Public Class Telescope
 
     Public ReadOnly Property DriverInfo As String Implements ITelescopeV3.DriverInfo
         Get
-            Dim m_version As Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
-            Dim s_driverInfo As String = "OpenAstroTracker ASCOM driver version: " + m_version.Major.ToString() + "." + m_version.Minor.ToString() + "." + m_version.Build.ToString()
+            '            Dim m_version As Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
+            '           Dim s_driverInfo As String = "OpenAstroTracker ASCOM driver version: " + m_version.Major.ToString() + "." + m_version.Minor.ToString() + "." + m_version.Build.ToString()
+            Dim s_driverInfo As String = "OpenAstroTracker ASCOM driver version: " + Version
             TL.LogMessage("DriverInfo Get", s_driverInfo)
             Return s_driverInfo
         End Get
@@ -304,9 +300,11 @@ Public Class Telescope
 
     Public ReadOnly Property DriverVersion() As String Implements ITelescopeV3.DriverVersion
         Get
-            ' Get our own assembly and report its version number
-            TL.LogMessage("DriverVersion Get", Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString(2))
-            Return Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString(2)
+            TL.LogMessage("DriverVersion Get", Version)
+            Return Version
+
+            ' TL.LogMessage("DriverVersion Get", Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString(2))
+            ' Return Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString(2)
         End Get
     End Property
 
@@ -656,11 +654,12 @@ Public Class Telescope
 
     Public ReadOnly Property RightAscension() As Double Implements ITelescopeV3.RightAscension
         Get
+
             Dim rightAscension__1 As Double = 0.0
-            Dim scopeRA As String = CommandString(":GR")
-            TL.LogMessage("RightAscension", "Get: " + scopeRA)
-            rightAscension__1 = utilities.HMSToHours(scopeRA)
+            rightAscension__1 = utilities.HMSToHours(CommandString(":GR"))
+            TL.LogMessage("RightAscension", rightAscension__1.ToString)
             Return rightAscension__1
+
         End Get
     End Property
 
