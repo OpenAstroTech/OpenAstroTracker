@@ -110,13 +110,13 @@
 //      Park Scope and stop motors
 //      This slews the scope back to it's home position (RA ring centered, DEC
 //      at 90, basically pointing at celestial pole) and stops all movement (including tracking).
-//      Returns: 1 when the scope is parked.
+//      Returns: Nothing
 //
 // -- PARK Extensions --
 // :hU#
 //      Unpark Scope
 //      This currently simply turns on tracking.
-//      Returns: 1
+//      Returns: Nothing
 //
 //------------------------------------------------------------------
 // QUIT MOVEMENT FAMILY
@@ -287,11 +287,10 @@ void handleMeadeMovement(String inCmd) {
 void handleMeadeHome(String inCmd) {
   if (inCmd[0] == 'P') {  // Park
     mount.park();
-    Serial.print("1");
+  
   }
   else if (inCmd[0] == 'U') {  // Unpark
     mount.startSlewing(TRACKING);
-    Serial.print("1");
   }
 }
 
