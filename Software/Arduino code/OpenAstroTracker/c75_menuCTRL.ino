@@ -23,6 +23,7 @@ bool processControlKeys() {
         if (setZeroPoint) {
           // Leaving Control Menu, so set stepper motor positions to zero.
           mount.setHome();
+          mount.startSlewing(TRACKING);
         }
 
         // Set flag to prevent resetting zero point when moving over the menu items
