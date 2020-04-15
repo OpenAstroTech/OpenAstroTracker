@@ -53,6 +53,16 @@ Partial Class frmMain
         Me.btnSouth = New System.Windows.Forms.Button()
         Me.btnNorth = New System.Windows.Forms.Button()
         Me.groupBoxInfo = New System.Windows.Forms.GroupBox()
+        Me.Label18 = New System.Windows.Forms.Label()
+        Me.Label16 = New System.Windows.Forms.Label()
+        Me.txtTargetDec2000 = New System.Windows.Forms.TextBox()
+        Me.txtTargetRA2000 = New System.Windows.Forms.TextBox()
+        Me.txtMountDec2000 = New System.Windows.Forms.TextBox()
+        Me.txtMountRA2000 = New System.Windows.Forms.TextBox()
+        Me.Label15 = New System.Windows.Forms.Label()
+        Me.lblDriverVersion = New System.Windows.Forms.Label()
+        Me.Label17 = New System.Windows.Forms.Label()
+        Me.lblFirmwareVersion = New System.Windows.Forms.Label()
         Me.Label11 = New System.Windows.Forms.Label()
         Me.Label12 = New System.Windows.Forms.Label()
         Me.txtTargetDec = New System.Windows.Forms.TextBox()
@@ -73,16 +83,6 @@ Partial Class frmMain
         Me.txtLong = New System.Windows.Forms.TextBox()
         Me.txtLat = New System.Windows.Forms.TextBox()
         Me.GroupBox6 = New System.Windows.Forms.GroupBox()
-        Me.lblFirmwareVersion = New System.Windows.Forms.Label()
-        Me.Label17 = New System.Windows.Forms.Label()
-        Me.Label15 = New System.Windows.Forms.Label()
-        Me.lblDriverVersion = New System.Windows.Forms.Label()
-        Me.txtTargetDec2000 = New System.Windows.Forms.TextBox()
-        Me.txtTargetRA2000 = New System.Windows.Forms.TextBox()
-        Me.txtMountDec2000 = New System.Windows.Forms.TextBox()
-        Me.txtMountRA2000 = New System.Windows.Forms.TextBox()
-        Me.Label16 = New System.Windows.Forms.Label()
-        Me.Label18 = New System.Windows.Forms.Label()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         CType(Me.nud_Decm, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -189,7 +189,6 @@ Partial Class frmMain
         '
         'btnSlewAsync
         '
-        Me.btnSlewAsync.Enabled = False
         Me.btnSlewAsync.Location = New System.Drawing.Point(14, 116)
         Me.btnSlewAsync.Name = "btnSlewAsync"
         Me.btnSlewAsync.Size = New System.Drawing.Size(96, 23)
@@ -426,6 +425,90 @@ Partial Class frmMain
         Me.groupBoxInfo.TabStop = False
         Me.groupBoxInfo.Text = "Current Mount Information"
         '
+        'Label18
+        '
+        Me.Label18.AutoSize = True
+        Me.Label18.Location = New System.Drawing.Point(236, 83)
+        Me.Label18.Name = "Label18"
+        Me.Label18.Size = New System.Drawing.Size(36, 13)
+        Me.Label18.TabIndex = 20
+        Me.Label18.Text = "J2000"
+        '
+        'Label16
+        '
+        Me.Label16.AutoSize = True
+        Me.Label16.Location = New System.Drawing.Point(137, 83)
+        Me.Label16.Name = "Label16"
+        Me.Label16.Size = New System.Drawing.Size(34, 13)
+        Me.Label16.TabIndex = 19
+        Me.Label16.Text = "JNow"
+        '
+        'txtTargetDec2000
+        '
+        Me.txtTargetDec2000.Location = New System.Drawing.Point(208, 183)
+        Me.txtTargetDec2000.Name = "txtTargetDec2000"
+        Me.txtTargetDec2000.Size = New System.Drawing.Size(95, 20)
+        Me.txtTargetDec2000.TabIndex = 18
+        '
+        'txtTargetRA2000
+        '
+        Me.txtTargetRA2000.Location = New System.Drawing.Point(208, 157)
+        Me.txtTargetRA2000.Name = "txtTargetRA2000"
+        Me.txtTargetRA2000.Size = New System.Drawing.Size(95, 20)
+        Me.txtTargetRA2000.TabIndex = 17
+        '
+        'txtMountDec2000
+        '
+        Me.txtMountDec2000.Location = New System.Drawing.Point(208, 132)
+        Me.txtMountDec2000.Name = "txtMountDec2000"
+        Me.txtMountDec2000.Size = New System.Drawing.Size(95, 20)
+        Me.txtMountDec2000.TabIndex = 14
+        '
+        'txtMountRA2000
+        '
+        Me.txtMountRA2000.Location = New System.Drawing.Point(208, 106)
+        Me.txtMountRA2000.Name = "txtMountRA2000"
+        Me.txtMountRA2000.Size = New System.Drawing.Size(95, 20)
+        Me.txtMountRA2000.TabIndex = 13
+        '
+        'Label15
+        '
+        Me.Label15.AutoSize = True
+        Me.Label15.Location = New System.Drawing.Point(38, 49)
+        Me.Label15.Name = "Label15"
+        Me.Label15.Size = New System.Drawing.Size(73, 13)
+        Me.Label15.TabIndex = 12
+        Me.Label15.Text = "Driver Version"
+        Me.Label15.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'lblDriverVersion
+        '
+        Me.lblDriverVersion.AutoSize = True
+        Me.lblDriverVersion.Location = New System.Drawing.Point(117, 49)
+        Me.lblDriverVersion.Name = "lblDriverVersion"
+        Me.lblDriverVersion.Size = New System.Drawing.Size(31, 13)
+        Me.lblDriverVersion.TabIndex = 11
+        Me.lblDriverVersion.Text = "0.0.0"
+        '
+        'Label17
+        '
+        Me.Label17.AutoSize = True
+        Me.Label17.Location = New System.Drawing.Point(24, 24)
+        Me.Label17.Name = "Label17"
+        Me.Label17.Size = New System.Drawing.Size(87, 13)
+        Me.Label17.TabIndex = 10
+        Me.Label17.Text = "Firmware Version"
+        Me.Label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'lblFirmwareVersion
+        '
+        Me.lblFirmwareVersion.AutoSize = True
+        Me.lblFirmwareVersion.Location = New System.Drawing.Point(117, 24)
+        Me.lblFirmwareVersion.Name = "lblFirmwareVersion"
+        Me.lblFirmwareVersion.Size = New System.Drawing.Size(31, 13)
+        Me.lblFirmwareVersion.TabIndex = 9
+        Me.lblFirmwareVersion.Text = "0.0.0"
+        '
         'Label11
         '
         Me.Label11.AutoSize = True
@@ -571,90 +654,6 @@ Partial Class frmMain
         Me.GroupBox6.TabIndex = 11
         Me.GroupBox6.TabStop = False
         Me.GroupBox6.Text = "Debug Area"
-        '
-        'lblFirmwareVersion
-        '
-        Me.lblFirmwareVersion.AutoSize = True
-        Me.lblFirmwareVersion.Location = New System.Drawing.Point(117, 24)
-        Me.lblFirmwareVersion.Name = "lblFirmwareVersion"
-        Me.lblFirmwareVersion.Size = New System.Drawing.Size(31, 13)
-        Me.lblFirmwareVersion.TabIndex = 9
-        Me.lblFirmwareVersion.Text = "0.0.0"
-        '
-        'Label17
-        '
-        Me.Label17.AutoSize = True
-        Me.Label17.Location = New System.Drawing.Point(24, 24)
-        Me.Label17.Name = "Label17"
-        Me.Label17.Size = New System.Drawing.Size(87, 13)
-        Me.Label17.TabIndex = 10
-        Me.Label17.Text = "Firmware Version"
-        Me.Label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'Label15
-        '
-        Me.Label15.AutoSize = True
-        Me.Label15.Location = New System.Drawing.Point(38, 49)
-        Me.Label15.Name = "Label15"
-        Me.Label15.Size = New System.Drawing.Size(73, 13)
-        Me.Label15.TabIndex = 12
-        Me.Label15.Text = "Driver Version"
-        Me.Label15.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'lblDriverVersion
-        '
-        Me.lblDriverVersion.AutoSize = True
-        Me.lblDriverVersion.Location = New System.Drawing.Point(117, 49)
-        Me.lblDriverVersion.Name = "lblDriverVersion"
-        Me.lblDriverVersion.Size = New System.Drawing.Size(31, 13)
-        Me.lblDriverVersion.TabIndex = 11
-        Me.lblDriverVersion.Text = "0.0.0"
-        '
-        'txtTargetDec2000
-        '
-        Me.txtTargetDec2000.Location = New System.Drawing.Point(208, 183)
-        Me.txtTargetDec2000.Name = "txtTargetDec2000"
-        Me.txtTargetDec2000.Size = New System.Drawing.Size(95, 20)
-        Me.txtTargetDec2000.TabIndex = 18
-        '
-        'txtTargetRA2000
-        '
-        Me.txtTargetRA2000.Location = New System.Drawing.Point(208, 157)
-        Me.txtTargetRA2000.Name = "txtTargetRA2000"
-        Me.txtTargetRA2000.Size = New System.Drawing.Size(95, 20)
-        Me.txtTargetRA2000.TabIndex = 17
-        '
-        'txtMountDec2000
-        '
-        Me.txtMountDec2000.Location = New System.Drawing.Point(208, 132)
-        Me.txtMountDec2000.Name = "txtMountDec2000"
-        Me.txtMountDec2000.Size = New System.Drawing.Size(95, 20)
-        Me.txtMountDec2000.TabIndex = 14
-        '
-        'txtMountRA2000
-        '
-        Me.txtMountRA2000.Location = New System.Drawing.Point(208, 106)
-        Me.txtMountRA2000.Name = "txtMountRA2000"
-        Me.txtMountRA2000.Size = New System.Drawing.Size(95, 20)
-        Me.txtMountRA2000.TabIndex = 13
-        '
-        'Label16
-        '
-        Me.Label16.AutoSize = True
-        Me.Label16.Location = New System.Drawing.Point(137, 83)
-        Me.Label16.Name = "Label16"
-        Me.Label16.Size = New System.Drawing.Size(34, 13)
-        Me.Label16.TabIndex = 19
-        Me.Label16.Text = "JNow"
-        '
-        'Label18
-        '
-        Me.Label18.AutoSize = True
-        Me.Label18.Location = New System.Drawing.Point(236, 83)
-        Me.Label18.Name = "Label18"
-        Me.Label18.Size = New System.Drawing.Size(36, 13)
-        Me.Label18.TabIndex = 20
-        Me.Label18.Text = "J2000"
         '
         'frmMain
         '
