@@ -278,6 +278,8 @@ void Mount::startSlewingToTarget() {
 //
 // park
 //
+// Targets the mount to move to the home position and 
+// turns off all motors once it gets there.
 /////////////////////////////////
 void Mount::park()
 {
@@ -286,6 +288,25 @@ void Mount::park()
   setTargetToHome();
   startSlewingToTarget();
   _mountStatus |= STATUS_PARKING;
+}
+
+/////////////////////////////////
+//
+// goHome
+//
+// Synchronously moves mount to home position and 
+// sets Tracking mode according to argument
+/////////////////////////////////
+void Mount::goHome(bool tracking)
+{
+  stopSlewing(TRACKING);
+  setTargetToHome();
+  startSlewingToTarget();
+  waitUntilStopped(ALL_DIRECTIONS);
+  setHome();
+  if (tracking) {
+    startSlewing(TRACKING);
+  }
 }
 
 /////////////////////////////////
@@ -422,7 +443,7 @@ bool Mount::isParking() {
 //
 // startSlewing
 //
-// Starts manual slewing in one of eight directions or 
+// Starts manual slewing in one of eight directions or
 // tracking, but only if not currently parking!
 /////////////////////////////////
 void Mount::startSlewing(int direction) {
@@ -465,6 +486,7 @@ void Mount::stopSlewing(int direction) {
   if (direction & TRACKING) {
     // Turn off tracking
     _mountStatus &= ~STATUS_TRACKING;
+
     _stepperTRK->stop();
   }
 
@@ -533,11 +555,12 @@ void Mount::loop() {
   bool decStillRunning = false;
 
   unsigned long now = millis();
-  if (now - _lastMountPrint > 2500) {
-    //Serial.println(mountStatusString());
+#ifdef DEBUG_MODE
+  if (now - _lastMountPrint > 1500) {
+    Serial.println(mountStatusString());
     _lastMountPrint = now;
   }
-
+#endif
   if (_mountStatus & STATUS_TRACKING) {
     _stepperTRK->runSpeed();
   }

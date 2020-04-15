@@ -1,14 +1,22 @@
+byte subGoIndex = 0;
+
 bool processHomeKeys() {
   byte key;
   if (lcdButtons.keyChanged(key)) {
     switch (key) {
       case btnSELECT: {
-          mount.stopSlewing(TRACKING);
-          mount.setTargetToHome();
-          mount.startSlewingToTarget();
-          mount.waitUntilStopped(ALL_DIRECTIONS);
-          mount.setHome();
-          mount.startSlewing(TRACKING);
+          if (subGoIndex == 0) {
+            mount.goHome(true); // start tracking after home
+          } else {
+            mount.park();
+          }
+        }
+        break;
+
+      case btnUP:
+      case btnDOWN:
+      case btnLEFT: {
+          subGoIndex = 1 - subGoIndex;
         }
         break;
 
@@ -18,10 +26,17 @@ bool processHomeKeys() {
         break;
     }
   }
-  
+
   return true;
 }
 
 void printHomeSubmenu() {
-  lcdMenu.printMenu(">Go Home");
+  char scratchBuffer[16];
+  if (mount.isParked() && (subGoIndex == 1)) {
+    lcdMenu.printMenu("Parked...");
+  } else {
+    strcpy(scratchBuffer, " Home  Park");
+    scratchBuffer[subGoIndex * 6] = '>';
+    lcdMenu.printMenu(scratchBuffer);
+  }
 }

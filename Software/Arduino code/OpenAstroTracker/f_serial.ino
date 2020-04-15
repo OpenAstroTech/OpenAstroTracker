@@ -287,7 +287,6 @@ void handleMeadeMovement(String inCmd) {
 void handleMeadeHome(String inCmd) {
   if (inCmd[0] == 'P') {  // Park
     mount.park();
-  
   }
   else if (inCmd[0] == 'U') {  // Unpark
     mount.startSlewing(TRACKING);

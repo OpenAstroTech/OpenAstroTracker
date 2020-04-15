@@ -1,3 +1,4 @@
+#ifdef SUPPORT_INFO_DISPLAY
 byte infoIndex = 0;
 byte maxInfoIndex = 4;
 byte subIndex = 0;
@@ -81,3 +82,5 @@ void printStatusSubmenu() {
       break;
   }
 }
+
+#endif

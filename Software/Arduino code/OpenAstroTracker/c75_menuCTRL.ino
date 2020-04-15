@@ -1,3 +1,4 @@
+#ifdef SUPPORT_MANUAL_CONTROL
 bool confirmZeroPoint = false;
 bool setZeroPoint = true;
 
@@ -116,3 +117,4 @@ void printControlSubmenu() {
     mount.displayStepperPositionThrottled();
   }
 }
+#endif

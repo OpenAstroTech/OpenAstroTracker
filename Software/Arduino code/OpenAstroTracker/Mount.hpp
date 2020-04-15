@@ -93,12 +93,6 @@ class Mount {
     // Same as Arduino delay() but keeps the tracker going.
     void delay(int ms);
 
-    // What is the state of the mount
-    byte mountStatus();
-#ifdef DEBUG_MODE
-    String mountStatusString();
-#endif
-
     // Gets the position in one of eight directions or tracking
     long getCurrentStepperPosition(int direction);
 
@@ -108,11 +102,15 @@ class Mount {
     // Set RA and DEC to the home position
     void setTargetToHome();
 
+    // Synchronously slews the mount to the home position and sets tracking to argument.
+    void goHome(bool tracking);
+
     // Set the current stepper positions to be home.
     void setHome();
 
     // Asynchronously parks the mount. Moves to the home position and stops all motors. 
     void park();
+
     
     // Return a string of DEC in the given format. For LCDSTRING, active determines where the cursor is
     String DECString(byte type, byte active = 0);
@@ -132,6 +130,15 @@ class Mount {
 
     // Returns NOT_SLEWING, SLEWING_DEC, SLEWING_RA, or SLEWING_BOTH. SLEWING_TRACKING is an overlaid bit.
     byte slewStatus();
+
+    // What is the state of the mount. 
+    // Returns some combination of these flags: STATUS_PARKED, STATUS_SLEWING, STATUS_SLEWING_TO_TARGET, STATUS_SLEWING_FREE, STATUS_TRACKING, STATUS_PARKING
+    byte mountStatus();
+    
+#ifdef DEBUG_MODE
+    String mountStatusString();
+#endif
+
 
   private:
     LcdMenu* _lcdMenu;

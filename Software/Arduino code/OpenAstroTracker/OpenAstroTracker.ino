@@ -16,7 +16,7 @@
 */
 #include "Globals.h"
 
-String version = "V1.6.23";
+String version = "V1.6.24";
 
 ///////////////////////////////////////////////////////////////////////////
 // Please see the Globals.h file for configuration of the firmware.

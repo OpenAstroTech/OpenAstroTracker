@@ -59,17 +59,28 @@ void setup() {
   // Create the LCD top-level menu items
   lcdMenu.addItem("RA", RA_Menu);
   lcdMenu.addItem("DEC", DEC_Menu);
+
 #ifdef SUPPORT_POINTS_OF_INTEREST
-  lcdMenu.addItem("POI", POI_Menu);
+  lcdMenu.addItem("GO", POI_Menu);
+#else
+  lcdMenu.addItem("GO", Home_Menu);
 #endif
-  lcdMenu.addItem("HOME", Home_Menu);
+
   lcdMenu.addItem("HA", HA_Menu);
+
 #ifdef SUPPORT_HEATING
   lcdMenu.addItem("HEA", Heat_Menu);
 #endif
+
+#ifdef SUPPORT_MANUAL_CONTROL
   lcdMenu.addItem("CTRL", Control_Menu);
+#endif
+
   lcdMenu.addItem("CAL", Calibration_Menu);
+  
+#ifdef SUPPORT_INFO_DISPLAY
   lcdMenu.addItem("INFO", Status_Menu);
+#endif
 
   while (millis() - now < 750) {
     mount.loop();

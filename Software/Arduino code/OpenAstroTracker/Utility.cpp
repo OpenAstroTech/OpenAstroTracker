@@ -38,14 +38,3 @@ float clamp(float current, float minVal, float maxVal)
   if (current < minVal) current = minVal;
   return current;
 }
-/*
-int read_LCD_buttons() {
-  adc_key_in = analogRead(0);
-  if (adc_key_in > 1000) return btnNONE;
-  if (adc_key_in < 50)   return btnRIGHT;
-  if (adc_key_in < 240)  return btnUP;
-  if (adc_key_in < 400)  return btnDOWN;
-  if (adc_key_in < 600)  return btnLEFT;
-  if (adc_key_in < 920)  return btnSELECT;
-}
-*/

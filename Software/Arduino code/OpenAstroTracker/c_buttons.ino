@@ -80,10 +80,12 @@ void loop() {
         case POI_Menu:
           waitForButtonRelease = processPOIKeys();
           break;
-#endif
+#else
         case Home_Menu:
           waitForButtonRelease = processHomeKeys();
           break;
+#endif
+
         case HA_Menu:
           waitForButtonRelease = processHAKeys();
           break;
@@ -95,12 +97,18 @@ void loop() {
         case Calibration_Menu:
           waitForButtonRelease = processCalibrationKeys();
           break;
+
+#ifdef SUPPORT_MANUAL_CONTROL
         case Control_Menu:
           waitForButtonRelease = processControlKeys();
           break;
+#endif
+
+#ifdef SUPPORT_INFO_DISPLAY
         case Status_Menu:
           waitForButtonRelease = processStatusKeys();
           break;
+#endif
       }
     }
 
@@ -134,15 +142,21 @@ void loop() {
           case DEC_Menu: printDECSubmenu(); break;
 #ifdef SUPPORT_POINTS_OF_INTEREST
           case POI_Menu: printPOISubmenu(); break;
+#else
+          case Home_Menu: printHomeSubmenu(); break;
 #endif
           case HA_Menu: printHASubmenu(); break;
-          case Home_Menu: printHomeSubmenu(); break;
 #ifdef SUPPORT_HEATING
           case Heat_Menu: printHeatSubmenu(); break;
 #endif
+#ifdef SUPPORT_MANUAL_CONTROL
           case Control_Menu: printControlSubmenu(); break;
+#endif
           case Calibration_Menu: printCalibrationSubmenu(); break;
+
+#ifdef SUPPORT_INFO_DISPLAY
           case Status_Menu: printStatusSubmenu(); break;
+#endif
         }
       }
     }
