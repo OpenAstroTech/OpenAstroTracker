@@ -508,7 +508,6 @@ Public Class Telescope
     End Property
 
     Public ReadOnly Property CanSlewAsync() As Boolean Implements ITelescopeV3.CanSlewAsync
-        ' TODO - Async Slewing
         Get
             TL.LogMessage("CanSlewAsync", "Get - " & True.ToString())
             Return True
@@ -517,8 +516,8 @@ Public Class Telescope
 
     Public ReadOnly Property CanSync() As Boolean Implements ITelescopeV3.CanSync
         Get
-            TL.LogMessage("CanSync", "Get - " & False.ToString())
-            Return False
+            TL.LogMessage("CanSync", "Get - " & True.ToString())
+            Return True
         End Get
     End Property
 
@@ -635,14 +634,10 @@ Public Class Telescope
             TL.LogMessage("Park", "Err : Mount already parked")
             Throw New ASCOM.ParkedException("Park")
         Else
-            Dim prkRet As String = CommandString(":hP", False)
-            If prkRet = "1" Then
-                isParked = True
-            Else
-                isParked = False
-                Throw New ASCOM.DriverException("Park failed")
-            End If
-            TL.LogMessage("Park", "Park requested : " + prkRet)
+            CommandString(":hP", False)
+            PollUntilZero(":GIS")
+            isParked = True
+            TL.LogMessage("Park", "Parked mount")
         End If
 
     End Sub
@@ -789,6 +784,7 @@ Public Class Telescope
     End Sub
 
     Public Sub SlewToCoordinates(RightAscension As Double, Declination As Double) Implements ITelescopeV3.SlewToCoordinates
+        ' Synchronous slew to given coordinates.  Uses PollUntilZero to wait for slew to finish
         If RightAscension <= 24 And RightAscension >= 0 And Declination >= -90 And Declination <= 90 Then
 
             If Not AtPark Then
@@ -804,6 +800,7 @@ Public Class Telescope
                 If CommandString(strRAcmd) = "1" Then
                     If CommandString(strDeccmd) = "1" Then
                         CommandString(":MS")
+                        PollUntilZero(":GIS")
                     End If
 
                 End If
@@ -818,25 +815,51 @@ Public Class Telescope
     End Sub
 
     Public Sub SlewToCoordinatesAsync(RightAscension As Double, Declination As Double) Implements ITelescopeV3.SlewToCoordinatesAsync
-        TL.LogMessage("SlewToCoordinatesAsync", RightAscension.ToString + ", " + Declination.ToString)
-        SlewToCoordinates(RightAscension, Declination)
+        ' ASynchronous slew to coordinates.  Returns immediately after receiving response from :MS that command was accepted
+        If RightAscension <= 24 And RightAscension >= 0 And Declination >= -90 And Declination <= 90 Then
 
+            If Not AtPark Then
+                TL.LogMessage("SlewToCoordinatesAsync", "RA " + RightAscension.ToString + ", Dec " + Declination.ToString)
+                Dim strRAcmd = ":Sr" + utilities.HoursToHMS(RightAscension, ":", ":")
+                Dim strDeccmd = utilities.DegreesToDMS(Declination, "*", ":", "")
+                If Declination >= 0 Then
+                    strDeccmd = "+" + strDeccmd
+                End If
+                strDeccmd = ":Sd" + strDeccmd
+                TL.LogMessage("SlewToCoordinatesAsyncRACmd", strRAcmd)
+                TL.LogMessage("SlewToCoordinatesAsyncDecCmd", strDeccmd)
+                If CommandString(strRAcmd) = "1" Then
+                    If CommandString(strDeccmd) = "1" Then
+                        CommandString(":MS")
+                    End If
+
+                End If
+            Else
+                TL.LogMessage("SlewToCoordinatesAsync", "Parked")
+                Throw New ASCOM.ParkedException("SlewToCoordinatesAsync")
+            End If
+        Else
+            TL.LogMessage("SlewToCoordinatesAsync", "Invalid coordinates RA: " + RightAscension.ToString + ", Dec: " + Declination.ToString)
+            Throw New ASCOM.InvalidValueException("SlewToCoordinatesAsync")
+        End If
 
     End Sub
 
     Public Sub SlewToTarget() Implements ITelescopeV3.SlewToTarget
+        TL.LogMessage("SlewToTarget", TargetRightAscension.ToString + ", " + TargetDeclination.ToString)
         SlewToCoordinates(TargetRightAscension, TargetDeclination)
     End Sub
 
     Public Sub SlewToTargetAsync() Implements ITelescopeV3.SlewToTargetAsync
         TL.LogMessage("SlewToTargetAsync", TargetRightAscension.ToString + ", " + TargetDeclination.ToString)
-        SlewToCoordinates(TargetRightAscension, TargetDeclination)
+        SlewToCoordinatesAsync(TargetRightAscension, TargetDeclination)
     End Sub
 
     Public ReadOnly Property Slewing() As Boolean Implements ITelescopeV3.Slewing
         Get
-            TL.LogMessage("Slewing Get", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("Slewing", False)
+            Dim retVal As Boolean = Convert.ToBoolean(CInt(CommandString(":GIS")))
+            TL.LogMessage("Slewing Get", retVal.ToString)
+            Return retVal
         End Get
     End Property
 
@@ -846,13 +869,53 @@ Public Class Telescope
     End Sub
 
     Public Sub SyncToCoordinates(RightAscension As Double, Declination As Double) Implements ITelescopeV3.SyncToCoordinates
-        TL.LogMessage("SyncToCoordinates", "Not implemented")
-        Throw New ASCOM.MethodNotImplementedException("SyncToCoordinates")
+        If RightAscension <= 24 And RightAscension >= 0 And Declination >= -90 And Declination <= 90 Then
+            Dim sign As String = String.Empty
+            If Declination >= 0 Then
+                sign = "+"
+            End If
+            Dim success As String = CommandString(":SY" + sign + utilities.DegreesToDMS(Declination, "*", ":", String.Empty) + "." + utilities.HoursToHMS(RightAscension, ":", ":"), False)
+            If success = "1" Then
+                TL.LogMessage("SyncToCoordinates", "Synced to " + utilities.DegreesToDMS(Declination) + ", " + utilities.HoursToHMS(RightAscension))
+            Else
+                TL.LogMessage("SyncToCoordinates", "Failed to sync to " + utilities.DegreesToDMS(Declination) + ", " + utilities.HoursToHMS(RightAscension))
+                Throw New ASCOM.DriverException("SyncToCoordinates")
+            End If
+        Else
+            TL.LogMessage("SyncToCoordinates", "Invalid coordinates RA: " + RightAscension.ToString + ", Dec: " + Declination.ToString)
+            Throw New ASCOM.InvalidValueException("SyncToCoordinates")
+        End If
     End Sub
 
     Public Sub SyncToTarget() Implements ITelescopeV3.SyncToTarget
-        TL.LogMessage("SyncToTarget", "Not implemented")
-        Throw New ASCOM.MethodNotImplementedException("SyncToTarget")
+        If targetDecSet Then
+
+            If targetRASet Then
+
+                Dim sign As String = String.Empty
+                If TargetDeclination >= 0 Then
+                    sign = "+"
+                End If
+                Dim success As String = CommandString(":SY" + sign + utilities.DegreesToDMS(TargetDeclination, "*", ":", String.Empty) + "." + utilities.HoursToHMS(TargetRightAscension, ":", ":"), False)
+                If success = "1" Then
+                    TL.LogMessage("SyncToTarget", "Synced to " + utilities.DegreesToDMS(TargetDeclination) + ", " + utilities.HoursToHMS(TargetRightAscension))
+                Else
+                    TL.LogMessage("SyncToTarget", "Failed to sync to " + utilities.DegreesToDMS(TargetDeclination) + ", " + utilities.HoursToHMS(TargetRightAscension))
+                    Throw New ASCOM.DriverException("SyncToTarget")
+                End If
+
+            Else
+
+                Throw New ASCOM.ValueNotSetException("TargetRightAscension")
+
+            End If
+
+        Else
+
+            Throw New ASCOM.ValueNotSetException("TargetDeclination")
+
+        End If
+
     End Sub
 
     Public Property TargetDeclination() As Double Implements ITelescopeV3.TargetDeclination
@@ -1059,6 +1122,20 @@ Public Class Telescope
         End Using
 
     End Sub
+
+#End Region
+
+#Region "Helper Functions"
+
+    Private Function PollUntilZero(ByVal command As String) As Integer
+        ' Takes a command to be sent via CommandString, and resends every 1000ms until a 0 is returned.  Returns 0 only when complete.
+        Dim retVal As String = ""
+        Do Until retVal = "0"
+            retVal = CommandString(command, False)
+            Thread.Sleep(1000)
+        Loop
+        Return CInt(retVal)
+    End Function
 
 #End Region
 
