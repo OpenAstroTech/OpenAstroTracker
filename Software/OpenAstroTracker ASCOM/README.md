@@ -15,7 +15,8 @@ The first release candidate of the OAT ASCOM Driver.  This is an early release c
 		* issue #21 in ClutchplateDude/OpenAstroTracker on github
 	* CAUTION : Neither the mount nor the driver currently support setting any slew limits.  Thus it is quite possible the mount may be told to slew to a position that causes a crash
 				with some gadget you've printed and added, or results in an untennable position for your camera, or any number of other "Bad Things (tm)".  So...keep track of your own towel.
-				
+	* CAUTION : Enabling the DEBUG_MODE in the Arduino code (plus possibly others) will break the driver.  If using the ASCOM driver, only SPPORT_SERIAL_CONTROL should be enabled and allowed to output
+				to serial.
 * Known Issues
 	* All known current issues are probably documented at https://github.com/ClutchplateDude/OpenAstroTracker/issues 
 	
