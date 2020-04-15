@@ -7,6 +7,7 @@
 #define STATUS_SLEWING_TO_TARGET   B00000100
 #define STATUS_SLEWING_FREE        B00000010
 #define STATUS_TRACKING            B00001000
+#define STATUS_PARKING             B00010000
 
 // slewingStatus()
 #define SLEWING_DEC                B00000010
@@ -275,6 +276,20 @@ void Mount::startSlewingToTarget() {
 
 /////////////////////////////////
 //
+// park
+//
+/////////////////////////////////
+void Mount::park()
+{
+  stopSlewing(ALL_DIRECTIONS | TRACKING);
+  waitUntilStopped(ALL_DIRECTIONS);
+  setTargetToHome();
+  startSlewingToTarget();
+  _mountStatus |= STATUS_PARKING;
+}
+
+/////////////////////////////////
+//
 // mountStatus
 //
 /////////////////////////////////
@@ -290,19 +305,24 @@ byte Mount::mountStatus() {
 /////////////////////////////////
 String Mount::mountStatusString() {
   if (_mountStatus == STATUS_PARKED) {
-    return "PRKD";
+    return "PARKED";
   }
   String disp = "";
-  if (_mountStatus & STATUS_TRACKING) disp += "TRK ";
-  if (_mountStatus & STATUS_SLEWING) disp += "SLW ";
-  if (_mountStatus & STATUS_SLEWING_TO_TARGET) disp += "2TRG ";
-  if (_mountStatus & STATUS_SLEWING_FREE) disp += "FR ";
+  if (_mountStatus & STATUS_PARKING) {
+    disp = "PARKNG ";
+  }
+  else {
+    if (_mountStatus & STATUS_TRACKING) disp += "TRK ";
+    if (_mountStatus & STATUS_SLEWING) disp += "SLW ";
+    if (_mountStatus & STATUS_SLEWING_TO_TARGET) disp += "2TRG ";
+    if (_mountStatus & STATUS_SLEWING_FREE) disp += "FR ";
 
-  if (_mountStatus & STATUS_SLEWING) {
-    byte slew = slewStatus();
-    if (slew & SLEWING_RA) disp += " SRA ";
-    if (slew & SLEWING_DEC) disp += " SDEC ";
-    if (slew & SLEWING_TRACKING) disp += " STRK ";
+    if (_mountStatus & STATUS_SLEWING) {
+      byte slew = slewStatus();
+      if (slew & SLEWING_RA) disp += " SRA ";
+      if (slew & SLEWING_DEC) disp += " SDEC ";
+      if (slew & SLEWING_TRACKING) disp += " STRK ";
+    }
   }
 
   disp += " RA:" + String(_stepperRA->currentPosition());
@@ -337,6 +357,7 @@ byte Mount::slewStatus() {
 //
 /////////////////////////////////
 bool Mount::isSlewingDEC() {
+  if (isParking()) return true;
   return (slewStatus() & SLEWING_DEC) != 0;
 }
 
@@ -346,6 +367,7 @@ bool Mount::isSlewingDEC() {
 //
 /////////////////////////////////
 bool Mount::isSlewingRA() {
+  if (isParking()) return true;
   return (slewStatus() & SLEWING_RA) != 0;
 }
 
@@ -355,6 +377,7 @@ bool Mount::isSlewingRA() {
 //
 /////////////////////////////////
 bool Mount::isSlewingRAorDEC() {
+  if (isParking()) return true;
   return (slewStatus() & (SLEWING_DEC | SLEWING_RA)) != 0;
 }
 
@@ -364,6 +387,7 @@ bool Mount::isSlewingRAorDEC() {
 //
 /////////////////////////////////
 bool Mount::isSlewingIdle() {
+  if (isParking()) return false;
   return (slewStatus() & (SLEWING_DEC | SLEWING_RA)) == 0;
 }
 
@@ -382,38 +406,51 @@ bool Mount::isSlewingTRK() {
 //
 /////////////////////////////////
 bool Mount::isParked() {
-  return slewStatus() == NOT_SLEWING;
+  return (slewStatus() == NOT_SLEWING) && (_mountStatus == STATUS_PARKED);
+}
+
+/////////////////////////////////
+//
+// isParking
+//
+/////////////////////////////////
+bool Mount::isParking() {
+  return _mountStatus & STATUS_PARKING;
 }
 
 /////////////////////////////////
 //
 // startSlewing
 //
-// Starts manual slewing in one of eight directions or tracking
+// Starts manual slewing in one of eight directions or 
+// tracking, but only if not currently parking!
 /////////////////////////////////
 void Mount::startSlewing(int direction) {
-  if (direction & TRACKING) {
-    _stepperTRK->setSpeed(_trackingSpeed);
+  if (!isParking())
+  {
+    if (direction & TRACKING) {
+      _stepperTRK->setSpeed(_trackingSpeed);
 
-    // Turn on tracking
-    _mountStatus |= STATUS_TRACKING;
-  }
-  else {
-    if (direction & NORTH) {
-      _stepperDEC->moveTo(30000);
-      _mountStatus |= STATUS_SLEWING;
+      // Turn on tracking
+      _mountStatus |= STATUS_TRACKING;
     }
-    if (direction & SOUTH ) {
-      _stepperDEC->moveTo(-30000);
-      _mountStatus |= STATUS_SLEWING;
-    }
-    if (direction & EAST ) {
-      _stepperRA->moveTo(-30000);
-      _mountStatus |= STATUS_SLEWING;
-    }
-    if (direction & WEST) {
-      _stepperRA->moveTo(30000);
-      _mountStatus |= STATUS_SLEWING;
+    else {
+      if (direction & NORTH) {
+        _stepperDEC->moveTo(30000);
+        _mountStatus |= STATUS_SLEWING;
+      }
+      if (direction & SOUTH ) {
+        _stepperDEC->moveTo(-30000);
+        _mountStatus |= STATUS_SLEWING;
+      }
+      if (direction & EAST ) {
+        _stepperRA->moveTo(-30000);
+        _mountStatus |= STATUS_SLEWING;
+      }
+      if (direction & WEST) {
+        _stepperRA->moveTo(30000);
+        _mountStatus |= STATUS_SLEWING;
+      }
     }
   }
 }
@@ -450,7 +487,6 @@ void Mount::waitUntilStopped(byte direction) {
           || ((direction & (NORTH | SOUTH)) && _stepperDEC->isRunning())
           || ((direction & TRACKING) && (((_mountStatus & STATUS_TRACKING) == 0) && _stepperTRK->isRunning()))
         ) {
-    // //Serial.print("W4Stp: ");
     loop();
   }
 }
@@ -536,6 +572,14 @@ void Mount::loop() {
       // Mount is at Target!
       _currentRA = _targetRA;
       _currentDEC = _targetDEC;
+
+      // If we we're parking, we just reached home. Clear the flag, reset the motors and stop tracking.
+      if (isParking()) {
+        _mountStatus &= ~STATUS_PARKING;
+        stopSlewing(TRACKING);
+        setHome();
+      }
+
       _currentDECStepperPosition = _stepperDEC->currentPosition();
       _currentRAStepperPosition = _stepperRA->currentPosition();
       _totalDECMove = _totalRAMove = 0;
@@ -560,7 +604,6 @@ void Mount::setHome() {
   _stepperRA->setCurrentPosition(0);
   _stepperDEC->setCurrentPosition(0);
   _stepperTRK->setCurrentPosition(0);
-  startSlewing(TRACKING);
 }
 
 /////////////////////////////////

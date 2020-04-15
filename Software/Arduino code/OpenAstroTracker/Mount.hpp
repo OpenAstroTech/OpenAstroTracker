@@ -79,6 +79,7 @@ class Mount {
     bool isSlewingIdle();
     bool isSlewingTRK();
     bool isParked();
+    bool isParking();
 
     // Starts manual slewing in one of eight directions or tracking
     void startSlewing(int direction);
@@ -110,6 +111,9 @@ class Mount {
     // Set the current stepper positions to be home.
     void setHome();
 
+    // Asynchronously parks the mount. Moves to the home position and stops all motors. 
+    void park();
+    
     // Return a string of DEC in the given format. For LCDSTRING, active determines where the cursor is
     String DECString(byte type, byte active = 0);
 
