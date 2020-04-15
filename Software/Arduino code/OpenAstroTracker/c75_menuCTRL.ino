@@ -2,6 +2,35 @@
 bool confirmZeroPoint = false;
 bool setZeroPoint = true;
 
+
+#define LOOPS_TO_CONFIRM_KEY 10
+byte loopsWithKeyPressed = 0;
+byte keyPressed = btnNONE;
+
+
+bool processKeyStateChanges(int key, int dir)
+{
+  bool ret = false;
+  if (keyPressed != key) {
+    loopsWithKeyPressed = 0;
+    keyPressed = key;
+  }
+  else {
+    if (loopsWithKeyPressed == LOOPS_TO_CONFIRM_KEY) {
+      mount.stopSlewing(ALL_DIRECTIONS);
+      mount.waitUntilStopped(ALL_DIRECTIONS);
+      if (dir != 0) {
+        mount.startSlewing(dir);
+      }
+      loopsWithKeyPressed++;      
+      ret = true;
+    }
+    else if (loopsWithKeyPressed < LOOPS_TO_CONFIRM_KEY) {
+      loopsWithKeyPressed++;
+    }
+  }
+}
+
 bool processControlKeys() {
   byte key;
 
@@ -35,8 +64,8 @@ bool processControlKeys() {
           startupState = StartupPoleConfirmed;
           inStartup = true;
         }
-        else 
-#endif        
+        else
+#endif
         {
           lcdMenu.setNextActive();
         }
@@ -50,56 +79,49 @@ bool processControlKeys() {
     return true;
   }
 
-  if (lcdButtons.keyChanged(key)) {
-    switch (key) {
-      case btnUP: {
-          if (!mount.isSlewingDEC()) {
-            mount.startSlewing(NORTH);
-          } else {
-            mount.stopSlewing(NORTH | SOUTH);
-          }
-        }
-        break;
+  mount.loop();
 
-      case btnDOWN: {
-          if (!mount.isSlewingDEC()) {
-            mount.startSlewing(SOUTH);
-          } else {
-            mount.stopSlewing(NORTH | SOUTH);
-          }
-        }
-        break;
+  key = lcdButtons.currentState();
+  switch (key) {
+    case btnUP: {
+        processKeyStateChanges(btnUP, NORTH);
+      }
+      break;
 
-      case btnLEFT: {
-          if (!mount.isSlewingRA()) {
-            mount.startSlewing(WEST);
-          } else {
-            mount.stopSlewing(EAST | WEST);
-          }
-        }
-        break;
+    case btnDOWN: {
+        processKeyStateChanges(btnDOWN, SOUTH);
+      }
+      break;
 
-      case btnRIGHT: {
-          if (!mount.isSlewingRA()) {
-            mount.startSlewing(EAST);
-          } else {
-            mount.stopSlewing(EAST | WEST);
-          }
-        }
-        break;
+    case btnLEFT: {
+        processKeyStateChanges(btnLEFT, WEST);
+      }
+      break;
 
-      case btnSELECT: {
-          mount.stopSlewing(ALL_DIRECTIONS);
-          mount.waitUntilStopped(ALL_DIRECTIONS);
+    case btnRIGHT: {
+        processKeyStateChanges(btnRIGHT, EAST);
+      }
+      break;
+
+    case btnSELECT: {
+        if (processKeyStateChanges(btnSELECT, 0))
+        {
           lcdMenu.setCursor(0, 0);
           lcdMenu.printMenu("Set home point?");
           confirmZeroPoint = true;
         }
-        break;
-    }
+      }
+      break;
+
+    case btnNONE: {
+        processKeyStateChanges(btnNONE, 0);
+      }
+      break;
   }
 
-  return true;
+  mount.loop();
+
+  return false;
 }
 
 

@@ -1,7 +1,7 @@
 /*
   =======================================================================================================================================
 
-    Version 1.6.22
+    Version 1.6
 
     1. Connect your Arduino, under tools choose "Arduino Uno", set the right Port and set "Arduino ISP" as the Programmer.
     2. Hit upload (Ctrl-U)
@@ -16,7 +16,7 @@
 */
 #include "Globals.h"
 
-String version = "V1.6.24";
+String version = "V1.6.25";
 
 ///////////////////////////////////////////////////////////////////////////
 // Please see the Globals.h file for configuration of the firmware.
@@ -56,6 +56,7 @@ int DECacceleration = 400;
 
 // Define some stepper limits to prevent physical damage to the tracker. This assumes that the home
 // point (zero point) has been correctly set to be pointing at the celestial pole.
+// Note: these are currently not used
 float RAStepperLimit = 15500;         // Going much more than this each direction will make the ring fall off the bearings.
 
 // These are for 47N, so they will need adjustment if you're a lot away from that.
@@ -63,6 +64,7 @@ float RAStepperLimit = 15500;         // Going much more than this each directio
 // down until my lens was horizontal. Note the DEC number. Then move it up until
 // the lens is horizontal and note that number. Put those here. Always watch your
 // tracker and hit RESET if it approaches a dangerous area.
+// Note: these are currently not used
 float DECStepperDownLimit = 10000;    // Going much more than this will make the lens collide with the ring
 float DECStepperUpLimit = -22000;     // Going much more than this is going below the horizon.
 
