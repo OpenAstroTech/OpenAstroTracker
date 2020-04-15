@@ -1,5 +1,7 @@
-void processHeatKeys(int key) {
 #ifdef SUPPORT_HEATING
+
+bool processHeatKeys() {
+  byte key;
   switch (key) {
     case btnUP:
     case btnDOWN:
@@ -53,11 +55,10 @@ void processHeatKeys(int key) {
       }
       break;
   }
-#endif
+  return true;
 }
 
 void printHeatSubmenu() {
-#ifdef SUPPORT_HEATING
   String menu = format("RA%c%s%c DEC%c%s%c  ",
                        heatselect == 0 ? ">" : ":",
                        RAheat == 0 ? "Off" : "On ",
@@ -67,5 +68,6 @@ void printHeatSubmenu() {
                        heatselect == 1 ? "<" : " "
                       );
   lcdMenu.printMenu(menu);
-#endif
 }
+
+#endif

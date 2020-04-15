@@ -17,16 +17,18 @@
 mono_crash.*
 
 # Build results
+[Dd]ebug/
 [Dd]ebugPublic/
+[Rr]elease/
 [Rr]eleases/
 x64/
 x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
+[Bb]in/
 [Oo]bj/
 [Ll]og/
-[Ll]ogs/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -124,6 +126,9 @@ _ReSharper*/
 *.[Rr]e[Ss]harper
 *.DotSettings.user
 
+# JustCode is a .NET coding add-in
+.JustCode
+
 # TeamCity is a build add-in
 _TeamCity*
 
@@ -133,9 +138,6 @@ _TeamCity*
 # AxoCover is a Code Coverage Tool
 .axoCover/*
 !.axoCover/settings.json
-
-# Coverlet is a free, cross platform Code Coverage Tool
-coverage*[.json, .xml, .info]
 
 # Visual Studio code coverage results
 *.coverage
@@ -345,13 +347,3 @@ healthchecksdb
 
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
-
-# Ionide (cross platform F# VS Code tools) working folder
-.ionide/
-
-Software/OpenAstroTracker ASCOM/OpenAstroTracker ASCOM/bin/
-Software/OpenAstroTracker ASCOM/OAT PC Control/bin
-Software/PC control/bin
-Software/OpenAstroTracker ASCOM/OpenAstroTracker ASCOM/bin
-
-Software/OpenAstroTracker ASCOM/OpenAstroTracker ASCOM/OpenAstroTracker Setup.iss

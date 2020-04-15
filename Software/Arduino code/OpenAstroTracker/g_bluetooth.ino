@@ -17,17 +17,17 @@ void BTin() {
       if (inBT.indexOf("6") > 0)  BT.println("P"); Serial.print(1);
 
       if (inBT == ":GR") {
-        sprintf(current_RA, "%02d:%02d:%02d", int(hourRAprint), int(minRAprint), int(secRAprint));
-        BT.print(current_RA);
+        sprintf(scratchBuffer, "%02d:%02d:%02d", int(hourRAprint), int(minRAprint), int(secRAprint));
+        BT.print(scratchBuffer);
         BT.print("#");
-        Serial.print(current_RA);
+        Serial.print(scratchBuffer);
         Serial.print("#");
         //inCmd = "";
       }
 
       if (inBT == ":GD") {
-        sprintf(current_RA, "%02d:%02d:%02d", int(hourRAprint), int(minRAprint), int(secRAprint));
-        BT.print(current_RA);
+        sprintf(scratchBuffer, "%02d:%02d:%02d", int(hourRAprint), int(minRAprint), int(secRAprint));
+        BT.print(scratchBuffer);
         BT.print("#");
         //inCmd = "";
       }

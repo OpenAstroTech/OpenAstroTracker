@@ -1,23 +1,42 @@
-void processHomeKeys(int key) {
-  switch (key) {
-    case btnSELECT: {
-        if ((stepperRA.currentPosition() == 0) && (stepperDEC.currentPosition() == 0)) {
-          ShowStatusMessage("Already Home...");
+byte subGoIndex = 0;
+
+bool processHomeKeys() {
+  byte key;
+  if (lcdButtons.keyChanged(key)) {
+    switch (key) {
+      case btnSELECT: {
+          if (subGoIndex == 0) {
+            mount.goHome(true); // start tracking after home
+          } else {
+            mount.park();
+          }
         }
+        break;
 
-        stepperRA.moveTo(0);
-        stepperDEC.moveTo(0);
-        moveSteppersToTarget();
-      }
-      break;
+      case btnUP:
+      case btnDOWN:
+      case btnLEFT: {
+          subGoIndex = 1 - subGoIndex;
+        }
+        break;
 
-    case btnRIGHT: {
-        lcdMenu.setNextActive();
-      }
-      break;
+      case btnRIGHT: {
+          lcdMenu.setNextActive();
+        }
+        break;
+    }
   }
+
+  return true;
 }
 
 void printHomeSubmenu() {
-  lcdMenu.printMenu(">Go Home");
+  char scratchBuffer[16];
+  if (mount.isParked() && (subGoIndex == 1)) {
+    lcdMenu.printMenu("Parked...");
+  } else {
+    strcpy(scratchBuffer, " Home  Park");
+    scratchBuffer[subGoIndex * 6] = '>';
+    lcdMenu.printMenu(scratchBuffer);
+  }
 }

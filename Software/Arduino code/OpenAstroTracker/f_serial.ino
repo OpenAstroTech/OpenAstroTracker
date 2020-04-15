@@ -1,258 +1,349 @@
-void serialEvent() {
+#ifdef SUPPORT_SERIAL_CONTROL
 
-  while (stepperGUIDE.distanceToGo() != 0) tracking = 0;
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+// Serial support
+//
+// The Serial protocol implemented her is the Meade protocol with some extensions.
+// The Meade protocol commands start with a colon and end with a hash.
+// The first letter determines the family of functions (G for Get, S for Set, M for Movement, etc.)
+//
+// The set of Meade features implemented are:
+//
+//------------------------------------------------------------------
+// INITIALIZE FAMILY
+//
+// :I#   - Initialize Scope
+//         This puts the Arduino in Serial Control Mode and displays RA on line 1 and
+//         DEC on line 2 of the display. Serial Control Mode can be ended manually by
+//         pressing the SELECT key, or programmatically with the :Qq# command.
+//         Returns: nothing
+//
+//------------------------------------------------------------------
+// GET FAMILY
+//
+// :GVP#
+//      Get the Product Name
+//      Returns: 'OpenAstroTracker'
+//
+// :GVN#
+//      Get the Firmware Version Number
+//      Returns: 'V1.major.minor' from OpenAstroTracker.ino
+//
+// :Gd#
+//      Get Target Declination
+//      Where s is + or -, DD is degrees, MM is minutes, SS is seconds.
+//      Returns: sDD*MM'SS
+//
+// :GD#
+//      Get Current Declination
+//      Where s is + or -, DD is degrees, MM is minutes, SS is seconds.
+//      Returns: sDD*MM'SS
+//
+// :Gr#
+//      Get Target Right Ascension
+//      Where HH is hour, MM is minutes, SS is seconds.
+//      Returns: HH:MM:SS
+//
+// :GR#
+//      Get Current Right Ascension
+//      Where HH is hour, MM is minutes, SS is seconds.
+//      Returns: HH:MM:SS
+//
+// -- GET Extensions --
+// :GIS#
+//      Get DEC or RA Slewing
+//      Returns: 1 if either RA or DEC is slewing. 0 if not.
+//
+// :GIT#
+//      Get Tracking
+//      Returns: 1 if tracking is on. 0 if not.
+//
+//------------------------------------------------------------------
+// SET FAMILY
+//
+// :SdsDD*MM:SS#
+//      Set Target Declination
+//      This sets the target DEC. Use a Movement command to slew there.
+//      Where s is + or -, DD is degrees, MM is minutes, SS is seconds.
+//      Returns: 1 if successfully set, otherwise 0
+//
+// :SrHH:MM:SS#
+//      Set Right Ascension
+//      This sets the target RA. Use a Movement command to slew there.
+//      Where HH is hours, MM is minutes, SS is seconds.
+//      Returns: 1 if successfully set, otherwise 0
+//
+// -- SET Extensions --
+// :SHHH:MM#
+//      Set Hour Time (HA)
+//      This sets the scopes HA.
+//      Where HH is hours, MM is minutes.
+//      Returns: 1 if successfully set, otherwise 0
+//
+// :SYsDD*MM:SS.HH:MM:SS#
+//      Synchronize Declination and Right Ascension.
+//      This tells the scope what it is currently pointing at.
+//      Where s is + or -, DD is degrees, HH is hours, MM is minutes, SS is seconds.
+//      Returns: 1 if successfully set, otherwise 0
+//
+//------------------------------------------------------------------
+// MOVEMENT FAMILY
+//
+// :MS#
+//      Start Slew to Target (Asynchronously)
+//      This starts slewing the scope to the target RA and DEC coordinates and returns immediately.
+//      Returns: 1
+//
+// -- MOVEMENT Extensions --
+//
+// :MTs#
+//      Set Tracking mode
+//      This turns the scopes tracking mode on or off.
+//      Where s is 1 to turn on Tracking and 0 to turn it off.
+//      Returns: 1
+//
+//------------------------------------------------------------------
+// HOME FAMILY
+//
+// :hP#
+//      Park Scope and stop motors
+//      This slews the scope back to it's home position (RA ring centered, DEC
+//      at 90, basically pointing at celestial pole) and stops all movement (including tracking).
+//      Returns: Nothing
+//
+// -- PARK Extensions --
+// :hU#
+//      Unpark Scope
+//      This currently simply turns on tracking.
+//      Returns: Nothing
+//
+//------------------------------------------------------------------
+// QUIT MOVEMENT FAMILY
+//
+// :Q#
+//      Stop all motors
+//      This stops all motors, including tracking. Note that deceleration curves are still followed.
+//      Returns: 1 when all motors have stopped.
+//
+// -- QUIT MOVEMENT Extensions --
+// :Qq#
+//      Disconnect, Quit Control mode
+//      This quits Serial Control mode and starts tracking.
+//      Returns: nothing
+//
+/////////////////////////////////////////////////////////////////////////////////////////
 
-  while (Serial.available() > 0) {
+/////////////////////////////
+// INIT
+/////////////////////////////
+void handleMeadeInit(String inCmd) {
+  inSerialControl = true;
+  lcdMenu.setCursor(0, 0);
+  lcdMenu.printMenu("Remote control");
+  lcdMenu.setCursor(0, 1);
+  lcdMenu.printMenu(">SELECT to quit");
+}
 
+/////////////////////////////
+// GET INFO
+/////////////////////////////
+void handleMeadeGetInfo(String inCmd) {
+  char cmdOne = inCmd[0];
+  char cmdTwo = (inCmd.length() > 1) ? inCmd[1]  : '\0';
 
-    String inCmd = Serial.readStringUntil('#');
-    /*lcd.setCursor(0, 0);
-      lcd.print(inCmd);*/
-    logString += inCmd + "\n\r";
-
-
-
-    if (inCmd.indexOf('S') > 0) {
-      int rh = inCmd.indexOf('\a');
-      String a = inCmd.substring(0, rh);
-      int RaH = a.toInt();
-
-      int rm = inCmd.indexOf('\b');
-      String b = inCmd.substring(rh + 1, rm);
-      int RaM = b.toInt();
-
-      int rs = inCmd.indexOf('\f');
-      String c = inCmd.substring(rm + 1, rs);
-      int RaS = c.toInt();
-
-      RATime.set(RaH, RaH, RaS);
-
-      //lcd.clear();
-      //lcd.print(moveRA);
-      //lcd.print(minRA);
-      //lcd.print(secRA);
-    }
-
-
-
-    if (inCmd.indexOf("R") > 0) {
-      int r = inCmd.indexOf('\a');
-      String a = inCmd.substring(0, r);
-      int amount = a.toInt();
-      tracking = 0;
-      stepperRA.move(amount);
-      stepperRA.runToPosition();
-      tracking = 1;
-    }
-
-    if (inCmd.indexOf("L") > 0) {
-      tracking = 0;
-      int l = inCmd.indexOf('\a');
-      String a = inCmd.substring(0, l);
-      int amount = a.toInt();
-
-      stepperRA.move(-amount);
-      stepperRA.runToPosition();
-      tracking = 1;
-    }
-    if (inCmd.indexOf("UP") > 0) {
-      int u = inCmd.indexOf('\a');
-      String a = inCmd.substring(0, u);
-      int amount = a.toInt();
-      stepperDEC.setMaxSpeed(250);
-      stepperDEC.setAcceleration(600);
-      stepperDEC.move(-amount);
-      stepperDEC.runToPosition();
-    }
-    if (inCmd.indexOf("DOWN") > 0) {
-      int d = inCmd.indexOf('\a');
-      String a = inCmd.substring(0, d);
-      int amount = a.toInt();
-      stepperDEC.setMaxSpeed(250);
-      stepperDEC.setAcceleration(600);
-      stepperDEC.move(amount);
-      stepperDEC.runToPosition();
-    }
-    if (inCmd == "START") {
-      pcControl = true;
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("PC CONTROL");
-      lcd.setCursor(0, 1);
-      //lcd.print(amount);
-    }
-
-    if (inCmd == "STOP") {
-      pcControl = false;
-      lcd.clear();
-    }
-
-    if (inCmd == "I")
-    {
-      if (isPulseGuiding)
-      {
-        Serial.println("TRUE#");
+  switch (cmdOne) {
+    case 'V' : {
+        if (cmdTwo == 'N') {
+          Serial.print(version);
+          Serial.print("#");
+        }
+        else if (cmdTwo == 'P') {
+          Serial.print("OpenAstroTracker#");
+        }
       }
-      else
-      {
-        Serial.println("FALSE#");
+      break;
+    case 'r': {
+        Serial.print(mount.RAString(MEADE_STRING | TARGET_STRING));
       }
-    }
-
-
-
-    if (inCmd == "E") //RA + EAST
-    {
-      inCmd = "";
-
-      while (inCmd.toInt() == 0) {
-        tracking = 0;
-        direction_new = 1;
-
-        inCmd = Serial.readStringUntil('#');
-
-        stepperTRK.setSpeed(50);
-        stepperTRK.move(2);
-        stepperTRK.runToPosition();
-        tracking = 1;
-        logString += inCmd + "\n\r";
+      break;
+    case 'd': {
+        Serial.print(mount.DECString(MEADE_STRING | TARGET_STRING));
       }
-    }
-
-    if (inCmd == "W") //RA - WEST
-    {
-      inCmd = "";
-
-      while (inCmd.toInt() == 0) {
-        tracking = 0;
-        direction_new = 0;
-
-
-        inCmd = Serial.readStringUntil('#');
-
-        stepperTRK.setAcceleration(2000);
-        stepperTRK.setMaxSpeed(800);
-        stepperTRK.setSpeed(800);
-        stepperTRK.move(-12);
-        stepperTRK.runToPosition();
-        stepperTRK.move(10);
-        stepperTRK.runToPosition();
-        tracking = 1;
-        logString += inCmd + "\n\r";
+      break;
+    case 'R': {
+        Serial.print(mount.RAString(MEADE_STRING | CURRENT_STRING));
       }
-    }
+      break;
 
-    if (inCmd == "U") //DEC + NORTH
-    {
-      inCmd = "";
-
-      while (inCmd.toInt() == 0)
-        inCmd = Serial.readStringUntil('#');
-
-      logString += inCmd + "\n\r";
-
-      stepperDEC.move(-1);
-      stepperDEC.runToPosition();
-    }
-    if (inCmd == "D") //DEC - SOUTH
-    {
-      inCmd = "";
-
-      while (inCmd.toInt() == 0)
-        inCmd = Serial.readStringUntil('#');
-
-      logString += inCmd + "\n\r";
-
-      stepperDEC.move(1);
-      stepperDEC.runToPosition();
-    }
-    if (inCmd == "N") {
-
-      isPulseGuiding = false;
-    }
-
-    if (inCmd == "L")  {
-      Serial.println(logString);
-      logString = "";
-    }
-
-
-    // Stellarium stuff--------------------------------------------------
-
-    if (inCmd == ":GR") {
-      sprintf(current_RA, "%02d:%02d:%02d", RADisplayTime.getHours(), RADisplayTime.getMinutes(), RADisplayTime.getSeconds());
-      Serial.print(current_RA);
-      Serial.print("#");
-      //inCmd = "";
-    }
-
-    if (inCmd == ":GD") {
-      sprintf(current_DEC, "%c%02d*%02d:%02d", '+', int(printdegDEC), int(minDEC), int(secDEC));
-      Serial.print(current_DEC);
-      //Serial.print("+80*00#");
-      Serial.print("#");
-      //inCmd = "";
-    }
-    if (inCmd.indexOf("Sr") > 0) {
-      String x = inCmd.substring(3);
-      int RaH = x.toInt();
-      String y = inCmd.substring(7);
-      int RaM = y.toInt();
-      String z = inCmd.substring(10);
-      int RaS = z.toInt();
-
-      int slew_RAh = (RaH - RADisplayTime.getHours());
-      int slew_RAm = (RaM - RADisplayTime.getMinutes());
-      int slew_RAs = (RaS - RADisplayTime.getSeconds());
-
-      RATime.addTime(slew_RAh, slew_RAm, slew_RAs);
-
-      Serial.print("1");
-      slew_RA = (slew_RAh * stepsPerHour + slew_RAm * (stepsPerHour / 60) + slew_RAs * (stepsPerHour / 3600)) / 2;
-
-      stepperRA.moveTo(slew_RA);
-      //inCmd = "";
-      //slew();
-    }
-    if (inCmd.indexOf(":Sd") >= 0) {
-      //int s = inCmd.indexOf ("Sd");
-      String x = inCmd.substring(4);
-      int DECd = x.toInt();
-      String y = inCmd.substring(8);
-      int DECm = y.toInt();
-      String z = inCmd.substring(11);
-      int DECs = z.toInt();
-
-      int slew_DECd = (printdegDEC - DECd);
-      int slew_DECm = (DECm - minDEC);
-      int slew_DECs = (DECs - secDEC);
-
-      degreeDEC += slew_DECd;
-      minDEC += slew_DECm;
-      secDEC += slew_DECs;
-      Serial.print("1");
-      slew_DEC = (slew_DECd * float(DECsteps) + slew_DECm * (float(DECsteps) / float(60)) + slew_DECs * (float(DECsteps) / float(3600))) / 2;
-
-      stepperDEC.moveTo(slew_DEC);
-      //inCmd = "";
-      //slew();
-    }
-    if (inCmd == ":MS") {
-      Serial.print(0);
-      inCmd = "";
-      while (stepperRA.distanceToGo() != 0  && stepperDEC.distanceToGo() == 0) {
-        stepperRA.run();
+    case 'D': {
+        Serial.print(mount.DECString(MEADE_STRING | CURRENT_STRING));
       }
-      while (stepperDEC.distanceToGo() != 0 && stepperRA.distanceToGo() == 0) {
-        stepperDEC.run();
+      break;
 
+    case 'I': {
+        if (cmdTwo == 'S') {
+          Serial.print(mount.isSlewingRAorDEC() ? "1" : "0");
+        }
+        else if (cmdTwo == 'T') {
+          Serial.print(mount.isSlewingTRK() ? "1" : "0");
+        }
+        Serial.print("#");
       }
-      while (stepperDEC.distanceToGo() != 0 || stepperRA.distanceToGo() != 0) {
-        stepperRA.run();
-        stepperDEC.run();
-      }
-    }
-    loop();
-
+      break;
   }
 }
+
+/////////////////////////////
+// SET INFO
+/////////////////////////////
+void handleMeadeSetInfo(String inCmd) {
+  if (inCmd.length() < 6) {
+    Serial.print("0");
+    return;
+  }
+  if ((inCmd[0] == 'd') && (inCmd.length() == 10)) {
+    // Set DEC
+    //   0123456789
+    // :Sd+84*03:02
+    int sgn = inCmd[1] == '+' ? 1 : -1;
+    if ((inCmd[4] == '*') && (inCmd[7] == ':') )
+    {
+      int deg = inCmd.substring(2, 4).toInt();
+      mount.targetDEC().set(sgn * deg + (NORTHERN_HEMISPHERE ? -90 : 90), inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
+      Serial.print("1");
+    } else  {
+      // Did not understand the coordinate
+      Serial.print("0");
+    }
+  } else if (inCmd[0] == 'r' && (inCmd.length() == 9)) {
+    // Set RA
+    //   012345678
+    // :Sr04:03:02
+    if ((inCmd[3] == ':') && (inCmd[6] == ':') )
+    {
+      mount.targetRA().set(inCmd.substring(1, 3).toInt(), inCmd.substring(4, 6).toInt(), inCmd.substring(7, 9).toInt());
+      mount.targetRA().addTime(mount.getHACorrection());
+      mount.targetRA().subtractTime(mount.HA());
+      Serial.print("1");
+    } else
+      // Did not understand the coordinate
+      Serial.print("0");
+  } else if (inCmd[0] == 'H') {
+    // Set HA
+    int hHA = inCmd.substring(1, 3).toInt();
+    int minHA = inCmd.substring(4, 6).toInt();
+    mount.setHA(DayTime(hHA, minHA, 0));
+    Serial.print("1");
+  }
+  else if ((inCmd[0] == 'Y') && inCmd.length() == 19) {
+    // Sync RA, DEC - current position is teh given coordinate
+    //   0123456789012345678
+    // :SY+84*03:02.18:34:12
+    int sgn = inCmd[1] == '+' ? 1 : -1;
+    if ((inCmd[4] == '*') && (inCmd[7] == ':') && (inCmd[10] == '.') && (inCmd[13] == ':') && (inCmd[16] == ':')) {
+      int deg = inCmd.substring(2, 4).toInt();
+      mount.syncDEC(sgn * deg + (NORTHERN_HEMISPHERE ? -90 : 90), inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
+      mount.syncRA(inCmd.substring(11, 13).toInt(), inCmd.substring(14, 16).toInt(), inCmd.substring(17, 19).toInt());
+      Serial.print("1");
+    }
+    else {
+      Serial.print("0");
+    }
+  }
+  else {
+    Serial.print("0");
+  }
+}
+
+/////////////////////////////
+// MOVEMENT
+/////////////////////////////
+void handleMeadeMovement(String inCmd) {
+  if (inCmd[0] == 'S') {
+    mount.startSlewingToTarget();
+    Serial.print("1");
+  }
+  else if (inCmd[0] == 'T') {
+    if (inCmd.length() > 1) {
+      if (inCmd[1] == '1') {
+        mount.startSlewing(TRACKING);
+        Serial.print("1");
+      }
+      else if (inCmd[1] == '0')    {
+        mount.stopSlewing(TRACKING);
+        Serial.print("1");
+      }
+    }
+    else {
+      Serial.print("0");
+    }
+  }
+}
+
+/////////////////////////////
+// HOME
+/////////////////////////////
+void handleMeadeHome(String inCmd) {
+  if (inCmd[0] == 'P') {  // Park
+    mount.park();
+  }
+  else if (inCmd[0] == 'U') {  // Unpark
+    mount.startSlewing(TRACKING);
+  }
+}
+
+/////////////////////////////
+// QUIT
+/////////////////////////////
+void handleMeadeQuit(String inCmd) {
+  // :Q# stops a motors - remains in Control mode
+  // :Qq# command does not stop motors, but quits Control mode
+  if ((inCmd.length() == 0) || (inCmd[0] != 'q'))  {
+    mount.stopSlewing(ALL_DIRECTIONS | TRACKING);
+    mount.waitUntilStopped(ALL_DIRECTIONS);
+    Serial.print("1");
+  } else {
+    inSerialControl = false;
+    lcdMenu.setCursor(0, 0);
+    lcdMenu.updateDisplay();
+    mount.startSlewing(TRACKING);
+  }
+}
+
+////////////////////////////////////////////////
+// The main loop when under serial control
+void serialLoop()
+{
+  mount.loop();
+  mount.displayStepperPositionThrottled();
+}
+
+//////////////////////////////////////////////////
+// Event that is triggered when the serial port receives data.
+void serialEvent() {
+
+  // Implement Meade protocol
+  while (Serial.available() > 0) {
+
+    String inCmd = Serial.readStringUntil('#');
+
+    if (inCmd[0] = ':')
+    {
+
+      char command = inCmd[1];
+      inCmd = inCmd.substring(2);
+      switch (command) {
+        case 'S' : handleMeadeSetInfo(inCmd); break;
+        case 'M' : handleMeadeMovement(inCmd); break;
+        case 'G' : handleMeadeGetInfo(inCmd); break;
+        case 'h' : handleMeadeHome(inCmd); break;
+        case 'I' : handleMeadeInit(inCmd); break;
+        case 'Q' : handleMeadeQuit(inCmd); break;
+      }
+    }
+    mount.loop();
+  }
+}
+
+#endif
