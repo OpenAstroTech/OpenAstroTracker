@@ -1,7 +1,11 @@
-OpenAstroTracker ASCOM driver 0.1.3.0 RC1 : 2020-04-15
+OpenAstroTracker ASCOM driver 0.1.3.1 RC1 : 2020-04-16
 
 The first release candidate of the OAT ASCOM Driver.  This is an early release candidate/beta, use at your own risk!
 
+* History
+	* 0.1.3.0	2020-04-15		:		Initial release
+	* 0.1.3.1	2020-04-16		:		BUGFIX : Allow , as decimal separator where Windows regional settings use it.
+	
 * Arduino information
 	* Tested on Arduino Uno.  No other variants of Arduino have been tested.
 	* Currently built for Version V1.6.25 of the Arduino Code (As of 2020-04-15)
