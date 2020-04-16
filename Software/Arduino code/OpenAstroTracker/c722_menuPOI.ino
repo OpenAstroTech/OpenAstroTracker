@@ -15,8 +15,11 @@ PointOfInterest pointOfInterest[] = {
   { ">Polaris"        ,  2, 57, 56,   89, 21,  2 },
   { ">Big Dipper"     , 12, 16, 26,   56, 55,  7 },
   { ">M31 Andromeda"  ,  0, 43, 52,   41, 22, 53 },
+  { ">M42 Orion Nbula",  5, 36, 18,   -5, 22, 44 },
+  { ">M51 Whirlpool"  , 13, 30, 45,   47, 05, 21 },
+  { ">M63 Sunflower"  , 13, 16, 45,   41, 55, 14 },
   { ">M81 Bodes Galxy",  9, 57, 13,   68, 58,  1 },
-
+  { ">M101 Pinwheel",   14,  3, 56,   54, 15,  0 },
   // Add new items above here, not below.
   { ">Home"           ,  0,  0,  0,   90,  0,  0 },
   { ">Park"           ,  0,  0,  0,   90,  0,  0 },
