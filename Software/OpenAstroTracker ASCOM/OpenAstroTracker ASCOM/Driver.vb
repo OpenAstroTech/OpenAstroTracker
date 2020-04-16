@@ -40,7 +40,7 @@ Public Class Telescope
     '
     ' Driver ID and descriptive string that shows in the Chooser
     '
-    Private Version As String = "0.1.2.2"
+    Private Version As String = "0.1.3.0 RC1"
     Friend Shared driverID As String = "ASCOM.OpenAstroTracker.Telescope"
     Private Shared driverDescription As String = "OpenAstroTracker Telescope"
 
@@ -630,10 +630,10 @@ Public Class Telescope
     End Sub
 
     Public Sub Park() Implements ITelescopeV3.Park
-        If AtPark Then
-            TL.LogMessage("Park", "Err : Mount already parked")
-            Throw New ASCOM.ParkedException("Park")
-        Else
+        If Not AtPark Then
+            '    TL.LogMessage("Park", "Err : Mount already parked")
+            '    Throw New ASCOM.ParkedException("Already Parked")
+            'Else
             CommandString(":hP", False)
             PollUntilZero(":GIS")
             isParked = True
@@ -869,51 +869,62 @@ Public Class Telescope
     End Sub
 
     Public Sub SyncToCoordinates(RightAscension As Double, Declination As Double) Implements ITelescopeV3.SyncToCoordinates
-        If RightAscension <= 24 And RightAscension >= 0 And Declination >= -90 And Declination <= 90 Then
-            Dim sign As String = String.Empty
-            If Declination >= 0 Then
-                sign = "+"
-            End If
-            Dim success As String = CommandString(":SY" + sign + utilities.DegreesToDMS(Declination, "*", ":", String.Empty) + "." + utilities.HoursToHMS(RightAscension, ":", ":"), False)
-            If success = "1" Then
-                TL.LogMessage("SyncToCoordinates", "Synced to " + utilities.DegreesToDMS(Declination) + ", " + utilities.HoursToHMS(RightAscension))
+        If Not AtPark Then
+            If RightAscension <= 24 And RightAscension >= 0 And Declination >= -90 And Declination <= 90 Then
+                Dim sign As String = String.Empty
+                If Declination >= 0 Then
+                    sign = "+"
+                End If
+                Dim success As String = CommandString(":SY" + sign + utilities.DegreesToDMS(Declination, "*", ":", String.Empty) + "." + utilities.HoursToHMS(RightAscension, ":", ":"), False)
+                If success = "1" Then
+                    TL.LogMessage("SyncToCoordinates", "Synced to " + utilities.DegreesToDMS(Declination) + ", " + utilities.HoursToHMS(RightAscension))
+                Else
+                    TL.LogMessage("SyncToCoordinates", "Err - Failed to sync to " + utilities.DegreesToDMS(Declination) + ", " + utilities.HoursToHMS(RightAscension))
+                    Throw New ASCOM.DriverException("SyncToCoordinates")
+                End If
             Else
-                TL.LogMessage("SyncToCoordinates", "Failed to sync to " + utilities.DegreesToDMS(Declination) + ", " + utilities.HoursToHMS(RightAscension))
-                Throw New ASCOM.DriverException("SyncToCoordinates")
+                TL.LogMessage("SyncToCoordinates", "Err - Invalid coordinates RA: " + RightAscension.ToString + ", Dec: " + Declination.ToString)
+                Throw New ASCOM.InvalidValueException("SyncToCoordinates")
             End If
         Else
-            TL.LogMessage("SyncToCoordinates", "Invalid coordinates RA: " + RightAscension.ToString + ", Dec: " + Declination.ToString)
-            Throw New ASCOM.InvalidValueException("SyncToCoordinates")
+            TL.LogMessage("SyncToCoordinates", "Err - Parked")
+            Throw New ASCOM.ParkedException("SyncToCoordinates")
         End If
+
     End Sub
 
     Public Sub SyncToTarget() Implements ITelescopeV3.SyncToTarget
-        If targetDecSet Then
+        If Not AtPark Then
+            If targetDecSet Then
 
-            If targetRASet Then
+                If targetRASet Then
 
-                Dim sign As String = String.Empty
-                If TargetDeclination >= 0 Then
-                    sign = "+"
-                End If
-                Dim success As String = CommandString(":SY" + sign + utilities.DegreesToDMS(TargetDeclination, "*", ":", String.Empty) + "." + utilities.HoursToHMS(TargetRightAscension, ":", ":"), False)
-                If success = "1" Then
-                    TL.LogMessage("SyncToTarget", "Synced to " + utilities.DegreesToDMS(TargetDeclination) + ", " + utilities.HoursToHMS(TargetRightAscension))
+                    Dim sign As String = String.Empty
+                    If TargetDeclination >= 0 Then
+                        sign = "+"
+                    End If
+                    Dim success As String = CommandString(":SY" + sign + utilities.DegreesToDMS(TargetDeclination, "*", ":", String.Empty) + "." + utilities.HoursToHMS(TargetRightAscension, ":", ":"), False)
+                    If success = "1" Then
+                        TL.LogMessage("SyncToTarget", "Synced to " + utilities.DegreesToDMS(TargetDeclination) + ", " + utilities.HoursToHMS(TargetRightAscension))
+                    Else
+                        TL.LogMessage("SyncToTarget", "Failed to sync to " + utilities.DegreesToDMS(TargetDeclination) + ", " + utilities.HoursToHMS(TargetRightAscension))
+                        Throw New ASCOM.DriverException("SyncToTarget")
+                    End If
+
                 Else
-                    TL.LogMessage("SyncToTarget", "Failed to sync to " + utilities.DegreesToDMS(TargetDeclination) + ", " + utilities.HoursToHMS(TargetRightAscension))
-                    Throw New ASCOM.DriverException("SyncToTarget")
+
+                    Throw New ASCOM.ValueNotSetException("TargetRightAscension")
+
                 End If
 
             Else
 
-                Throw New ASCOM.ValueNotSetException("TargetRightAscension")
+                Throw New ASCOM.ValueNotSetException("TargetDeclination")
 
             End If
-
         Else
-
-            Throw New ASCOM.ValueNotSetException("TargetDeclination")
-
+            TL.LogMessage("SyncToTarget", "Err - Parked")
+            Throw New ASCOM.ParkedException("SyncToTarget")
         End If
 
     End Sub
@@ -1027,15 +1038,16 @@ Public Class Telescope
     End Property
 
     Public Sub Unpark() Implements ITelescopeV3.Unpark
-        If Not AtPark Then
-            TL.LogMessage("Unpark", "Err : Mount not parked")
-            Throw New ASCOM.DriverException("Mount not parked")
+        If AtPark Then
+            '    TL.LogMessage("Unpark", "Err : Mount not parked")
+            '    Throw New ASCOM.DriverException("Mount not parked")
+            'Else
+            Dim unprkRet As String = CommandString(":hU", False)
+            If unprkRet = "1" Then
+                TL.LogMessage("Unpark", "Unparked mount")
+            End If
+            isParked = False
         End If
-        Dim unprkRet As String = CommandString(":hU", False)
-        If unprkRet = "1" Then
-            TL.LogMessage("Unpark", "Unparked mount")
-        End If
-        isParked = False
     End Sub
 
 #End Region

@@ -76,8 +76,15 @@ Public Class frmMain
         buttonConnect.Enabled = Not String.IsNullOrEmpty(My.Settings.DriverId)
         buttonChoose.Enabled = Not IsConnected
         buttonConnect.Text = IIf(IsConnected, "Disconnect", "Connect")
-        btnPark.Enabled = IsConnected
-        btnSlewSync.Enabled = IsConnected
+        If IsConnected Then
+            If Not driver.AtPark Then
+                btnPark.Enabled = True
+                btnSlewSync.Enabled = True
+                btnSlewAsync.Enabled = True
+                btnHalt.Enabled = True
+            End If
+        End If
+
     End Sub
 
     ''' <summary>
@@ -95,9 +102,25 @@ Public Class frmMain
         End Get
     End Property
 
-    ' TODO: Add additional UI and controls to test more of the driver being tested.
 
     Private Sub btnSlewSync_Click(sender As Object, e As EventArgs) Handles btnSlewSync.Click
+        If IsConnected Then
+            Dim TargetRAHMS As String = nud_RAh.Value.ToString + ":" + nud_RAm.Value.ToString + ":" + nud_RAs.Value.ToString
+            Dim TargetDecDMS As String = nud_Decd.Value.ToString + ":" + nud_Decm.Value.ToString + ":" + nud_Decs.Value.ToString
+            driver.TargetRightAscension = HMStoDbl(TargetRAHMS)
+            driver.TargetDeclination = DMStoDbl(TargetDecDMS)
+
+            txtTargetRA.Text = DbltoHMS(driver.TargetRightAscension)
+            txtTargetDec.Text = DblToDMS(driver.TargetDeclination)
+
+            driver.SlewToTarget()
+
+            updateValues()
+
+        End If
+    End Sub
+
+    Private Sub btnSlewAsync_Click(sender As Object, e As EventArgs) Handles btnSlewAsync.Click
         If IsConnected Then
             Dim TargetRAHMS As String = nud_RAh.Value.ToString + ":" + nud_RAm.Value.ToString + ":" + nud_RAs.Value.ToString
             Dim TargetDecDMS As String = nud_Decd.Value.ToString + ":" + nud_Decm.Value.ToString + ":" + nud_Decs.Value.ToString
@@ -111,19 +134,7 @@ Public Class frmMain
 
             updateValues()
 
-            'nud_Decd.Value = CInt(txtMountDec.Text.Substring(0, 2))
-            'nud_Decm.Value = CInt(txtMountDec.Text.Substring(4, 2))
-            'nud_Decs.Value = CInt(txtMountDec.Text.Substring(8, 2))
-
-            'nud_RAh.Value = CInt(txtMountRA.Text.Substring(0, 2))
-            'nud_RAm.Value = CInt(txtMountRA.Text.Substring(4, 2))
-            'nud_RAs.Value = CInt(txtMountRA.Text.Substring(8, 2))
-
         End If
-    End Sub
-
-    Private Sub btnSlewAsync_Click(sender As Object, e As EventArgs) Handles btnSlewAsync.Click
-
     End Sub
     Private Sub updateValues()
 
@@ -190,20 +201,23 @@ Public Class frmMain
             driver.Park()
             btnPark.Text = "Unpark"
             btnSlewSync.Enabled = False
+            btnSlewAsync.Enabled = False
             btnHalt.Enabled = False
         Else
             driver.Unpark()
             btnPark.Text = "Park"
             btnSlewSync.Enabled = True
+            btnSlewAsync.Enabled = True
             btnHalt.Enabled = True
         End If
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs)
-
-        MsgBox(driver.TrackingRates.Count)
+    Private Sub btnHalt_Click(sender As Object, e As EventArgs) Handles btnHalt.Click
+        If IsConnected Then
+            If Not driver.AtPark Then
+                driver.AbortSlew()
+            End If
+        End If
 
     End Sub
-
- 
 End Class
