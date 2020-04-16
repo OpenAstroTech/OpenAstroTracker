@@ -55,13 +55,13 @@ Public Class SetupDialogForm
     End Sub
 
     Private Sub txtLat_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtLat.KeyPress
-        If Not Char.IsDigit(e.KeyChar) And Not Char.IsControl(e.KeyChar) And Not e.KeyChar = "." And Not e.KeyChar = "-" Then
+        If Not Char.IsDigit(e.KeyChar) And Not Char.IsControl(e.KeyChar) And Not e.KeyChar = "." And Not e.KeyChar = "," And Not e.KeyChar = "-" Then
             e.Handled = True
         End If
     End Sub
 
     Private Sub txtLong_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtLong.KeyPress
-        If Not Char.IsDigit(e.KeyChar) And Not Char.IsControl(e.KeyChar) And Not e.KeyChar = "." And Not e.KeyChar = "-" Then
+        If Not Char.IsDigit(e.KeyChar) And Not Char.IsControl(e.KeyChar) And Not e.KeyChar = "." And Not e.KeyChar = "," And Not e.KeyChar = "-" Then
             e.Handled = True
         End If
     End Sub
@@ -72,5 +72,5 @@ Public Class SetupDialogForm
         End If
     End Sub
 
-    
+
 End Class

@@ -40,7 +40,7 @@ Public Class Telescope
     '
     ' Driver ID and descriptive string that shows in the Chooser
     '
-    Private Version As String = "0.1.3.0 RC1"
+    Private Version As String = "0.1.3.1 RC1"
     Friend Shared driverID As String = "ASCOM.OpenAstroTracker.Telescope"
     Private Shared driverDescription As String = "OpenAstroTracker Telescope"
 
