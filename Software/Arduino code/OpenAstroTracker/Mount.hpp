@@ -80,6 +80,7 @@ class Mount {
     bool isSlewingTRK();
     bool isParked();
     bool isParking();
+    bool isGuiding();
 
     // Starts manual slewing in one of eight directions or tracking
     void startSlewing(int direction);
@@ -111,6 +112,11 @@ class Mount {
     // Asynchronously parks the mount. Moves to the home position and stops all motors. 
     void park();
 
+    // Runs the RA motor at twice the speed (or stops it), or the DEC motor at tracking speed for the given duration in ms.
+    void guidePulse(byte direction, int duration);
+
+    // Stops any guide operation in progress.
+    void stopGuiding();
     
     // Return a string of DEC in the given format. For LCDSTRING, active determines where the cursor is
     String DECString(byte type, byte active = 0);
@@ -144,6 +150,11 @@ class Mount {
     LcdMenu* _lcdMenu;
     int  _stepsPerRADegree;
     int _stepsPerDECDegree;
+    //int _maxRASpeed;
+    int _maxDECSpeed;
+    //int _maxRAAcceleration;
+    int _maxDECAcceleration;
+    
     long _lastHASet;
     DayTime _HAAdjust;
 
@@ -163,6 +174,7 @@ class Mount {
     AccelStepper* _stepperDEC;
     AccelStepper* _stepperTRK;
 
+    unsigned long _guideEndTime;
     unsigned long _lastMountPrint = 0;
     DayTime _HATime;
     DayTime _HACorrection;

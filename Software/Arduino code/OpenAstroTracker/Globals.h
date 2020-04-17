@@ -43,7 +43,7 @@ extern bool inSerialControl;
 // #define SUPPORT_HEATING
 
 // Uncomment to support Guided Startup 
-#define SUPPORT_GUIDED_STARTUP
+//#define SUPPORT_GUIDED_STARTUP
 
 // Uncomment to support full GO (was POI) menu. 
 // If this is commented out you still have a GO menu that has Home and Park.
@@ -53,9 +53,9 @@ extern bool inSerialControl;
 #define SUPPORT_MANUAL_CONTROL
 
 // Uncomment to support INFO menu that displays various pieces of information about the mount. 
-#define SUPPORT_INFO_DISPLAY
+//#define SUPPORT_INFO_DISPLAY
 
 // Uncomment to support Serial Meade LX200 protocol support
-// #define SUPPORT_SERIAL_CONTROL
+#define SUPPORT_SERIAL_CONTROL
 
 #endif

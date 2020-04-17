@@ -8,6 +8,11 @@
 #define STATUS_SLEWING_FREE        B00000010
 #define STATUS_TRACKING            B00001000
 #define STATUS_PARKING             B00010000
+#define STATUS_GUIDE_PULSE         B10000000
+#define STATUS_GUIDE_PULSE_DIR     B01100000
+#define STATUS_GUIDE_PULSE_RA      B01000000
+#define STATUS_GUIDE_PULSE_DEC     B00100000
+#define STATUS_GUIDE_PULSE_MASK    B11100000
 
 // slewingStatus()
 #define SLEWING_DEC                B00000010
@@ -69,6 +74,8 @@ void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, b
   _stepperRA = new AccelStepper(stepMode, pin1, pin2, pin3, pin4);
   _stepperRA->setMaxSpeed(maxSpeed);
   _stepperRA->setAcceleration(maxAcceleration);
+//  _maxRASpeed = maxSpeed;
+//  _maxRAAcceleration = maxAcceleration;
 
   // Use another AccelStepper to run the RA motor as well. This instance tracks earths rotation.
   _stepperTRK = new AccelStepper(HALFSTEP, pin1, pin2, pin3, pin4);
@@ -86,6 +93,8 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, 
   _stepperDEC = new AccelStepper(stepMode, pin4, pin3, pin2, pin1);
   _stepperDEC->setMaxSpeed(maxSpeed);
   _stepperDEC->setAcceleration(maxAcceleration);
+  _maxDECSpeed = maxSpeed;
+  _maxDECAcceleration = maxAcceleration;
 }
 
 float Mount::getSpeedCalibration() {
@@ -256,12 +265,35 @@ void Mount::syncDEC(int degree, int minute, int second) {
 
 /////////////////////////////////
 //
+// stopGuiding
+//
+/////////////////////////////////
+void Mount::stopGuiding() {
+  _stepperDEC->stop();
+  while (_stepperDEC->isRunning()) {
+    _stepperDEC->run();
+  }
+  _stepperDEC->setMaxSpeed(_maxDECSpeed);
+  _stepperDEC->setAcceleration(_maxDECAcceleration);
+  _stepperTRK->setMaxSpeed(10);
+  _stepperTRK->setAcceleration(2500);
+  _stepperTRK->setSpeed(_trackingSpeed);
+  _stepperTRK->runSpeed();
+  _mountStatus &= ~STATUS_GUIDE_PULSE_MASK;
+}
+
+/////////////////////////////////
+//
 // startSlewingToTarget
 //
 /////////////////////////////////
 // Calculates movement parameters and program steppers to move
 // there. Must call loop() frequently to actually move.
 void Mount::startSlewingToTarget() {
+  if (isGuiding()) {
+    stopGuiding();
+  }
+
   // Calculate new RA stepper target (and DEC)
   _currentDECStepperPosition = _stepperDEC->currentPosition();
   _currentRAStepperPosition = _stepperRA->currentPosition();
@@ -276,13 +308,64 @@ void Mount::startSlewingToTarget() {
 
 /////////////////////////////////
 //
+// guidePulse
+//
+/////////////////////////////////
+void Mount::guidePulse(byte direction, int duration) {
+  // How many steps moves the RA ring one sidereal hour along. One sidereal hour moves just shy of 15 degrees
+  // NOTE: May need to adjust with _trackingSpeedCalibration
+  float decStepsPerSiderealHour = _stepsPerDECDegree * siderealDegreesInHour;
+  float decStepsForDuration = decStepsPerSiderealHour * duration / 3600000;
+  float raStepsPerSiderealHour = _stepsPerRADegree * siderealDegreesInHour;
+  float raStepsForDuration = raStepsPerSiderealHour * duration / 3600000;
+
+  float decTrackingSpeed = _stepsPerDECDegree * siderealDegreesInHour / 3600.0f;
+  float raTrackingSpeed = _stepsPerRADegree * siderealDegreesInHour / 3600.0f;
+
+  long raPos = _stepperRA->currentPosition();
+  long decPos = _stepperDEC->currentPosition();
+
+  switch (direction) {
+    case NORTH:
+      _stepperDEC->setMaxSpeed(decTrackingSpeed * 1.2);
+      _stepperDEC->setSpeed(decTrackingSpeed);
+      _stepperDEC->moveTo(decPos + decStepsForDuration);
+      _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_DEC ;
+      break;
+
+    case SOUTH:
+      _stepperDEC->setMaxSpeed(decTrackingSpeed * 1.2);
+      _stepperDEC->setSpeed(decTrackingSpeed);
+      _stepperDEC->moveTo(decPos - decStepsForDuration);
+      _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_DEC ;
+      break;
+
+    case WEST:
+      _stepperTRK->setMaxSpeed(raTrackingSpeed * 2.2);
+      _stepperTRK->setSpeed(raTrackingSpeed * 2);
+      _stepperTRK->moveTo(raPos + raStepsForDuration);
+      _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_RA;
+      break;
+
+    case EAST:
+      _stepperTRK->setMaxSpeed(raTrackingSpeed * 2.2);
+      _stepperTRK->setSpeed(0);
+      _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_RA;
+      break;
+  }
+
+  _guideEndTime = millis() + duration;
+}
+
+/////////////////////////////////
+//
 // park
 //
-// Targets the mount to move to the home position and 
+// Targets the mount to move to the home position and
 // turns off all motors once it gets there.
 /////////////////////////////////
-void Mount::park()
-{
+void Mount::park() {
+  stopGuiding();
   stopSlewing(ALL_DIRECTIONS | TRACKING);
   waitUntilStopped(ALL_DIRECTIONS);
   setTargetToHome();
@@ -294,11 +377,12 @@ void Mount::park()
 //
 // goHome
 //
-// Synchronously moves mount to home position and 
+// Synchronously moves mount to home position and
 // sets Tracking mode according to argument
 /////////////////////////////////
 void Mount::goHome(bool tracking)
 {
+  stopGuiding();
   stopSlewing(TRACKING);
   setTargetToHome();
   startSlewingToTarget();
@@ -331,6 +415,9 @@ String Mount::mountStatusString() {
   String disp = "";
   if (_mountStatus & STATUS_PARKING) {
     disp = "PARKNG ";
+  }
+  else if (isGuiding()){
+     disp = "GUIDING ";
   }
   else {
     if (_mountStatus & STATUS_TRACKING) disp += "TRK ";
@@ -365,11 +452,24 @@ byte Mount::slewStatus() {
   if (_mountStatus == STATUS_PARKED) {
     return NOT_SLEWING;
   }
+  if (isGuiding()) {
+    return NOT_SLEWING;
+  }
   byte slewState = _stepperRA->isRunning() ? SLEWING_RA : NOT_SLEWING;
   slewState |= _stepperDEC->isRunning() ? SLEWING_DEC : NOT_SLEWING;
 
   slewState |= (_mountStatus & STATUS_TRACKING) ? SLEWING_TRACKING : NOT_SLEWING;
   return slewState;
+}
+
+/////////////////////////////////
+//
+// isGuiding
+//
+/////////////////////////////////
+bool Mount::isGuiding()
+{
+  return (_mountStatus & STATUS_GUIDE_PULSE);
 }
 
 /////////////////////////////////
@@ -449,6 +549,10 @@ bool Mount::isParking() {
 void Mount::startSlewing(int direction) {
   if (!isParking())
   {
+    if (isGuiding()) {
+      stopGuiding();
+    }
+
     if (direction & TRACKING) {
       _stepperTRK->setSpeed(_trackingSpeed);
 
@@ -561,6 +665,22 @@ void Mount::loop() {
     _lastMountPrint = now;
   }
 #endif
+  if (isGuiding()) {
+    if (millis() > _guideEndTime) {
+      stopGuiding();
+    }
+    else
+    {
+      if (_mountStatus & STATUS_GUIDE_PULSE_RA) {
+        _stepperTRK->runSpeed();
+      }
+      if (_mountStatus & STATUS_GUIDE_PULSE_DEC) {
+        _stepperDEC->runSpeed();
+      }
+    }
+    return;
+  }
+
   if (_mountStatus & STATUS_TRACKING) {
     _stepperTRK->runSpeed();
   }
