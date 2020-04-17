@@ -1,3 +1,4 @@
+#ifndef HEADLESS_CLIENT
 #ifdef SUPPORT_GUIDED_STARTUP
 //////////////////////////////////////////////////////////////
 // This file contains the Starup 'wizard' that guides you through initial setup
@@ -121,4 +122,5 @@ void prinStartupMenu() {
       break;
   }
 }
+#endif
 #endif

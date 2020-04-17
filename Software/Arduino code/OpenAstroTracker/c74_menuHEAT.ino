@@ -1,3 +1,4 @@
+#ifndef HEADLESS_CLIENT
 #ifdef SUPPORT_HEATING
 
 bool processHeatKeys() {
@@ -70,4 +71,5 @@ void printHeatSubmenu() {
   lcdMenu.printMenu(menu);
 }
 
+#endif
 #endif

@@ -1,4 +1,5 @@
 #include "LcdMenu.hpp"
+
 #include "Mount.hpp"
 
 //mountstatus
@@ -860,6 +861,8 @@ void Mount::moveSteppersTo(float targetRA, float targetDEC) {
 //
 /////////////////////////////////
 void Mount::displayStepperPosition() {
+#ifndef HEADLESS_CLIENT  
+ 
   String disp ;
 
   if ((abs(_totalDECMove) > 0.001) && (abs(_totalRAMove) > 0.001)) {
@@ -914,6 +917,7 @@ void Mount::displayStepperPosition() {
     _lcdMenu->printMenu(disp);
 #endif
   }
+#endif
 }
 
 /////////////////////////////////
@@ -922,11 +926,13 @@ void Mount::displayStepperPosition() {
 //
 /////////////////////////////////
 void Mount::displayStepperPositionThrottled() {
+#ifndef HEADLESS_CLIENT  
   long elapsed = millis() - _lastDisplayUpdate;
   if (elapsed > DISPLAY_UPDATE_TIME) {
     displayStepperPosition();
     _lastDisplayUpdate = millis();
   }
+ #endif
 }
 
 /////////////////////////////////

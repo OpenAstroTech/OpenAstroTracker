@@ -1,3 +1,5 @@
+#ifndef HEADLESS_CLIENT
+
 #define HIGHLIGHT_POLAR 1
 #define HIGHLIGHT_SPEED 2
 #define POLAR_CALIBRATION_WAIT 3
@@ -161,3 +163,4 @@ void printCalibrationSubmenu() {
       break;
   }
 }
+#endif

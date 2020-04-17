@@ -56,6 +56,7 @@ void setup() {
   // Start the tracker.
   mount.startSlewing(TRACKING);
 
+#ifndef HEADLESS_CLIENT
   // Create the LCD top-level menu items
   lcdMenu.addItem("RA", RA_Menu);
   lcdMenu.addItem("DEC", DEC_Menu);
@@ -87,6 +88,7 @@ void setup() {
   }
 
   lcdMenu.updateDisplay();
+#endif
 
 #ifdef DEBUG_MODE
   Serial.println("SetupDone");

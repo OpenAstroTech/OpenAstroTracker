@@ -1,3 +1,4 @@
+#ifndef HEADLESS_CLIENT
 byte subGoIndex = 0;
 
 bool processHomeKeys() {
@@ -40,3 +41,5 @@ void printHomeSubmenu() {
     lcdMenu.printMenu(scratchBuffer);
   }
 }
+
+#endif

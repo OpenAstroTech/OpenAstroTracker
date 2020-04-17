@@ -306,6 +306,18 @@ void handleMeadeMovement(String inCmd) {
       mount.guidePulse(direction, duration);
     }
   }
+  else if (inCmd[0] == 'e') {
+    mount.startSlewing(EAST);
+  }
+  else if (inCmd[0] == 'w') {
+    mount.startSlewing(WEST);
+  }
+  else if (inCmd[0] == 'n') {
+    mount.startSlewing(NORTH);
+  }
+  else if (inCmd[0] == 's') {
+    mount.startSlewing(SOUTH);
+  }
 }
 
 /////////////////////////////
@@ -369,6 +381,7 @@ void serialEvent() {
         case 'Q' : handleMeadeQuit(inCmd); break;
       }
     }
+    
     mount.loop();
   }
 }

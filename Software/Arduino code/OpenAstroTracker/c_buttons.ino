@@ -1,4 +1,7 @@
 void BTin();
+
+#ifndef HEADLESS_CLIENT
+
 int loopsOfSameKey = 0;
 int lastLoopKey = -1;
 
@@ -164,3 +167,11 @@ void loop() {
 
   BTin();
 }
+#else
+
+void loop(){
+  serialLoop();
+  BTin();
+}
+
+#endif
