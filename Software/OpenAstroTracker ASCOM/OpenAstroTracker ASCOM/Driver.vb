@@ -40,7 +40,7 @@ Public Class Telescope
     '
     ' Driver ID and descriptive string that shows in the Chooser
     '
-    Private Version As String = "0.1.3.1 RC1"
+    Private Version As String = "0.1.4b"
     Friend Shared driverID As String = "ASCOM.OpenAstroTracker.Telescope"
     Private Shared driverDescription As String = "OpenAstroTracker Telescope"
 
@@ -435,10 +435,9 @@ Public Class Telescope
     End Property
 
     Public ReadOnly Property CanPulseGuide() As Boolean Implements ITelescopeV3.CanPulseGuide
-        ' This will be true as we get around to pulse guiding
         Get
-            TL.LogMessage("CanPulseGuide", "Get - " & False.ToString())
-            Return False
+            TL.LogMessage("CanPulseGuide", "Get - " & True.ToString())
+            Return True
         End Get
     End Property
 
@@ -618,8 +617,9 @@ Public Class Telescope
 
     Public ReadOnly Property IsPulseGuiding() As Boolean Implements ITelescopeV3.IsPulseGuiding
         Get
-            TL.LogMessage("IsPulseGuiding Get", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("IsPulseGuiding", False)
+            Dim retVal As Boolean = Convert.ToBoolean(CInt(CommandString(":GIG")))
+            TL.LogMessage("isPulseGuiding Get", retVal.ToString)
+            Return retVal
         End Get
     End Property
 
@@ -643,8 +643,17 @@ Public Class Telescope
     End Sub
 
     Public Sub PulseGuide(Direction As GuideDirections, Duration As Integer) Implements ITelescopeV3.PulseGuide
-        TL.LogMessage("PulseGuide", "Not implemented")
-        Throw New ASCOM.MethodNotImplementedException("PulseGuide")
+        If Not AtPark Then
+            TL.LogMessage("PulseGuide", Direction.ToString + " " + Duration.ToString)
+            Dim dir As String, length As String, pgCmd As String = ":MG"
+            dir = Direction.ToString.Substring(5, 1)
+            length = Right("0000" + Duration.ToString, 4)
+            pgCmd = pgCmd + dir + length
+            CommandBlind(pgCmd, False)
+        Else
+            TL.LogMessage("PulseGuide", "Parked")
+            Throw New ASCOM.ParkedException("PulseGuide")
+        End If
     End Sub
 
     Public ReadOnly Property RightAscension() As Double Implements ITelescopeV3.RightAscension
