@@ -47,7 +47,7 @@ bool processStartupKeys() {
               startupState = StartupWaitForPoleCompletion;
               inStartup = false;
               lcdMenu.setCursor(0, 0);
-              lcdMenu.printMenu("Use ^~<> to pole");
+              lcdMenu.printMenu("Use ^~<> to home");
               lcdMenu.setActive(Control_Menu);
 
               // Skip the 'Manual control' prompt
@@ -111,7 +111,7 @@ void prinStartupMenu() {
           choices.setCharAt(15, '<');
         }
         lcdMenu.setCursor(0, 0);
-        lcdMenu.printMenu("Pointed at pole?");
+        lcdMenu.printMenu("Home position?");
         lcdMenu.setCursor(0, 1);
         lcdMenu.printMenu(choices);
       }
