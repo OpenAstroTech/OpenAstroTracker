@@ -40,7 +40,7 @@ Public Class Telescope
     '
     ' Driver ID and descriptive string that shows in the Chooser
     '
-    Private Version As String = "0.1.4b"
+    Private Version As String = "0.1.4.1b"
     Friend Shared driverID As String = "ASCOM.OpenAstroTracker.Telescope"
     Private Shared driverDescription As String = "OpenAstroTracker Telescope"
 
@@ -200,12 +200,12 @@ Public Class Telescope
             TL.LogMessage("CommandString", "Transmitted " & Command)
             Dim cmdGroup As String = Command.Substring(1, 1)
             Select Case cmdGroup
-                Case "S"
+                Case "S", "M", "h", "Q"
                     response = objSerial.ReceiveCounted(1)
-                Case "M"
-                    response = objSerial.ReceiveCounted(1)
-                Case "h"
-                    response = objSerial.ReceiveCounted(1)
+                    'Case "M"
+                    '    response = objSerial.ReceiveCounted(1)
+                    'Case "h"
+                    '    response = objSerial.ReceiveCounted(1)
                 Case Else
                     response = objSerial.ReceiveTerminated("#")
                     response = response.Replace("#", "")
@@ -339,7 +339,7 @@ Public Class Telescope
 #Region "ITelescope Implementation"
     Public Sub AbortSlew() Implements ITelescopeV3.AbortSlew
         If Not AtPark Then
-            CommandBlind(":Q")
+            CommandString(":Q")
             TL.LogMessage("AbortSlew", ":Q# Sent")
         Else
             Throw New ASCOM.ParkedException("AbortSlew")
