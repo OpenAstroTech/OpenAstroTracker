@@ -6,6 +6,7 @@ This driver is still in a great deal of flux.  Capacitor levels of flux.  Use at
 	* 0.1.3.0	2020-04-15		:		Initial release
 	* 0.1.3.1	2020-04-16		:		BUGFIX : Allow , as decimal separator where Windows regional settings use it.
 	* 0.1.4b	2020-04-18		:		CHANGE : Implement pulse guiding.
+										BUGFIX : Uninstaller was not correctly removing previous driver DLL
 	
 * Arduino information
 	* Tested on Arduino Uno.  No other variants of Arduino have been tested.
