@@ -1,14 +1,17 @@
-OpenAstroTracker ASCOM driver 0.1.3.1 RC1 : 2020-04-16
+OpenAstroTracker ASCOM driver 0.1.4.1b : 2020-04-18
 
-The first release candidate of the OAT ASCOM Driver.  This is an early release candidate/beta, use at your own risk!
+This driver is still in a great deal of flux.  Capacitor levels of flux.  Use at your own risk!
 
 * History
 	* 0.1.3.0	2020-04-15		:		Initial release
 	* 0.1.3.1	2020-04-16		:		BUGFIX : Allow , as decimal separator where Windows regional settings use it.
-	
+	* 0.1.4b	2020-04-18		:		CHANGE : Implement pulse guiding.
+										BUGFIX : Uninstaller was not correctly removing previous driver DLL
+	* 0.1.4.1b	2020-04-18		:		BUGFIX : Driver not correctly handling return value from Halt
+										
 * Arduino information
 	* Tested on Arduino Uno.  No other variants of Arduino have been tested.
-	* Currently built for Version V1.6.25 of the Arduino Code (As of 2020-04-15)
+	* Currently built for Version V1.6.27 of the Arduino Code (As of 2020-04-18)
 	* Uncomment #define SUPPORT_SERIAL_CONTROL in Globals.h
 	* Leave #define DEBUG_MODE in Globals.h commented.
 	
@@ -16,7 +19,7 @@ The first release candidate of the OAT ASCOM Driver.  This is an early release c
 	* Documented in included spreadsheet
 	* Note : Implementation of a property does not mean it "does stuff", merely that it will return a value instead of an exception.  The value may never change.
 
-* Last Conformance Test - 2020-04-15
+* Last Conformance Test - 2020-04-18
 
 * Cautions and warnings
 	* WARNING : DO NOT BUILD THIS DRIVER ON THE SAME MACHINE YOU INTEND TO USE IT ON.
@@ -34,6 +37,5 @@ The first release candidate of the OAT ASCOM Driver.  This is an early release c
 		* You are welcome to play with the PC Control code included in "OAT PC Control" in this branch, but be aware it's not ready for prime time yet.
 	* Implementation of AltAz methods and properties
 	* Ability to set home position of mount via ASCOM
-	* ASCOM guide functionality
 	* ASCOM local server wrapper (Need help!)
 	

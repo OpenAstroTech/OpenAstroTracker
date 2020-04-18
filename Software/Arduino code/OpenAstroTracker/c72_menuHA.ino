@@ -1,3 +1,4 @@
+#ifndef HEADLESS_CLIENT
 bool processHAKeys() {
   byte key;
   bool waitForRelease = true;
@@ -65,3 +66,4 @@ void printHASubmenu() {
   scratchBuffer[HAselect * 4] = '>';
   lcdMenu.printMenu(scratchBuffer);
 }
+#endif

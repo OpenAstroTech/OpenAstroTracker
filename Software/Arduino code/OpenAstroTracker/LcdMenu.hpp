@@ -2,7 +2,9 @@
 #define _LCDMENU_HPP_
 
 #include <Arduino.h>
+#ifndef HEADLESS_CLIENT
 #include <LiquidCrystal.h>
+#endif
 #include "Globals.h"
 
 // A single menu item (like RA, HEAT, POL, etc.)
@@ -67,6 +69,7 @@ class LcdMenu {
     void printChar(char ch);
 
   private:
+#ifndef HEADLESS_CLIENT
     LiquidCrystal _lcd;   // The LCD screen that we'll display the menu on
     MenuItem** _menuItems;  // The first menu item (linked list)
     byte _numMenuItems;
@@ -89,6 +92,7 @@ class LcdMenu {
     static byte DownArrowBitmap[8];
     static byte DegreesBitmap[8];
     static byte MinutesBitmap[8];
+#endif
 };
 
 #endif

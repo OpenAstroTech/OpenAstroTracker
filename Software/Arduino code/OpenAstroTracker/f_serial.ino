@@ -59,6 +59,10 @@
 //      Get Tracking
 //      Returns: 1 if tracking is on. 0 if not.
 //
+// :GIG#
+//      Get Guiding
+//      Returns: 1 if currently guiding. 0 if not.
+//
 //------------------------------------------------------------------
 // SET FAMILY
 //
@@ -96,6 +100,12 @@
 //      Returns: 1
 //
 // -- MOVEMENT Extensions --
+//
+// :MGdnnnn#
+//      Run a Guide pulse
+//      This runs the motors for a short period of time.
+//      Where d is one of 'N', 'E', 'W', or 'S' and nnnn is the duration in ms.
+//      Returns: nothing
 //
 // :MTs#
 //      Set Tracking mode
@@ -188,6 +198,9 @@ void handleMeadeGetInfo(String inCmd) {
         else if (cmdTwo == 'T') {
           Serial.print(mount.isSlewingTRK() ? "1" : "0");
         }
+        else if (cmdTwo == 'G') {
+          Serial.print(mount.isGuiding() ? "1" : "0");
+        }
         Serial.print("#");
       }
       break;
@@ -279,6 +292,32 @@ void handleMeadeMovement(String inCmd) {
       Serial.print("0");
     }
   }
+  else if (inCmd[0] == 'G') {
+    // Guide pulse
+    //   012345678901
+    // :MGd0403
+    if (inCmd.length() == 6) {
+      byte direction = EAST;
+      if (inCmd[1] == 'N') direction = NORTH;
+      else if (inCmd[1] == 'S') direction = SOUTH;
+      else if (inCmd[1] == 'E') direction = EAST;
+      else if (inCmd[1] == 'W') direction = WEST;
+      int duration = (inCmd[2] - '0') * 1000 + (inCmd[3] - '0') * 100 + (inCmd[4] - '0') * 10 + (inCmd[5] - '0');
+      mount.guidePulse(direction, duration);
+    }
+  }
+  else if (inCmd[0] == 'e') {
+    mount.startSlewing(EAST);
+  }
+  else if (inCmd[0] == 'w') {
+    mount.startSlewing(WEST);
+  }
+  else if (inCmd[0] == 'n') {
+    mount.startSlewing(NORTH);
+  }
+  else if (inCmd[0] == 's') {
+    mount.startSlewing(SOUTH);
+  }
 }
 
 /////////////////////////////
@@ -342,6 +381,7 @@ void serialEvent() {
         case 'Q' : handleMeadeQuit(inCmd); break;
       }
     }
+    
     mount.loop();
   }
 }

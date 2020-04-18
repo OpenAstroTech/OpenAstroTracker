@@ -1,4 +1,4 @@
-
+#ifndef HEADLESS_CLIENT
 bool processDECKeys() {
   byte key;
   bool waitForRelease = true;
@@ -51,3 +51,4 @@ void printDECSubmenu() {
     lcdMenu.printMenu(mount.DECString(LCDMENU_STRING | TARGET_STRING, DECselect));
   }
 }
+#endif

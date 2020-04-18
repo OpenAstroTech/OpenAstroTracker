@@ -1,6 +1,8 @@
 #include "Utility.h"
 #include "LcdMenu.hpp"
 
+#ifndef HEADLESS_CLIENT
+
 // Class that drives the LCD screen with a menu
 // You add a string and an id item and this class handles the display and navigation
 // Create a new menu, using the given number of LCD display columns and rows
@@ -235,3 +237,33 @@ byte LcdMenu::MinutesBitmap[8] = {
   B00000,
   B00000
 };
+#else
+
+LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) {
+}
+
+MenuItem* LcdMenu::findById(byte id) {
+  return NULL;
+}
+
+void LcdMenu::addItem(const char *disp, byte id) {}
+
+byte LcdMenu::getActive() {
+  return 0;
+}
+
+void LcdMenu::setActive(byte id) {}
+
+void LcdMenu::setCursor(byte col, byte row) {}
+
+void LcdMenu::clear() {}
+
+void LcdMenu::setNextActive() {}
+
+void LcdMenu::updateDisplay() {}
+
+void LcdMenu::printMenu(String line) {}
+
+void LcdMenu::printChar(char ch) {}
+
+#endif

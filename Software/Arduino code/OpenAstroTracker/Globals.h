@@ -38,6 +38,10 @@ extern bool inSerialControl;
 //
 ////////////////////////////////////////////////////////////////
 
+// If you do not have a LCD shield on your Arduino Uno, uncomment the line below. This is
+// useful if you are always going to run the mount from a laptop anyway.
+// #define HEADLESS_CLIENT
+
 // Uncomment this to enable the heating menu
 // NOTE: Heating is currently not supported!
 // #define SUPPORT_HEATING
@@ -57,5 +61,11 @@ extern bool inSerialControl;
 
 // Uncomment to support Serial Meade LX200 protocol support
 // #define SUPPORT_SERIAL_CONTROL
+
+
+// If we are making a headleass (no screen, no keyboard) client, always enable Serial.
+#ifdef HEADLESS_CLIENT
+#define SUPPORT_SERIAL_CONTROL
+#endif
 
 #endif

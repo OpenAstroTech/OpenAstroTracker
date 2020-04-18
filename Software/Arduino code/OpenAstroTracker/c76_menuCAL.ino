@@ -1,3 +1,5 @@
+#ifndef HEADLESS_CLIENT
+
 #define HIGHLIGHT_POLAR 1
 #define HIGHLIGHT_SPEED 2
 #define POLAR_CALIBRATION_WAIT 3
@@ -97,7 +99,7 @@ bool processCalibrationKeys() {
           mount.targetRA().subtractTime(mount.HA());
 
           // Now set DEC to move to Polaris
-          mount.targetDEC() = DegreeTime(89 - (NORTHERN_HEMISPHERE ? 90 : -90), 21, 3);
+          mount.targetDEC() = DegreeTime(90 - (NORTHERN_HEMISPHERE ? 90 : -90), 0, 0);
           mount.startSlewingToTarget();
         } else if (key == btnRIGHT) {
           lcdMenu.setNextActive();
@@ -110,7 +112,7 @@ bool processCalibrationKeys() {
 
           // RA is already set. Now set DEC to move the same distance past Polaris as
           // it is from the Celestial Pole. That equates to 88deg 42' 6".
-          mount.targetDEC() = DegreeTime(88 - (NORTHERN_HEMISPHERE ? 90 : -90), 42, 6);
+          mount.targetDEC() = DegreeTime(89 - (NORTHERN_HEMISPHERE ? 90 : -90), 21, 3);
           mount.startSlewingToTarget();
         }
         else if (key == btnRIGHT) {
@@ -161,3 +163,4 @@ void printCalibrationSubmenu() {
       break;
   }
 }
+#endif
