@@ -35,7 +35,9 @@ void setup() {
 
   // Configure the mount
   // Set the global HA correction
-  mount.setHACorrection(PolarisRAHour, PolarisRAMinute, PolarisRASecond);
+  DayTime polaris = DayTime(24,0,0);
+  polaris.subtractTime(DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond));
+  mount.setHACorrection(polaris.getHours(), polaris.getMinutes(), polaris.getSeconds());
 
   // Set the stepper motor parameters
   mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);

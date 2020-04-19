@@ -93,12 +93,12 @@ bool processCalibrationKeys() {
 
           // Move the RA to that of Polaris. Moving to this RA aligns the DEC axis such that
           // it swings along the line between Polaris and the Celestial Pole.
-          mount.targetRA() = DayTime(2, 57, 56); // This is Polaris RA.
+          mount.targetRA() = DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond); 
           // Account for the current settings.
           mount.targetRA().addTime(mount.getHACorrection());
           mount.targetRA().subtractTime(mount.HA());
 
-          // Now set DEC to move to Polaris
+          // Now set DEC to move to Home position
           mount.targetDEC() = DegreeTime(90 - (NORTHERN_HEMISPHERE ? 90 : -90), 0, 0);
           mount.startSlewingToTarget();
         } else if (key == btnRIGHT) {
