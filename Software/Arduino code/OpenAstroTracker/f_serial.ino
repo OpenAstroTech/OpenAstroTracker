@@ -20,6 +20,15 @@
 //         Returns: nothing
 //
 //------------------------------------------------------------------
+// SYNC CONTROL FAMILY
+//
+// :CM#
+//      Synchronize Declination and Right Ascension.
+//      This tells the scope what it is currently pointing at.
+//      The scope synchronizes to the current target coordinates (set with :Sd# and :Sr#)
+//      Returns: NONE#
+//
+//------------------------------------------------------------------
 // GET FAMILY
 //
 // :GVP#
@@ -208,6 +217,20 @@ void handleMeadeGetInfo(String inCmd) {
 }
 
 /////////////////////////////
+// SYNC CONTROL
+/////////////////////////////
+void handleMeadeSyncControl(String inCmd) {
+  if (inCmd[0] == 'M') {
+    mount.syncDEC(mount.targetDEC().getHours(), mount.targetDEC().getMinutes(), mount.targetDEC().getSeconds(),);
+    mount.syncRA(mount.targetRA().getHours(), mount.targetRA.getMinutes()(), mount.targetRA().getSeconds());
+    Serial.print("NONE#");
+  }
+  else {
+    Serial.print("0");
+  }
+}
+
+/////////////////////////////
 // SET INFO
 /////////////////////////////
 void handleMeadeSetInfo(String inCmd) {
@@ -376,12 +399,13 @@ void serialEvent() {
         case 'S' : handleMeadeSetInfo(inCmd); break;
         case 'M' : handleMeadeMovement(inCmd); break;
         case 'G' : handleMeadeGetInfo(inCmd); break;
+        case 'C' : handleMeadeSyncControl(inCmd); break;
         case 'h' : handleMeadeHome(inCmd); break;
         case 'I' : handleMeadeInit(inCmd); break;
         case 'Q' : handleMeadeQuit(inCmd); break;
       }
     }
-    
+
     mount.loop();
   }
 }
