@@ -129,6 +129,8 @@ class Mount {
 
     void displayStepperPositionThrottled();
 
+    void runDriftAlignmentPhase(int direction, int durationSecs);
+
   private:
     void calculateRAandDECSteppers(float& targetRA, float& targetDEC);
     void displayStepperPosition();
@@ -150,9 +152,9 @@ class Mount {
     LcdMenu* _lcdMenu;
     int  _stepsPerRADegree;
     int _stepsPerDECDegree;
-    //int _maxRASpeed;
+    int _maxRASpeed;
     int _maxDECSpeed;
-    //int _maxRAAcceleration;
+    int _maxRAAcceleration;
     int _maxDECAcceleration;
     
     long _lastHASet;

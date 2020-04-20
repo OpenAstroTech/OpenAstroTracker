@@ -57,7 +57,7 @@ extern bool inSerialControl;
 #define SUPPORT_MANUAL_CONTROL
 
 // Uncomment to support INFO menu that displays various pieces of information about the mount. 
-#define SUPPORT_INFO_DISPLAY
+// #define SUPPORT_INFO_DISPLAY
 
 // Uncomment to support Serial Meade LX200 protocol support
 // #define SUPPORT_SERIAL_CONTROL

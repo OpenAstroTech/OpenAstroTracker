@@ -75,8 +75,8 @@ void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, b
   _stepperRA = new AccelStepper(stepMode, pin1, pin2, pin3, pin4);
   _stepperRA->setMaxSpeed(maxSpeed);
   _stepperRA->setAcceleration(maxAcceleration);
-  //  _maxRASpeed = maxSpeed;
-  //  _maxRAAcceleration = maxAcceleration;
+  _maxRASpeed = maxSpeed;
+  _maxRAAcceleration = maxAcceleration;
 
   // Use another AccelStepper to run the RA motor as well. This instance tracks earths rotation.
   _stepperTRK = new AccelStepper(HALFSTEP, pin1, pin2, pin3, pin4);
@@ -354,6 +354,52 @@ void Mount::guidePulse(byte direction, int duration) {
   }
 
   _guideEndTime = millis() + duration;
+}
+
+/////////////////////////////////
+//
+// runDriftAlignmentPhase
+//
+// Runs one of the phases of the Drift alignment
+// This runs the RA motor 400 steps (about 5.3 arcminutes) in the given duration
+// This function should be callsed 3 times:
+// The first time with EAST, second with WEST and then with 0.
+/////////////////////////////////
+void Mount::runDriftAlignmentPhase(int direction, int durationSecs) {
+  // Calculate the speed at which it takes the given duration to cover 400 steps.
+  float speed = 400.0 / durationSecs;
+  switch (direction) {
+    case EAST:
+      // Move 400 steps east at the calculated speed, synchronously
+      _stepperRA->setAcceleration(1500);
+      _stepperRA->setMaxSpeed(speed);
+      _stepperRA->move(400);
+      _stepperRA->runToPosition();
+
+      // Overcome the gearing gap
+      _stepperRA->setMaxSpeed(300);
+      _stepperRA->move(-20);
+      _stepperRA->runToPosition();
+      break;
+
+    case WEST:
+      // Move 400 steps west at the calculated speed, synchronously
+      _stepperRA->setMaxSpeed(speed);
+      _stepperRA->move(-400);
+      _stepperRA->runToPosition();
+      break;
+
+    case 0 :
+      // Fix the gearing to go back the other way
+      _stepperRA->setMaxSpeed(300);
+      _stepperRA->move(20);
+      _stepperRA->runToPosition();
+
+      // Re-configure the stepper to the correct parameters.
+      _stepperRA->setAcceleration(_maxRAAcceleration);
+      _stepperRA->setMaxSpeed(_maxRASpeed);
+      break;
+  }
 }
 
 /////////////////////////////////
