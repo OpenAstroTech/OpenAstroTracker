@@ -40,7 +40,7 @@ Public Class Telescope
     '
     ' Driver ID and descriptive string that shows in the Chooser
     '
-    Private Version As String = "0.1.4.1b"
+    Private Version As String = "0.1.4.2b"
     Friend Shared driverID As String = "ASCOM.OpenAstroTracker.Telescope"
     Private Shared driverDescription As String = "OpenAstroTracker Telescope"
 
@@ -879,22 +879,27 @@ Public Class Telescope
 
     Public Sub SyncToCoordinates(RightAscension As Double, Declination As Double) Implements ITelescopeV3.SyncToCoordinates
         If Not AtPark Then
-            If RightAscension <= 24 And RightAscension >= 0 And Declination >= -90 And Declination <= 90 Then
-                Dim sign As String = String.Empty
-                If Declination >= 0 Then
-                    sign = "+"
-                End If
-                Dim success As String = CommandString(":SY" + sign + utilities.DegreesToDMS(Declination, "*", ":", String.Empty) + "." + utilities.HoursToHMS(RightAscension, ":", ":"), False)
-                If success = "1" Then
-                    TL.LogMessage("SyncToCoordinates", "Synced to " + utilities.DegreesToDMS(Declination) + ", " + utilities.HoursToHMS(RightAscension))
-                Else
-                    TL.LogMessage("SyncToCoordinates", "Err - Failed to sync to " + utilities.DegreesToDMS(Declination) + ", " + utilities.HoursToHMS(RightAscension))
-                    Throw New ASCOM.DriverException("SyncToCoordinates")
-                End If
-            Else
-                TL.LogMessage("SyncToCoordinates", "Err - Invalid coordinates RA: " + RightAscension.ToString + ", Dec: " + Declination.ToString)
-                Throw New ASCOM.InvalidValueException("SyncToCoordinates")
-            End If
+            TargetDeclination = Declination
+            TargetRightAscension = RightAscension
+            ' Looks like there's an LX200 command to sync to target, so...
+            SyncToTarget()
+
+            'If RightAscension <= 24 And RightAscension >= 0 And Declination >= -90 And Declination <= 90 Then
+            '    Dim sign As String = String.Empty
+            '    If Declination >= 0 Then
+            '        sign = "+"
+            '    End If
+            '    Dim success As String = CommandString(":SY" + sign + utilities.DegreesToDMS(Declination, "*", ":", String.Empty) + "." + utilities.HoursToHMS(RightAscension, ":", ":"), False)
+            '    If success = "1" Then
+            '        TL.LogMessage("SyncToCoordinates", "Synced to " + utilities.DegreesToDMS(Declination) + ", " + utilities.HoursToHMS(RightAscension))
+            '    Else
+            '        TL.LogMessage("SyncToCoordinates", "Err - Failed to sync to " + utilities.DegreesToDMS(Declination) + ", " + utilities.HoursToHMS(RightAscension))
+            '        Throw New ASCOM.DriverException("SyncToCoordinates")
+            '    End If
+            'Else
+            '    TL.LogMessage("SyncToCoordinates", "Err - Invalid coordinates RA: " + RightAscension.ToString + ", Dec: " + Declination.ToString)
+            '    Throw New ASCOM.InvalidValueException("SyncToCoordinates")
+            'End If
         Else
             TL.LogMessage("SyncToCoordinates", "Err - Parked")
             Throw New ASCOM.ParkedException("SyncToCoordinates")
@@ -912,13 +917,16 @@ Public Class Telescope
                     If TargetDeclination >= 0 Then
                         sign = "+"
                     End If
-                    Dim success As String = CommandString(":SY" + sign + utilities.DegreesToDMS(TargetDeclination, "*", ":", String.Empty) + "." + utilities.HoursToHMS(TargetRightAscension, ":", ":"), False)
-                    If success = "1" Then
-                        TL.LogMessage("SyncToTarget", "Synced to " + utilities.DegreesToDMS(TargetDeclination) + ", " + utilities.HoursToHMS(TargetRightAscension))
-                    Else
-                        TL.LogMessage("SyncToTarget", "Failed to sync to " + utilities.DegreesToDMS(TargetDeclination) + ", " + utilities.HoursToHMS(TargetRightAscension))
-                        Throw New ASCOM.DriverException("SyncToTarget")
-                    End If
+                    ' Looks like there's an LX200 command to sync to target, so...
+
+                    CommandBlind(":CM")
+                    'Dim success As String = CommandString(":SY" + sign + utilities.DegreesToDMS(TargetDeclination, "*", ":", String.Empty) + "." + utilities.HoursToHMS(TargetRightAscension, ":", ":"), False)
+                    'If success = "1" Then
+                    '    TL.LogMessage("SyncToTarget", "Synced to " + utilities.DegreesToDMS(TargetDeclination) + ", " + utilities.HoursToHMS(TargetRightAscension))
+                    'Else
+                    '    TL.LogMessage("SyncToTarget", "Failed to sync to " + utilities.DegreesToDMS(TargetDeclination) + ", " + utilities.HoursToHMS(TargetRightAscension))
+                    '    Throw New ASCOM.DriverException("SyncToTarget")
+                    'End If
 
                 Else
 

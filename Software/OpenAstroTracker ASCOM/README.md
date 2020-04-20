@@ -1,4 +1,4 @@
-OpenAstroTracker ASCOM driver 0.1.4.1b : 2020-04-18
+OpenAstroTracker ASCOM driver 0.1.4.2b : 2020-04-20
 
 This driver is still in a great deal of flux.  Capacitor levels of flux.  Use at your own risk!
 
@@ -8,10 +8,11 @@ This driver is still in a great deal of flux.  Capacitor levels of flux.  Use at
 	* 0.1.4b	2020-04-18		:		CHANGE : Implement pulse guiding.
 										BUGFIX : Uninstaller was not correctly removing previous driver DLL
 	* 0.1.4.1b	2020-04-18		:		BUGFIX : Driver not correctly handling return value from Halt
+	* 0.1.4.2b	2020-04-20		:		CHANGE : Driver uses :CM LX200 Protocol command to sync
 										
 * Arduino information
 	* Tested on Arduino Uno.  No other variants of Arduino have been tested.
-	* Currently built for Version V1.6.27 of the Arduino Code (As of 2020-04-18)
+	* Currently built for Version V1.6.29 and above of the Arduino Code (As of 2020-04-20)
 	* Uncomment #define SUPPORT_SERIAL_CONTROL in Globals.h
 	* Leave #define DEBUG_MODE in Globals.h commented.
 	
@@ -33,7 +34,7 @@ This driver is still in a great deal of flux.  Capacitor levels of flux.  Use at
 	* All known current issues are probably documented at https://github.com/ClutchplateDude/OpenAstroTracker/issues 
 	
 * Work in Progress / Coming soon
-	* A simple PC Control application has been built during testing.  A release version of this for basic mount control will follow soon.
+	* A simple PC Control application is being developed.
 		* You are welcome to play with the PC Control code included in "OAT PC Control" in this branch, but be aware it's not ready for prime time yet.
 	* Implementation of AltAz methods and properties
 	* Ability to set home position of mount via ASCOM
