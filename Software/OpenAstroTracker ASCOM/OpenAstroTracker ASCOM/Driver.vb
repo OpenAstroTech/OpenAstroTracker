@@ -883,7 +883,7 @@ Public Class Telescope
             TargetRightAscension = RightAscension
             ' Looks like there's an LX200 command to sync to target, so...
             SyncToTarget()
-
+            TL.LogMessage("SyncToCoordinates", "Synced to " + utilities.DegreesToDMS(Declination) + ", " + utilities.HoursToHMS(RightAscension))
             'If RightAscension <= 24 And RightAscension >= 0 And Declination >= -90 And Declination <= 90 Then
             '    Dim sign As String = String.Empty
             '    If Declination >= 0 Then
@@ -913,13 +913,14 @@ Public Class Telescope
 
                 If targetRASet Then
 
-                    Dim sign As String = String.Empty
-                    If TargetDeclination >= 0 Then
-                        sign = "+"
-                    End If
+                    'Dim sign As String = String.Empty
+                    'If TargetDeclination >= 0 Then
+                    '    sign = "+"
+                    'End If
                     ' Looks like there's an LX200 command to sync to target, so...
 
                     CommandBlind(":CM")
+                    TL.LogMessage("SyncToTarget", "Synced to " + utilities.DegreesToDMS(TargetDeclination) + ", " + utilities.HoursToHMS(TargetRightAscension))
                     'Dim success As String = CommandString(":SY" + sign + utilities.DegreesToDMS(TargetDeclination, "*", ":", String.Empty) + "." + utilities.HoursToHMS(TargetRightAscension, ":", ":"), False)
                     'If success = "1" Then
                     '    TL.LogMessage("SyncToTarget", "Synced to " + utilities.DegreesToDMS(TargetDeclination) + ", " + utilities.HoursToHMS(TargetRightAscension))
@@ -949,6 +950,7 @@ Public Class Telescope
     Public Property TargetDeclination() As Double Implements ITelescopeV3.TargetDeclination
         Get
             If targetDecSet Then
+                targetDec = utilities.DMSToDegrees(CommandString(":Gd"))
                 TL.LogMessage("TargetDeclination Get", targetDec.ToString)
                 Return targetDec
             Else
@@ -959,9 +961,24 @@ Public Class Telescope
         End Get
         Set(value As Double)
             If value >= -90 And value <= 90 Then
-                TL.LogMessage("TargetDeclination Set", value.ToString)
-                targetDec = value
-                targetDecSet = True
+
+                Dim strDeccmd = utilities.DegreesToDMS(value, "*", ":", "")
+                If Declination >= 0 Then
+                    strDeccmd = "+" + strDeccmd
+                End If
+                strDeccmd = ":Sd" + strDeccmd
+
+                TL.LogMessage("TargetDeclination", strDeccmd)
+
+                If CommandString(strDeccmd) <> "1" Then
+                    targetDecSet = False
+                    Throw New ASCOM.DriverException("ERR TargetDeclination", strDeccmd)
+                Else
+                    TL.LogMessage("TargetDeclination Set", value.ToString)
+                    targetDec = value
+                    targetDecSet = True
+                End If
+
             Else
                 TL.LogMessage("TargetDeclination Set", "Invalid Value " + value.ToString)
                 Throw New ASCOM.InvalidValueException("TargetDeclination")
@@ -973,6 +990,7 @@ Public Class Telescope
     Public Property TargetRightAscension() As Double Implements ITelescopeV3.TargetRightAscension
         Get
             If targetRASet Then
+                targetRA = targetDec = utilities.HMSToHours(CommandString(":Gr"))
                 TL.LogMessage("TargetRightAscension Get", targetRA.ToString)
                 Return targetRA
             Else
@@ -982,10 +1000,17 @@ Public Class Telescope
 
         End Get
         Set(value As Double)
+
             If value >= 0 And value <= 24 Then
-                TL.LogMessage("TargetRightAscension Set", value.ToString)
-                targetRA = value
-                targetRASet = True
+                Dim strRAcmd = ":Sr" + utilities.HoursToHMS(value, ":", ":")
+                If CommandString(strRAcmd) <> "1" Then
+                    targetRASet = False
+                    Throw New ASCOM.DriverException("ERR TargetRightAscension", strRAcmd)
+                Else
+                    TL.LogMessage("TargetRightAscension Set", value.ToString)
+                    targetRA = value
+                    targetRASet = True
+                End If
             Else
                 TL.LogMessage("TargetRightAscension Set", "Invalid Value " + value.ToString)
                 Throw New ASCOM.InvalidValueException("TargetRightAscension")
