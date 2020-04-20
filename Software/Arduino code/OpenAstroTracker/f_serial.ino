@@ -221,8 +221,8 @@ void handleMeadeGetInfo(String inCmd) {
 /////////////////////////////
 void handleMeadeSyncControl(String inCmd) {
   if (inCmd[0] == 'M') {
-    mount.syncDEC(mount.targetDEC().getHours(), mount.targetDEC().getMinutes(), mount.targetDEC().getSeconds(),);
-    mount.syncRA(mount.targetRA().getHours(), mount.targetRA.getMinutes()(), mount.targetRA().getSeconds());
+    mount.syncDEC(mount.targetDEC().getHours(), mount.targetDEC().getMinutes(), mount.targetDEC().getSeconds());
+    mount.syncRA(mount.targetRA().getHours(), mount.targetRA().getMinutes(), mount.targetRA().getSeconds());
     Serial.print("NONE#");
   }
   else {
