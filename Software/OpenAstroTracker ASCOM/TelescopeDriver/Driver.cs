@@ -90,6 +90,7 @@ namespace ASCOM.OpenAstroTracker {
                 ArrayList actionList = new ArrayList();
                 actionList.Add("Telescope:getFirmwareVer");
                 actionList.Add("Utility:JNowtoJ2000");
+                actionList.Add("Serial:PassThroughCommand");
                 LogMessage("SupportedActions Get",
                     "Returning arraylist of " + actionList.Count.ToString() + " item(s)");
                 return actionList;
@@ -111,6 +112,12 @@ namespace ASCOM.OpenAstroTracker {
                             System.Convert.ToDouble(ActionParameters.Split(',')[1]));
                         retVal = _utilities.HoursToHMS(_transform.RAJ2000, ":", ":", string.Empty) + "&" +
                                  DegreesToDmsWithSign(_transform.DecJ2000, "*", ":", string.Empty);
+                        break;
+                    }
+
+                    case "Serial:PassThroughCommand": {
+                        var s = ActionParameters.Split(',');
+                        retVal = SharedResources.SendPassThroughCommand(s[0], s[1][0]);
                         break;
                     }
                 }

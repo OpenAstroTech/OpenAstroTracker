@@ -15,7 +15,6 @@
 //
 
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Threading;
 using ASCOM.Utilities;
@@ -68,11 +67,15 @@ namespace ASCOM.OpenAstroTracker {
             using (Profile driverProfile = new Profile()) {
                 driverProfile.DeviceType = "Telescope";
                 return new ProfileData {
-                    TraceState = Convert.ToBoolean(driverProfile.GetValue(driverID, traceStateProfileName, String.Empty, traceStateDefault)),
+                    TraceState = Convert.ToBoolean(driverProfile.GetValue(driverID, traceStateProfileName, String.Empty,
+                        traceStateDefault)),
                     ComPort = driverProfile.GetValue(driverID, comPortProfileName, string.Empty, comPortDefault),
-                    Latitude = Convert.ToDouble(driverProfile.GetValue(driverID, latitudeProfileName, string.Empty, latitudeDefault.ToString())),
-                    Longitude = Convert.ToDouble(driverProfile.GetValue(driverID, longitudeProfileName, string.Empty, longitudeDefault.ToString())),
-                    Elevation = Convert.ToDouble(driverProfile.GetValue(driverID, elevationProfileName, string.Empty, elevationDefault.ToString()))
+                    Latitude = Convert.ToDouble(driverProfile.GetValue(driverID, latitudeProfileName, string.Empty,
+                        latitudeDefault.ToString())),
+                    Longitude = Convert.ToDouble(driverProfile.GetValue(driverID, longitudeProfileName, string.Empty,
+                        longitudeDefault.ToString())),
+                    Elevation = Convert.ToDouble(driverProfile.GetValue(driverID, elevationProfileName, string.Empty,
+                        elevationDefault.ToString()))
                 };
             }
         }
@@ -160,7 +163,29 @@ namespace ASCOM.OpenAstroTracker {
             }
         }
 
+        public static string SendPassThroughCommand(string message, char terminator) {
+            lock (lockObject) {
+                tl.LogMessage("OAT Server", "Lock Object");
 
+                try {
+                    if (SharedSerial.Connected && !String.IsNullOrEmpty(message)) {
+                        tl.LogMessage("Telescope", "Send message: " + message);
+                        SharedSerial.ClearBuffers();
+                        SharedSerial.Transmit(message);
+                        return SharedSerial.ReceiveTerminated(terminator.ToString());
+                    }
+                    else {
+                        tl.LogMessage("OAT Server", "Not connected or Empty Message: " + message);
+                        return "";
+                    }
+                }
+                catch (Exception e) {
+                    tl.LogMessage($"Caught exception while SendPassThroughCommand - ${message}", e.Message);
+                    return "";
+                }
+                
+            }
+        }
 
 
         /// <summary>
@@ -207,6 +232,7 @@ namespace ASCOM.OpenAstroTracker {
                                 SharedResources.tl.LogMessage("Serial port read timeout", exception.Message);
                             }
                         }
+
                         Connections++;
                         tl.LogMessage("Connected Set", $"{value} - Connection Count is {Connections} Clients");
                     }
@@ -215,7 +241,8 @@ namespace ASCOM.OpenAstroTracker {
                         tl.LogMessage("Connected Set", $"{value} - Connection Count is {Connections} Clients");
                         if (Connections <= 0) {
                             Connections = 0;
-                            tl.LogMessage("Connection Set", $"Connection Count is {Connections} Disconnecting From Device");
+                            tl.LogMessage("Connection Set",
+                                $"Connection Count is {Connections} Disconnecting From Device");
                             SharedSerial.Transmit(":Qq#");
                             SharedSerial.Connected = false;
                         }
