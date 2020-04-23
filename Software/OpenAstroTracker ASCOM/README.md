@@ -32,7 +32,6 @@ This driver is still in a great deal of flux.  Capacitor levels of flux.  Use at
 	
 * Work in Progress / Coming soon
 	* A simple PC Control application is being developed.
-		* You are welcome to play with the PC Control code included in "OAT PC Control" in this branch, but be aware it's not ready for prime time yet.
 	* Implementation of AltAz methods and properties
 	* Ability to set home position of mount via ASCOM
 
