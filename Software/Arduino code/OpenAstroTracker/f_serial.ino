@@ -72,6 +72,10 @@
 //      Get Guiding
 //      Returns: 1 if currently guiding. 0 if not.
 //
+// :GX#
+//      Get Mount Status
+//      Returns: string reflecting the mounts' status
+//
 //------------------------------------------------------------------
 // SET FAMILY
 //
@@ -197,6 +201,11 @@ void handleMeadeGetInfo(String inCmd) {
 
     case 'D': {
         Serial.print(mount.DECString(MEADE_STRING | CURRENT_STRING));
+      }
+      break;
+
+    case 'X': {
+        Serial.print(mount.getStatusString()+"#");
       }
       break;
 

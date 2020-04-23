@@ -18,6 +18,7 @@
 #define MEADE_STRING        B0010
 #define PRINT_STRING        B0011
 #define LCD_STRING          B0100
+#define COMPACT_STRING      B0101
 #define FORMAT_STRING_MASK  B0111
 
 #define TARGET_STRING      B01000
@@ -123,6 +124,9 @@ class Mount {
 
     // Return a string of DEC in the given format. For LCDSTRING, active determines where the cursor is
     String RAString(byte type, byte active = 0);
+
+    // Returns a comma-delimited string with all the mounts' information
+    String getStatusString();
 
     // Get the current speed of the stepper. NORTH, WEST, TRACKING
     float getSpeed(int direction);

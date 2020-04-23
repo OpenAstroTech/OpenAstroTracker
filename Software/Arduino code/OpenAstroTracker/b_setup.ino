@@ -2,12 +2,6 @@
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(0);
 
-// Create the variables to track RA time, RA display time and HA time
-//DayTime RATime;
-//DayTime RADisplayTime;
-//DayTime HATime;
-//DayTime HACorrection;
-
 Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
 
 void setup() {

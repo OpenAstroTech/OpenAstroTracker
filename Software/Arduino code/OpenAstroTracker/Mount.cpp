@@ -37,6 +37,7 @@ char* formatStringsDEC[] = {
   "%c%02d*%02d'%02d#",      // Meade
   "%c%02d %02d'%02d\"",     // Print
   "%c%02d@%02d'%02d\"",     // LCD display only
+  "%c%02d%02d%02d",         // Compact
 };
 
 char* formatStringsRA[] = {
@@ -45,6 +46,7 @@ char* formatStringsRA[] = {
   "%02d:%02d:%02d#",        // Meade
   "%02dh %02dm %02ds",      // Print
   "%02dh%02dm%02ds",        // LCD display only
+  "%02d%02d%02d",           // Compact
 };
 
 const float siderealDegreesInHour = 14.95902778;
@@ -485,6 +487,57 @@ String Mount::mountStatusString() {
   return disp;
 }
 #endif
+
+/////////////////////////////////
+//
+// getStatusString
+//
+/////////////////////////////////
+String Mount::getStatusString() {
+  String status;
+  if (_mountStatus == STATUS_PARKED) {
+    status = "Parked,";
+  }
+  else if (_mountStatus & STATUS_PARKING) {
+    status = "Parking,";
+  }
+  else if (isGuiding()) {
+    status = "Guiding,";
+  }
+  else if (slewStatus() & SLEW_MASK_ANY) {
+    if (_mountStatus & STATUS_SLEWING_TO_TARGET) {
+      status = "SlewToTarget,";
+    }
+    else if (_mountStatus & STATUS_SLEWING_FREE) {
+      status = "FreeSlew,";
+    }
+    else {
+      status = "Idle,";
+    }
+  } else {
+    status = "Idle,";
+  }
+
+  String disp = "---,";
+  if (_mountStatus & STATUS_SLEWING) {
+    byte slew = slewStatus();
+    if (slew & SLEWING_RA) disp[0] = _stepperRA->speed() < 0 ? 'R' : 'r';
+    if (slew & SLEWING_DEC) disp[1] = _stepperDEC->speed() < 0 ? 'D' : 'd';
+    if (slew & SLEWING_TRACKING) disp[2] = 'T';
+  } else if (isSlewingTRK()) {
+    disp[2] = 'T';
+  }
+
+  status += disp;
+  status += String(_stepperRA->currentPosition()) + ",";
+  status += String(_stepperDEC->currentPosition()) + ",";
+  status += String(_stepperTRK->currentPosition()) + ",";
+
+  status += RAString(COMPACT_STRING | CURRENT_STRING) + ",";
+  status += DECString(COMPACT_STRING | CURRENT_STRING) + ",";
+
+  return status ;
+}
 
 /////////////////////////////////
 //
@@ -937,7 +990,7 @@ void Mount::displayStepperPosition() {
   else {
 #ifdef SUPPORT_SERIAL_CONTROL
     if (inSerialControl) {
-      sprintf(scratchBuffer, " RA:  %s", RAString(LCD_STRING | CURRENT_STRING).c_str());
+      sprintf(scratchBuffer, " RA: %s", RAString(LCD_STRING | CURRENT_STRING).c_str());
       _lcdMenu->setCursor(0, 0);
       _lcdMenu->printMenu(scratchBuffer);
       sprintf(scratchBuffer, "DEC: %s", DECString(LCD_STRING | CURRENT_STRING).c_str());
