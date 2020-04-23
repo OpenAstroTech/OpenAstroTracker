@@ -37,6 +37,7 @@ char* formatStringsDEC[] = {
   "%c%02d*%02d'%02d#",      // Meade
   "%c%02d %02d'%02d\"",     // Print
   "%c%02d@%02d'%02d\"",     // LCD display only
+  "%c%02d%02d%02d",         // Compact
 };
 
 char* formatStringsRA[] = {
@@ -45,6 +46,7 @@ char* formatStringsRA[] = {
   "%02d:%02d:%02d#",        // Meade
   "%02dh %02dm %02ds",      // Print
   "%02dh%02dm%02ds",        // LCD display only
+  "%02d%02d%02d",           // Compact
 };
 
 const float siderealDegreesInHour = 14.95902778;
@@ -75,8 +77,8 @@ void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, b
   _stepperRA = new AccelStepper(stepMode, pin1, pin2, pin3, pin4);
   _stepperRA->setMaxSpeed(maxSpeed);
   _stepperRA->setAcceleration(maxAcceleration);
-//  _maxRASpeed = maxSpeed;
-//  _maxRAAcceleration = maxAcceleration;
+  _maxRASpeed = maxSpeed;
+  _maxRAAcceleration = maxAcceleration;
 
   // Use another AccelStepper to run the RA motor as well. This instance tracks earths rotation.
   _stepperTRK = new AccelStepper(HALFSTEP, pin1, pin2, pin3, pin4);
@@ -266,25 +268,6 @@ void Mount::syncDEC(int degree, int minute, int second) {
 
 /////////////////////////////////
 //
-// stopGuiding
-//
-/////////////////////////////////
-void Mount::stopGuiding() {
-  _stepperDEC->stop();
-  while (_stepperDEC->isRunning()) {
-    _stepperDEC->run();
-  }
-  _stepperDEC->setMaxSpeed(_maxDECSpeed);
-  _stepperDEC->setAcceleration(_maxDECAcceleration);
-  _stepperTRK->setMaxSpeed(10);
-  _stepperTRK->setAcceleration(2500);
-  _stepperTRK->setSpeed(_trackingSpeed);
-  _stepperTRK->runSpeed();
-  _mountStatus &= ~STATUS_GUIDE_PULSE_MASK;
-}
-
-/////////////////////////////////
-//
 // startSlewingToTarget
 //
 /////////////////////////////////
@@ -309,42 +292,59 @@ void Mount::startSlewingToTarget() {
 
 /////////////////////////////////
 //
+// stopGuiding
+//
+/////////////////////////////////
+void Mount::stopGuiding() {
+  _stepperDEC->stop();
+  while (_stepperDEC->isRunning()) {
+    _stepperDEC->run();
+  }
+
+  _stepperDEC->setMaxSpeed(_maxDECSpeed);
+  _stepperDEC->setAcceleration(_maxDECAcceleration);
+  _stepperTRK->setMaxSpeed(10);
+  _stepperTRK->setAcceleration(2500);
+  _stepperTRK->setSpeed(_trackingSpeed);
+  _mountStatus &= ~STATUS_GUIDE_PULSE_MASK;
+}
+
+/////////////////////////////////
+//
 // guidePulse
 //
 /////////////////////////////////
 void Mount::guidePulse(byte direction, int duration) {
-  // How many steps moves the RA ring one sidereal hour along. One sidereal hour moves just shy of 15 degrees
-  // NOTE: May need to adjust with _trackingSpeedCalibration
-  float decStepsPerSiderealHour = _stepsPerDECDegree * siderealDegreesInHour;
-  float decStepsForDuration = decStepsPerSiderealHour * duration / 3600000;
-  float raStepsPerSiderealHour = _stepsPerRADegree * siderealDegreesInHour;
-  float raStepsForDuration = raStepsPerSiderealHour * duration / 3600000;
-
+  // DEC stepper moves at sidereal rate in both directions
+  // RA stepper moves at either 2x sidereal rate or stops.
+  // TODO: Do we need to adjust with _trackingSpeedCalibration?
   float decTrackingSpeed = _stepsPerDECDegree * siderealDegreesInHour / 3600.0f;
   float raTrackingSpeed = _stepsPerRADegree * siderealDegreesInHour / 3600.0f;
 
-  long raPos = _stepperRA->currentPosition();
-  long decPos = _stepperDEC->currentPosition();
+  // TODO: Do we need to track how many steps the steppers took and add them to the GoHome calculation?
+  // If so, we need to remember where we were when we started the guide pulse. Then at the end,
+  // we can calculate the difference.
+  // long raPos = _stepperTRK->currentPosition();
+  // long decPos = _stepperDEC->currentPosition();
 
   switch (direction) {
     case NORTH:
+      _stepperDEC->setAcceleration(2500);
       _stepperDEC->setMaxSpeed(decTrackingSpeed * 1.2);
       _stepperDEC->setSpeed(decTrackingSpeed);
-      _stepperDEC->moveTo(decPos + decStepsForDuration);
       _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_DEC ;
       break;
 
     case SOUTH:
+      _stepperDEC->setAcceleration(2500);
       _stepperDEC->setMaxSpeed(decTrackingSpeed * 1.2);
-      _stepperDEC->setSpeed(decTrackingSpeed);
-      _stepperDEC->moveTo(decPos - decStepsForDuration);
+      _stepperDEC->setSpeed(-decTrackingSpeed);
       _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_DEC ;
       break;
 
     case WEST:
       _stepperTRK->setMaxSpeed(raTrackingSpeed * 2.2);
       _stepperTRK->setSpeed(raTrackingSpeed * 2);
-      _stepperTRK->moveTo(raPos + raStepsForDuration);
       _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_RA;
       break;
 
@@ -356,6 +356,52 @@ void Mount::guidePulse(byte direction, int duration) {
   }
 
   _guideEndTime = millis() + duration;
+}
+
+/////////////////////////////////
+//
+// runDriftAlignmentPhase
+//
+// Runs one of the phases of the Drift alignment
+// This runs the RA motor 400 steps (about 5.3 arcminutes) in the given duration
+// This function should be callsed 3 times:
+// The first time with EAST, second with WEST and then with 0.
+/////////////////////////////////
+void Mount::runDriftAlignmentPhase(int direction, int durationSecs) {
+  // Calculate the speed at which it takes the given duration to cover 400 steps.
+  float speed = 400.0 / durationSecs;
+  switch (direction) {
+    case EAST:
+      // Move 400 steps east at the calculated speed, synchronously
+      _stepperRA->setAcceleration(1500);
+      _stepperRA->setMaxSpeed(speed);
+      _stepperRA->move(400);
+      _stepperRA->runToPosition();
+
+      // Overcome the gearing gap
+      _stepperRA->setMaxSpeed(300);
+      _stepperRA->move(-20);
+      _stepperRA->runToPosition();
+      break;
+
+    case WEST:
+      // Move 400 steps west at the calculated speed, synchronously
+      _stepperRA->setMaxSpeed(speed);
+      _stepperRA->move(-400);
+      _stepperRA->runToPosition();
+      break;
+
+    case 0 :
+      // Fix the gearing to go back the other way
+      _stepperRA->setMaxSpeed(300);
+      _stepperRA->move(20);
+      _stepperRA->runToPosition();
+
+      // Re-configure the stepper to the correct parameters.
+      _stepperRA->setAcceleration(_maxRAAcceleration);
+      _stepperRA->setMaxSpeed(_maxRASpeed);
+      break;
+  }
 }
 
 /////////////////////////////////
@@ -417,8 +463,8 @@ String Mount::mountStatusString() {
   if (_mountStatus & STATUS_PARKING) {
     disp = "PARKNG ";
   }
-  else if (isGuiding()){
-     disp = "GUIDING ";
+  else if (isGuiding()) {
+    disp = "GUIDING ";
   }
   else {
     if (_mountStatus & STATUS_TRACKING) disp += "TRK ";
@@ -441,6 +487,57 @@ String Mount::mountStatusString() {
   return disp;
 }
 #endif
+
+/////////////////////////////////
+//
+// getStatusString
+//
+/////////////////////////////////
+String Mount::getStatusString() {
+  String status;
+  if (_mountStatus == STATUS_PARKED) {
+    status = "Parked,";
+  }
+  else if (_mountStatus & STATUS_PARKING) {
+    status = "Parking,";
+  }
+  else if (isGuiding()) {
+    status = "Guiding,";
+  }
+  else if (slewStatus() & SLEW_MASK_ANY) {
+    if (_mountStatus & STATUS_SLEWING_TO_TARGET) {
+      status = "SlewToTarget,";
+    }
+    else if (_mountStatus & STATUS_SLEWING_FREE) {
+      status = "FreeSlew,";
+    }
+    else {
+      status = "Idle,";
+    }
+  } else {
+    status = "Idle,";
+  }
+
+  String disp = "---,";
+  if (_mountStatus & STATUS_SLEWING) {
+    byte slew = slewStatus();
+    if (slew & SLEWING_RA) disp[0] = _stepperRA->speed() < 0 ? 'R' : 'r';
+    if (slew & SLEWING_DEC) disp[1] = _stepperDEC->speed() < 0 ? 'D' : 'd';
+    if (slew & SLEWING_TRACKING) disp[2] = 'T';
+  } else if (isSlewingTRK()) {
+    disp[2] = 'T';
+  }
+
+  status += disp;
+  status += String(_stepperRA->currentPosition()) + ",";
+  status += String(_stepperDEC->currentPosition()) + ",";
+  status += String(_stepperTRK->currentPosition()) + ",";
+
+  status += RAString(COMPACT_STRING | CURRENT_STRING) + ",";
+  status += DECString(COMPACT_STRING | CURRENT_STRING) + ",";
+
+  return status ;
+}
 
 /////////////////////////////////
 //
@@ -861,8 +958,8 @@ void Mount::moveSteppersTo(float targetRA, float targetDEC) {
 //
 /////////////////////////////////
 void Mount::displayStepperPosition() {
-#ifndef HEADLESS_CLIENT  
- 
+#ifndef HEADLESS_CLIENT
+
   String disp ;
 
   if ((abs(_totalDECMove) > 0.001) && (abs(_totalRAMove) > 0.001)) {
@@ -893,7 +990,7 @@ void Mount::displayStepperPosition() {
   else {
 #ifdef SUPPORT_SERIAL_CONTROL
     if (inSerialControl) {
-      sprintf(scratchBuffer, " RA:  %s", RAString(LCD_STRING | CURRENT_STRING).c_str());
+      sprintf(scratchBuffer, " RA: %s", RAString(LCD_STRING | CURRENT_STRING).c_str());
       _lcdMenu->setCursor(0, 0);
       _lcdMenu->printMenu(scratchBuffer);
       sprintf(scratchBuffer, "DEC: %s", DECString(LCD_STRING | CURRENT_STRING).c_str());
@@ -926,13 +1023,13 @@ void Mount::displayStepperPosition() {
 //
 /////////////////////////////////
 void Mount::displayStepperPositionThrottled() {
-#ifndef HEADLESS_CLIENT  
+#ifndef HEADLESS_CLIENT
   long elapsed = millis() - _lastDisplayUpdate;
   if (elapsed > DISPLAY_UPDATE_TIME) {
     displayStepperPosition();
     _lastDisplayUpdate = millis();
   }
- #endif
+#endif
 }
 
 /////////////////////////////////

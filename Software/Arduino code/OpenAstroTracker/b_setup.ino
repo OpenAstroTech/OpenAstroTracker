@@ -2,12 +2,6 @@
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(0);
 
-// Create the variables to track RA time, RA display time and HA time
-//DayTime RATime;
-//DayTime RADisplayTime;
-//DayTime HATime;
-//DayTime HACorrection;
-
 Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
 
 void setup() {
@@ -35,7 +29,9 @@ void setup() {
 
   // Configure the mount
   // Set the global HA correction
-  mount.setHACorrection(PolarisRAHour, PolarisRAMinute, PolarisRASecond);
+  DayTime polaris = DayTime(24,0,0);
+  polaris.subtractTime(DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond));
+  mount.setHACorrection(polaris.getHours(), polaris.getMinutes(), polaris.getSeconds());
 
   // Set the stepper motor parameters
   mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);

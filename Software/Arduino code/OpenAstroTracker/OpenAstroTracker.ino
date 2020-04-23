@@ -16,7 +16,7 @@
 */
 #include "Globals.h"
 
-String version = "V1.6.28";
+String version = "V1.6.33";
 
 ///////////////////////////////////////////////////////////////////////////
 // Please see the Globals.h file for configuration of the firmware.
@@ -69,10 +69,10 @@ float DECStepperDownLimit = 10000;    // Going much more than this will make the
 float DECStepperUpLimit = -22000;     // Going much more than this is going below the horizon.
 
 // These values are needed to calculate the current position during initial alignment.
-int PolarisRAHour = 21;
-int PolarisRAMinute = 2;
-int PolarisRASecond = 25;
-// You get these values by calculating 24h minus the current (not J2000) RA of Polaris.
+int PolarisRAHour = 2;
+int PolarisRAMinute = 58;
+int PolarisRASecond = 0;
+// Use something like Stellarium to look up the RA of Polaris in JNow (on date) variant.
 // This changes slightly over weeks, so adjust every couple of months.
-// This value is from 27.Nov.19, I suggest next adjustment in mid 2020
+// This value is from 18.Apr.2020, next adjustment suggested at end 2020
 // The same could be done for the DEC coordinates but they dont change significantly for the next 5 years

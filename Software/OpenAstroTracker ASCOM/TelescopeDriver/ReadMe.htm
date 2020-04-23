@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+	<TITLE>Untitled Document</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 3.2  (Win32)">
+	<META NAME="CREATED" CONTENT="0;0">
+	<META NAME="CHANGEDBY" CONTENT="Chris Rowland">
+	<META NAME="CHANGED" CONTENT="20110918;14150500">
+	<STYLE TYPE="text/css">
+	<!--
+		@page { margin: 2cm }
+		P { font-family: "Verdana", "Arial", "Helvetica", sans-serif; font-weight: normal }
+		TD P { font-family: "Verdana", "Arial", "Helvetica", sans-serif; font-weight: normal }
+		H3 { font-family: "Arial", "Helvetica", sans-serif }
+		H2 { font-family: "Arial", "Helvetica", sans-serif }
+		H4 { font-family: "Arial", "Helvetica", sans-serif }
+		TD P.note { background: #33ffff; font-family: "Verdana", "Arial", "Helvetica", sans-serif; font-weight: normal }
+		TD P.underline { font-family: "Verdana", "Arial", "Helvetica", sans-serif; font-weight: normal; text-decoration: underline }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-GB" DIR="LTR">
+<TABLE WIDTH=100% BORDER=0 CELLPADDING=4 CELLSPACING=0>
+	<TR>
+		<TD>
+			<H2>ASCOM Telescope Driver (C#)</H2>
+		</TD>
+	</TR>
+</TABLE>
+<P><BR><BR>
+</P>
+<H4>You have just created the skeleton of an ASCOM
+Telescope driver in C#. It produces an in-process
+(assembly) based driver.</H4>
+<HR>
+<P CLASS="note">Prior to developing your first driver, please
+familiarize yourself with the <A HREF="http://ascom-standards.org/developer.html">developer
+information we've provided</A> at the ASCOM Initiative web site
+(internet required). 
+</P>
+<P CLASS="underline">You must do the following in order to complete
+your implementation:</P>
+<OL>
+	<LI><P STYLE="margin-bottom: 0cm">Switch to the Debug configuration
+	and build the template now. It should build without errors. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Add a test project to the
+	solution. There are templates that can be used to add either a
+	console or a Windows Forms application:</P>
+</OL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm">Select the <FONT FACE="Consolas, monospace">ASCOM
+	Test Forms App (CS)</FONT> or <FONT FACE="Consolas, monospace">ASCOM
+	Test Console App (CS)</FONT> template.</P>
+	<LI><P STYLE="margin-bottom: 0cm">Set a name for the test
+	application and click on OK.</P>
+	<LI><P STYLE="margin-bottom: 0cm">In the Wizard: set the same device
+	type and model name as for the driver and select Create to build the
+	test project.</P>
+	<LI><P STYLE="margin-bottom: 0cm">Set the Test Application to Run at
+	Startup.</P>
+	<LI><P STYLE="margin-bottom: 0cm">Click on Debug and the test
+	application should run.  You should be able to select your
+	application in the chooser. Selecting Properties should show the
+	default setup dialog for your driver.</P>
+	<LI><P STYLE="margin-bottom: 0cm">Trying to continue will generate
+	errors because the additional properties have not been implemented.</P>
+</UL>
+<OL START=4>
+	<LI><P STYLE="margin-bottom: 0cm">Go through the Driver.cs file and
+	replace the System.NotImplemented exceptions with code to implement
+	your driver's functionality. See the ASCOM ITelescopeV3
+	spec.  If a property or method is not implemented in your driver the
+	System.NotImplemented exception must be replaced by an
+	ASCOM.PropertyNotImplemented or ASCOM.MethodNotImplemented
+	exception.</P>
+	<LI><P>Customize the Setup Dialog (SetupDialogForm) to provide the
+	settings and other controls for your driver. You can bind settings
+	directly to controls on your dialog form, there's no need to manage
+	settings manually. A custom Settings class takes care of managing
+	your settings behind the scenes. 
+	</P>
+</OL>
+<H3>Notes:</H3>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm">Successfully building the driver,
+	as well as using <FONT FACE="Lucida Console, Courier New, Courier, monospace">regasm</FONT>
+	on the assembly, registers it for both COM and ASCOM (the Chooser).
+	See the code in the ASCOM Registration region of Driver.vb. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Doing a Clean for the project, as
+	well doing a <FONT FACE="Lucida Console, Courier New, Courier, monospace">regasm
+	-u</FONT> on the assembly, unregisters it for both COM and ASCOM
+	(the Chooser). 
+	</P>
+	<LI><P>Place a breakpoint in your driver class constructor, then
+	start debugging (go, F5). Your breakpoint will be hit when the test
+	application creates an instance of your driver (after selecting it
+	in the Chooser). You can now single step, examine variables, etc.
+	Please review the test application and make changes and additions to
+	activate various parts of your driver during debugging.</P>
+	<LI><P>The project's Debug configuration is already configured (The
+	test application creates an instance of your driver (after selecting
+	it in the Chooser). You can now single step, examine variables, etc.
+	Please review the test application and feel free to make changes and
+	additions to activate various parts of your driver during debugging.
+		</P>
+</UL>
+<DIV ALIGN=RIGHT>
+	<TABLE WIDTH=100% BORDER=0 CELLPADDING=4 CELLSPACING=0>
+		<TR>
+			<TD>
+				<TABLE WIDTH=100% BORDER=0 CELLPADDING=4 CELLSPACING=0>
+					<TR>
+						<TD>
+							<H3>ASCOM Initiative</H3>
+						</TD>
+						<TD>
+							<IMG SRC="ASCOM.png" NAME="graphics1" ALIGN=RIGHT WIDTH=48 HEIGHT=56 BORDER=0></TD>
+					</TR>
+				</TABLE>
+				<P><BR><BR>
+				</P>
+			</TD>
+		</TR>
+		<TR>
+			<TD>
+				<P>The ASCOM Initiative consists of a group of astronomy software
+				developers and instrument vendors whose goals are to promote the
+				driver/client model and scripting automation. 
+				</P>
+				<P>See the <A HREF="http://ascom-standards.org/" TARGET="browser">ASCOM
+				web site</A> for more information. Please participate in the
+				<A HREF="http://tech.groups.yahoo.com/group/ASCOM-Talk" TARGET="browser">ASCOM-Talk
+				Yahoo Group</A>. 
+				</P>
+			</TD>
+		</TR>
+	</TABLE>
+</DIV>
+<P><BR><BR>
+</P><P>
+<BR><BR>
+</P>
+</BODY>
+</HTML>
