@@ -12,6 +12,98 @@
 #define btnSELECT 4
 #define btnNONE   5
 
+#ifdef DEBUG_MODE
+
+class RealTime {
+    static unsigned long _pausedTime;
+    static unsigned long _startTime;
+    static unsigned long _suspendStart;
+    static int  _suspended;
+public:
+    static void suspend() {
+      if (_suspended == 0) {
+        _suspendStart = micros();
+      }
+      _suspended++;
+    }
+
+    static void resume() {
+      _suspended--;
+      if (_suspended == 0) {
+        unsigned long now = micros();
+        _pausedTime += now - _suspendStart;
+      }
+    }
+
+    static unsigned long currentTime() {
+      if (_suspended != 0) {
+        unsigned long now = micros();
+        unsigned long pausedUntilNow = now - _suspendStart;
+        return now - pausedUntilNow;
+      } else {
+        return micros() - _pausedTime;
+      }
+    }
+};
+
+class PerfMeasure {
+    unsigned long _start;
+    unsigned long _end;
+    unsigned long _duration;
+    int _indent;
+    String _name;
+    bool _running;
+    bool _printed;
+
+  public:
+    PerfMeasure(int indent, String name)  {
+      _name = name;
+      _running = true;
+      _printed = false;
+      _indent = indent;
+      _start = RealTime::currentTime();
+    }
+
+    ~PerfMeasure() {
+      if (_running) stop();
+      print();
+    }
+
+    void stop() {
+      _end = RealTime::currentTime();
+      _duration = _end - _start ;
+      _running = false;
+    }
+
+    float durationMs() {
+      return 0.001 * _duration;
+    }
+
+    void print() {
+      if (_running) stop();
+      RealTime::suspend();
+      if (!_printed ) {
+        char buf[128];
+        memset(buf, ' ', 127);
+        buf[127] = 0;
+
+        String disp = String(durationMs(), 3);
+        char *p = buf + (_indent * 1);
+        memcpy(p, _name.c_str(), _name.length());
+        p = buf + 36 - disp.length();
+        memcpy(p, disp.c_str(), disp.length());
+        p = buf + 36;
+        *p++ = 'm';
+        *p++ = 's';
+        *p++ = 0;
+        Serial.println(String(buf));
+        _printed = true;
+      }
+      RealTime::resume();
+    }
+};
+
+#endif
 
 class LcdButtons {
   public:

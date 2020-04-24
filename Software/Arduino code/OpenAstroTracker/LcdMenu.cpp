@@ -9,12 +9,14 @@
 LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(8, 9, 4, 5, 6, 7) {
   //_lcd = new LiquidCrystal(8, 9, 4, 5, 6, 7);
   _lcd.begin(cols, rows);
-
   _activeId = 0;
   _numMenuItems = 0;
   _activeMenuIndex = 0;
   _longestDisplay = 0;
   _columns = cols;
+  _activeRow = -1;
+  _lastDisplay[0] = "";
+  _lastDisplay[1] = "";
   _menuItems = new MenuItem*[maxItems];
 
   // Create special characters for degrees and arrows
@@ -61,6 +63,7 @@ void LcdMenu::setActive(byte id) {
 
 // Pass thru utility function
 void LcdMenu::setCursor(byte col, byte row) {
+  _activeRow = row;
   _lcd.setCursor(col, row);
 }
 
@@ -71,6 +74,7 @@ void LcdMenu::clear() {
 
 // Go to the next menu item from currently active one
 void LcdMenu::setNextActive() {
+
   _activeMenuIndex = adjustWrap(_activeMenuIndex, 1, 0, _numMenuItems - 1);
   _activeId = _menuItems[_activeMenuIndex]->id();
 
@@ -107,33 +111,36 @@ void LcdMenu::updateDisplay() {
     offset += strlen(scratchBuffer);
   }
 
-  // Determine where to place the active menu item. (empty space around longest item divided by two).
-  int margin = (_columns - (_longestDisplay)) / 2;
-  int offsetIntoString = offsetToActive - margin;
+  if (menuString != _lastDisplay[0]) {
+    _lastDisplay[0] = menuString;
 
-  // Pad the front if we don't have enough to offset the string to the arrow locations (happens on first item(s))
-  while (offsetIntoString < 0) {
-    _lcd.print(" ");
-    offsetIntoString++;
+    // Determine where to place the active menu item. (empty space around longest item divided by two).
+    int margin = (_columns - (_longestDisplay)) / 2;
+    int offsetIntoString = offsetToActive - margin;
+
+    // Pad the front if we don't have enough to offset the string to the arrow locations (happens on first item(s))
+    while (offsetIntoString < 0) {
+      _lcd.print(" ");
+      offsetIntoString++;
+    }
+
+    // Display the actual menu string
+    String displayString = menuString.substring(offsetIntoString, offsetIntoString + _columns);
+
+    // Pad the end with spaces so the display is cleared when getting to the last item(s).
+    while (displayString.length() < _columns) {
+      displayString += " ";
+    }
+
+    printMenu(displayString);
+
+    // Pad the end with spaces so the display is cleared when getting to the last item(s).
+    byte len = displayString.length();
+    while ( len < _columns) {
+      _lcd.print(" ");
+      len++;
+    }
   }
-
-  // Display the actual menu string
-  String displayString = menuString.substring(offsetIntoString, offsetIntoString + _columns);
-
-  // Pad the end with spaces so the display is cleared when getting to the last item(s).
-  while (displayString.length() < _columns) {
-    displayString += " ";
-  }
-
-  printMenu(displayString);
-
-  // Pad the end with spaces so the display is cleared when getting to the last item(s).
-  byte len = displayString.length();
-  while ( len < _columns) {
-    _lcd.print(" ");
-    len++;
-  }
-
   _lcd.setCursor(0, 1);
 }
 
@@ -156,17 +163,20 @@ void LcdMenu::printChar(char ch) {
 }
 
 // Print a string to the LCD at the current cursor position, substituting the special arrows and padding with spaces to the end
-void LcdMenu::printMenu(String line)
-{
-  int spaces = _columns - line.length();
-  for (int i = 0; i < line.length(); i++) {
-    printChar(line[i]);
-  }
+void LcdMenu::printMenu(String line) {
+  if (_lastDisplay[_activeRow] != line) {
+    _lastDisplay[_activeRow] = line;
 
-  // Clear the rest of the display
-  while (spaces > 0) {
-    _lcd.print(" ");
-    spaces--;
+    int spaces = _columns - line.length();
+    for (int i = 0; i < line.length(); i++) {
+      printChar(line[i]);
+    }
+
+    // Clear the rest of the display
+    while (spaces > 0) {
+      _lcd.print(" ");
+      spaces--;
+    }
   }
 }
 

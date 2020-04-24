@@ -169,7 +169,7 @@ void loop() {
 }
 #else
 
-void loop(){
+void loop() {
   serialLoop();
   BTin();
 }

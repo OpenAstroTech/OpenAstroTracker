@@ -77,6 +77,8 @@ class LcdMenu {
     byte _activeId;         // The id of the currently active menu item
     byte _longestDisplay;   // The number of characters in the longest menu item
     byte _columns;          // The number of columns in the LCD display
+    byte _activeRow;        // The row that the cursor is on
+    String _lastDisplay[2]; // The last string that was displayed on each row
 
     byte _degrees = 1;
     byte _minutes = 2;
