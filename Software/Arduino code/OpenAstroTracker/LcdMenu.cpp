@@ -64,7 +64,7 @@ void LcdMenu::setActive(byte id) {
 // Pass thru utility function
 void LcdMenu::setCursor(byte col, byte row) {
   _activeRow = row;
-  _lcd.setCursor(col, row);
+  // _lcd.setCursor(col, row);
 }
 
 // Pass thru utility function
@@ -112,6 +112,7 @@ void LcdMenu::updateDisplay() {
   }
 
   if (menuString != _lastDisplay[0]) {
+    _lcd.setCursor(0, _activeRow);
     _lastDisplay[0] = menuString;
 
     // Determine where to place the active menu item. (empty space around longest item divided by two).
@@ -166,6 +167,7 @@ void LcdMenu::printChar(char ch) {
 void LcdMenu::printMenu(String line) {
   if (_lastDisplay[_activeRow] != line) {
     _lastDisplay[_activeRow] = line;
+    _lcd.setCursor(0, _activeRow);
 
     int spaces = _columns - line.length();
     for (int i = 0; i < line.length(); i++) {
