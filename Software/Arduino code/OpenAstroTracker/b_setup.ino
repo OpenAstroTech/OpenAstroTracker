@@ -29,7 +29,7 @@ void setup() {
 
   // Configure the mount
   // Set the global HA correction
-  DayTime polaris = DayTime(24,0,0);
+  DayTime polaris = DayTime(24, 0, 0);
   polaris.subtractTime(DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond));
   mount.setHACorrection(polaris.getHours(), polaris.getMinutes(), polaris.getSeconds());
 
@@ -74,7 +74,7 @@ void setup() {
 #endif
 
   lcdMenu.addItem("CAL", Calibration_Menu);
-  
+
 #ifdef SUPPORT_INFO_DISPLAY
   lcdMenu.addItem("INFO", Status_Menu);
 #endif

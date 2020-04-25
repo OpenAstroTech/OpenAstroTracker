@@ -23,7 +23,7 @@ bool processKeyStateChanges(int key, int dir)
       if (dir != 0) {
         mount.startSlewing(dir);
       }
-      loopsWithKeyPressed++;      
+      loopsWithKeyPressed++;
       ret = true;
     }
     else if (loopsWithKeyPressed < LOOPS_TO_CONFIRM_KEY) {
@@ -36,12 +36,13 @@ bool processControlKeys() {
   byte key;
 
   // User must use SELECT to enter manual control.
-  if (!inControlMode ) {
+  if (!inControlMode) {
     if (lcdButtons.keyChanged(key)) {
       if (key == btnSELECT) {
         inControlMode = true;
         mount.stopSlewing(ALL_DIRECTIONS);
-      } else if (key == btnRIGHT) {
+      }
+      else if (key == btnRIGHT) {
         lcdMenu.setNextActive();
       }
     }
@@ -73,7 +74,8 @@ bool processControlKeys() {
 
         confirmZeroPoint = false;
         setZeroPoint = true;
-      } else if (key == btnLEFT) {
+      }
+      else if (key == btnLEFT) {
         setZeroPoint = !setZeroPoint;
       }
     }
@@ -85,39 +87,39 @@ bool processControlKeys() {
   key = lcdButtons.currentState();
   switch (key) {
     case btnUP: {
-        processKeyStateChanges(btnUP, NORTH);
-      }
-      break;
+      processKeyStateChanges(btnUP, NORTH);
+    }
+    break;
 
     case btnDOWN: {
-        processKeyStateChanges(btnDOWN, SOUTH);
-      }
-      break;
+      processKeyStateChanges(btnDOWN, SOUTH);
+    }
+    break;
 
     case btnLEFT: {
-        processKeyStateChanges(btnLEFT, WEST);
-      }
-      break;
+      processKeyStateChanges(btnLEFT, WEST);
+    }
+    break;
 
     case btnRIGHT: {
-        processKeyStateChanges(btnRIGHT, EAST);
-      }
-      break;
+      processKeyStateChanges(btnRIGHT, EAST);
+    }
+    break;
 
     case btnSELECT: {
-        if (processKeyStateChanges(btnSELECT, 0))
-        {
-          lcdMenu.setCursor(0, 0);
-          lcdMenu.printMenu("Set home point?");
-          confirmZeroPoint = true;
-        }
+      if (processKeyStateChanges(btnSELECT, 0))
+      {
+        lcdMenu.setCursor(0, 0);
+        lcdMenu.printMenu("Set home point?");
+        confirmZeroPoint = true;
       }
-      break;
+    }
+    break;
 
     case btnNONE: {
-        processKeyStateChanges(btnNONE, 0);
-      }
-      break;
+      processKeyStateChanges(btnNONE, 0);
+    }
+    break;
   }
 
   mount.loop();
@@ -127,7 +129,7 @@ bool processControlKeys() {
 
 
 void printControlSubmenu() {
-  if (!inControlMode ) {
+  if (!inControlMode) {
     lcdMenu.printMenu(">Manual control");
   }
   else if (confirmZeroPoint) {

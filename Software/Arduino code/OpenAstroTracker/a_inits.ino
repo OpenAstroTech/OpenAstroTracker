@@ -55,7 +55,7 @@ float inputcal;              // calibration variable set form as integer. Added 
 int calDelay = 150;          // The current delay in ms when changing calibration value. The longer a button is depressed, the smaller this gets.
 
 //// Variables for use in the CONTROL menu
-bool inControlMode  = false;  // Is manual control enabled
+bool inControlMode = false;  // Is manual control enabled
 
 // Global variables
 bool isUnreachable = false;

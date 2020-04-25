@@ -117,7 +117,7 @@ namespace ASCOM.OpenAstroTracker {
 
                     case "Serial:PassThroughCommand": {
                         var s = ActionParameters.Split(',');
-                        retVal = SharedResources.SendPassThroughCommand(s[0], s[1][0]);
+                        retVal = SharedResources.SendPassThroughCommand(s[0], s[1]);
                         break;
                     }
                 }

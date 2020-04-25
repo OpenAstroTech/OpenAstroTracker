@@ -33,163 +33,163 @@
 //
 //////////////////////////////////////////////////////////////////
 class Mount {
-  public:
-    Mount(int stepsPerRAHour, int stepsPerDECDegree, LcdMenu* lcdMenu);
+public:
+  Mount(int stepsPerRAHour, int stepsPerDECDegree, LcdMenu* lcdMenu);
 
-    // Configure the RA stepper motor. This also sets up the TRK stepper on the same pins.
-    void configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
+  // Configure the RA stepper motor. This also sets up the TRK stepper on the same pins.
+  void configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
 
-    // Configure the DEC stepper motor.
-    void configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
+  // Configure the DEC stepper motor.
+  void configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
 
-    // Set the HA time
-    void setHA(const DayTime & haTime);
-    const DayTime& HA() const;
-    void setHACorrection(int h, int m, int s);
-    DayTime getHACorrection();
+  // Set the HA time
+  void setHA(const DayTime& haTime);
+  const DayTime& HA() const;
+  void setHACorrection(int h, int m, int s);
+  DayTime getHACorrection();
 
-    // Get a reference to the target RA value.
-    DayTime& targetRA();
+  // Get a reference to the target RA value.
+  DayTime& targetRA();
 
-    // Get a reference to the target DEC value.
-    DegreeTime& targetDEC();
+  // Get a reference to the target DEC value.
+  DegreeTime& targetDEC();
 
-    // Get current RA value.
-    const DayTime currentRA() const;
+  // Get current RA value.
+  const DayTime currentRA() const;
 
-    // Get current DEC value.
-    const DegreeTime currentDEC() const;
+  // Get current DEC value.
+  const DegreeTime currentDEC() const;
 
-    // Set the current RA position to be the given time
-    void syncRA(int hour, int minute, int second);
+  // Set the current RA position to be the given time
+  void syncRA(int hour, int minute, int second);
 
-    // Set the current DEC position to be the given degrees
-    void syncDEC(int degree, int minute, int second);
+  // Set the current DEC position to be the given degrees
+  void syncDEC(int degree, int minute, int second);
 
-    float getSpeedCalibration();
+  float getSpeedCalibration();
 
-    void setSpeedCalibration(float val);
+  void setSpeedCalibration(float val);
 
-    // Calculates movement parameters and program steppers to move
-    // there. Must call loop() frequently to actually move.
-    void startSlewingToTarget();
+  // Calculates movement parameters and program steppers to move
+  // there. Must call loop() frequently to actually move.
+  void startSlewingToTarget();
 
-    bool isSlewingDEC();
-    bool isSlewingRA();
-    bool isSlewingRAorDEC();
-    bool isSlewingIdle();
-    bool isSlewingTRK();
-    bool isParked();
-    bool isParking();
-    bool isGuiding();
+  bool isSlewingDEC() const;
+  bool isSlewingRA() const;
+  bool isSlewingRAorDEC() const;
+  bool isSlewingIdle() const;
+  bool isSlewingTRK() const;
+  bool isParked() const;
+  bool isParking() const;
+  bool isGuiding() const;
 
-    // Starts manual slewing in one of eight directions or tracking
-    void startSlewing(int direction);
+  // Starts manual slewing in one of eight directions or tracking
+  void startSlewing(int direction);
 
-    // Stop manual slewing in one of two directions or tracking. NS is the same. EW is the same
-    void stopSlewing(int direction);
+  // Stop manual slewing in one of two directions or tracking. NS is the same. EW is the same
+  void stopSlewing(int direction);
 
-    // Block until the motors specified (NORTH, EAST, TRACKING, etc.) are stopped
-    void waitUntilStopped(byte direction);
+  // Block until the motors specified (NORTH, EAST, TRACKING, etc.) are stopped
+  void waitUntilStopped(byte direction);
 
-    // Same as Arduino delay() but keeps the tracker going.
-    void delay(int ms);
+  // Same as Arduino delay() but keeps the tracker going.
+  void delay(int ms);
 
-    // Gets the position in one of eight directions or tracking
-    long getCurrentStepperPosition(int direction);
+  // Gets the position in one of eight directions or tracking
+  long getCurrentStepperPosition(int direction);
 
-    // Process any stepper movement. Must be called frequently
-    void loop();
+  // Process any stepper movement. Must be called frequently
+  void loop();
 
-    // Set RA and DEC to the home position
-    void setTargetToHome();
+  // Set RA and DEC to the home position
+  void setTargetToHome();
 
-    // Synchronously slews the mount to the home position and sets tracking to argument.
-    void goHome(bool tracking);
+  // Synchronously slews the mount to the home position and sets tracking to argument.
+  void goHome(bool tracking);
 
-    // Set the current stepper positions to be home.
-    void setHome();
+  // Set the current stepper positions to be home.
+  void setHome();
 
-    // Asynchronously parks the mount. Moves to the home position and stops all motors. 
-    void park();
+  // Asynchronously parks the mount. Moves to the home position and stops all motors. 
+  void park();
 
-    // Runs the RA motor at twice the speed (or stops it), or the DEC motor at tracking speed for the given duration in ms.
-    void guidePulse(byte direction, int duration);
+  // Runs the RA motor at twice the speed (or stops it), or the DEC motor at tracking speed for the given duration in ms.
+  void guidePulse(byte direction, int duration);
 
-    // Stops any guide operation in progress.
-    void stopGuiding();
-    
-    // Return a string of DEC in the given format. For LCDSTRING, active determines where the cursor is
-    String DECString(byte type, byte active = 0);
+  // Stops any guide operation in progress.
+  void stopGuiding();
 
-    // Return a string of DEC in the given format. For LCDSTRING, active determines where the cursor is
-    String RAString(byte type, byte active = 0);
+  // Return a string of DEC in the given format. For LCDSTRING, active determines where the cursor is
+  String DECString(byte type, byte active = 0);
 
-    // Returns a comma-delimited string with all the mounts' information
-    String getStatusString();
+  // Return a string of DEC in the given format. For LCDSTRING, active determines where the cursor is
+  String RAString(byte type, byte active = 0);
 
-    // Get the current speed of the stepper. NORTH, WEST, TRACKING
-    float getSpeed(int direction);
+  // Returns a comma-delimited string with all the mounts' information
+  String getStatusString();
 
-    void displayStepperPositionThrottled();
+  // Get the current speed of the stepper. NORTH, WEST, TRACKING
+  float getSpeed(int direction);
 
-    void runDriftAlignmentPhase(int direction, int durationSecs);
+  void displayStepperPositionThrottled();
 
-  private:
-    void calculateRAandDECSteppers(float& targetRA, float& targetDEC);
-    void displayStepperPosition();
-    void moveSteppersTo(float targetRA, float targetDEC);
+  void runDriftAlignmentPhase(int direction, int durationSecs);
 
-    // Returns NOT_SLEWING, SLEWING_DEC, SLEWING_RA, or SLEWING_BOTH. SLEWING_TRACKING is an overlaid bit.
-    byte slewStatus();
+private:
+  void calculateRAandDECSteppers(float& targetRA, float& targetDEC);
+  void displayStepperPosition();
+  void moveSteppersTo(float targetRA, float targetDEC);
 
-    // What is the state of the mount. 
-    // Returns some combination of these flags: STATUS_PARKED, STATUS_SLEWING, STATUS_SLEWING_TO_TARGET, STATUS_SLEWING_FREE, STATUS_TRACKING, STATUS_PARKING
-    byte mountStatus();
-    
+  // Returns NOT_SLEWING, SLEWING_DEC, SLEWING_RA, or SLEWING_BOTH. SLEWING_TRACKING is an overlaid bit.
+  byte slewStatus() const;
+
+  // What is the state of the mount. 
+  // Returns some combination of these flags: STATUS_PARKED, STATUS_SLEWING, STATUS_SLEWING_TO_TARGET, STATUS_SLEWING_FREE, STATUS_TRACKING, STATUS_PARKING
+  byte mountStatus();
+
 #ifdef DEBUG_MODE
-    String mountStatusString();
+  String mountStatusString();
 #endif
 
 
-  private:
-    LcdMenu* _lcdMenu;
-    int  _stepsPerRADegree;
-    int _stepsPerDECDegree;
-    int _maxRASpeed;
-    int _maxDECSpeed;
-    int _maxRAAcceleration;
-    int _maxDECAcceleration;
-    
-    long _lastHASet;
-    DayTime _HAAdjust;
+private:
+  LcdMenu* _lcdMenu;
+  int  _stepsPerRADegree;
+  int _stepsPerDECDegree;
+  int _maxRASpeed;
+  int _maxDECSpeed;
+  int _maxRAAcceleration;
+  int _maxDECAcceleration;
 
-    DayTime _targetRA;
-    DayTime _currentRA;
-    long _currentRAStepperPosition;
+  long _lastHASet;
+  DayTime _HAAdjust;
 
-    DegreeTime _targetDEC;
-    DegreeTime _currentDEC;
-    long _currentDECStepperPosition;
+  DayTime _targetRA;
+  DayTime _currentRA;
+  long _currentRAStepperPosition;
 
-    float _totalDECMove;
-    float _totalRAMove;
+  DegreeTime _targetDEC;
+  DegreeTime _currentDEC;
+  long _currentDECStepperPosition;
 
-    // Stepper control for RA, DEC and TRK.
-    AccelStepper* _stepperRA;
-    AccelStepper* _stepperDEC;
-    AccelStepper* _stepperTRK;
+  float _totalDECMove;
+  float _totalRAMove;
 
-    unsigned long _guideEndTime;
-    unsigned long _lastMountPrint = 0;
-    DayTime _HATime;
-    DayTime _HACorrection;
-    float _trackingSpeed;
-    float _trackingSpeedCalibration;
-    unsigned long _lastDisplayUpdate;
-    byte _mountStatus;
-    char scratchBuffer[24];
-    bool _stepperWasRunning;
+  // Stepper control for RA, DEC and TRK.
+  AccelStepper* _stepperRA;
+  AccelStepper* _stepperDEC;
+  AccelStepper* _stepperTRK;
+
+  unsigned long _guideEndTime;
+  unsigned long _lastMountPrint = 0;
+  DayTime _HATime;
+  DayTime _HACorrection;
+  float _trackingSpeed;
+  float _trackingSpeedCalibration;
+  unsigned long _lastDisplayUpdate;
+  byte _mountStatus;
+  char scratchBuffer[24];
+  bool _stepperWasRunning;
 };
 
 #endif

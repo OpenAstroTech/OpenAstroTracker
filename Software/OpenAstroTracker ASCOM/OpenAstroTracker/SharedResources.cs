@@ -163,7 +163,7 @@ namespace ASCOM.OpenAstroTracker {
             }
         }
 
-        public static string SendPassThroughCommand(string message, char terminator) {
+        public static string SendPassThroughCommand(string message, string terminator) {
             lock (lockObject) {
                 tl.LogMessage("OAT Server", "Lock Object");
 
@@ -172,7 +172,10 @@ namespace ASCOM.OpenAstroTracker {
                         tl.LogMessage("Telescope", "Send message: " + message);
                         SharedSerial.ClearBuffers();
                         SharedSerial.Transmit(message);
-                        return SharedSerial.ReceiveTerminated(terminator.ToString());
+                        if (!string.IsNullOrEmpty(terminator)) {
+                            return SharedSerial.ReceiveTerminated(terminator.ToString());
+                        }
+                        return string.Empty;
                     }
                     else {
                         tl.LogMessage("OAT Server", "Not connected or Empty Message: " + message);
