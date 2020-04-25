@@ -3,7 +3,7 @@ How to use:
 
 This guide is using Cura 4.6 but it works for other slicers too. Google smart infill for your slicer.
 
- 1. Select a .stl from the STL folder and its counterpart with the _topo ending from this folder.
+ 1. Select a .stl from the STL folder and its counterpart with the _topo ending from this folder. Note: not all parts have/need this.
  2. Open the non-topo file in Cura
  3. Right click the part and select "center selected model". Dont worry about the part not fitting the buildplate for now. Do not move it.
  4. Open the _topo file for the part. Repeat step 3 for it too. Both parts should perfectly overlap now. If not, repeat the centering, or if that doesnt work, carefully place them manually so that they lay on top of each other perfectly.
