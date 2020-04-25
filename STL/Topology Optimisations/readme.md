@@ -11,7 +11,10 @@ This guide is using Cura 4.6 but it works for other slicers too. Google smart in
  6. Now you can use the move tools to move both models at the same time to fit your print bed. Double check that they are still on top of each other after moving.
  7. Select the _topo part only now.
  8. On the left side of Cura, find and select "per model settings". In this menu, select "modify settings for overlaps".
- 9. Configure this menu as following:  ![enter image description here](https://i.imgur.com/nGp14kl.png)
+ 9. Configure this menu as following:  
+ 
+ ![enter image description here](https://i.imgur.com/nGp14kl.png)
+ 
  10. Its important to select "infill mesh only". You can edit the visible settings under "select settings". Find and select the 3 settings shown. It is important to use at least 1 wall and a higher infill density than your normal part. Test around with more settings and different infill patterns.
 
 After slicing your part should look something like this:
