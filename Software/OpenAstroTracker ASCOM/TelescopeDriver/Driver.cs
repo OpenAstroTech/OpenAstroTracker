@@ -292,30 +292,20 @@ namespace ASCOM.OpenAstroTracker {
             get {
                 if (!IsConnected)
                     throw new ASCOM.NotConnectedException("CanFindHome");
-                LogMessage("CanFindHome", "Get - " + false.ToString());
+                LogMessage("CanFindHome", "Get - " + false);
                 return false;
             }
         }
 
         public bool CanMoveAxis(TelescopeAxes Axis) {
-            LogMessage("CanMoveAxis", "Get - " + Axis.ToString());
+            LogMessage("CanMoveAxis", "Get - " + Axis);
+            
             switch (Axis) {
-                case TelescopeAxes.axisPrimary: {
+                case TelescopeAxes.axisPrimary:
+                case TelescopeAxes.axisSecondary:
+                    return true;
+                default:
                     return false;
-                }
-
-                case TelescopeAxes.axisSecondary: {
-                    return false;
-                }
-
-                case TelescopeAxes.axisTertiary: {
-                    return false;
-                }
-
-                default: {
-                    throw new InvalidValueException("CanMoveAxis", Axis.ToString(), "0 to 2");
-                    break;
-                }
             }
         }
 
@@ -515,10 +505,60 @@ namespace ASCOM.OpenAstroTracker {
             }
         }
 
+
+        private bool _trackingPriorToMove;
         public void MoveAxis(TelescopeAxes Axis, double Rate) {
-            // TODO This is coming
-            LogMessage("MoveAxis", "Not implemented");
-            throw new ASCOM.MethodNotImplementedException("MoveAxis");
+            if (Axis == TelescopeAxes.axisTertiary) {
+                throw new ASCOM.NotImplementedException("MoveAxis Tertiary Not Supported.");
+            }
+            
+            if (AtPark) {
+                LogMessage("MoveAxis", "Parked");
+                throw new ASCOM.ParkedException("MoveAxis");
+            }
+
+            if (Rate != 0 && !ValidAxisSpeed(Axis, Rate)) {
+                throw new ASCOM.InvalidValueException("Invalid speed for Axis");
+            }
+
+
+            var sAxis = Enum.GetName(typeof(TelescopeAxes), Axis);
+            string cmd = "Q";
+
+            LogMessage("MoveAxis", $"{sAxis} Rate {Rate}");
+
+
+            if (Rate == 0) {
+                // if at some point we support multiple tracking rates this should set
+                // the value back to the previous rate...
+                CommandBlind($":{cmd}");
+                Tracking = _trackingPriorToMove;
+            }
+            else {
+                _trackingPriorToMove = Tracking;
+                switch (Axis)
+                {
+                    case TelescopeAxes.axisPrimary:
+                        cmd = Rate > 0 ? "Mw" : "Me";
+                        break;
+                    case TelescopeAxes.axisSecondary:
+                        cmd = Rate > 0 ? "Mn" : "Ms";
+                        break;
+                }
+                CommandBlind($":{cmd}");
+            }
+        }
+
+        private bool ValidAxisSpeed(TelescopeAxes axis, double reqRate) {
+            var rates = AxisRates(axis);
+            var absRate = Math.Abs(reqRate);
+            foreach (Rate rate in rates) {
+                if (absRate >= rate.Minimum && absRate <= rate.Maximum) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void Park() {
