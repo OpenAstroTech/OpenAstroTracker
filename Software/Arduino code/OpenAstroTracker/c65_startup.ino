@@ -30,96 +30,97 @@ void startupIsCompleted() {
 bool processStartupKeys() {
   byte key;
   bool waitForRelease = true;
-  switch (startupState )
-  {
-    case StartupIsPointedAtPole:
+  switch (startupState) {
+    case StartupIsPointedAtPole: {
+      if (lcdButtons.keyChanged(key))
       {
-        if (lcdButtons.keyChanged(key))
-        {
-          if (key == btnLEFT)    {
-            isAtPole = adjustWrap(isAtPole, 1, YES, CANCEL);
+        if (key == btnLEFT) {
+          isAtPole = adjustWrap(isAtPole, 1, YES, CANCEL);
+        }
+        else if (key == btnSELECT) {
+          if (isAtPole == YES) {
+            startupState = StartupSetHATime;
           }
-          else if (key == btnSELECT)    {
-            if (isAtPole == YES) {
-              startupState = StartupSetHATime;
-            }
-            else if (isAtPole == NO) {
-              startupState = StartupWaitForPoleCompletion;
-              inStartup = false;
-              lcdMenu.setCursor(0, 0);
-              lcdMenu.printMenu("Use ^~<> to home");
-              lcdMenu.setActive(Control_Menu);
+          else if (isAtPole == NO) {
+            startupState = StartupWaitForPoleCompletion;
+            inStartup = false;
+            lcdMenu.setCursor(0, 0);
+            lcdMenu.printMenu("Use ^~<> to home");
+            lcdMenu.setActive(Control_Menu);
 
-              // Skip the 'Manual control' prompt
-              inControlMode = true;
-            }
-            else if (isAtPole == CANCEL) {
-              startupIsCompleted();
-            }
+            // Skip the 'Manual control' prompt
+            inControlMode = true;
+          }
+          else if (isAtPole == CANCEL) {
+            startupIsCompleted();
           }
         }
       }
-      break;
+    }
+    break;
 
-    case StartupSetHATime :
-      {
-        inStartup = false;
+    case StartupSetHATime: {
+      inStartup = false;
 
-        // Jump to the HA menu
-        lcdMenu.setCursor(0, 0);
-        lcdMenu.printMenu("Set current HA");
-        lcdMenu.setActive(HA_Menu);
-        startupState = StartupWaitForHACompletion;
-      }
-      break;
+      // Jump to the HA menu
+      lcdMenu.setCursor(0, 0);
+      lcdMenu.printMenu("Set current HA");
+      lcdMenu.setActive(HA_Menu);
+      startupState = StartupWaitForHACompletion;
+    }
+    break;
 
     case StartupHAConfirmed: {
-        startupIsCompleted();
-      }
-      break;
+      startupIsCompleted();
+    }
+    break;
 
     case StartupPoleConfirmed: {
-        isAtPole = YES;
+      isAtPole = YES;
 
-        // Ask again to confirm
-        startupState = StartupIsPointedAtPole;
-      }
-      break;
+      // Ask again to confirm
+      startupState = StartupIsPointedAtPole;
+    }
+    break;
   }
+
   return waitForRelease;
 }
 
 
 void prinStartupMenu() {
 
-  switch (startupState)
-  {
-    case StartupIsPointedAtPole:
-      {
-        //              0123456789012345
-        String choices(" Yes  No  Cancl ");
-        if (isAtPole == YES) {
-          choices.setCharAt(0, '>');
-          choices.setCharAt(4, '<');
-        }
-        if (isAtPole == NO) {
-          choices.setCharAt(5, '>');
-          choices.setCharAt(8, '<');
-        }
-        if (isAtPole == CANCEL) {
-          choices.setCharAt(9, '>');
-          choices.setCharAt(15, '<');
-        }
-        lcdMenu.setCursor(0, 0);
-        lcdMenu.printMenu("Home position?");
-        lcdMenu.setCursor(0, 1);
-        lcdMenu.printMenu(choices);
+  switch (startupState) {
+    case StartupIsPointedAtPole: {
+      //              0123456789012345
+      String choices(" Yes  No  Cancl ");
+      if (isAtPole == YES) {
+        choices.setCharAt(0, '>');
+        choices.setCharAt(4, '<');
       }
-      break;
+
+      if (isAtPole == NO) {
+        choices.setCharAt(5, '>');
+        choices.setCharAt(8, '<');
+      }
+
+      if (isAtPole == CANCEL) {
+        choices.setCharAt(9, '>');
+        choices.setCharAt(15, '<');
+      }
+
+      lcdMenu.setCursor(0, 0);
+      lcdMenu.printMenu("Home position?");
+      lcdMenu.setCursor(0, 1);
+      lcdMenu.printMenu(choices);
+    }
+    break;
+    
     case StartupPoleConfirmed:
-      break;
+    break;
+
     case StartupHAConfirmed:
-      break;
+    break;
   }
 }
 #endif

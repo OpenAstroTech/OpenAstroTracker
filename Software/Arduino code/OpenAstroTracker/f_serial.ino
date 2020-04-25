@@ -173,55 +173,58 @@ void handleMeadeInit(String inCmd) {
 /////////////////////////////
 void handleMeadeGetInfo(String inCmd) {
   char cmdOne = inCmd[0];
-  char cmdTwo = (inCmd.length() > 1) ? inCmd[1]  : '\0';
+  char cmdTwo = (inCmd.length() > 1) ? inCmd[1] : '\0';
 
   switch (cmdOne) {
-    case 'V' : {
-        if (cmdTwo == 'N') {
-          Serial.print(version);
-          Serial.print("#");
-        }
-        else if (cmdTwo == 'P') {
-          Serial.print("OpenAstroTracker#");
-        }
-      }
-      break;
-    case 'r': {
-        Serial.print(mount.RAString(MEADE_STRING | TARGET_STRING));
-      }
-      break;
-    case 'd': {
-        Serial.print(mount.DECString(MEADE_STRING | TARGET_STRING));
-      }
-      break;
-    case 'R': {
-        Serial.print(mount.RAString(MEADE_STRING | CURRENT_STRING));
-      }
-      break;
-
-    case 'D': {
-        Serial.print(mount.DECString(MEADE_STRING | CURRENT_STRING));
-      }
-      break;
-
-    case 'X': {
-        Serial.print(mount.getStatusString()+"#");
-      }
-      break;
-
-    case 'I': {
-        if (cmdTwo == 'S') {
-          Serial.print(mount.isSlewingRAorDEC() ? "1" : "0");
-        }
-        else if (cmdTwo == 'T') {
-          Serial.print(mount.isSlewingTRK() ? "1" : "0");
-        }
-        else if (cmdTwo == 'G') {
-          Serial.print(mount.isGuiding() ? "1" : "0");
-        }
+    case 'V': {
+      if (cmdTwo == 'N') {
+        Serial.print(version);
         Serial.print("#");
       }
-      break;
+      else if (cmdTwo == 'P') {
+        Serial.print("OpenAstroTracker#");
+      }
+    }
+    break;
+
+    case 'r': {
+      Serial.print(mount.RAString(MEADE_STRING | TARGET_STRING));
+    }
+    break;
+
+    case 'd': {
+      Serial.print(mount.DECString(MEADE_STRING | TARGET_STRING));
+    }
+    break;
+
+    case 'R': {
+      Serial.print(mount.RAString(MEADE_STRING | CURRENT_STRING));
+    }
+    break;
+
+    case 'D': {
+      Serial.print(mount.DECString(MEADE_STRING | CURRENT_STRING));
+    }
+    break;
+
+    case 'X': {
+      Serial.print(mount.getStatusString() + "#");
+    }
+    break;
+
+    case 'I': {
+      if (cmdTwo == 'S') {
+        Serial.print(mount.isSlewingRAorDEC() ? "1" : "0");
+      }
+      else if (cmdTwo == 'T') {
+        Serial.print(mount.isSlewingTRK() ? "1" : "0");
+      }
+      else if (cmdTwo == 'G') {
+        Serial.print(mount.isGuiding() ? "1" : "0");
+      }
+      Serial.print("#");
+    }
+    break;
   }
 }
 
@@ -247,34 +250,39 @@ void handleMeadeSetInfo(String inCmd) {
     Serial.print("0");
     return;
   }
+
   if ((inCmd[0] == 'd') && (inCmd.length() == 10)) {
     // Set DEC
     //   0123456789
     // :Sd+84*03:02
     int sgn = inCmd[1] == '+' ? 1 : -1;
-    if ((inCmd[4] == '*') && (inCmd[7] == ':') )
+    if ((inCmd[4] == '*') && (inCmd[7] == ':'))
     {
       int deg = inCmd.substring(2, 4).toInt();
       mount.targetDEC().set(sgn * deg + (NORTHERN_HEMISPHERE ? -90 : 90), inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
       Serial.print("1");
-    } else  {
+    }
+    else {
       // Did not understand the coordinate
       Serial.print("0");
     }
-  } else if (inCmd[0] == 'r' && (inCmd.length() == 9)) {
+  }
+  else if (inCmd[0] == 'r' && (inCmd.length() == 9)) {
     // Set RA
     //   012345678
     // :Sr04:03:02
-    if ((inCmd[3] == ':') && (inCmd[6] == ':') )
+    if ((inCmd[3] == ':') && (inCmd[6] == ':'))
     {
       mount.targetRA().set(inCmd.substring(1, 3).toInt(), inCmd.substring(4, 6).toInt(), inCmd.substring(7, 9).toInt());
       mount.targetRA().addTime(mount.getHACorrection());
       mount.targetRA().subtractTime(mount.HA());
       Serial.print("1");
-    } else
+    }
+    else
       // Did not understand the coordinate
       Serial.print("0");
-  } else if (inCmd[0] == 'H') {
+  }
+  else if (inCmd[0] == 'H') {
     // Set HA
     int hHA = inCmd.substring(1, 3).toInt();
     int minHA = inCmd.substring(4, 6).toInt();
@@ -315,7 +323,7 @@ void handleMeadeMovement(String inCmd) {
         mount.startSlewing(TRACKING);
         Serial.print("1");
       }
-      else if (inCmd[1] == '0')    {
+      else if (inCmd[1] == '0') {
         mount.stopSlewing(TRACKING);
         Serial.print("1");
       }
@@ -370,11 +378,12 @@ void handleMeadeHome(String inCmd) {
 void handleMeadeQuit(String inCmd) {
   // :Q# stops a motors - remains in Control mode
   // :Qq# command does not stop motors, but quits Control mode
-  if ((inCmd.length() == 0) || (inCmd[0] != 'q'))  {
+  if ((inCmd.length() == 0) || (inCmd[0] != 'q')) {
     mount.stopSlewing(ALL_DIRECTIONS | TRACKING);
     mount.waitUntilStopped(ALL_DIRECTIONS);
     Serial.print("1");
-  } else {
+  }
+  else {
     inSerialControl = false;
     lcdMenu.setCursor(0, 0);
     lcdMenu.updateDisplay();
@@ -399,19 +408,17 @@ void serialEvent() {
 
     String inCmd = Serial.readStringUntil('#');
 
-    if (inCmd[0] = ':')
-    {
-
+    if (inCmd[0] = ':') {
       char command = inCmd[1];
       inCmd = inCmd.substring(2);
       switch (command) {
-        case 'S' : handleMeadeSetInfo(inCmd); break;
-        case 'M' : handleMeadeMovement(inCmd); break;
-        case 'G' : handleMeadeGetInfo(inCmd); break;
-        case 'C' : handleMeadeSyncControl(inCmd); break;
-        case 'h' : handleMeadeHome(inCmd); break;
-        case 'I' : handleMeadeInit(inCmd); break;
-        case 'Q' : handleMeadeQuit(inCmd); break;
+        case 'S': handleMeadeSetInfo(inCmd); break;
+        case 'M': handleMeadeMovement(inCmd); break;
+        case 'G': handleMeadeGetInfo(inCmd); break;
+        case 'C': handleMeadeSyncControl(inCmd); break;
+        case 'h': handleMeadeHome(inCmd); break;
+        case 'I': handleMeadeInit(inCmd); break;
+        case 'Q': handleMeadeQuit(inCmd); break;
       }
     }
 

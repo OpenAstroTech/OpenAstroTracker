@@ -51,7 +51,7 @@ void loop() {
       if (lcd_key == btnSELECT) {
         quitSerialOnNextButtonRelease = true;
       }
-      else if ((lcd_key == btnNONE) && quitSerialOnNextButtonRelease)  {
+      else if ((lcd_key == btnNONE) && quitSerialOnNextButtonRelease) {
         handleMeadeQuit("q#");
         quitSerialOnNextButtonRelease = false;
       }
@@ -124,8 +124,7 @@ void loop() {
 
           // Make sure tracker can still run while fiddling with menus....
           mount.loop();
-        }
-        while (true);
+        } while (true);
       }
     }
 
