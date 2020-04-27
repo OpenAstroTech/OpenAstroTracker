@@ -131,8 +131,14 @@
 //
 // :hP#
 //      Park Scope and stop motors
-//      This slews the scope back to it's home position (RA ring centered, DEC
+//      This slews the scope back to its home position (RA ring centered, DEC
 //      at 90, basically pointing at celestial pole) and stops all movement (including tracking).
+//      Returns: Nothing
+//
+// :hF#
+//      Move Scope to Home position 
+//      This slews the scope back to its home position (RA ring centered, DEC
+//      at 90, basically pointing at celestial pole). Mount will keep tracking.
 //      Returns: Nothing
 //
 // -- PARK Extensions --
@@ -185,32 +191,32 @@ void handleMeadeGetInfo(String inCmd) {
         Serial.print("OpenAstroTracker#");
       }
     }
-    break;
+            break;
 
     case 'r': {
       Serial.print(mount.RAString(MEADE_STRING | TARGET_STRING));
     }
-    break;
+            break;
 
     case 'd': {
       Serial.print(mount.DECString(MEADE_STRING | TARGET_STRING));
     }
-    break;
+            break;
 
     case 'R': {
       Serial.print(mount.RAString(MEADE_STRING | CURRENT_STRING));
     }
-    break;
+            break;
 
     case 'D': {
       Serial.print(mount.DECString(MEADE_STRING | CURRENT_STRING));
     }
-    break;
+            break;
 
     case 'X': {
       Serial.print(mount.getStatusString() + "#");
     }
-    break;
+            break;
 
     case 'I': {
       if (cmdTwo == 'S') {
@@ -224,7 +230,7 @@ void handleMeadeGetInfo(String inCmd) {
       }
       Serial.print("#");
     }
-    break;
+            break;
   }
 }
 
@@ -283,10 +289,32 @@ void handleMeadeSetInfo(String inCmd) {
       Serial.print("0");
   }
   else if (inCmd[0] == 'H') {
-    // Set HA
-    int hHA = inCmd.substring(1, 3).toInt();
-    int minHA = inCmd.substring(4, 6).toInt();
-    mount.setHA(DayTime(hHA, minHA, 0));
+    if (inCmd[1] == 'L') {
+      // Set LST
+      int hLST = inCmd.substring(2, 4).toInt();
+      int minLST = inCmd.substring(4, 6).toInt();
+      int secLST = 0;
+      if (inCmd.length() > 7) {
+        secLST = inCmd.substring(6, 8).toInt();
+      }
+
+      DayTime ha(hLST, minLST, secLST);
+      DayTime pol(PolarisRAHour, PolarisRAMinute, PolarisRASecond);
+      ha.subtractTime(pol);
+      mount.setHA(ha);
+    }
+    else if (inCmd[1] == 'P') {
+      // Set home point
+      mount.setHome();
+      mount.startSlewing(TRACKING);
+    }
+    else {
+      // Set HA
+      int hHA = inCmd.substring(1, 3).toInt();
+      int minHA = inCmd.substring(4, 6).toInt();
+      mount.setHA(DayTime(hHA, minHA, 0));
+    }
+
     Serial.print("1");
   }
   else if ((inCmd[0] == 'Y') && inCmd.length() == 19) {
@@ -367,7 +395,43 @@ void handleMeadeHome(String inCmd) {
   if (inCmd[0] == 'P') {  // Park
     mount.park();
   }
+  else if (inCmd[0] == 'F') {  // Home
+    mount.goHome(true);
+  }
   else if (inCmd[0] == 'U') {  // Unpark
+    mount.startSlewing(TRACKING);
+  }
+}
+
+/////////////////////////////
+// EXTRA COMMANDS
+/////////////////////////////
+void handleMeadeExtraCommands(String inCmd) {
+  //   0123
+  // :XDmmm
+  if (inCmd[0] == 'D') {  // Drift Alignemnt
+    int duration = inCmd.substring(1, 4).toInt() - 3;
+    lcdMenu.setCursor(0, 0);
+    lcdMenu.printMenu(">Drift Alignment");
+    lcdMenu.setCursor(0, 1);
+    lcdMenu.printMenu("Pause 1.5s....");
+    mount.stopSlewing(ALL_DIRECTIONS | TRACKING);
+    mount.waitUntilStopped(ALL_DIRECTIONS);
+    mount.delay(1500);
+    lcdMenu.setCursor(0, 1);
+    lcdMenu.printMenu("Eastward pass...");
+    mount.runDriftAlignmentPhase(EAST, duration);
+    lcdMenu.setCursor(0, 1);
+    lcdMenu.printMenu("Pause 1.5s....");
+    mount.delay(1500);
+    lcdMenu.printMenu("Westward pass...");
+    mount.runDriftAlignmentPhase(WEST, duration);
+    lcdMenu.setCursor(0, 1);
+    lcdMenu.printMenu("Pause 1.5s....");
+    mount.delay(1500);
+    lcdMenu.printMenu("Reset mount...");
+    mount.runDriftAlignmentPhase(0, duration);
+    lcdMenu.setCursor(0, 1);
     mount.startSlewing(TRACKING);
   }
 }
@@ -419,6 +483,7 @@ void serialEvent() {
         case 'h': handleMeadeHome(inCmd); break;
         case 'I': handleMeadeInit(inCmd); break;
         case 'Q': handleMeadeQuit(inCmd); break;
+        case 'X': handleMeadeExtraCommands(inCmd); break;
       }
     }
 
