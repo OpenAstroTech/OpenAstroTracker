@@ -213,7 +213,7 @@ int DegreeTime::getPrintDegrees() {
   return NORTHERN_HEMISPHERE ? hours + 90 : hours - 90;
 }
 
-float DegreeTime::getTotalDegrees() {
+float DegreeTime::getTotalDegrees() const {
   return getTotalHours();
 }
 

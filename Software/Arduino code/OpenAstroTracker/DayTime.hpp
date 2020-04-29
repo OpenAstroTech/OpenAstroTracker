@@ -78,7 +78,7 @@ public:
   int getPrintDegrees();
 
   // Get total degrees
-  float getTotalDegrees();
+  float getTotalDegrees() const;
   //protected:
   virtual void checkHours() override;
 

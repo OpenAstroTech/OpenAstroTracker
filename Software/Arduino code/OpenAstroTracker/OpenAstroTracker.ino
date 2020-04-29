@@ -31,9 +31,9 @@ String version = "V1.6.35";
 // Which means 108245 steps (26.43 x 4096) moves 360 degrees (V2: 115812 steps (28.27 x 4096))
 // So there are 300.1 steps/degree (108245 / 360)  (V2: 322 (115812 / 360))
 // Theoretically correct RA tracking speed is 1.246586 (300 x 14.95903 / 3600) (V2 : 1.333800 (322 x 14.95903 / 3600) steps/sec
-#error "Please uncomment one of the two following lines depending on which version of the RA ring you printed. And comment out this line."
+// #error "Please uncomment one of the two following lines depending on which version of the RA ring you printed. And comment out this line."
 // int RAStepsPerDegree = 300;      // V1 Ring has a ridge on top of the ring that the belt runs on and the ring runs on the bearings
-// int RAStepsPerDegree = 322;      // V2 Ring has belt in a groove and belt runs on bearings
+ int RAStepsPerDegree = 402;      // V2 Ring has belt in a groove and belt runs on bearings
 
 
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
@@ -41,7 +41,7 @@ String version = "V1.6.35";
 // One DEC revolution needs 14.13 (565.5mm/40mm) stepper revolutions
 // Which means 57907 steps (14.14 x 4096) moves 360 degrees
 // So there are 160.85 steps/degree (57907/360)
-int DECStepsPerDegree = 161;     // Number of steps needed to move DEC motor 1 degree.
+int DECStepsPerDegree = 201;     // Number of steps needed to move DEC motor 1 degree.
 
 // This is how many steps your 28BYJ-48 stepper needs for a full rotation. It is almost always 4096.
 // This code drives the steppers in halfstep mode for TRK and DEC, and full step for RA

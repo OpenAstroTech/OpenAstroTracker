@@ -171,6 +171,7 @@ void loop() {
 void loop() {
   serialLoop();
   BTin();
+  wifiControl.loop();
 }
 
 #endif

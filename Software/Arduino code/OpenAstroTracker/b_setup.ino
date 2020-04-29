@@ -2,7 +2,15 @@
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(0);
 
+
+
+
 Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
+
+#ifdef WIFI_ENABLED
+#include "WifiControl.hpp"
+WifiControl wifiControl(&mount, &lcdMenu);
+#endif
 
 void setup() {
 
@@ -14,6 +22,10 @@ void setup() {
   Serial.println("Hello");
 #endif
 
+
+
+#ifndef HEADLESS_CLIENT
+
   // Show a splash screen
   lcdMenu.setCursor(0, 0);
   lcdMenu.printMenu("OpenAstroTracker");
@@ -22,11 +34,13 @@ void setup() {
   unsigned long now = millis();
 
   // Not sure if this is neeeded
+ 
   pinMode(A1, OUTPUT);
   pinMode(A2, OUTPUT);
   pinMode(A3, OUTPUT);
   pinMode(A4, OUTPUT);
 
+#endif
   // Configure the mount
   // Set the global HA correction
   DayTime polaris = DayTime(24, 0, 0);
@@ -84,6 +98,10 @@ void setup() {
   }
 
   lcdMenu.updateDisplay();
+#endif // HEADLESS_CLIENT
+
+#ifdef WIFI_CONTROL
+
 #endif
 
 #ifdef DEBUG_MODE

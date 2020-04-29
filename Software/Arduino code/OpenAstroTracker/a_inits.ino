@@ -14,7 +14,26 @@
 
 //SoftwareSerial BT(10,11);
 
+#ifdef USE_ESP8266_PINS
 // RA Motor pins
+#define RAmotorPin1  D0    // IN1 auf ULN2003 driver 1    //  2 / 22
+#define RAmotorPin3  D1    // IN2 auf ULN2003 driver 1    //  3 / 24d
+#define RAmotorPin2  D2    // IN3 auf ULN2003 driver 1   // 11 / 26
+#define RAmotorPin4  D3    // IN4 auf ULN2003 driver 1   // 12 / 28
+
+// DEC Motor pins
+#define DECmotorPin1  D5    // IN1 auf ULN2003 driver 2
+#define DECmotorPin2  D6    // IN2 auf ULN2003 driver 2
+#define DECmotorPin3  D7    // IN3 auf ULN2003 driver 2
+#define DECmotorPin4  D8    // IN4 auf ULN2003 driver 2
+
+// ST4 Input Pins - TODO.
+#define st4North      SD0 
+#define st4South      SD1
+#define st4West       SD2
+#define st4East       SD3
+
+#else // normal Arduino Mapping
 #define RAmotorPin1  2    // IN1 auf ULN2003 driver 1    //  2 / 22
 #define RAmotorPin3  3    // IN2 auf ULN2003 driver 1    //  3 / 24
 #define RAmotorPin2  11    // IN3 auf ULN2003 driver 1   // 11 / 26
@@ -25,6 +44,7 @@
 #define DECmotorPin2  17    // IN2 auf ULN2003 driver 2
 #define DECmotorPin3  16    // IN3 auf ULN2003 driver 2
 #define DECmotorPin4  18    // IN4 auf ULN2003 driver 2
+#endif
 
 // Menu IDs
 #define RA_Menu 0
