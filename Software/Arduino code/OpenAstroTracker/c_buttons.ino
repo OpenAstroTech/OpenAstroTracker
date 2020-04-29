@@ -5,6 +5,10 @@ void BTin();
 int loopsOfSameKey = 0;
 int lastLoopKey = -1;
 
+#ifdef LCD_BUTTON_TEST
+byte lastKey = 0;
+#endif
+
 void loop() {
   byte lcd_key;
   int adc_key_in;
@@ -13,7 +17,7 @@ void loop() {
 
   lcdMenu.setCursor(0, 0);
   lcdMenu.printMenu("Key Diagnostic");
-  int lcd_key = lcdButtons.currentState();
+  lcd_key = lcdButtons.currentState();
   adc_key_in = lcdButtons.currentAnalogState();
 
   lcdMenu.setCursor(0, 1);
