@@ -7,7 +7,7 @@ class MeadeCommandProcessor
 {
 public: 
     String processCommand(String incmd);
-    MeadeCommandProcessor(Mount* mount, LcdMenu* lcdMenu = nullptr);
+    MeadeCommandProcessor(Mount* mount, LcdMenu* lcdMenu);
 
 
 private: 

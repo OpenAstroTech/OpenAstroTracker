@@ -23,8 +23,8 @@
 
 // DEC Motor pins
 #define DECmotorPin1  D5    // IN1 auf ULN2003 driver 2
-#define DECmotorPin2  D6    // IN2 auf ULN2003 driver 2
-#define DECmotorPin3  D7    // IN3 auf ULN2003 driver 2
+#define DECmotorPin2  D7    // IN2 auf ULN2003 driver 2
+#define DECmotorPin3  D6    // IN3 auf ULN2003 driver 2
 #define DECmotorPin4  D8    // IN4 auf ULN2003 driver 2
 
 // ST4 Input Pins - TODO.

@@ -160,7 +160,14 @@
 
 MeadeCommandProcessor::MeadeCommandProcessor(Mount* mount, LcdMenu* lcdMenu) {
     _mount = mount;
+
+    // ideally if we're headless then the LCD menu just stays null...
+#ifndef HEADLESS_CLIENT
     _lcdMenu = lcdMenu;
+#else
+    _lcdMenu = nullptr;
+#endif
+
 }
 
 /////////////////////////////
@@ -174,6 +181,7 @@ String MeadeCommandProcessor::handleMeadeInit(String inCmd) {
         _lcdMenu->setCursor(0, 1);
         _lcdMenu->printMenu(">SELECT to quit");
     }
+    return "";
 }
 
 /////////////////////////////
@@ -255,8 +263,9 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
             // Did not understand the coordinate
             return "0";
         }
-    }
+    } 
     else if (inCmd[0] == 'r' && (inCmd.length() == 9)) {
+        // :Sr11:04:57#
         // Set RA
         //   012345678
         // :Sr04:03:02
@@ -294,6 +303,25 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
             return "0";
         }
     }
+    else if ((inCmd[0] == 't')) // longitude: :St+30*29#
+    {
+        return "1";
+    }
+    else if( inCmd[0] == 'g') // latitude :Sg097*34#
+    {
+        return "1";
+    }
+    else if (inCmd[0] == 'G') // utc offset :SG+05#
+    {
+        return "1";
+    }
+    else if (inCmd[0] == 'L') // Local time :SL19:33:03#
+    {
+        return "1";
+    }
+    else if (inCmd[0] == 'D') { // Set Date (MM/DD/YY) :SC04/30/20#
+        return "1Updating Planetary Data#"; // 
+    }
     else {
         return "0";
     }
@@ -305,7 +333,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
 String MeadeCommandProcessor::handleMeadeMovement(String inCmd) {
     if (inCmd[0] == 'S') {
         _mount->startSlewingToTarget();
-        return "1";
+        return "0";
     }
     else if (inCmd[0] == 'T') {
         if (inCmd.length() > 1) {
@@ -348,6 +376,8 @@ String MeadeCommandProcessor::handleMeadeMovement(String inCmd) {
     else if (inCmd[0] == 's') {
         _mount->startSlewing(SOUTH);
     }
+
+    return "";
 }
 
 /////////////////////////////

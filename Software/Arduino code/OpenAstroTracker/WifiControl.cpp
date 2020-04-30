@@ -37,9 +37,9 @@ void WifiControl::loop()
             _tcpServer = new WiFiServer(4030);
             _tcpServer->begin();
             _tcpServer->setNoDelay(true);
-            
+#ifdef DEBUG_MODE            
             Serial.printf("Server status is %d\n", _tcpServer->status());
-
+#endif
             _udp = new WiFiUDP();
             _udp->begin(4031);
 
@@ -61,31 +61,21 @@ void WifiControl::loop()
 
 void WifiControl::tcpLoop() {
     if (client && client.connected()) {
-        if (client.available()) {
-            Serial.println("Client Connected");
+        while (client.available()) {
             String cmd = client.readStringUntil('#');
-            cmd += '#';
-
-            Serial.printf("<--  %s\n", cmd.c_str());
-
+#ifdef DEBUG_MODE
+            Serial.printf("<--  %s#\n", cmd.c_str());
+#endif
             auto retVal = _cmdProcessor.processCommand(cmd);
 
             if (retVal != "") {
                 client.write(retVal.c_str());
+#ifdef DEBUG_MODE
                 Serial.printf("-->  %s\n", retVal.c_str());
+#endif
             }
 
             _mount->loop();
-
-            //        String cmd = client.readStringUntil('\n');
-            //#ifdef DEBUG_MODE
-            //        Serial.println("<-- " + cmd);
-            //#endif
-            //        String retVal = _cmdProcessor.processCommand(cmd);
-            //        client.println(retVal);
-            //#ifdef DEBUG_MODE
-            //#endif
-            client.stop();
         }
     }
     else {
@@ -107,13 +97,15 @@ void WifiControl::udpLoop()
         reply += HOSTNAME;
         reply += "@";
         reply += WiFi.localIP().toString();
-
+#ifdef DEBUG_MODE
         Serial.printf("Received %d bytes from %s, port %d\n", packetSize, _udp->remoteIP().toString().c_str(), _udp->remotePort());
+#endif
         char incomingPacket[255];
         int len = _udp->read(incomingPacket, 255);
         incomingPacket[lookingFor.length()] = NULL;
-
+#ifdef DEBUG_MODE
         Serial.printf("Received: %s\n", incomingPacket);
+#endif
         
         
         if (lookingFor.equalsIgnoreCase(incomingPacket)) {
@@ -124,7 +116,9 @@ void WifiControl::udpLoop()
 
             _udp->write(reply.c_str());
             _udp->endPacket();
+#ifdef DEBUG_MODE
             Serial.printf("Replied: %s\n", reply.c_str());
+#endif
         }
     }
 }

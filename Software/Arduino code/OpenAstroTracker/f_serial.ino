@@ -7,18 +7,35 @@ void serialLoop()
 {
     mount.loop();
     mount.displayStepperPositionThrottled();
+
+#ifdef USE_ESP8266_PINS
+    processSerialData();
+#endif
+
+#ifdef WIFI_ENABLED
+    wifiControl.loop();
+#endif
 }
 
 //////////////////////////////////////////////////
 // Event that is triggered when the serial port receives data.
+#ifndef USE_ESP8266_PINS
 void serialEvent() {
-    auto cp = MeadeCommandProcessor(&mount, &lcdMenu);
+    processSerialData();
+}
+#endif
+
+// ESP8266 needs to call this in a loop :_(
+auto cp = MeadeCommandProcessor(&mount, &lcdMenu);
+void processSerialData() {
     while (Serial.available() > 0) {
 
         String inCmd = Serial.readStringUntil('#');
 
         auto retVal = cp.processCommand(inCmd);
-        Serial.print(retVal);
+        if (retVal != "") {
+            Serial.print(retVal);
+        }
         mount.loop();
     }
 }

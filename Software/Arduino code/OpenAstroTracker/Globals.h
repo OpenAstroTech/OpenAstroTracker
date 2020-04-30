@@ -15,7 +15,7 @@ extern bool inSerialControl;
 extern String version;
 
 // Comment this out to save some code space
-#define DEBUG_MODE
+// #define DEBUG_MODE
 
 // Uncomment to run a key diagnostic. No tracker functions are on at all.
 // #define LCD_BUTTON_TEST
