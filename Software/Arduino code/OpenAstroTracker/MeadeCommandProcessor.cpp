@@ -136,6 +136,12 @@
 //      at 90, basically pointing at celestial pole) and stops all movement (including tracking).
 //      Returns: Nothing
 //
+// :hF#
+//      Move Scope to Home position 
+//      This slews the scope back to its home position (RA ring centered, DEC
+//      at 90, basically pointing at celestial pole). Mount will keep tracking.
+//      Returns: Nothing
+//
 // -- PARK Extensions --
 // :hU#
 //      Unpark Scope
@@ -282,10 +288,32 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
         }
     }
     else if (inCmd[0] == 'H') {
-        // Set HA
-        int hHA = inCmd.substring(1, 3).toInt();
-        int minHA = inCmd.substring(4, 6).toInt();
-        _mount->setHA(DayTime(hHA, minHA, 0));
+        if (inCmd[1] == 'L') {
+            // Set LST
+            int hLST = inCmd.substring(2, 4).toInt();
+            int minLST = inCmd.substring(4, 6).toInt();
+            int secLST = 0;
+            if (inCmd.length() > 7) {
+                secLST = inCmd.substring(6, 8).toInt();
+            }
+
+            DayTime ha(hLST, minLST, secLST);
+            DayTime pol(PolarisRAHour, PolarisRAMinute, PolarisRASecond);
+            ha.subtractTime(pol);
+            _mount->setHA(ha);
+        }
+        else if (inCmd[1] == 'P') {
+            // Set home point
+            _mount->setHome();
+            _mount->startSlewing(TRACKING);
+        }
+        else {
+            // Set HA
+            int hHA = inCmd.substring(1, 3).toInt();
+            int minHA = inCmd.substring(4, 6).toInt();
+            _mount->setHA(DayTime(hHA, minHA, 0));
+        }
+
         return "1";
     }
     else if ((inCmd[0] == 'Y') && inCmd.length() == 19) {
@@ -387,11 +415,63 @@ String MeadeCommandProcessor::handleMeadeHome(String inCmd) {
     if (inCmd[0] == 'P') {  // Park
         _mount->park();
     }
+    else if (inCmd[0] == 'F') {  // Home
+        _mount->goHome(true);
+    }
     else if (inCmd[0] == 'U') {  // Unpark
         _mount->startSlewing(TRACKING);
     }
     return "";
 }
+
+/////////////////////////////
+// EXTRA COMMANDS
+/////////////////////////////
+String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
+    //   0123
+    // :XDmmm
+    if (inCmd[0] == 'D') {  // Drift Alignemnt
+        int duration = inCmd.substring(1, 4).toInt() - 3;
+        if (_lcdMenu != nullptr) {
+            _lcdMenu->setCursor(0, 0);
+            _lcdMenu->printMenu(">Drift Alignment");
+            _lcdMenu->setCursor(0, 1);
+            _lcdMenu->printMenu("Pause 1.5s....");
+        }
+        _mount->stopSlewing(ALL_DIRECTIONS | TRACKING);
+        _mount->waitUntilStopped(ALL_DIRECTIONS);
+        _mount->delay(1500);
+        if (_lcdMenu != nullptr) {
+            _lcdMenu->setCursor(0, 1);
+            _lcdMenu->printMenu("Eastward pass...");
+        }
+        _mount->runDriftAlignmentPhase(EAST, duration);
+        if (_lcdMenu != nullptr) {
+            _lcdMenu->setCursor(0, 1);
+            _lcdMenu->printMenu("Pause 1.5s....");
+        }
+        _mount->delay(1500);
+        if (_lcdMenu != nullptr) {
+            _lcdMenu->printMenu("Westward pass...");
+        }
+        _mount->runDriftAlignmentPhase(WEST, duration);
+        if (_lcdMenu != nullptr) {
+            _lcdMenu->setCursor(0, 1);
+            _lcdMenu->printMenu("Pause 1.5s....");
+        }
+        _mount->delay(1500);
+        if (_lcdMenu != nullptr) {
+            _lcdMenu->printMenu("Reset _mount->..");
+        }
+        _mount->runDriftAlignmentPhase(0, duration);
+        if (_lcdMenu != nullptr) {
+            _lcdMenu->setCursor(0, 1);
+        }
+        _mount->startSlewing(TRACKING);
+    }
+    return "";
+}
+
 
 /////////////////////////////
 // QUIT
@@ -442,6 +522,7 @@ String MeadeCommandProcessor::processCommand(String inCmd) {
         case 'I': return handleMeadeInit(inCmd);
         case 'Q': return handleMeadeQuit(inCmd);
         case 'R': return handleMeadeSetSlewRate(inCmd);
+        case 'X': return handleMeadeExtraCommands(inCmd); 
         default:
 #ifdef DEBUG_MODE
             Serial.println("Unknown Command in MeadeCommandProcessor::processCommand " + inCmd);

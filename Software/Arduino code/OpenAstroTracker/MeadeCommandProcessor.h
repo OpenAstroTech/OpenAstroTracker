@@ -19,6 +19,7 @@ private:
     String handleMeadeInit(String inCmd);
     String handleMeadeQuit(String inCmd);
     String handleMeadeSetSlewRate(String inCmd);
+    String handleMeadeExtraCommands(String inCmd);
     Mount* _mount;
     LcdMenu* _lcdMenu;
 };

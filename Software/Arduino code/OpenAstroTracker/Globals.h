@@ -13,7 +13,9 @@
 // Make some variables in the sketch files available to the C++ code.
 extern bool inSerialControl;
 extern String version;
-
+extern int PolarisRAHour;
+extern int PolarisRAMinute;
+extern int PolarisRASecond;
 // Comment this out to save some code space
 // #define DEBUG_MODE
 
