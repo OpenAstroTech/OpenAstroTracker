@@ -8,7 +8,7 @@ void serialLoop()
     mount.loop();
     mount.displayStepperPositionThrottled();
 
-#ifdef USE_ESP8266_PINS
+#ifdef ESP8266
     processSerialData();
 #endif
 
@@ -19,7 +19,7 @@ void serialLoop()
 
 //////////////////////////////////////////////////
 // Event that is triggered when the serial port receives data.
-#ifndef USE_ESP8266_PINS
+#ifndef ESP8266
 void serialEvent() {
     processSerialData();
 }

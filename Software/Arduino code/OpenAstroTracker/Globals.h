@@ -42,21 +42,21 @@ extern String version;
 
 // If you do not have a LCD shield on your Arduino Uno, uncomment the line below. This is
 // useful if you are always going to run the mount from a laptop anyway.
-#define HEADLESS_CLIENT
+// #define HEADLESS_CLIENT
 
 // Uncomment this to enable the heating menu
 // NOTE: Heating is currently not supported!
 // #define SUPPORT_HEATING
 
 // Uncomment to support Guided Startup 
-// #define SUPPORT_GUIDED_STARTUP
+#define SUPPORT_GUIDED_STARTUP
 
 // Uncomment to support full GO (was POI) menu. 
 // If this is commented out you still have a GO menu that has Home and Park.
-// #define SUPPORT_POINTS_OF_INTEREST
+#define SUPPORT_POINTS_OF_INTEREST
 
 // Uncomment to support CTRL menu, allowing you to manually slew the mount with the buttons. 
-// #define SUPPORT_MANUAL_CONTROL
+#define SUPPORT_MANUAL_CONTROL
 
 // Uncomment to support INFO menu that displays various pieces of information about the mount. 
 // #define SUPPORT_INFO_DISPLAY
@@ -65,22 +65,25 @@ extern String version;
 // #define SUPPORT_SERIAL_CONTROL
 
 
+
+
+
+#ifdef ESP8266
+    #define HEADLESS_CLIENT
+    #define WIFI_ENABLED 
+    #define INFRA_SSID "yourSSID"
+    #define INFRA_WPAKEY "yourWPAKey"
+    #define OAT_WPAKEY "superSecret"
+    #define HOSTNAME "OATerScope"
+    // 0 - Infrastructure Only - Connecting to a Router
+    // 1 - AP Mode Only        - Acting as a Router
+    // 2 - Attempt Infrastructure, Fail over to AP Mode.
+    #define WIFI_MODE 0  
+#endif
+
 // If we are making a headleass (no screen, no keyboard) client, always enable Serial.
 #ifdef HEADLESS_CLIENT
 #define SUPPORT_SERIAL_CONTROL
-#endif
-
-#define WIFI_ENABLED 
-#ifdef WIFI_ENABLED
-#define INFRA_SSID "yourSSID"
-#define INFRA_WPAKEY "yourWPAKey"
-#define OAT_WPAKEY "superSecret"
-#define HOSTNAME "OATerScope"
-// 0 - Infrastructure Only - Connecting to a Router
-// 1 - AP Mode Only        - Acting as a Router
-// 2 - Attempt Infrastructure, Fail over to AP Mode.
-#define WIFI_MODE 0  
-#define USE_ESP8266_PINS 
 #endif
 
 #endif

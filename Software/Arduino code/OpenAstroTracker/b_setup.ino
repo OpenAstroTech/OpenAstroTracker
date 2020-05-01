@@ -100,10 +100,6 @@ void setup() {
   lcdMenu.updateDisplay();
 #endif // HEADLESS_CLIENT
 
-#ifdef WIFI_CONTROL
-
-#endif
-
 #ifdef DEBUG_MODE
   Serial.println("SetupDone");
 #endif

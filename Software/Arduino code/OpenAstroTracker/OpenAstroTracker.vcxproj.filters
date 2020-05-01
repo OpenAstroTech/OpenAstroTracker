@@ -31,7 +31,6 @@
     <None Include="c_buttons.ino" />
     <None Include="f_serial.ino" />
     <None Include="g_bluetooth.ino" />
-    <None Include="h-wifi.ino" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.OpenAstroTracker.vsarduino.h">

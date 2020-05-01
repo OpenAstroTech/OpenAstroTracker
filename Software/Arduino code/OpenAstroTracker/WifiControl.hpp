@@ -1,4 +1,7 @@
 #pragma once
+#include "Globals.h"
+
+#ifdef WIFI_ENABLED
 #include "Mount.hpp";
 #include "LcdMenu.hpp";
 #include "MeadeCommandProcessor.h"
@@ -13,7 +16,7 @@ public:
 
 private: 
     void startInfrastructureMode();
-    void startApMode(); 
+    //void startApMode(); 
     void tcpLoop();
     void udpLoop();
     wl_status_t _status;
@@ -25,3 +28,4 @@ private:
     WiFiUDP* _udp;
     WiFiClient client;
 };
+#endif

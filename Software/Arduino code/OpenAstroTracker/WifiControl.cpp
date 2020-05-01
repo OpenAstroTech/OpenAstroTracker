@@ -1,6 +1,6 @@
 #include "WifiControl.hpp"
-#include "ESP8266WiFi.h"
-#include "Globals.h"
+#ifdef WIFI_ENABLED
+#include "ESP8266Wifi.h"
 
 
 WifiControl::WifiControl(Mount* mount, LcdMenu* lcdMenu) :
@@ -122,4 +122,4 @@ void WifiControl::udpLoop()
         }
     }
 }
-
+#endif

@@ -146,7 +146,6 @@
     <None Include="g_bluetooth.ino">
       <FileType>CppCode</FileType>
     </None>
-    <None Include="h-wifi.ino" />
     <None Include="OpenAstroTracker.ino">
       <FileType>CppCode</FileType>
     </None>
