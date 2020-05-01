@@ -16,7 +16,7 @@
 */
 #include "Globals.h"
 
-String version = "V1.6.35";
+String version = "V1.6.37";
 
 ///////////////////////////////////////////////////////////////////////////
 // Please see the Globals.h file for configuration of the firmware.
@@ -80,7 +80,7 @@ float DECStepperUpLimit = -22000;     // Going much more than this is going belo
 // These values are needed to calculate the current position during initial alignment.
 int PolarisRAHour = 2;
 int PolarisRAMinute = 58;
-int PolarisRASecond = 0;
+int PolarisRASecond = 4;
 // Use something like Stellarium to look up the RA of Polaris in JNow (on date) variant.
 // This changes slightly over weeks, so adjust every couple of months.
 // This value is from 18.Apr.2020, next adjustment suggested at end 2020
