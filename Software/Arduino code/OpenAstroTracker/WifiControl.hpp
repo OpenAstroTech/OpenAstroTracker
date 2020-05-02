@@ -12,6 +12,7 @@
 class WifiControl {
 public: 
     WifiControl(Mount* mount, LcdMenu* lcdMenu);
+    void setup();
     void loop();
 
 private: 
@@ -22,7 +23,7 @@ private:
     wl_status_t _status;
     Mount* _mount;
     LcdMenu* _lcdMenu;
-    MeadeCommandProcessor _cmdProcessor;
+    MeadeCommandProcessor* _cmdProcessor;
 
     WiFiServer* _tcpServer;
     WiFiUDP* _udp;

@@ -60,15 +60,14 @@ extern int PolarisRASecond;
 // Uncomment to support CTRL menu, allowing you to manually slew the mount with the buttons. 
 #define SUPPORT_MANUAL_CONTROL
 
+// Uncomment to support CAL menu, allowing you to calibrate various things
+#define SUPPORT_CALIBRATION
+
 // Uncomment to support INFO menu that displays various pieces of information about the mount. 
 // #define SUPPORT_INFO_DISPLAY
 
 // Uncomment to support Serial Meade LX200 protocol support
 // #define SUPPORT_SERIAL_CONTROL
-
-
-
-
 
 #ifdef ESP8266
     #define HEADLESS_CLIENT

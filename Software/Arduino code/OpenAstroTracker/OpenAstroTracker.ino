@@ -16,7 +16,7 @@
 */
 #include "Globals.h"
 
-String version = "V1.6.37";
+String version = "V1.6.40";
 
 ///////////////////////////////////////////////////////////////////////////
 // Please see the Globals.h file for configuration of the firmware.
@@ -36,14 +36,14 @@ float StepsPerRevolution = 4096;
 // So there are 300.1 steps/degree (108245 / 360)  (V2: 322 (115812 / 360))
 // Theoretically correct RA tracking speed is 1.246586 (300 x 14.95903 / 3600) (V2 : 1.333800 (322 x 14.95903 / 3600) steps/sec
 
-// your drive pulley tooth count:
-#define RAPulley 20
+// Your drive pulley tooth count:
+#define RAPulleyTeeth 20
 // the Circumference of the RA wheel
 // V1: 1057.1  
 // V2: 1131
 #define RACircumference 1131
 
-int RAStepsPerDegree = (RACircumference / (RAPulley * 2.0) * StepsPerRevolution / 360.0);      // V2 Ring has belt in a groove and belt runs on bearings
+int RAStepsPerDegree = (RACircumference / (RAPulleyTeeth * 2.0) * StepsPerRevolution / 360.0);      // V2 Ring has belt in a groove and belt runs on bearings
 
 
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
@@ -51,9 +51,9 @@ int RAStepsPerDegree = (RACircumference / (RAPulley * 2.0) * StepsPerRevolution 
 // One DEC revolution needs 14.13 (565.5mm/40mm) stepper revolutions
 // Which means 57907 steps (14.14 x 4096) moves 360 degrees
 // So there are 160.85 steps/degree (57907/360)
-#define DecPulley 20
+#define DecPulleyTeeth 20
 
-int DECStepsPerDegree = (565.5 / (DecPulley * 2.0) * StepsPerRevolution / 360.0);
+int DECStepsPerDegree = (565.5 / (DecPulleyTeeth * 2.0) * StepsPerRevolution / 360.0);
 
 
 float speed = 1.000;    // Use this value to slightly increase or decrese tracking speed. The values from the "CAL" menu will be added to this.

@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////
 // This file contains the Starup 'wizard' that guides you through initial setup
 
-#define StartupIsPointedAtPole 1
+#define StartupIsInHomePosition 1
 #define StartupSetHATime 4
 #define StartupWaitForHACompletion 6
 #define StartupHAConfirmed 7
@@ -15,8 +15,8 @@
 #define NO 2
 #define CANCEL 3
 
-int startupState = StartupIsPointedAtPole;
-int isAtPole = NO;
+int startupState = StartupIsInHomePosition;
+int isInHomePosition = NO;
 
 void startupIsCompleted() {
   startupState = StartupCompleted;
@@ -31,17 +31,17 @@ bool processStartupKeys() {
   byte key;
   bool waitForRelease = true;
   switch (startupState) {
-    case StartupIsPointedAtPole: {
+    case StartupIsInHomePosition: {
       if (lcdButtons.keyChanged(key))
       {
         if (key == btnLEFT) {
-          isAtPole = adjustWrap(isAtPole, 1, YES, CANCEL);
+          isInHomePosition = adjustWrap(isInHomePosition, 1, YES, CANCEL);
         }
         else if (key == btnSELECT) {
-          if (isAtPole == YES) {
+          if (isInHomePosition == YES) {
             startupState = StartupSetHATime;
           }
-          else if (isAtPole == NO) {
+          else if (isInHomePosition == NO) {
             startupState = StartupWaitForPoleCompletion;
             inStartup = false;
             lcdMenu.setCursor(0, 0);
@@ -51,7 +51,7 @@ bool processStartupKeys() {
             // Skip the 'Manual control' prompt
             inControlMode = true;
           }
-          else if (isAtPole == CANCEL) {
+          else if (isInHomePosition == CANCEL) {
             startupIsCompleted();
           }
         }
@@ -76,10 +76,10 @@ bool processStartupKeys() {
     break;
 
     case StartupPoleConfirmed: {
-      isAtPole = YES;
+      isInHomePosition = YES;
 
       // Ask again to confirm
-      startupState = StartupIsPointedAtPole;
+      startupState = StartupIsInHomePosition;
     }
     break;
   }
@@ -91,20 +91,20 @@ bool processStartupKeys() {
 void prinStartupMenu() {
 
   switch (startupState) {
-    case StartupIsPointedAtPole: {
+    case StartupIsInHomePosition: {
       //              0123456789012345
       String choices(" Yes  No  Cancl ");
-      if (isAtPole == YES) {
+      if (isInHomePosition == YES) {
         choices.setCharAt(0, '>');
         choices.setCharAt(4, '<');
       }
 
-      if (isAtPole == NO) {
+      if (isInHomePosition == NO) {
         choices.setCharAt(5, '>');
         choices.setCharAt(8, '<');
       }
 
-      if (isAtPole == CANCEL) {
+      if (isInHomePosition == CANCEL) {
         choices.setCharAt(9, '>');
         choices.setCharAt(15, '<');
       }

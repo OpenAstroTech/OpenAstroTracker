@@ -1,5 +1,6 @@
-#include "LcdMenu.hpp"
+#include <EEPROM.h>
 
+#include "LcdMenu.hpp"
 #include "Mount.hpp"
 
 //mountstatus
@@ -64,7 +65,93 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
   _stepperWasRunning = false;
   _totalDECMove = 0;
   _totalRAMove = 0;
-  setSpeedCalibration(1.0);
+  readPersistentData();
+}
+
+/////////////////////////////////
+//
+// readPersistentData
+//
+/////////////////////////////////
+//
+// EEPROM storage location 5 must be 0xBE for the mount to read any data
+// Location 4 indicates what has been stored so far: 00000000
+//                                                        ^^^
+//                                                        |||
+//                           Speed factor (0/3) ----------+||
+//     DEC stepper motor steps per degree (8/9) -----------+|
+//      RA stepper motor steps per degree (6/7) ------------+
+//
+void Mount::readPersistentData()
+{
+  // Read the magic marker byte and state
+  int marker = EEPROM.read(4) + EEPROM.read(5) * 256;
+
+  if (marker & 0xFF01 == 0xBE01) {
+    _stepsPerRADegree = EEPROM.read(6) + EEPROM.read(7) * 256;
+  }
+
+  if (marker & 0xFF02 == 0xBE02) {
+    _stepsPerDECDegree = EEPROM.read(8) + EEPROM.read(9) * 256;
+  }
+
+  float speed = 1.0;
+  if (marker & 0xFF04 == 0xBE04) {
+    int adjust = EEPROM.read(0) + EEPROM.read(3) * 256;
+    speed = 1.0 + adjust / 10000;
+  }
+
+  setSpeedCalibration(speed, false);
+}
+
+/////////////////////////////////
+//
+// writePersistentData
+//
+/////////////////////////////////
+void Mount::writePersistentData(int which, int val)
+{
+  int flag = 0x00;
+  int loByteLocation = 0;
+  int hiByteLocation = 0;
+
+  // If we're written something before...
+  if (EEPROM.read(5) == 0xBE) {
+    // ... read the current state ...
+    flag = EEPROM.read(4);
+  }
+  switch (which) {
+    case RA_STEPS:
+    {
+      // ... set bit 0 to indicate RA value has been written to 6/7
+      flag |= 0x01;
+      loByteLocation = 6;
+      hiByteLocation = 7;
+    }
+    break;
+    case DEC_STEPS:
+    {
+      // ... set bit 1 to indicate DEC value has been written to 8/9
+      flag |= 0x02;
+      loByteLocation = 8;
+      hiByteLocation = 9;
+    }
+    break;
+    case SPEED_FACTOR_DECIMALS:
+    {
+      // ... set bit 2 to indicate speed factor value has been written to 0/3
+      flag |= 0x04;
+      loByteLocation = 0;
+      hiByteLocation = 3;
+    }
+    break;
+  }
+
+  EEPROM.write(4, flag);
+  EEPROM.write(5, 0xBE);
+
+  EEPROM.write(loByteLocation, val & 0x00FF);
+  EEPROM.write(hiByteLocation, (val >> 8) & 0x00FF);
 }
 
 /////////////////////////////////
@@ -100,16 +187,68 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, 
   _maxDECAcceleration = maxAcceleration;
 }
 
+/////////////////////////////////
+//
+// getSpeedCalibration
+//
+/////////////////////////////////
 float Mount::getSpeedCalibration() {
   return _trackingSpeedCalibration;
 }
 
-void Mount::setSpeedCalibration(float val) {
+/////////////////////////////////
+//
+// setSpeedCalibration
+//
+/////////////////////////////////
+void Mount::setSpeedCalibration(float val, bool saveToStorage) {
   _trackingSpeedCalibration = val;
+
+  if (saveToStorage) {
+    val = (val - 1.0) * 10000;
+    if (val > 32766) val = 32766;
+    if (val < -32766) val = -32766;
+    writePersistentData(SPEED_FACTOR_DECIMALS, (int)floor(val));
+  }
 
   // The tracker simply needs to rotate at 15degrees/hour, adjusted for sidereal
   // time (i.e. the 15degrees is per 23h56m04s. 86164s/86400 = 0.99726852. 3590/3600 is the same ratio) So we only go 15 x 0.99726852 in an hour.
   _trackingSpeed = _trackingSpeedCalibration * _stepsPerRADegree * siderealDegreesInHour / 3600.0f;
+}
+
+/////////////////////////////////
+//
+// getStepsPerDegree
+//
+/////////////////////////////////
+int Mount::getStepsPerDegree(int which)
+{
+  if (which == RA_STEPS) {
+    return _stepsPerRADegree;
+  }
+  if (which == DEC_STEPS) {
+    return _stepsPerDECDegree;
+  }
+}
+
+/////////////////////////////////
+//
+// setStepsPerDegree
+//
+/////////////////////////////////
+// Function to set steps per degree for each axis. This function stores the value in persistent storage.
+// The EEPROM storage location 5 is set to 0xBE if this value has ever been written. The storage location 4
+// contains a bitfield indicating which values have been stored. Currently bit 0 is used for RA and bit 1 for DEC.
+void Mount::setStepsPerDegree(int which, int steps) {
+  if (which == DEC_STEPS) {
+    writePersistentData(DEC_STEPS, steps);
+    _stepsPerDECDegree = steps;
+
+  }
+  else if (which == RA_STEPS) {
+    writePersistentData(RA_STEPS, steps);
+    _stepsPerDECDegree = steps;
+  }
 }
 
 /////////////////////////////////
@@ -1082,3 +1221,4 @@ String Mount::RAString(byte type, byte active) {
   }
   return String(scratchBuffer);
 }
+

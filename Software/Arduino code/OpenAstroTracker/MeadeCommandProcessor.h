@@ -5,21 +5,23 @@
 
 class MeadeCommandProcessor
 {
-public: 
-    String processCommand(String incmd);
-    MeadeCommandProcessor(Mount* mount, LcdMenu* lcdMenu);
+public:
+  static MeadeCommandProcessor* createProcessor(Mount* mount, LcdMenu* lcdMenu);
+  static MeadeCommandProcessor* instance();
+  String processCommand(String incmd);
 
-
-private: 
-    String handleMeadeSetInfo(String inCmd);
-    String handleMeadeMovement(String inCmd);
-    String handleMeadeGetInfo(String inCmd);
-    String handleMeadeSyncControl(String inCmd);
-    String handleMeadeHome(String inCmd);
-    String handleMeadeInit(String inCmd);
-    String handleMeadeQuit(String inCmd);
-    String handleMeadeSetSlewRate(String inCmd);
-    String handleMeadeExtraCommands(String inCmd);
-    Mount* _mount;
-    LcdMenu* _lcdMenu;
+private:
+  MeadeCommandProcessor(Mount* mount, LcdMenu* lcdMenu);
+  String handleMeadeSetInfo(String inCmd);
+  String handleMeadeMovement(String inCmd);
+  String handleMeadeGetInfo(String inCmd);
+  String handleMeadeSyncControl(String inCmd);
+  String handleMeadeHome(String inCmd);
+  String handleMeadeInit(String inCmd);
+  String handleMeadeQuit(String inCmd);
+  String handleMeadeSetSlewRate(String inCmd);
+  String handleMeadeExtraCommands(String inCmd);
+  Mount* _mount;
+  LcdMenu* _lcdMenu;
+  static MeadeCommandProcessor* _instance;
 };

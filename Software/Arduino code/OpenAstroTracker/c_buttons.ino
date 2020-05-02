@@ -56,7 +56,7 @@ void loop() {
         quitSerialOnNextButtonRelease = true;
       }
       else if ((lcd_key == btnNONE) && quitSerialOnNextButtonRelease) {
-        handleMeadeQuit("q#");
+        MeadeCommandProcessor::instance()->processCommand(":Qq#");
         quitSerialOnNextButtonRelease = false;
       }
     }
@@ -101,9 +101,12 @@ void loop() {
           waitForButtonRelease = processHeatKeys();
           break;
 #endif
+
+#ifdef SUPPORT_CALIBRATION
         case Calibration_Menu:
           waitForButtonRelease = processCalibrationKeys();
           break;
+#endif
 
 #ifdef SUPPORT_MANUAL_CONTROL
         case Control_Menu:
@@ -158,7 +161,9 @@ void loop() {
 #ifdef SUPPORT_MANUAL_CONTROL
           case Control_Menu: printControlSubmenu(); break;
 #endif
+#ifdef SUPPORT_CALIBRATION
           case Calibration_Menu: printCalibrationSubmenu(); break;
+#endif
 
 #ifdef SUPPORT_INFO_DISPLAY
           case Status_Menu: printStatusSubmenu(); break;

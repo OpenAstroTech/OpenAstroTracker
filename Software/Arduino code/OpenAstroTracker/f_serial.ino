@@ -26,13 +26,12 @@ void serialEvent() {
 #endif
 
 // ESP8266 needs to call this in a loop :_(
-auto cp = MeadeCommandProcessor(&mount, &lcdMenu);
 void processSerialData() {
     while (Serial.available() > 0) {
 
         String inCmd = Serial.readStringUntil('#');
 
-        auto retVal = cp.processCommand(inCmd);
+        auto retVal = MeadeCommandProcessor::instance()->processCommand(inCmd);
         if (retVal != "") {
             Serial.print(retVal);
         }

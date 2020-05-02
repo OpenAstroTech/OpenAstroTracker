@@ -3,10 +3,8 @@
 #include "ESP8266Wifi.h"
 
 
-WifiControl::WifiControl(Mount* mount, LcdMenu* lcdMenu) :
-    _cmdProcessor(mount, lcdMenu)
+WifiControl::WifiControl(Mount* mount, LcdMenu* lcdMenu) 
 {
-
     _mount = mount;
     _lcdMenu = lcdMenu;
 
@@ -18,6 +16,10 @@ WifiControl::WifiControl(Mount* mount, LcdMenu* lcdMenu) :
     case 2: // Attempt Infra, fail over to AP
         break;
     }
+}
+
+void WifiControl::setup() {}
+  _cmdProcessor = MeadeCommandProcessor::instance();
 }
 
 

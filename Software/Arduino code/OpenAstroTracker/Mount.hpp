@@ -27,6 +27,10 @@
 #define HALFSTEP 8
 #define FULLSTEP 4
 
+#define RA_STEPS  1
+#define DEC_STEPS 2
+#define SPEED_FACTOR_DECIMALS 3
+
 //////////////////////////////////////////////////////////////////
 //
 // Class that represent the OpenAstroTracker mount, with all its parameters, motors, etc.
@@ -34,13 +38,26 @@
 //////////////////////////////////////////////////////////////////
 class Mount {
 public:
-  Mount(int stepsPerRAHour, int stepsPerDECDegree, LcdMenu* lcdMenu);
+  Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu);
 
   // Configure the RA stepper motor. This also sets up the TRK stepper on the same pins.
   void configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
 
   // Configure the DEC stepper motor.
   void configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
+
+  // Get the current RA tracking speed factor
+  float getSpeedCalibration();
+
+  // Set the current RA tracking speed factor
+  void setSpeedCalibration(float val, bool saveToStorage);
+
+  // Returns the number of steps the given motor turns to move one degree
+  int getStepsPerDegree(int which);
+
+  // Function to set the number of steps the given motor turns to move one 
+  // degree for each axis. This function stores the value in persistent storage
+  void setStepsPerDegree(int which, int steps);
 
   // Set the HA time
   void setHA(const DayTime& haTime);
@@ -66,14 +83,12 @@ public:
   // Set the current DEC position to be the given degrees
   void syncDEC(int degree, int minute, int second);
 
-  float getSpeedCalibration();
-
-  void setSpeedCalibration(float val);
-
+  
   // Calculates movement parameters and program steppers to move
   // there. Must call loop() frequently to actually move.
   void startSlewingToTarget();
 
+  // Various status query functions
   bool isSlewingDEC() const;
   bool isSlewingRA() const;
   bool isSlewingRAorDEC() const;
@@ -131,11 +146,20 @@ public:
   // Get the current speed of the stepper. NORTH, WEST, TRACKING
   float getSpeed(int direction);
 
+  // Displays the current location of the mount every n ms, where n is defined in Globals.h as DISPLAY_UPDATE_TIME
   void displayStepperPositionThrottled();
 
+  // Runs a phase of the drift alignment procedure
   void runDriftAlignmentPhase(int direction, int durationSecs);
 
 private:
+
+  // Reads values from EEPROM that configure the mount (if previously stored)
+  void readPersistentData();
+
+  // Writes a 16-bit value to persistent (EEPROM) storage
+  void writePersistentData(int which, int val);
+
   void calculateRAandDECSteppers(float& targetRA, float& targetDEC);
   void displayStepperPosition();
   void moveSteppersTo(float targetRA, float targetDEC);

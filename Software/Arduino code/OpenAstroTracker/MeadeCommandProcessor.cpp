@@ -162,50 +162,104 @@
 //      This quits Serial Control mode and starts tracking.
 //      Returns: nothing
 //
+//------------------------------------------------------------------
+// EXTRA OAT FAMILY - These are meant for the PC control app
+//
+// :XDnnn#
+//      Run drift alignment
+//      This runs a drift alignment procedure where the mounts slews east, pauses, slews west and pauses.
+//      Where nnn is the number of seconds the entire alignment should take.
+//      Returns: nothing
+//
+// :XGR#
+//      Get RA steps 
+//      Get the number of steps the RA stepper motor needs to take to rotate by one degree 
+//      Returns: integer
+//
+// :XGD#
+//      Get DEC steps 
+//      Get the number of steps the DEC stepper motor needs to take to rotate by one degree 
+//      Returns: integer
+//
+// :XGS#
+//      Get Tracking speed adjustment
+//      Get the adjustment factor used to speed up (>1.0) or slow down (<1.0) the tracking speed of the mount.
+//      Returns: float
+//
+// :XSRn#
+//      Set RA steps 
+//      Set the number of steps the RA stepper motor needs to take to rotate by one degree 
+//      Where n is the number of steps
+//      Returns: nothing
+//
+// :XSDn#
+//      Set DEC steps 
+//      Set the number of steps the DEC stepper motor needs to take to rotate by one degree 
+//      Where n is the number of steps
+//      Returns: nothing
+//
+// :XSSn.n#
+//      Set Tracking speed adjustment
+//      Set the adjustment factor used to speed up (>1.0) or slow down (<1.0) the tracking speed of the mount.
+//      Returns: nothing
+//
 /////////////////////////////////////////////////////////////////////////////////////////
 
+MeadeCommandProcessor* MeadeCommandProcessor::_instance = nullptr;
+
+/////////////////////////////
+// Create the processor 
+/////////////////////////////
+MeadeCommandProcessor* MeadeCommandProcessor::createProcessor(Mount* mount, LcdMenu* lcdMenu) {
+  _instance = new MeadeCommandProcessor(mount, lcdMenu);
+  return _instance;
+}
+
+/////////////////////////////
+// Get the singleton
+/////////////////////////////
+MeadeCommandProcessor* MeadeCommandProcessor::instance() {
+  return _instance;
+}
+
+/////////////////////////////
+// Constructor 
+/////////////////////////////
 MeadeCommandProcessor::MeadeCommandProcessor(Mount* mount, LcdMenu* lcdMenu) {
-    _mount = mount;
+  _mount = mount;
 
-    // ideally if we're headless then the LCD menu just stays null...
-#ifndef HEADLESS_CLIENT
-    _lcdMenu = lcdMenu;
-#else
-    _lcdMenu = nullptr;
-#endif
-
+  // In HEADLESS_CLIENT, the lcdMenu is just an empty shell class to save having to null check everywhere
+  _lcdMenu = lcdMenu;
 }
 
 /////////////////////////////
 // INIT
 /////////////////////////////
 String MeadeCommandProcessor::handleMeadeInit(String inCmd) {
-    inSerialControl = true;
-    if (_lcdMenu != nullptr) {
-        _lcdMenu->setCursor(0, 0);
-        _lcdMenu->printMenu("Remote control");
-        _lcdMenu->setCursor(0, 1);
-        _lcdMenu->printMenu(">SELECT to quit");
-    }
-    return "";
+  inSerialControl = true;
+  _lcdMenu->setCursor(0, 0);
+  _lcdMenu->printMenu("Remote control");
+  _lcdMenu->setCursor(0, 1);
+  _lcdMenu->printMenu(">SELECT to quit");
+  return "";
 }
 
 /////////////////////////////
 // GET INFO
 /////////////////////////////
 String MeadeCommandProcessor::handleMeadeGetInfo(String inCmd) {
-    char cmdOne = inCmd[0];
-    char cmdTwo = (inCmd.length() > 1) ? inCmd[1] : '\0';
+  char cmdOne = inCmd[0];
+  char cmdTwo = (inCmd.length() > 1) ? inCmd[1] : '\0';
 
-    switch (cmdOne) {
-    case 'V': 
-        if (cmdTwo == 'N') {
-            return version + "#";
-        }
-        else if (cmdTwo == 'P') {
-            return "OpenAstroTracker#";
-        }
-        break;
+  switch (cmdOne) {
+    case 'V':
+    if (cmdTwo == 'N') {
+      return version + "#";
+    }
+    else if (cmdTwo == 'P') {
+      return "OpenAstroTracker#";
+    }
+    break;
 
     case 'r': return _mount->RAString(MEADE_STRING | TARGET_STRING);
 
@@ -217,32 +271,32 @@ String MeadeCommandProcessor::handleMeadeGetInfo(String inCmd) {
 
     case 'X': return _mount->getStatusString() + "#";
 
-    case 'I': 
-        String retVal = "";
-        if (cmdTwo == 'S') {
-            retVal = _mount->isSlewingRAorDEC() ? "1" : "0";
-        }
-        else if (cmdTwo == 'T') {
-            retVal = _mount->isSlewingTRK() ? "1" : "0";
-        }
-        else if (cmdTwo == 'G') {
-            retVal = _mount->isGuiding() ? "1" : "0";
-        }
-        return retVal + "#";
+    case 'I':
+    String retVal = "";
+    if (cmdTwo == 'S') {
+      retVal = _mount->isSlewingRAorDEC() ? "1" : "0";
     }
+    else if (cmdTwo == 'T') {
+      retVal = _mount->isSlewingTRK() ? "1" : "0";
+    }
+    else if (cmdTwo == 'G') {
+      retVal = _mount->isGuiding() ? "1" : "0";
+    }
+    return retVal + "#";
+  }
 }
 
 /////////////////////////////
 // SYNC CONTROL
 /////////////////////////////
 String MeadeCommandProcessor::handleMeadeSyncControl(String inCmd) {
-    if (inCmd[0] == 'M') {
-        _mount->syncDEC(_mount->targetDEC().getHours(), _mount->targetDEC().getMinutes(), _mount->targetDEC().getSeconds());
-        _mount->syncRA(_mount->targetRA().getHours(), _mount->targetRA().getMinutes(), _mount->targetRA().getSeconds());
-        return "NONE#";
-    }
+  if (inCmd[0] == 'M') {
+    _mount->syncDEC(_mount->targetDEC().getHours(), _mount->targetDEC().getMinutes(), _mount->targetDEC().getSeconds());
+    _mount->syncRA(_mount->targetRA().getHours(), _mount->targetRA().getMinutes(), _mount->targetRA().getSeconds());
+    return "NONE#";
+  }
 
-    return "0";
+  return "0";
 
 }
 
@@ -250,226 +304,234 @@ String MeadeCommandProcessor::handleMeadeSyncControl(String inCmd) {
 // SET INFO
 /////////////////////////////
 String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
-    if (inCmd.length() < 6) {
-        return "0";
-    }
+  if (inCmd.length() < 6) {
+    return "0";
+  }
 
-    if ((inCmd[0] == 'd') && (inCmd.length() == 10)) {
-        // Set DEC
-        //   0123456789
-        // :Sd+84*03:02
-        int sgn = inCmd[1] == '+' ? 1 : -1;
-        if ((inCmd[4] == '*') && (inCmd[7] == ':'))
-        {
-            int deg = inCmd.substring(2, 4).toInt();
-            _mount->targetDEC().set(sgn * deg + (NORTHERN_HEMISPHERE ? -90 : 90), inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
-            return "1";
-        }
-        else {
-            // Did not understand the coordinate
-            return "0";
-        }
-    } 
-    else if (inCmd[0] == 'r' && (inCmd.length() == 9)) {
-        // :Sr11:04:57#
-        // Set RA
-        //   012345678
-        // :Sr04:03:02
-        if ((inCmd[3] == ':') && (inCmd[6] == ':'))
-        {
-            _mount->targetRA().set(inCmd.substring(1, 3).toInt(), inCmd.substring(4, 6).toInt(), inCmd.substring(7, 9).toInt());
-            _mount->targetRA().addTime(_mount->getHACorrection());
-            _mount->targetRA().subtractTime(_mount->HA());
-            return "1";
-        }
-        else {
-            // Did not understand the coordinate
-            return "0";
-        }
-    }
-    else if (inCmd[0] == 'H') {
-        if (inCmd[1] == 'L') {
-            // Set LST
-            int hLST = inCmd.substring(2, 4).toInt();
-            int minLST = inCmd.substring(4, 6).toInt();
-            int secLST = 0;
-            if (inCmd.length() > 7) {
-                secLST = inCmd.substring(6, 8).toInt();
-            }
-
-            DayTime ha(hLST, minLST, secLST);
-            DayTime pol(PolarisRAHour, PolarisRAMinute, PolarisRASecond);
-            ha.subtractTime(pol);
-            _mount->setHA(ha);
-        }
-        else if (inCmd[1] == 'P') {
-            // Set home point
-            _mount->setHome();
-            _mount->startSlewing(TRACKING);
-        }
-        else {
-            // Set HA
-            int hHA = inCmd.substring(1, 3).toInt();
-            int minHA = inCmd.substring(4, 6).toInt();
-            _mount->setHA(DayTime(hHA, minHA, 0));
-        }
-
-        return "1";
-    }
-    else if ((inCmd[0] == 'Y') && inCmd.length() == 19) {
-        // Sync RA, DEC - current position is teh given coordinate
-        //   0123456789012345678
-        // :SY+84*03:02.18:34:12
-        int sgn = inCmd[1] == '+' ? 1 : -1;
-        if ((inCmd[4] == '*') && (inCmd[7] == ':') && (inCmd[10] == '.') && (inCmd[13] == ':') && (inCmd[16] == ':')) {
-            int deg = inCmd.substring(2, 4).toInt();
-            _mount->syncDEC(sgn * deg + (NORTHERN_HEMISPHERE ? -90 : 90), inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
-            _mount->syncRA(inCmd.substring(11, 13).toInt(), inCmd.substring(14, 16).toInt(), inCmd.substring(17, 19).toInt());
-            return "1";
-        }
-        else {
-            return "0";
-        }
-    }
-    else if ((inCmd[0] == 't')) // longitude: :St+30*29#
+  if ((inCmd[0] == 'd') && (inCmd.length() == 10)) {
+    // Set DEC
+    //   0123456789
+    // :Sd+84*03:02
+    int sgn = inCmd[1] == '+' ? 1 : -1;
+    if ((inCmd[4] == '*') && (inCmd[7] == ':'))
     {
-        return "1";
-    }
-    else if( inCmd[0] == 'g') // latitude :Sg097*34#
-    {
-        return "1";
-    }
-    else if (inCmd[0] == 'G') // utc offset :SG+05#
-    {
-        return "1";
-    }
-    else if (inCmd[0] == 'L') // Local time :SL19:33:03#
-    {
-        return "1";
-    }
-    else if (inCmd[0] == 'D') { // Set Date (MM/DD/YY) :SC04/30/20#
-        return "1Updating Planetary Data#"; // 
+      int deg = inCmd.substring(2, 4).toInt();
+      _mount->targetDEC().set(sgn * deg + (NORTHERN_HEMISPHERE ? -90 : 90), inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
+      return "1";
     }
     else {
-        return "0";
+      // Did not understand the coordinate
+      return "0";
     }
+  }
+  else if (inCmd[0] == 'r' && (inCmd.length() == 9)) {
+    // :Sr11:04:57#
+    // Set RA
+    //   012345678
+    // :Sr04:03:02
+    if ((inCmd[3] == ':') && (inCmd[6] == ':'))
+    {
+      _mount->targetRA().set(inCmd.substring(1, 3).toInt(), inCmd.substring(4, 6).toInt(), inCmd.substring(7, 9).toInt());
+      _mount->targetRA().addTime(_mount->getHACorrection());
+      _mount->targetRA().subtractTime(_mount->HA());
+      return "1";
+    }
+    else {
+      // Did not understand the coordinate
+      return "0";
+    }
+  }
+  else if (inCmd[0] == 'H') {
+    if (inCmd[1] == 'L') {
+      // Set LST
+      int hLST = inCmd.substring(2, 4).toInt();
+      int minLST = inCmd.substring(4, 6).toInt();
+      int secLST = 0;
+      if (inCmd.length() > 7) {
+        secLST = inCmd.substring(6, 8).toInt();
+      }
+
+      DayTime ha(hLST, minLST, secLST);
+      DayTime pol(PolarisRAHour, PolarisRAMinute, PolarisRASecond);
+      ha.subtractTime(pol);
+      _mount->setHA(ha);
+    }
+    else if (inCmd[1] == 'P') {
+      // Set home point
+      _mount->setHome();
+      _mount->startSlewing(TRACKING);
+    }
+    else {
+      // Set HA
+      int hHA = inCmd.substring(1, 3).toInt();
+      int minHA = inCmd.substring(4, 6).toInt();
+      _mount->setHA(DayTime(hHA, minHA, 0));
+    }
+
+    return "1";
+  }
+  else if ((inCmd[0] == 'Y') && inCmd.length() == 19) {
+    // Sync RA, DEC - current position is teh given coordinate
+    //   0123456789012345678
+    // :SY+84*03:02.18:34:12
+    int sgn = inCmd[1] == '+' ? 1 : -1;
+    if ((inCmd[4] == '*') && (inCmd[7] == ':') && (inCmd[10] == '.') && (inCmd[13] == ':') && (inCmd[16] == ':')) {
+      int deg = inCmd.substring(2, 4).toInt();
+      _mount->syncDEC(sgn * deg + (NORTHERN_HEMISPHERE ? -90 : 90), inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
+      _mount->syncRA(inCmd.substring(11, 13).toInt(), inCmd.substring(14, 16).toInt(), inCmd.substring(17, 19).toInt());
+      return "1";
+    }
+    else {
+      return "0";
+    }
+  }
+  else if ((inCmd[0] == 't')) // longitude: :St+30*29#
+  {
+    return "1";
+  }
+  else if (inCmd[0] == 'g') // latitude :Sg097*34#
+  {
+    return "1";
+  }
+  else if (inCmd[0] == 'G') // utc offset :SG+05#
+  {
+    return "1";
+  }
+  else if (inCmd[0] == 'L') // Local time :SL19:33:03#
+  {
+    return "1";
+  }
+  else if (inCmd[0] == 'D') { // Set Date (MM/DD/YY) :SC04/30/20#
+    return "1Updating Planetary Data#"; // 
+  }
+  else {
+    return "0";
+  }
 }
 
 /////////////////////////////
 // MOVEMENT
 /////////////////////////////
 String MeadeCommandProcessor::handleMeadeMovement(String inCmd) {
-    if (inCmd[0] == 'S') {
-        _mount->startSlewingToTarget();
-        return "0";
+  if (inCmd[0] == 'S') {
+    _mount->startSlewingToTarget();
+    return "0";
+  }
+  else if (inCmd[0] == 'T') {
+    if (inCmd.length() > 1) {
+      if (inCmd[1] == '1') {
+        _mount->startSlewing(TRACKING);
+        return "1";
+      }
+      else if (inCmd[1] == '0') {
+        _mount->stopSlewing(TRACKING);
+        return "1";
+      }
     }
-    else if (inCmd[0] == 'T') {
-        if (inCmd.length() > 1) {
-            if (inCmd[1] == '1') {
-                _mount->startSlewing(TRACKING);
-                return "1";
-            }
-            else if (inCmd[1] == '0') {
-                _mount->stopSlewing(TRACKING);
-                return "1";
-            }
-        }
-        else {
-            return "0";
-        }
+    else {
+      return "0";
     }
-    else if (inCmd[0] == 'G') {
-        // Guide pulse
-        //   012345678901
-        // :MGd0403
-        if (inCmd.length() == 6) {
-            byte direction = EAST;
-            if (inCmd[1] == 'N') direction = NORTH;
-            else if (inCmd[1] == 'S') direction = SOUTH;
-            else if (inCmd[1] == 'E') direction = EAST;
-            else if (inCmd[1] == 'W') direction = WEST;
-            int duration = (inCmd[2] - '0') * 1000 + (inCmd[3] - '0') * 100 + (inCmd[4] - '0') * 10 + (inCmd[5] - '0');
-            _mount->guidePulse(direction, duration);
-        }
+  }
+  else if (inCmd[0] == 'G') {
+    // Guide pulse
+    //   012345678901
+    // :MGd0403
+    if (inCmd.length() == 6) {
+      byte direction = EAST;
+      if (inCmd[1] == 'N') direction = NORTH;
+      else if (inCmd[1] == 'S') direction = SOUTH;
+      else if (inCmd[1] == 'E') direction = EAST;
+      else if (inCmd[1] == 'W') direction = WEST;
+      int duration = (inCmd[2] - '0') * 1000 + (inCmd[3] - '0') * 100 + (inCmd[4] - '0') * 10 + (inCmd[5] - '0');
+      _mount->guidePulse(direction, duration);
     }
-    else if (inCmd[0] == 'e') {
-        _mount->startSlewing(EAST);
-    }
-    else if (inCmd[0] == 'w') {
-        _mount->startSlewing(WEST);
-    }
-    else if (inCmd[0] == 'n') {
-        _mount->startSlewing(NORTH);
-    }
-    else if (inCmd[0] == 's') {
-        _mount->startSlewing(SOUTH);
-    }
+  }
+  else if (inCmd[0] == 'e') {
+    _mount->startSlewing(EAST);
+  }
+  else if (inCmd[0] == 'w') {
+    _mount->startSlewing(WEST);
+  }
+  else if (inCmd[0] == 'n') {
+    _mount->startSlewing(NORTH);
+  }
+  else if (inCmd[0] == 's') {
+    _mount->startSlewing(SOUTH);
+  }
 
-    return "";
+  return "";
 }
 
 /////////////////////////////
 // HOME
 /////////////////////////////
 String MeadeCommandProcessor::handleMeadeHome(String inCmd) {
-    if (inCmd[0] == 'P') {  // Park
-        _mount->park();
-    }
-    else if (inCmd[0] == 'F') {  // Home
-        _mount->goHome(true);
-    }
-    else if (inCmd[0] == 'U') {  // Unpark
-        _mount->startSlewing(TRACKING);
-    }
-    return "";
+  if (inCmd[0] == 'P') {  // Park
+    _mount->park();
+  }
+  else if (inCmd[0] == 'F') {  // Home
+    _mount->goHome(true);
+  }
+  else if (inCmd[0] == 'U') {  // Unpark
+    _mount->startSlewing(TRACKING);
+  }
+  return "";
 }
 
 /////////////////////////////
 // EXTRA COMMANDS
 /////////////////////////////
 String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
-    //   0123
-    // :XDmmm
-    if (inCmd[0] == 'D') {  // Drift Alignemnt
-        int duration = inCmd.substring(1, 4).toInt() - 3;
-        if (_lcdMenu != nullptr) {
-            _lcdMenu->setCursor(0, 0);
-            _lcdMenu->printMenu(">Drift Alignment");
-            _lcdMenu->setCursor(0, 1);
-            _lcdMenu->printMenu("Pause 1.5s....");
-        }
-        _mount->stopSlewing(ALL_DIRECTIONS | TRACKING);
-        _mount->waitUntilStopped(ALL_DIRECTIONS);
-        _mount->delay(1500);
-        if (_lcdMenu != nullptr) {
-            _lcdMenu->setCursor(0, 1);
-            _lcdMenu->printMenu("Eastward pass...");
-        }
-        _mount->runDriftAlignmentPhase(EAST, duration);
-        if (_lcdMenu != nullptr) {
-            _lcdMenu->setCursor(0, 1);
-            _lcdMenu->printMenu("Pause 1.5s....");
-        }
-        _mount->delay(1500);
-        if (_lcdMenu != nullptr) {
-            _lcdMenu->printMenu("Westward pass...");
-        }
-        _mount->runDriftAlignmentPhase(WEST, duration);
-        if (_lcdMenu != nullptr) {
-            _lcdMenu->setCursor(0, 1);
-            _lcdMenu->printMenu("Pause 1.5s....");
-        }
-        _mount->delay(1500);
-        if (_lcdMenu != nullptr) {
-            _lcdMenu->printMenu("Reset _mount->..");
-        }
-        _mount->runDriftAlignmentPhase(0, duration);
-        if (_lcdMenu != nullptr) {
-            _lcdMenu->setCursor(0, 1);
-        }
-        _mount->startSlewing(TRACKING);
+  //   0123
+  // :XDmmm
+  if (inCmd[0] == 'D') {  // Drift Alignemnt
+    int duration = inCmd.substring(1, 4).toInt() - 3;
+    _lcdMenu->setCursor(0, 0);
+    _lcdMenu->printMenu(">Drift Alignment");
+    _lcdMenu->setCursor(0, 1);
+    _lcdMenu->printMenu("Pause 1.5s....");
+    _mount->stopSlewing(ALL_DIRECTIONS | TRACKING);
+    _mount->waitUntilStopped(ALL_DIRECTIONS);
+    _mount->delay(1500);
+    _lcdMenu->setCursor(0, 1);
+    _lcdMenu->printMenu("Eastward pass...");
+    _mount->runDriftAlignmentPhase(EAST, duration);
+    _lcdMenu->setCursor(0, 1);
+    _lcdMenu->printMenu("Pause 1.5s....");
+    _mount->delay(1500);
+    _lcdMenu->printMenu("Westward pass...");
+    _mount->runDriftAlignmentPhase(WEST, duration);
+    _lcdMenu->setCursor(0, 1);
+    _lcdMenu->printMenu("Pause 1.5s....");
+    _mount->delay(1500);
+    _lcdMenu->printMenu("Reset _mount->..");
+    _mount->runDriftAlignmentPhase(0, duration);
+    _lcdMenu->setCursor(0, 1);
+    _mount->startSlewing(TRACKING);
+  }
+  else if (inCmd[0] == 'G') { // Get RA/DEC steps/deg, speedfactor
+    if (inCmd[1] == 'R') {
+      return String(_mount->getStepsPerDegree(RA_STEPS)) + "#";
     }
-    return "";
+    else if (inCmd[1] == 'D') {
+      return String(_mount->getStepsPerDegree(DEC_STEPS)) + "#";
+    }
+    else if (inCmd[1] == 'S') {
+      return String(_mount->getSpeedCalibration(), 5) + "#";
+    }
+  }
+  else if (inCmd[0] == 'S') { // Set RA/DEC steps/deg, speedfactor
+    if (inCmd[1] == 'R') {
+      _mount->setStepsPerDegree(RA_STEPS, inCmd.substring(2).toInt());
+    }
+    else if (inCmd[1] == 'D') {
+      _mount->setStepsPerDegree(DEC_STEPS, inCmd.substring(2).toInt());
+    }
+    else if (inCmd[1] == 'S') {
+      _mount->setSpeedCalibration(inCmd.substring(2).toFloat(), true);
+    }
+  }
+  return "";
 }
 
 
@@ -477,58 +539,56 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
 // QUIT
 /////////////////////////////
 String MeadeCommandProcessor::handleMeadeQuit(String inCmd) {
-    // :Q# stops a motors - remains in Control mode
-    // :Qq# command does not stop motors, but quits Control mode
-    if ((inCmd.length() == 0) || (inCmd[0] != 'q')) {
-        _mount->stopSlewing(ALL_DIRECTIONS | TRACKING);
-        _mount->waitUntilStopped(ALL_DIRECTIONS);
-        return "1";
-    }
-    else {
-        inSerialControl = false;
-        if (_lcdMenu != nullptr) {
-            _lcdMenu->setCursor(0, 0);
-            _lcdMenu->updateDisplay();
-        }
-        _mount->startSlewing(TRACKING);
-        return "";
-    }
+  // :Q# stops a motors - remains in Control mode
+  // :Qq# command does not stop motors, but quits Control mode
+  if ((inCmd.length() == 0) || (inCmd[0] != 'q')) {
+    _mount->stopSlewing(ALL_DIRECTIONS | TRACKING);
+    _mount->waitUntilStopped(ALL_DIRECTIONS);
+    return "1";
+  }
+  else {
+    inSerialControl = false;
+    _lcdMenu->setCursor(0, 0);
+    _lcdMenu->updateDisplay();
+    _mount->startSlewing(TRACKING);
+    return "";
+  }
 }
 
 /////////////////////////////
 // Set Slew Rates
 /////////////////////////////
 String MeadeCommandProcessor::handleMeadeSetSlewRate(String inCmd) {
-    switch (inCmd[1]) {
-        case 'S': // Slew   - Fastest
-        case 'M': // Find   - 2nd Fastest
-        case 'C': // Center - 2nd Slowest
-        case 'G': // Guide  - Slowest
-        default:
-            return "";
-    }
+  switch (inCmd[1]) {
+    case 'S': // Slew   - Fastest
+    case 'M': // Find   - 2nd Fastest
+    case 'C': // Center - 2nd Slowest
+    case 'G': // Guide  - Slowest
+    default:
+    return "";
+  }
 }
 
 String MeadeCommandProcessor::processCommand(String inCmd) {
-    if (inCmd[0] = ':') {
-        char command = inCmd[1];
-        inCmd = inCmd.substring(2);
-        switch (command) {
-        case 'S': return handleMeadeSetInfo(inCmd);
-        case 'M': return handleMeadeMovement(inCmd);
-        case 'G': return handleMeadeGetInfo(inCmd);
-        case 'C': return handleMeadeSyncControl(inCmd);
-        case 'h': return handleMeadeHome(inCmd);
-        case 'I': return handleMeadeInit(inCmd);
-        case 'Q': return handleMeadeQuit(inCmd);
-        case 'R': return handleMeadeSetSlewRate(inCmd);
-        case 'X': return handleMeadeExtraCommands(inCmd); 
-        default:
+  if (inCmd[0] = ':') {
+    char command = inCmd[1];
+    inCmd = inCmd.substring(2);
+    switch (command) {
+      case 'S': return handleMeadeSetInfo(inCmd);
+      case 'M': return handleMeadeMovement(inCmd);
+      case 'G': return handleMeadeGetInfo(inCmd);
+      case 'C': return handleMeadeSyncControl(inCmd);
+      case 'h': return handleMeadeHome(inCmd);
+      case 'I': return handleMeadeInit(inCmd);
+      case 'Q': return handleMeadeQuit(inCmd);
+      case 'R': return handleMeadeSetSlewRate(inCmd);
+      case 'X': return handleMeadeExtraCommands(inCmd);
+      default:
 #ifdef DEBUG_MODE
-            Serial.println("Unknown Command in MeadeCommandProcessor::processCommand " + inCmd);
-            return "";
+      Serial.println("Unknown Command in MeadeCommandProcessor::processCommand " + inCmd);
+      return "";
 #endif
-            break;
-        }
+      break;
     }
+  }
 }
