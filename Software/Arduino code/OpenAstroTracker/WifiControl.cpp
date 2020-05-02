@@ -18,7 +18,7 @@ WifiControl::WifiControl(Mount* mount, LcdMenu* lcdMenu)
     }
 }
 
-void WifiControl::setup() {}
+void WifiControl::setup() {
   _cmdProcessor = MeadeCommandProcessor::instance();
 }
 
@@ -68,7 +68,7 @@ void WifiControl::tcpLoop() {
 #ifdef DEBUG_MODE
             Serial.printf("<--  %s#\n", cmd.c_str());
 #endif
-            auto retVal = _cmdProcessor.processCommand(cmd);
+            auto retVal = _cmdProcessor->processCommand(cmd);
 
             if (retVal != "") {
                 client.write(retVal.c_str());

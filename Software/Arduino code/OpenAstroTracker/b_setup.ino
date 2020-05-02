@@ -33,12 +33,6 @@ void setup() {
   wifiControl.setup();
 #endif
 
-  // Not sure if this is neeeded
-  pinMode(A1, OUTPUT);
-  pinMode(A2, OUTPUT);
-  pinMode(A3, OUTPUT);
-  pinMode(A4, OUTPUT);
-
   // Configure the mount
   // Set the global HA correction
   DayTime polaris = DayTime(24, 0, 0);

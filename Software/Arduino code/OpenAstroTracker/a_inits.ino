@@ -15,7 +15,7 @@
 
 //SoftwareSerial BT(10,11);
 
-#ifdef USE_ESP8266_PINS
+#ifdef ESP8266
 // RA Motor pins
 #define RAmotorPin1  D0    // IN1 auf ULN2003 driver 1    //  2 / 22
 #define RAmotorPin3  D1    // IN2 auf ULN2003 driver 1    //  3 / 24d
