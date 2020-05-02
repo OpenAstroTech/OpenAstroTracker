@@ -37,7 +37,7 @@ float StepsPerRevolution = 4096;
 // Theoretically correct RA tracking speed is 1.246586 (300 x 14.95903 / 3600) (V2 : 1.333800 (322 x 14.95903 / 3600) steps/sec
 
 // your drive pulley tooth count:
-#define RAPulley 16
+#define RAPulley 20
 // the Circumference of the RA wheel
 // V1: 1057.1  
 // V2: 1131
@@ -51,7 +51,7 @@ int RAStepsPerDegree = (RACircumference / (RAPulley * 2.0) * StepsPerRevolution 
 // One DEC revolution needs 14.13 (565.5mm/40mm) stepper revolutions
 // Which means 57907 steps (14.14 x 4096) moves 360 degrees
 // So there are 160.85 steps/degree (57907/360)
-#define DecPulley 16
+#define DecPulley 20
 
 int DECStepsPerDegree = (565.5 / (DecPulley * 2.0) * StepsPerRevolution / 360.0);
 

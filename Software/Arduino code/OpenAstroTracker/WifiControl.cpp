@@ -102,7 +102,7 @@ void WifiControl::udpLoop()
 #endif
         char incomingPacket[255];
         int len = _udp->read(incomingPacket, 255);
-        incomingPacket[lookingFor.length()] = NULL;
+        incomingPacket[lookingFor.length()] = 0;
 #ifdef DEBUG_MODE
         Serial.printf("Received: %s\n", incomingPacket);
 #endif
