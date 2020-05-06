@@ -4,6 +4,11 @@ LcdButtons lcdButtons(0);
 
 Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
 
+#ifdef WIFI_ENABLED
+#include "WifiControl.hpp"
+WifiControl wifiControl(&mount, &lcdMenu);
+#endif
+
 void setup() {
 
   //Serial.begin(38400);
@@ -21,15 +26,16 @@ void setup() {
   lcdMenu.printMenu("     " + version);
   unsigned long now = millis();
 
-  // Not sure if this is neeeded
-  pinMode(A1, OUTPUT);
-  pinMode(A2, OUTPUT);
-  pinMode(A3, OUTPUT);
-  pinMode(A4, OUTPUT);
+  // Create the command processor singleton
+  MeadeCommandProcessor::createProcessor(&mount, &lcdMenu);
+
+#ifdef WIFI_ENABLED
+  wifiControl.setup();
+#endif
 
   // Configure the mount
   // Set the global HA correction
-  DayTime polaris = DayTime(24,0,0);
+  DayTime polaris = DayTime(24, 0, 0);
   polaris.subtractTime(DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond));
   mount.setHACorrection(polaris.getHours(), polaris.getMinutes(), polaris.getSeconds());
 
@@ -37,12 +43,12 @@ void setup() {
   mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);
   mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
 
-  // Read persisted values and set in mount
-  inputcal = EEPROM.read(0) + EEPROM.read(3) * 256;
+  // The mount uses EEPROM storage locations 0-10 that it reads during construction
+
+  // Read other persisted values and set in mount
   DayTime haTime = DayTime(EEPROM.read(1), EEPROM.read(2), 0);
-  mount.setSpeedCalibration(speed + inputcal / 10000);
+
 #ifdef DEBUG_MODE
-  Serial.println("InputCal: " + String(inputcal));
   Serial.println("SpeedCal: " + String(mount.getSpeedCalibration(), 5));
   Serial.println("TRKSpeed: " + String(mount.getSpeed(TRACKING), 5));
 #endif
@@ -73,8 +79,10 @@ void setup() {
   lcdMenu.addItem("CTRL", Control_Menu);
 #endif
 
+#ifdef SUPPORT_CALIBRATION
   lcdMenu.addItem("CAL", Calibration_Menu);
-  
+#endif
+
 #ifdef SUPPORT_INFO_DISPLAY
   lcdMenu.addItem("INFO", Status_Menu);
 #endif
@@ -84,7 +92,7 @@ void setup() {
   }
 
   lcdMenu.updateDisplay();
-#endif
+#endif // HEADLESS_CLIENT
 
 #ifdef DEBUG_MODE
   Serial.println("SetupDone");

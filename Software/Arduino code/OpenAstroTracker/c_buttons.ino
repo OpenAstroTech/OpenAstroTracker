@@ -5,6 +5,10 @@ void BTin();
 int loopsOfSameKey = 0;
 int lastLoopKey = -1;
 
+#ifdef LCD_BUTTON_TEST
+byte lastKey = 0;
+#endif
+
 void loop() {
   byte lcd_key;
   int adc_key_in;
@@ -13,7 +17,7 @@ void loop() {
 
   lcdMenu.setCursor(0, 0);
   lcdMenu.printMenu("Key Diagnostic");
-  int lcd_key = lcdButtons.currentState();
+  lcd_key = lcdButtons.currentState();
   adc_key_in = lcdButtons.currentAnalogState();
 
   lcdMenu.setCursor(0, 1);
@@ -51,8 +55,8 @@ void loop() {
       if (lcd_key == btnSELECT) {
         quitSerialOnNextButtonRelease = true;
       }
-      else if ((lcd_key == btnNONE) && quitSerialOnNextButtonRelease)  {
-        handleMeadeQuit("q#");
+      else if ((lcd_key == btnNONE) && quitSerialOnNextButtonRelease) {
+        MeadeCommandProcessor::instance()->processCommand(":Qq#");
         quitSerialOnNextButtonRelease = false;
       }
     }
@@ -97,9 +101,12 @@ void loop() {
           waitForButtonRelease = processHeatKeys();
           break;
 #endif
+
+#ifdef SUPPORT_CALIBRATION
         case Calibration_Menu:
           waitForButtonRelease = processCalibrationKeys();
           break;
+#endif
 
 #ifdef SUPPORT_MANUAL_CONTROL
         case Control_Menu:
@@ -124,8 +131,7 @@ void loop() {
 
           // Make sure tracker can still run while fiddling with menus....
           mount.loop();
-        }
-        while (true);
+        } while (true);
       }
     }
 
@@ -155,7 +161,9 @@ void loop() {
 #ifdef SUPPORT_MANUAL_CONTROL
           case Control_Menu: printControlSubmenu(); break;
 #endif
+#ifdef SUPPORT_CALIBRATION
           case Calibration_Menu: printCalibrationSubmenu(); break;
+#endif
 
 #ifdef SUPPORT_INFO_DISPLAY
           case Status_Menu: printStatusSubmenu(); break;
@@ -169,7 +177,7 @@ void loop() {
 }
 #else
 
-void loop(){
+void loop() {
   serialLoop();
   BTin();
 }

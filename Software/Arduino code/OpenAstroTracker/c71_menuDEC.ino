@@ -2,7 +2,7 @@
 bool processDECKeys() {
   byte key;
   bool waitForRelease = true;
-  if (lcdButtons.currentState() == btnUP)  {
+  if (lcdButtons.currentState() == btnUP) {
     if (DECselect == 0) mount.targetDEC().addDegrees(1);
     if (DECselect == 1) mount.targetDEC().addMinutes(1);
     if (DECselect == 2) mount.targetDEC().addSeconds(1);
@@ -10,7 +10,7 @@ bool processDECKeys() {
     mount.delay(200);
     waitForRelease = false;
   }
-  else if (lcdButtons.currentState() == btnDOWN)  {
+  else if (lcdButtons.currentState() == btnDOWN) {
     if (DECselect == 0) mount.targetDEC().addDegrees(-1);
     if (DECselect == 1) mount.targetDEC().addMinutes(-1);
     if (DECselect == 2) mount.targetDEC().addSeconds(-1);
@@ -19,27 +19,27 @@ bool processDECKeys() {
     waitForRelease = false;
   }
   else if (lcdButtons.keyChanged(key)) {
-    switch (key) {
-
+    switch (key)
+    {
       case btnLEFT: {
-          DECselect = adjustWrap(DECselect, 1, 0, 2);
-        }
-        break;
+        DECselect = adjustWrap(DECselect, 1, 0, 2);
+      }
+      break;
 
       case btnSELECT: {
-          if (mount.isSlewingRAorDEC()) {
-            mount.stopSlewing(ALL_DIRECTIONS);
-          }
-          else {
-            mount.startSlewingToTarget();
-          }
+        if (mount.isSlewingRAorDEC()) {
+          mount.stopSlewing(ALL_DIRECTIONS);
         }
-        break;
+        else {
+          mount.startSlewingToTarget();
+        }
+      }
+      break;
 
       case btnRIGHT: {
-          lcdMenu.setNextActive();
-        }
-        break;
+        lcdMenu.setNextActive();
+      }
+      break;
     }
   }
 

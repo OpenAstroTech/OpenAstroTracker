@@ -1,5 +1,13 @@
 #include <Arduino.h>
-#include "Globals.h"
+
+#include "Utility.h"
+
+#ifdef DEBUG_MODE
+unsigned long RealTime::_pausedTime = 0;
+unsigned long RealTime::_startTime = micros();
+unsigned long RealTime::_suspendStart = 0;
+int RealTime::_suspended = 0;
+#endif
 
 // Adjust the given number by the given adjustment, wrap around the limits.
 // Limits are inclusive, so they represent the lowest and highest valid number.

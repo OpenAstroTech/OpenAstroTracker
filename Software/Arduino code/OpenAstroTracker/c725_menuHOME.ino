@@ -6,25 +6,26 @@ bool processHomeKeys() {
   if (lcdButtons.keyChanged(key)) {
     switch (key) {
       case btnSELECT: {
-          if (subGoIndex == 0) {
-            mount.goHome(true); // start tracking after home
-          } else {
-            mount.park();
-          }
+        if (subGoIndex == 0) {
+          mount.goHome(true); // start tracking after home
         }
-        break;
+        else {
+          mount.park();
+        }
+      }
+      break;
 
       case btnUP:
       case btnDOWN:
       case btnLEFT: {
-          subGoIndex = 1 - subGoIndex;
-        }
-        break;
+        subGoIndex = 1 - subGoIndex;
+      }
+      break;
 
       case btnRIGHT: {
-          lcdMenu.setNextActive();
-        }
-        break;
+        lcdMenu.setNextActive();
+      }
+      break;
     }
   }
 
@@ -35,7 +36,8 @@ void printHomeSubmenu() {
   char scratchBuffer[16];
   if (mount.isParked() && (subGoIndex == 1)) {
     lcdMenu.printMenu("Parked...");
-  } else {
+  }
+  else {
     strcpy(scratchBuffer, " Home  Park");
     scratchBuffer[subGoIndex * 6] = '>';
     lcdMenu.printMenu(scratchBuffer);
