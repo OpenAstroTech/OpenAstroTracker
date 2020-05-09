@@ -156,6 +156,10 @@
 //      This stops all motors, including tracking. Note that deceleration curves are still followed.
 //      Returns: 1 when all motors have stopped.
 //
+// :Qd#
+//      Stop slew in specified direction where d is n, s, e, w
+//      Returns: nothing
+//
 // -- QUIT MOVEMENT Extensions --
 // :Qq#
 //      Disconnect, Quit Control mode
@@ -304,10 +308,6 @@ String MeadeCommandProcessor::handleMeadeSyncControl(String inCmd) {
 // SET INFO
 /////////////////////////////
 String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
-  if (inCmd.length() < 6) {
-    return "0";
-  }
-
   if ((inCmd[0] == 'd') && (inCmd.length() == 10)) {
     // Set DEC
     //   0123456789
@@ -401,7 +401,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
   {
     return "1";
   }
-  else if (inCmd[0] == 'D') { // Set Date (MM/DD/YY) :SC04/30/20#
+  else if (inCmd[0] == 'C') { // Set Date (MM/DD/YY) :SC04/30/20#
     return "1Updating Planetary Data#"; // 
   }
   else {
@@ -541,18 +541,33 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
 String MeadeCommandProcessor::handleMeadeQuit(String inCmd) {
   // :Q# stops a motors - remains in Control mode
   // :Qq# command does not stop motors, but quits Control mode
-  if ((inCmd.length() == 0) || (inCmd[0] != 'q')) {
+  if (inCmd.length() == 0) {
     _mount->stopSlewing(ALL_DIRECTIONS | TRACKING);
     _mount->waitUntilStopped(ALL_DIRECTIONS);
     return "1";
   }
-  else {
-    inSerialControl = false;
-    _lcdMenu->setCursor(0, 0);
-    _lcdMenu->updateDisplay();
-    _mount->startSlewing(TRACKING);
-    return "";
+
+  switch (inCmd[0]) {
+  case 'e':
+      _mount->stopSlewing(EAST);
+      break;
+  case 'w':
+      _mount->stopSlewing(WEST);
+      break;
+  case 'n':
+      _mount->stopSlewing(NORTH);
+      break;
+  case 's':
+      _mount->stopSlewing(SOUTH);
+      break;
+  case 'q':
+      inSerialControl = false;
+      _lcdMenu->setCursor(0, 0);
+      _lcdMenu->updateDisplay();
+      break;
   }
+
+  return "";
 }
 
 /////////////////////////////

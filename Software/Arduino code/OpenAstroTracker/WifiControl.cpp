@@ -7,29 +7,57 @@ WifiControl::WifiControl(Mount* mount, LcdMenu* lcdMenu)
 {
     _mount = mount;
     _lcdMenu = lcdMenu;
-
-    switch (WIFI_MODE) {
-    case 0: // startup Infrastructure Mode
-        break;
-    case 1: // startup AP mode
-        break;
-    case 2: // Attempt Infra, fail over to AP
-        break;
-    }
 }
 
 void WifiControl::setup() {
+
+#ifdef DEBUG_MODE
+    Serial.printf("Starting up Wifi As Mode %d\n", WIFI_MODE);
+#endif
+
   _cmdProcessor = MeadeCommandProcessor::instance();
+
+  switch (WIFI_MODE) {
+  case 0: // startup Infrastructure Mode
+      startInfrastructureMode();
+      break;
+  case 1: // startup AP mode
+      startAccessPointMode();
+      break;
+  case 2: // Attempt Infra, fail over to AP
+      startInfrastructureMode();
+      _infraStart = millis();
+      break;
+  }
 }
 
 
 void WifiControl::startInfrastructureMode()
 {
+#ifdef DEBUG_MODE
+    Serial.println("Starting Infrastructure Mode Wifi");
+#endif
+    WiFi.hostname(HOSTNAME);
     WiFi.begin(INFRA_SSID, INFRA_WPAKEY);
+}
+
+void WifiControl::startAccessPointMode()
+{
+#ifdef DEBUG_MODE
+    Serial.println("Starting AP Mode Wifi");
+#endif
+    IPAddress local_ip(192, 168, 1, 1);
+    IPAddress gateway(192, 168, 1, 1);
+    IPAddress subnet(255, 255, 255, 0);
+    
+    WiFi.hostname(HOSTNAME);
+    WiFi.softAP(HOSTNAME, OAT_WPAKEY);
+    WiFi.softAPConfig(local_ip, gateway, subnet);
 }
 
 void WifiControl::loop()
 {
+
     if (_status != WiFi.status()) {
         _status = WiFi.status();
 #ifdef DEBUG_MODE
@@ -55,10 +83,28 @@ void WifiControl::loop()
     }
     _mount->loop();
 
-    if (_status != WL_CONNECTED) return;
+    if (_status != WL_CONNECTED) {
+        infraToAPFailover();
+        return;
+    }
 
     tcpLoop();
     udpLoop();
+}
+
+void WifiControl::infraToAPFailover() {
+    if (_infraStart != 0 && 
+        !WiFi.isConnected() && 
+        _infraStart + _infraWait < millis()) {
+
+        WiFi.disconnect();
+        startAccessPointMode();
+        _infraStart = 0;
+
+#ifdef DEBUG_MODE
+        Serial.println("Could not connect to Infra, Starting AP.");
+#endif
+    }
 }
 
 void WifiControl::tcpLoop() {
@@ -91,9 +137,7 @@ void WifiControl::udpLoop()
     int packetSize = _udp->parsePacket();
     if (packetSize)
     {
-        String lookingFor = "skyfi:";
-        lookingFor += HOSTNAME;
-        lookingFor += "?";
+        String lookingFor = "skyfi:";;
 
         String reply = "skyfi:";
         reply += HOSTNAME;
@@ -104,12 +148,12 @@ void WifiControl::udpLoop()
 #endif
         char incomingPacket[255];
         int len = _udp->read(incomingPacket, 255);
-        incomingPacket[lookingFor.length()] = 0;
+        incomingPacket[len] = 0;
 #ifdef DEBUG_MODE
         Serial.printf("Received: %s\n", incomingPacket);
 #endif
-        
-        
+
+        incomingPacket[lookingFor.length()] = 0;
         if (lookingFor.equalsIgnoreCase(incomingPacket)) {
             _udp->beginPacket(_udp->remoteIP(), 4031);
             /*unsigned char bytes[255];
