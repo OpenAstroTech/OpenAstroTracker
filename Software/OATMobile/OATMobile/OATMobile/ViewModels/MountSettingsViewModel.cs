@@ -26,7 +26,7 @@ namespace OATMobile.ViewModels
 
         public MountSettingsViewModel()
         {
-            _cmdHandler = new OatmealTelescopeCommandHandlers(new TcpCommunicationHandler(new IPAddress(new byte[] { 192, 168, 86, 250 }), 4030));
+            _cmdHandler = new OatmealTelescopeCommandHandlers(new TcpCommunicationHandler(new IPAddress(new byte[] { 192, 168, 86, 249 }), 4030));
             Title = "Mount Settings";
             Items = new ObservableCollection<Item>();
             LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());

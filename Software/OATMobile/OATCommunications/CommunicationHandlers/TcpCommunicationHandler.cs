@@ -14,7 +14,7 @@ namespace OATCommunications.CommunicationHandlers {
         public TcpCommunicationHandler(IPAddress ip, int port) {
             _ip = ip;
             _port = port;
-            _client = new TcpClient(new IPEndPoint(IPAddress.Any, _port));
+            _client = new TcpClient();
         }
 
         public async Task<CommandResponse> SendBlind(string command) {
@@ -27,8 +27,13 @@ namespace OATCommunications.CommunicationHandlers {
 
         private async Task<CommandResponse> SendCommand(string command, bool needsResponse) {
             if (!_client.Connected) {
-                _client = new TcpClient(new IPEndPoint(IPAddress.Any, _port));
-                _client.Connect(_ip, _port);
+                try {
+                    _client = new TcpClient();
+                    _client.Connect(_ip, _port);
+                }
+                catch (Exception e) {
+                    Debug.WriteLine($"Failed To connect or create client: \n{e.Message}");
+                }
             }
 
             _client.ReceiveTimeout = 1000;
