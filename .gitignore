@@ -361,3 +361,5 @@ Software/Arduino code/OpenAstroTracker/Release
 Software/Arduino code/OpenAstroTracker/__vm
 *.exe
 test
+
+bin/
