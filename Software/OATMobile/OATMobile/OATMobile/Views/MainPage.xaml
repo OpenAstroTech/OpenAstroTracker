@@ -1,4 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
@@ -7,40 +8,50 @@
             xmlns:views="clr-namespace:OATMobile.Views"
             x:Class="OATMobile.Views.MainPage">
 
-    <TabbedPage.Children>
-        
-        <NavigationPage Title="OAT Controls">
-            <NavigationPage.Icon>
-                <OnPlatform x:TypeArguments="FileImageSource">
-                    <On Platform="iOS" Value="remote.png"/>
-                </OnPlatform>
-            </NavigationPage.Icon>
-            <x:Arguments>
-                <views:MountControlPage />
-            </x:Arguments>
-        </NavigationPage>
 
-        <NavigationPage Title="Settings">
-            <NavigationPage.Icon>
-                <OnPlatform x:TypeArguments="FileImageSource">
-                    <On Platform="iOS" Value="settings.png"/>
-                </OnPlatform>
-            </NavigationPage.Icon>
-            <x:Arguments>
-                <views:MountSettings />
-            </x:Arguments>
-        </NavigationPage>
+    <NavigationPage Title="Control">
+        <NavigationPage.Icon>
+            <OnPlatform x:TypeArguments="FileImageSource">
+                <On Platform="iOS" Value="remote.png" />
+            </OnPlatform>
+        </NavigationPage.Icon>
+        <x:Arguments>
+            <views:MountControlView />
+        </x:Arguments>
+    </NavigationPage>
 
-        <NavigationPage Title="About">
-            <NavigationPage.Icon>
-                <OnPlatform x:TypeArguments="FileImageSource">
-                    <On Platform="iOS" Value="tab_about.png"/>
-                </OnPlatform>
-            </NavigationPage.Icon>
-            <x:Arguments>
-                <views:AboutPage />
-            </x:Arguments>
-        </NavigationPage>
-    </TabbedPage.Children>
-    
+    <NavigationPage Title="Status">
+        <NavigationPage.Icon>
+            <OnPlatform x:TypeArguments="FileImageSource">
+                <On Platform="iOS" Value="tab_about.png" />
+            </OnPlatform>
+        </NavigationPage.Icon>
+        <x:Arguments>
+            <views:MountStatusView />
+        </x:Arguments>
+    </NavigationPage>
+
+    <NavigationPage Title="Calibration">
+        <NavigationPage.Icon>
+            <OnPlatform x:TypeArguments="FileImageSource">
+                <On Platform="iOS" Value="tab_about.png" />
+            </OnPlatform>
+        </NavigationPage.Icon>
+        <x:Arguments>
+            <views:MountCalibrationView />
+        </x:Arguments>
+    </NavigationPage>
+
+    <NavigationPage Title="Settings">
+        <NavigationPage.Icon>
+            <OnPlatform x:TypeArguments="FileImageSource">
+                <On Platform="iOS" Value="settings.png" />
+            </OnPlatform>
+        </NavigationPage.Icon>
+        <x:Arguments>
+            <views:MountSettingsView />
+        </x:Arguments>
+    </NavigationPage>
+
+
 </TabbedPage>

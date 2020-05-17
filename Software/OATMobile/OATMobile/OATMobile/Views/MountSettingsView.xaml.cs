@@ -4,9 +4,9 @@ using Xamarin.Forms.Xaml;
 namespace OATMobile.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class MountSettings : ContentPage
+    public partial class MountSettingsView : ContentPage
     {
-        public MountSettings()
+        public MountSettingsView()
         {
             InitializeComponent();
         }

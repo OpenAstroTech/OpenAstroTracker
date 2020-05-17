@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using OATCommunications.Model;
 using OATCommunications.TelescopeCommandHandlers;
 using Xamarin.Forms;
-using OATMobile.Models;
 using Xamarin.Essentials;
 
 namespace OATMobile.ViewModels {
     public class MountControlViewModel : ViewModelBase {
-        public ObservableCollection<Item> Items { get; set; }
 
         private ITelescopeCommandHandler _cmdHandler;
 
@@ -17,7 +13,7 @@ namespace OATMobile.ViewModels {
 
         public MountControlViewModel(ITelescopeCommandHandler handler) {
             _cmdHandler = handler;
-            Title = "OAT Controls";
+            Title = "Control";
 
             _cmdHandler.MountState.PropertyChanged += MountStateOnPropertyChanged;
 

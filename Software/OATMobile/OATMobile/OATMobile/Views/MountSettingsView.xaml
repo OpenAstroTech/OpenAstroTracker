@@ -4,10 +4,13 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             Title="{Binding}"
-             x:Class="OATMobile.Views.MountSettings">
-  <!--Pages can be added as references or inline-->
-    <StackLayout>
-        
-    </StackLayout>
+             Title="Open Astro Tracker"
+             x:Class="OATMobile.Views.MountSettingsView">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="Mount Settings View"
+                   VerticalOptions="CenterAndExpand" 
+                   HorizontalOptions="CenterAndExpand" />
+        </StackLayout>
+    </ContentPage.Content>
 </ContentPage>

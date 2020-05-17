@@ -1,7 +1,6 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using System.Reflection;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 
 namespace OATMobile.Views
 {
@@ -13,6 +12,18 @@ namespace OATMobile.Views
         public MainPage()
         {
             InitializeComponent();
+            //DebugImages();
         }
+
+        private void DebugImages() {
+            // ...
+            // NOTE: use for debugging, not in released app code!
+            var assembly = typeof(MountControlView).GetTypeInfo().Assembly;
+            foreach (var res in assembly.GetManifestResourceNames())
+            {
+                System.Diagnostics.Debug.WriteLine("found resource: " + res);
+            }
+        }
+
     }
 }

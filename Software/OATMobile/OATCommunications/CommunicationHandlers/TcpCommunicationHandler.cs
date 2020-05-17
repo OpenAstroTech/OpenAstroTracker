@@ -52,7 +52,7 @@ namespace OATCommunications.CommunicationHandlers {
                 return new CommandResponse("", false, $"Failed to send message: {e.Message}");
             }
 
-            Debug.WriteLine($"Sent {bytes}");
+            Debug.WriteLine($"Sent {command}");
 
             var respString = String.Empty;
 

@@ -10,10 +10,10 @@ namespace OATMobile.Views {
     // Learn more about making custom code visible in the Xamarin.Forms previewer
     // by visiting https://aka.ms/xamarinforms-previewer
     [DesignTimeVisible(false)]
-    public partial class MountControlPage : ContentPage {
+    public partial class MountControlView : ContentPage {
         MountControlViewModel viewModel;
 
-        public MountControlPage() {
+        public MountControlView() {
             InitializeComponent();
             var handler =
                 new OatmealTelescopeCommandHandlers(
@@ -22,12 +22,12 @@ namespace OATMobile.Views {
         }
 
         private void Move_Button_Pressed(object sender, EventArgs e) {
-            var dir = (sender as Button).CommandParameter.ToString();
+            var dir = (sender as ImageButton).CommandParameter.ToString();
             viewModel.Commands["StartMoveDirection"].Execute(dir);
         }
 
         private void Move_Button_Released(object sender, EventArgs e) {
-            var dir = (sender as Button).CommandParameter.ToString();
+            var dir = (sender as ImageButton).CommandParameter.ToString();
             viewModel.Commands["StopMoveDirection"].Execute(dir);
         }
     }
