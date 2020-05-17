@@ -146,10 +146,14 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Forms" Version="4.4.0.991265" />
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.1.9"/>
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.1.9" />
     <PackageReference Include="Xamarin.Essentials" Version="1.3.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\OATCommunications\OATCommunications.csproj">
+      <Project>{f071f4f0-433d-44d0-9c25-816711b6c6a6}</Project>
+      <Name>OATCommunications</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OATMobile\OATMobile.csproj">
       <Project>{5FA44D76-619C-41A1-80F2-9814F74CDBA4}</Project>
       <Name>OATMobile</Name>
