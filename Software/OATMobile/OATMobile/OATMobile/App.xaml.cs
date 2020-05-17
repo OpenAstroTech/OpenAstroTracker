@@ -1,8 +1,4 @@
-﻿using System;
-using OATCommunications;
-using OATCommunications.TelescopeCommandHandlers;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+﻿using Xamarin.Forms;
 using OATMobile.Services;
 using OATMobile.Views;
 

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
-
+using System.Windows.Input;
+using OATCommunications.Model;
 using Xamarin.Forms;
 
 using OATMobile.Models;
@@ -10,8 +10,14 @@ using OATMobile.Services;
 
 namespace OATMobile.ViewModels
 {
-    public class BaseViewModel : INotifyPropertyChanged
+    public class ViewModelBase : ObservableClass
     {
+        public Dictionary<string, ICommand> Commands { get; protected set; }
+
+        public ViewModelBase() {
+            Commands = new Dictionary<string, ICommand>();
+        }
+
         public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
 
         bool isBusy = false;
@@ -38,17 +44,5 @@ namespace OATMobile.ViewModels
             OnPropertyChanged(propertyName);
             return true;
         }
-
-        #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            var changed = PropertyChanged;
-            if (changed == null)
-                return;
-
-            changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-        #endregion
     }
 }

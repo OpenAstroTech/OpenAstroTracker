@@ -5,9 +5,9 @@ using Xamarin.Forms;
 
 namespace OATMobile.ViewModels
 {
-    public class AboutViewModel : BaseViewModel
+    public class About : ViewModelBase
     {
-        public AboutViewModel()
+        public About()
         {
             Title = "About";
             OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://xamarin.com"));

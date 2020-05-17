@@ -8,25 +8,26 @@
             x:Class="OATMobile.Views.MainPage">
 
     <TabbedPage.Children>
-        <NavigationPage Title="Mount Settings">
+        
+        <NavigationPage Title="OAT Controls">
             <NavigationPage.Icon>
                 <OnPlatform x:TypeArguments="FileImageSource">
-                    <On Platform="iOS" Value="tab_feed.png"/>
+                    <On Platform="iOS" Value="remote.png"/>
                 </OnPlatform>
             </NavigationPage.Icon>
             <x:Arguments>
-                <views:MountSettingsPage />
+                <views:MountControlPage />
             </x:Arguments>
         </NavigationPage>
 
-        <NavigationPage Title="Network Settings">
+        <NavigationPage Title="Settings">
             <NavigationPage.Icon>
                 <OnPlatform x:TypeArguments="FileImageSource">
-                    <On Platform="iOS" Value="tab_about.png"/>
+                    <On Platform="iOS" Value="settings.png"/>
                 </OnPlatform>
             </NavigationPage.Icon>
             <x:Arguments>
-                <views:AboutPage />
+                <views:MountSettings />
             </x:Arguments>
         </NavigationPage>
 

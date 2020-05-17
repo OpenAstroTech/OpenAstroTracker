@@ -33,11 +33,12 @@ namespace OATCommunications.CommunicationHandlers {
                 }
                 catch (Exception e) {
                     Debug.WriteLine($"Failed To connect or create client: \n{e.Message}");
+                    return new CommandResponse("", false, $"Failed To Connect to Client: {e.Message}");
                 }
             }
 
-            _client.ReceiveTimeout = 1000;
-
+            _client.ReceiveTimeout = 250;
+            _client.SendTimeout = 250;
             
             string error = String.Empty;
 
