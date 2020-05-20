@@ -359,7 +359,7 @@ namespace OATControl.ViewModels
 			{
 				try
 				{
-					ScopeName = _oatMount.SendCommand("GVP").Result.Data;
+					ScopeName = _oatMount.SendCommand("GVP").GetAwaiter().GetResult().Data;
 
 					_transform.SiteElevation = 100;// _oatMount.SiteElevation;
 					_transform.SiteLatitude = 47; //_oatMount.SiteLatitude;
@@ -459,7 +459,7 @@ namespace OATControl.ViewModels
 			//{
 			//	ScopeName = name;
 			_oatMount = new OatmealTelescopeCommandHandlers(
-			  new TcpCommunicationHandler(new IPAddress(new byte[] { 192, 168, 86, 21 }), 4030));
+			  new TcpCommunicationHandler(new IPAddress(new byte[] { 192, 168, 86, 40 }), 4030));
 
 			try
 			{

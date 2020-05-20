@@ -74,9 +74,6 @@
     <Reference Include="MahApps.Metro, Version=1.6.5.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MahApps.Metro.1.6.5\lib\net47\MahApps.Metro.dll</HintPath>
     </Reference>
-    <Reference Include="OATCommunications">
-      <HintPath>..\..\OATMobile\OATCommunications\bin\Debug\netstandard2.0\OATCommunications.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -196,6 +193,12 @@
     <Content Include="PointsOfInterest.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\OATMobile\OATCommunications\OATCommunications.csproj">
+      <Project>{83ca4f93-43ce-4da1-839a-f65f51fc34ed}</Project>
+      <Name>OATCommunications</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
