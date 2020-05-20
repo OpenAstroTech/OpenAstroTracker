@@ -1,6 +1,12 @@
 # Changelog
 
 ## Parts
+20.05.2020
+ - see [this post](https://www.reddit.com/r/OpenAstroTech/comments/gnjsvu/a_whole_bunch_of_updated_parts/)
+
+10.04.20
+ - updated the files for 200x200 printers with the v2 ring
+
 17.03.2020
 
  - updated parts 6a,b,c and 14 to v2
@@ -19,14 +25,3 @@
 
 
 
-## Arduino Code:
-1.3b  -  17.03.2020
-
- - added Stellarium support. Still a bit buggy
- - upped some speeds and adjusted accelerations
- chanegd the DEC stepper to halfstep mode
-
-1.2.5  -  26.02.2020
-
- - added support for southern hemisphere
- - removed some debug printouts
