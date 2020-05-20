@@ -19,6 +19,8 @@ namespace OATCommunications
             _commHandler = commHandler;
         }
 
+        public bool Connected { get { return _commHandler.Connected; } }
+
         public async Task<bool> RefreshMountState() {
             var _slewingStates = new []{"SlewToTarget", "FreeSlew", "ManualSlew"};
 
@@ -169,7 +171,7 @@ namespace OATCommunications
             return status.Success;
         }
 
-        private async Task<CommandResponse> SendCommand(string cmd) {
+        public async Task<CommandResponse> SendCommand(string cmd) {
             if (!cmd.StartsWith(":")) {
                 cmd = $":{cmd}";
             }

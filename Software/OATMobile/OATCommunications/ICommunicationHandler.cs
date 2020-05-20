@@ -8,5 +8,6 @@ namespace OATCommunications
 {
     public interface ICommunicationHandler {
         Task<CommandResponse> SendCommand(string command);
+        bool Connected { get; }
     }
 }

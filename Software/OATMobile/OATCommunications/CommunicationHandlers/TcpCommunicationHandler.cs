@@ -25,6 +25,14 @@ namespace OATCommunications.CommunicationHandlers {
             return await SendCommand(command, true);
         }
 
+        public bool Connected
+		{
+			get
+			{
+                return _client != null && _client.Connected;
+			}
+		}
+
         private async Task<CommandResponse> SendCommand(string command, bool needsResponse) {
             if (!_client.Connected) {
                 try {

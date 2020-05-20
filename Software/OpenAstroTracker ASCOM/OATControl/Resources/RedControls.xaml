@@ -1,0 +1,23 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	
+	<!-- Begin InlineSlider Colors -->
+	<Color x:Key="USBGTop">#FF280808</Color>
+	<Color x:Key="USBGBottom">#FF401010</Color>
+	<Color x:Key="SBGTop">#FF701010</Color>
+	<Color x:Key="SBGBottom">#FF501010</Color>
+	<Color x:Key="SBGActTop">#FF702020</Color>
+	<Color x:Key="SBGActBottom">#FF501010</Color>
+	<Color x:Key="ButtonBGTop">#FF902020</Color>
+	<Color x:Key="ButtonBGBottom">#FF601010</Color>
+	<Color x:Key="ButtonBGActTop">#FFB03030</Color>
+	<Color x:Key="ButtonBGActBottom">#FF902020</Color>
+	<Color x:Key="TextColor">#FFFF2020</Color>
+	<Color x:Key="SliderBorderColor">#FF380808</Color>
+	<Color x:Key="SliderPosColor">#FFFF1010</Color>
+	<Color x:Key="PromptColor">#FFD01010</Color>
+	<Color x:Key="PromptActColor">#FFFF1010</Color>
+	<!-- End InlineSlider Colors -->
+
+	
+</ResourceDictionary>
