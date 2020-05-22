@@ -68,8 +68,7 @@ namespace OATCommunications.CommunicationHandlers {
                 try {
                     var response = new byte[256];
                     var respCount = await stream.ReadAsync(response, 0, response.Length);
-                    respString = Encoding.ASCII.GetString(response, 0, respCount);
-
+                    respString = Encoding.ASCII.GetString(response, 0, respCount).TrimEnd("#".ToCharArray());
                     Debug.WriteLine($"Received {respString}");
                 }
                 catch (Exception e) {

@@ -7,6 +7,7 @@ using OATCommunications.CommunicationHandlers;
 namespace OATCommunications
 {
     public interface ICommunicationHandler {
+        Task<CommandResponse> SendBlind(string command);
         Task<CommandResponse> SendCommand(string command);
         bool Connected { get; }
     }
