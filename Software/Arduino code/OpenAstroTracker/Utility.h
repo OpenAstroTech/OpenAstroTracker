@@ -104,6 +104,12 @@ public:
   }
 };
 
+String formatArg(const char* input, va_list args);
+String format(const char* input, ...);
+void log(const char* input);
+void log(String input);
+void logv(const char* input, ...);
+
 #endif
 
 class LcdButtons {

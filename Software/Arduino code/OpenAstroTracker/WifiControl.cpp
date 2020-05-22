@@ -36,6 +36,9 @@ void WifiControl::startInfrastructureMode()
 {
 #ifdef DEBUG_MODE
     Serial.println("Starting Infrastructure Mode Wifi");
+    Serial.println("   with host name: "+String(HOSTNAME));
+    Serial.println("         for SSID: "+String(INFRA_SSID));
+    Serial.println("      and WPA key: "+String(INFRA_WPAKEY));
 #endif
     WiFi.hostname(HOSTNAME);
     WiFi.begin(INFRA_SSID, INFRA_WPAKEY);
@@ -55,20 +58,31 @@ void WifiControl::startAccessPointMode()
     WiFi.softAPConfig(local_ip, gateway, subnet);
 }
 
+String wifiStatus(int status){
+    if (status==WL_IDLE_STATUS) return "Idle.";
+    if (status==WL_NO_SSID_AVAIL) return "No SSID available.";
+    if (status==WL_SCAN_COMPLETED  ) return "Scan completed.";
+    if (status==WL_CONNECTED       ) return "Connected!";
+    if (status==WL_CONNECT_FAILED   ) return "Connect failed.";
+    if (status==WL_CONNECTION_LOST  ) return "Connection Lost.";
+    if (status==WL_DISCONNECTED     ) return "Disconnected.";
+    return "#"+String(status);
+}
+
 void WifiControl::loop()
 {
 
     if (_status != WiFi.status()) {
         _status = WiFi.status();
 #ifdef DEBUG_MODE
-        Serial.println("Connected status changed to " + _status);
+        Serial.println("Connected status changed to " + wifiStatus(_status));
 #endif
         if (_status == WL_CONNECTED) {
             _tcpServer = new WiFiServer(4030);
             _tcpServer->begin();
             _tcpServer->setNoDelay(true);
 #ifdef DEBUG_MODE            
-            Serial.printf("Server status is %d\n", _tcpServer->status());
+            Serial.println("Server status is "+ wifiStatus( _tcpServer->status()));
 #endif
             _udp = new WiFiUDP();
             _udp->begin(4031);
@@ -77,7 +91,9 @@ void WifiControl::loop()
             Serial.print("Connecting to SSID ");
             Serial.print(INFRA_SSID);
             Serial.print("  IP: ");
-            Serial.println(WiFi.localIP());
+            Serial.print(WiFi.localIP());
+            Serial.print(":");
+            Serial.println(String(_tcpServer->port()));
 #endif
         }
     }
@@ -112,14 +128,14 @@ void WifiControl::tcpLoop() {
         while (client.available()) {
             String cmd = client.readStringUntil('#');
 #ifdef DEBUG_MODE
-            Serial.printf("<--  %s#\n", cmd.c_str());
+            Serial.println("<--  "+ cmd + "#");
 #endif
             auto retVal = _cmdProcessor->processCommand(cmd);
 
             if (retVal != "") {
                 client.write(retVal.c_str());
 #ifdef DEBUG_MODE
-                Serial.printf("-->  %s\n", retVal.c_str());
+                Serial.println("-->  " + retVal);
 #endif
             }
 

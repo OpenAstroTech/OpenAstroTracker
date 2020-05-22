@@ -11,6 +11,7 @@ WifiControl wifiControl(&mount, &lcdMenu);
 
 void setup() {
 
+  //debug_init();
   //Serial.begin(38400);
   Serial.begin(57600);
   //BT.begin(9600);
@@ -34,11 +35,7 @@ void setup() {
 #endif
 
   // Configure the mount
-  // Set the global HA correction
-  DayTime polaris = DayTime(24, 0, 0);
-  polaris.subtractTime(DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond));
-  mount.setHACorrection(polaris.getHours(), polaris.getMinutes(), polaris.getSeconds());
-
+  
   // Set the stepper motor parameters
   mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);
   mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);

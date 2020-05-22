@@ -2,19 +2,21 @@
 
 #include "LcdMenu.hpp"
 #include "Mount.hpp"
+#include "Utility.h"
 
 //mountstatus
-#define STATUS_PARKED              B00000000
-#define STATUS_SLEWING             B00000010
-#define STATUS_SLEWING_TO_TARGET   B00000100
-#define STATUS_SLEWING_FREE        B00000010
-#define STATUS_TRACKING            B00001000
-#define STATUS_PARKING             B00010000
-#define STATUS_GUIDE_PULSE         B10000000
-#define STATUS_GUIDE_PULSE_DIR     B01100000
-#define STATUS_GUIDE_PULSE_RA      B01000000
-#define STATUS_GUIDE_PULSE_DEC     B00100000
-#define STATUS_GUIDE_PULSE_MASK    B11100000
+#define STATUS_PARKED              0B0000000000000000
+#define STATUS_SLEWING             0B0000000000000010
+#define STATUS_SLEWING_TO_TARGET   0B0000000000000100
+#define STATUS_SLEWING_FREE        0B0000000000000010
+#define STATUS_SLEWING_MANUAL      0B0000000100000000
+#define STATUS_TRACKING            0B0000000000001000
+#define STATUS_PARKING             0B0000000000010000
+#define STATUS_GUIDE_PULSE         0B0000000010000000
+#define STATUS_GUIDE_PULSE_DIR     0B0000000001100000
+#define STATUS_GUIDE_PULSE_RA      0B0000000001000000
+#define STATUS_GUIDE_PULSE_DEC     0B0000000000100000
+#define STATUS_GUIDE_PULSE_MASK    0B0000000011100000
 
 // slewingStatus()
 #define SLEWING_DEC                B00000010
@@ -147,11 +149,12 @@ void Mount::writePersistentData(int which, int val)
     break;
   }
 
-  EEPROM.write(4, flag);
-  EEPROM.write(5, 0xBE);
 
-  EEPROM.write(loByteLocation, val & 0x00FF);
-  EEPROM.write(hiByteLocation, (val >> 8) & 0x00FF);
+  EEPROMupdate(4, flag);
+  EEPROMupdate(5, 0xBE);
+
+  EEPROMupdate(loByteLocation, val & 0x00FF);
+  EEPROMupdate(hiByteLocation, (val >> 8) & 0x00FF);
 }
 
 /////////////////////////////////
@@ -247,7 +250,7 @@ void Mount::setStepsPerDegree(int which, int steps) {
   }
   else if (which == RA_STEPS) {
     writePersistentData(RA_STEPS, steps);
-    _stepsPerDECDegree = steps;
+    _stepsPerRADegree = steps;
   }
 }
 
@@ -257,36 +260,56 @@ void Mount::setStepsPerDegree(int which, int steps) {
 //
 /////////////////////////////////
 void Mount::setHA(const DayTime& haTime) {
-  _HATime = haTime;
-  _HACorrection.set(_HATime);
-  _HACorrection.subtractTime(_HAAdjust);
+#ifdef DEBUG_MODE
+  logv("setHA:  HA: %d:%d:%d", haTime.getHours(), haTime.getMinutes(), haTime.getSeconds());
+#endif
+  DayTime lst = DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond);
+  lst.addTime(haTime);
+  setLST(lst);
   _lastHASet = millis();
 }
 
-/////////////////////////////////
-//
-// setHACorrection
-//
-/////////////////////////////////
-void Mount::setHACorrection(int h, int m, int s) {
-  _HAAdjust.set(h, m, s);
-}
-
-/////////////////////////////////
-//
-// getHACorrection
-//
-/////////////////////////////////
-DayTime Mount::getHACorrection() {
-  return _HAAdjust;
-}
 /////////////////////////////////
 //
 // HA
 //
 /////////////////////////////////
 const DayTime& Mount::HA() const {
-  return _HATime;
+#ifdef DEBUG_MODE
+  logv("Mount: Get HA.");
+  logv("Mount: Polaris adjust: %d:%d:%d", PolarisRAHour,PolarisRAMinute, PolarisRASecond);
+#endif 
+  DayTime ha = _LST;
+#ifdef DEBUG_MODE
+  logv("Mount: LST: %d:%d:%d", _LST.getHours(), _LST.getMinutes(), _LST.getSeconds());
+#endif
+  ha.subtractTime(DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond));
+#ifdef DEBUG_MODE
+  logv("Mount: LST-Polaris is HA: %d:%d:%d", ha.getHours(), ha.getMinutes(), ha.getSeconds());
+#endif
+  return ha;
+}
+
+/////////////////////////////////
+//
+// LST
+//
+/////////////////////////////////
+const DayTime& Mount::LST() const {
+  return _LST;
+}
+
+/////////////////////////////////
+//
+// setLST
+//
+/////////////////////////////////
+void Mount::setLST(const DayTime& lst) {
+  _LST = lst;
+  _zeroPosRA = lst;
+#ifdef DEBUG_MODE
+  logv("Mount: LST and ZeroPosRA set to: %d:%d:%d", lst.getHours(), lst.getMinutes(), lst.getSeconds());
+#endif
 }
 
 /////////////////////////////////
@@ -316,29 +339,27 @@ DegreeTime& Mount::targetDEC() {
 /////////////////////////////////
 // Get current RA value.
 const DayTime Mount::currentRA() const {
-  if (!isSlewingRA() || (_mountStatus & STATUS_SLEWING_TO_TARGET) == 0) return _currentRA;
-
-  // How many steps are needed between current and target
-  long deltaSteps = _stepperRA->targetPosition() - _currentRAStepperPosition;
-
-  // Calculate how far along (0..1) we are
-  float alongPathNormalized = 1.0 * (_stepperRA->currentPosition() - _currentRAStepperPosition) / deltaSteps;
-
-  float raT = _targetRA.getTotalHours();
-  float raC = _currentRA.getTotalHours();
-  float deltaT = raT - raC;
-
-  // If we're rolling over, take the short route. i.e. if the motor direction indicates
-  // the other direction than the math, move the target beyond current in the right direction
-  if ((raT < raC && (deltaSteps < 0)) || (raT > raC && (deltaSteps > 0))) {
-    raT += (deltaSteps < 0) ? 24 : -24;
-    deltaT = raT - raC;
+  // How many steps moves the RA ring one sidereal hour along. One sidereal hour moves just shy of 15 degrees
+  float stepsPerSiderealHour = _stepsPerRADegree * siderealDegreesInHour;
+  float hourPos = _stepperRA->currentPosition() / stepsPerSiderealHour / 2.0;
+#ifdef DEBUG_MODE
+  logv("currentRA: hourPos: %s", String(hourPos, 4).c_str());
+  logv("currentRA: adding zeroPosRA: %s", String(_zeroPosRA.getTotalHours(), 4).c_str());
+#endif
+  hourPos += _zeroPosRA.getTotalHours();
+#ifdef DEBUG_MODE
+  logv("currentRA: hourPos: %s", String(hourPos, 4).c_str());
+#endif
+  if (_stepperDEC->currentPosition() > 0)
+  {
+    hourPos += 12;
+    if (hourPos > 24) hourPos -= 24;
+#ifdef DEBUG_MODE
+    logv("currentRA: Dec is %d (>0), so adding 12. New hourPos: %s", _stepperDEC->currentPosition(), String(hourPos, 4).c_str());
+#endif
   }
 
-  // Move the RA along by wher we are, fractionally
-  raC += deltaT * alongPathNormalized;
-
-  return raC;
+  return hourPos;
 }
 
 /////////////////////////////////
@@ -348,19 +369,14 @@ const DayTime Mount::currentRA() const {
 /////////////////////////////////
 // Get current DEC value.
 const DegreeTime Mount::currentDEC() const {
-  if (!isSlewingDEC() || (_mountStatus & STATUS_SLEWING_TO_TARGET) == 0) return _currentDEC;
 
-  // How many steps are needed between current and target
-  long deltaSteps = _stepperDEC->targetPosition() - _currentDECStepperPosition;
+  float degreePos = 1.0 * _stepperDEC->currentPosition() / _stepsPerDECDegree;
+  if (degreePos > 0)
+  {
+    degreePos = -degreePos;
+  }
 
-  // Calculate how far along (0..1) we are
-  float alongPathNormalized = 1.0 * (_stepperDEC->currentPosition() - _currentDECStepperPosition) / deltaSteps;
-
-  float decT = _targetDEC.getTotalDegrees();
-  float decC = _currentDEC.getTotalDegrees();
-  float deltaT = decT - decC;
-  decC += deltaT * alongPathNormalized;
-  return decC;
+  return degreePos;
 }
 
 /////////////////////////////////
@@ -374,15 +390,12 @@ void Mount::syncRA(int hour, int minute, int second) {
   // Given the display RA coordinates...
   DayTime newRA = DayTime(hour, minute, second);
 
-  // ... convert to the system RA values
-  newRA.subtractTime(_HACorrection);
-
   // Calculate the difference between the new system RA and the current system RA
   DayTime deltaRA = DayTime(newRA);
-  deltaRA.subtractTime(_currentRA);
+  deltaRA.subtractTime(currentRA());
 
   // Now add this difference to HA.
-  DayTime newHA = DayTime(_HATime);
+  DayTime newHA = DayTime(HA());
   newHA.addTime(deltaRA);
   setHA(newHA);
 
@@ -398,8 +411,7 @@ void Mount::syncRA(int hour, int minute, int second) {
 /////////////////////////////////
 // Set the current DEC position to be the given degrees (which are 0 .. -180 for Northern Hemisphere)
 void Mount::syncDEC(int degree, int minute, int second) {
-  _currentDEC = DegreeTime(degree, minute, second);
-  _targetDEC = _currentDEC;
+  _targetDEC = DegreeTime(degree, minute, second);;
   float targetRA, targetDEC;
   calculateRAandDECSteppers(targetRA, targetDEC);
   _stepperDEC->setCurrentPosition(targetDEC);
@@ -515,32 +527,79 @@ void Mount::runDriftAlignmentPhase(int direction, int durationSecs) {
     _stepperRA->setAcceleration(1500);
     _stepperRA->setMaxSpeed(speed);
     _stepperRA->move(400);
-    _stepperRA->runToPosition();
+    while (_stepperRA->run()) {
+      yield();
+    }
 
     // Overcome the gearing gap
     _stepperRA->setMaxSpeed(300);
     _stepperRA->move(-20);
-    _stepperRA->runToPosition();
+    while (_stepperRA->run()) {
+      yield();
+    }
     break;
 
     case WEST:
     // Move 400 steps west at the calculated speed, synchronously
     _stepperRA->setMaxSpeed(speed);
     _stepperRA->move(-400);
-    _stepperRA->runToPosition();
+    while (_stepperRA->run()) {
+      yield();
+    }
     break;
 
     case 0:
     // Fix the gearing to go back the other way
     _stepperRA->setMaxSpeed(300);
     _stepperRA->move(20);
-    _stepperRA->runToPosition();
+    while (_stepperRA->run()) {
+      yield();
+    }
 
     // Re-configure the stepper to the correct parameters.
     _stepperRA->setAcceleration(_maxRAAcceleration);
     _stepperRA->setMaxSpeed(_maxRASpeed);
     break;
   }
+}
+
+/////////////////////////////////
+//
+// setManualSlewMode
+//
+/////////////////////////////////
+void Mount::setManualSlewMode(bool state) {
+  if (state) {
+    stopSlewing(ALL_DIRECTIONS);
+    stopSlewing(TRACKING);
+    waitUntilStopped(ALL_DIRECTIONS);
+    _mountStatus |= STATUS_SLEWING | STATUS_SLEWING_MANUAL;
+  }
+  else {
+    _mountStatus &= ~STATUS_SLEWING_MANUAL;
+    stopSlewing(ALL_DIRECTIONS);
+    waitUntilStopped(ALL_DIRECTIONS);
+    _stepperRA->setAcceleration(_maxRAAcceleration);
+    _stepperRA->setMaxSpeed(_maxRASpeed);
+    _stepperDEC->setMaxSpeed(_maxDECSpeed);
+    _stepperDEC->setAcceleration(_maxDECAcceleration);
+    startSlewing(TRACKING);
+  }
+}
+
+/////////////////////////////////
+//
+// setSpeed
+//
+/////////////////////////////////
+void Mount::setSpeed(int which, float speed) {
+  if (which == RA_STEPS) {
+    _stepperRA->setSpeed(speed);
+  }
+  else if (which == DEC_STEPS) {
+    _stepperDEC->setSpeed(speed);
+  }
+
 }
 
 /////////////////////////////////
@@ -607,9 +666,10 @@ String Mount::mountStatusString() {
   }
   else {
     if (_mountStatus & STATUS_TRACKING) disp += "TRK ";
-    if (_mountStatus & STATUS_SLEWING) disp += "SLW ";
+    if (_mountStatus & STATUS_SLEWING) disp += "SLW-";
     if (_mountStatus & STATUS_SLEWING_TO_TARGET) disp += "2TRG ";
     if (_mountStatus & STATUS_SLEWING_FREE) disp += "FR ";
+    if (_mountStatus & STATUS_SLEWING_MANUAL) disp += "MAN ";
 
     if (_mountStatus & STATUS_SLEWING) {
       byte slew = slewStatus();
@@ -650,8 +710,11 @@ String Mount::getStatusString() {
     else if (_mountStatus & STATUS_SLEWING_FREE) {
       status = "FreeSlew,";
     }
-    else {
-      status = "Idle,";
+    else if (_mountStatus & STATUS_SLEWING_MANUAL) {
+      status = "ManualSlew,";
+    }
+    else if (slewStatus()& SLEWING_TRACKING){
+      status = "Tracking,";
     }
   }
   else {
@@ -853,6 +916,7 @@ void Mount::waitUntilStopped(byte direction) {
          || ((direction & TRACKING) && (((_mountStatus & STATUS_TRACKING) == 0) && _stepperTRK->isRunning()))
          ) {
     loop();
+    yield();
   }
 }
 
@@ -884,6 +948,7 @@ void Mount::delay(int ms) {
   while (millis() - now < ms)
   {
     loop();
+    yield();
   }
 }
 
@@ -899,8 +964,8 @@ void Mount::loop() {
 
   unsigned long now = millis();
 #ifdef DEBUG_MODE
-  if (now - _lastMountPrint > 1500) {
-    Serial.println(mountStatusString());
+  if (now - _lastMountPrint > 100) {
+    Serial.println(getStatusString());
     _lastMountPrint = now;
   }
 #endif
@@ -925,8 +990,14 @@ void Mount::loop() {
   }
 
   if (_mountStatus & STATUS_SLEWING) {
-    _stepperDEC->run();
-    _stepperRA->run();
+    if (_mountStatus & STATUS_SLEWING_MANUAL) {
+      _stepperDEC->runSpeed();
+      _stepperRA->runSpeed();
+    }
+    else {
+      _stepperDEC->run();
+      _stepperRA->run();
+    }
   }
 
   if (_stepperDEC->isRunning()) {
@@ -938,38 +1009,35 @@ void Mount::loop() {
   }
 
   if (raStillRunning || decStillRunning) {
-    if (!raStillRunning) {
-      _currentRA = _targetRA;
-    }
-    if (!decStillRunning) {
-      _currentDEC = _targetDEC;
-    }
-
     displayStepperPositionThrottled();
   }
   else {
-    _mountStatus &= ~(STATUS_SLEWING | STATUS_SLEWING_TO_TARGET);
-
-    if (_stepperWasRunning) {
-      // Mount is at Target!
-      _currentRA = _targetRA;
-      _currentDEC = _targetDEC;
-
-      // If we we're parking, we just reached home. Clear the flag, reset the motors and stop tracking.
-      if (isParking()) {
-        _mountStatus &= ~STATUS_PARKING;
-        stopSlewing(TRACKING);
-        setHome();
+    if (_mountStatus & STATUS_SLEWING_MANUAL) {
+      if (_stepperWasRunning) {
+        _mountStatus &= ~(STATUS_SLEWING);
       }
+    }
+    else {
+      _mountStatus &= ~(STATUS_SLEWING | STATUS_SLEWING_TO_TARGET);
 
-      _currentDECStepperPosition = _stepperDEC->currentPosition();
-      _currentRAStepperPosition = _stepperRA->currentPosition();
-      _totalDECMove = _totalRAMove = 0;
+      if (_stepperWasRunning) {
+        // Mount is at Target!
+        // If we we're parking, we just reached home. Clear the flag, reset the motors and stop tracking.
+        if (isParking()) {
+          _mountStatus &= ~STATUS_PARKING;
+          stopSlewing(TRACKING);
+          setHome();
+        }
 
-      // Make sure we do one last update when the steppers have stopped.
-      displayStepperPosition();
-      if (!inSerialControl) {
-        _lcdMenu->updateDisplay();
+        _currentDECStepperPosition = _stepperDEC->currentPosition();
+        _currentRAStepperPosition = _stepperRA->currentPosition();
+        _totalDECMove = _totalRAMove = 0;
+
+        // Make sure we do one last update when the steppers have stopped.
+        displayStepperPosition();
+        if (!inSerialControl) {
+          _lcdMenu->updateDisplay();
+        }
       }
     }
   }
@@ -986,6 +1054,10 @@ void Mount::setHome() {
   _stepperRA->setCurrentPosition(0);
   _stepperDEC->setCurrentPosition(0);
   _stepperTRK->setCurrentPosition(0);
+  _zeroPosRA = currentRA();
+#ifdef DEBUG_MODE
+  logv("Mount::setHome: ZeroPosRA set to %d:%d:%d", _zeroPosRA.getHours(), _zeroPosRA.getMinutes(), _zeroPosRA.getSeconds());
+#endif
 }
 
 /////////////////////////////////
@@ -1000,11 +1072,15 @@ void Mount::setTargetToHome() {
   // In order for RA coordinates to work correctly, we need to
   // offset HATime by elapsed time since last HA set and also
   // adjust RA by the elapsed time and set it to zero.
-  _targetRA.set(0, 0, 0);
+  _targetRA = _zeroPosRA;
   _targetRA.addSeconds(trackedSeconds);
-  DayTime ha(_HATime);
-  ha.addSeconds(trackedSeconds);
-  setHA(ha);
+#ifdef DEBUG_MODE
+  logv("Mount::setTargetToHome: ZeroPosRA is %d:%d:%d", _zeroPosRA.getHours(), _zeroPosRA.getMinutes(), _zeroPosRA.getSeconds());
+  logv("Mount::setTargetToHome: TrackedSeconds is %f", trackedSeconds);
+#endif
+  DayTime lst(_LST);
+  lst.addSeconds(trackedSeconds);
+  setLST(lst);
 
   // Set DEC to pole
   _targetDEC.set(0, 0, 0);
@@ -1037,10 +1113,23 @@ float Mount::getSpeed(int direction) {
 // This code tells the steppers to what location to move to, given the select right ascension and declination
 /////////////////////////////////
 void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
-  float hourPos = _targetRA.getTotalHours();
+#ifdef DEBUG_MODE
+  logv("Mount::CalcSteppers: Target RA: %f, DEC: %f    ZeroRA: %f      Steppers: RA: %d, DEC: %d", _targetRA.getTotalHours(), _targetDEC.getTotalDegrees(), _zeroPosRA.getTotalHours(), _stepperRA->currentPosition(), _stepperDEC->currentPosition());
+#endif
+  DayTime raTarget = _targetRA;
+
+  raTarget.subtractTime(_zeroPosRA);
+#ifdef DEBUG_MODE
+  logv("Mount::CalcSteppers: Adjust RA by Zeropos. New Target RA: %f, DEC: %f", raTarget.getTotalHours(), _targetDEC.getTotalDegrees());
+#endif
+
+  float hourPos = raTarget.getTotalHours();
   // Map [0 to 24] range to [-12 to +12] range
   if (hourPos > 12) {
     hourPos = hourPos - 24;
+#ifdef DEBUG_MODE
+    logv("Mount::CalcSteppers: RA>12 so -24. New Target RA: %f, DEC: %f", hourPos, _targetDEC.getTotalDegrees());
+#endif
   }
 
   // How many steps moves the RA ring one sidereal hour along. One sidereal hour moves just shy of 15 degrees
@@ -1053,22 +1142,39 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
   // the variable targetDEC 0deg for the celestial pole (90deg), and goes negative only.
   float moveDEC = -_targetDEC.getTotalDegrees() * _stepsPerDECDegree;
 
+#ifdef DEBUG_MODE
+  logv("Mount::CalcSteppers: Target Step pos RA: %f, DEC: %f", moveRA, moveDEC);
+#endif
+
   // We can move 6 hours in either direction. Outside of that we need to flip directions.
   float RALimit = (6.0f * stepsPerSiderealHour / 2);
 
   // If we reach the limit in the positive direction ...
   if (moveRA > RALimit) {
+#ifdef DEBUG_MODE
+    logv("Mount::CalcSteppers: RA is past +limit: %f, DEC: %f", RALimit);
+#endif
+
     // ... turn both RA and DEC axis around
     float oldRA = moveRA;
     moveRA -= long(12.0f * stepsPerSiderealHour / 2);
     moveDEC = -moveDEC;
+#ifdef DEBUG_MODE
+    logv("Mount::CalcSteppers: Adjusted Target Step pos RA: %f, DEC: %f", moveRA, moveDEC);
+#endif
   }
   // If we reach the limit in the negative direction...
   else if (moveRA < -RALimit) {
+#ifdef DEBUG_MODE
+    logv("Mount::CalcSteppers: RA is past -limit: %f, DEC: %f", -RALimit);
+#endif
     // ... turn both RA and DEC axis around
     float oldRA = moveRA;
     moveRA += long(12.0f * stepsPerSiderealHour / 2);
     moveDEC = -moveDEC;
+#ifdef DEBUG_MODE
+    logv("Mount::CalcSteppers: Adjusted Target Step pos RA: %f, DEC: %f", moveRA, moveDEC);
+#endif
   }
 
   //    float targetRA = clamp(-moveRA, -RAStepperLimit, RAStepperLimit);
@@ -1202,7 +1308,7 @@ String Mount::DECString(byte type, byte active) {
 // RAString
 //
 /////////////////////////////////
-// Return a string of DEC in the given format. For LCDSTRING, active determines where the cursor is
+// Return a string of RA in the given format. For LCDSTRING, active determines where the cursor is
 String Mount::RAString(byte type, byte active) {
   DayTime ra;
   if ((type & TARGET_STRING) == TARGET_STRING) {
@@ -1212,13 +1318,9 @@ String Mount::RAString(byte type, byte active) {
     ra = DayTime(currentRA());
   }
 
-  DayTime raDisplay(ra);
-  raDisplay.addTime(_HACorrection);
-
-  sprintf(scratchBuffer, formatStringsRA[type & FORMAT_STRING_MASK], raDisplay.getHours(), raDisplay.getMinutes(), raDisplay.getSeconds());
+  sprintf(scratchBuffer, formatStringsRA[type & FORMAT_STRING_MASK], ra.getHours(), ra.getMinutes(), ra.getSeconds());
   if ((type & FORMAT_STRING_MASK) == LCDMENU_STRING) {
     scratchBuffer[active * 4] = '>';
   }
   return String(scratchBuffer);
 }
-

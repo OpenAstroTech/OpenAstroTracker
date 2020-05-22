@@ -5,7 +5,7 @@
 #include "Mount.hpp";
 #include "LcdMenu.hpp";
 #include "MeadeCommandProcessor.h"
-#include "WifiServer.h"
+#include "WiFiServer.h"
 #include "WiFiUDP.h"
 #include "WiFiClient.h"
 

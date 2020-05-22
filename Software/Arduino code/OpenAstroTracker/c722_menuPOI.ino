@@ -46,8 +46,6 @@ bool processPOIKeys() {
         else {
           PointOfInterest* poi = &pointOfInterest[currentPOI];
           mount.targetRA().set(poi->hourRA, poi->minRA, poi->secRA);
-          mount.targetRA().addTime(mount.getHACorrection());
-          mount.targetRA().subtractTime(mount.HA());
           mount.targetDEC().set(poi->degreeDEC - (NORTHERN_HEMISPHERE ? 90 : -90), poi->minDEC, poi->secDEC); // internal DEC degree is 0 at celestial poles
           mount.startSlewingToTarget();
         }

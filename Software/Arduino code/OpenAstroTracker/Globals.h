@@ -4,6 +4,8 @@
 #include <Arduino.h>
 #include <WString.h>
 
+void EEPROMupdate(int loc, byte val);
+
 // Set to 1 if you are in the northern hemisphere.
 #define NORTHERN_HEMISPHERE 1
 
@@ -56,7 +58,7 @@ extern int PolarisRASecond;
     // 0 - Infrastructure Only - Connecting to a Router
     // 1 - AP Mode Only        - Acting as a Router
     // 2 - Attempt Infrastructure, Fail over to AP Mode.
-    #define WIFI_MODE 0  
+    #define WIFI_MODE 2 
 #endif
 
 

@@ -59,11 +59,13 @@ public:
   // degree for each axis. This function stores the value in persistent storage
   void setStepsPerDegree(int which, int steps);
 
-  // Set the HA time
+  // Set the HA time (HA is derived from LST, the setter calculates and sets LST)
   void setHA(const DayTime& haTime);
   const DayTime& HA() const;
-  void setHACorrection(int h, int m, int s);
-  DayTime getHACorrection();
+
+  // Set the LST time (HA is derived from LST)
+  void setLST(const DayTime& haTime);
+  const DayTime& LST() const;
 
   // Get a reference to the target RA value.
   DayTime& targetRA();
@@ -152,6 +154,12 @@ public:
   // Runs a phase of the drift alignment procedure
   void runDriftAlignmentPhase(int direction, int durationSecs);
 
+  // Toggle the state where we run the motors at a constant speed
+  void setManualSlewMode(bool state);
+
+  // Set the speed of the given motoer
+  void setSpeed(int which, float speed);
+   
 private:
 
   // Reads values from EEPROM that configure the mount (if previously stored)
@@ -186,14 +194,13 @@ private:
   int _maxDECAcceleration;
 
   long _lastHASet;
-  DayTime _HAAdjust;
+  DayTime _LST;
+  DayTime _zeroPosRA;
 
   DayTime _targetRA;
-  DayTime _currentRA;
   long _currentRAStepperPosition;
 
   DegreeTime _targetDEC;
-  DegreeTime _currentDEC;
   long _currentDECStepperPosition;
 
   float _totalDECMove;
@@ -206,12 +213,10 @@ private:
 
   unsigned long _guideEndTime;
   unsigned long _lastMountPrint = 0;
-  DayTime _HATime;
-  DayTime _HACorrection;
   float _trackingSpeed;
   float _trackingSpeedCalibration;
   unsigned long _lastDisplayUpdate;
-  byte _mountStatus;
+  int _mountStatus;
   char scratchBuffer[24];
   bool _stepperWasRunning;
 };

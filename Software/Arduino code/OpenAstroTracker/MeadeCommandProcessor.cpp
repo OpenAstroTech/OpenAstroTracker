@@ -1,5 +1,6 @@
 #include "MeadeCommandProcessor.h"
 #include "Globals.h"
+#include "Utility.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -75,7 +76,22 @@
 //
 // :GX#
 //      Get Mount Status
-//      Returns: string reflecting the mounts' status
+//      Returns: string reflecting the mounts' status. The string is a comma-delimited list of statuses:
+//               Idle,--T,11219,0,927,071906,+900000,#
+//                 |   |    |   |  |     |      |    
+//                 |   |    |   |  |     |      |    
+//                 |   |    |   |  |     |      |    
+//                 |   |    |   |  |     |      +------------------ [6] The current DEC position
+//                 |   |    |   |  |     +------------------------- [5] The current RA position
+//                 |   |    |   |  +------------------------------- [4] The Tracking stepper position
+//                 |   |    |   +---------------------------------- [3] The DEC stepper position
+//                 |   |    +-------------------------------------- [2] The RA stepper position
+//                 |   +------------------------------------------- [1] The motion state. 
+//                 |                                                    First character is RA slewing state ('R' is East, 'r' is West, '-' is stopped). 
+//                 |                                                    Second character is DEC slewing state ('d' is North, 'D' is South, '-' is stopped). 
+//                 |                                                    Third character is TRK slewing state ('T' is Tracking, '-' is stopped). 
+//                 +----------------------------------------------- [0] The mount status. One of 'Idle', 'Parked', 'Parking', 'Guiding', 'SlewToTarget', 'FreeSlew', 'ManualSlew', 'Tracking'
+//
 //
 //------------------------------------------------------------------
 // SET FAMILY
@@ -111,7 +127,7 @@
 // :MS#
 //      Start Slew to Target (Asynchronously)
 //      This starts slewing the scope to the target RA and DEC coordinates and returns immediately.
-//      Returns: 1
+//      Returns: 0
 //
 // -- MOVEMENT Extensions --
 //
@@ -119,13 +135,19 @@
 //      Run a Guide pulse
 //      This runs the motors for a short period of time.
 //      Where d is one of 'N', 'E', 'W', or 'S' and nnnn is the duration in ms.
-//      Returns: nothing
+//      Returns: 1
 //
 // :MTs#
 //      Set Tracking mode
 //      This turns the scopes tracking mode on or off.
 //      Where s is 1 to turn on Tracking and 0 to turn it off.
 //      Returns: 1
+//
+// :Mc#
+//      Start slewing 
+//      This starts slewing the mount in the given direction.
+//      Where c is one of 'n', 'e', 'w', or 's'. 
+//      Returns: nothing
 //
 //------------------------------------------------------------------
 // HOME FAMILY
@@ -146,7 +168,7 @@
 // :hU#
 //      Unpark Scope
 //      This currently simply turns on tracking.
-//      Returns: Nothing
+//      Returns: 1
 //
 //------------------------------------------------------------------
 // QUIT MOVEMENT FAMILY
@@ -157,7 +179,7 @@
 //      Returns: 1 when all motors have stopped.
 //
 // :Qd#
-//      Stop slew in specified direction where d is n, s, e, w
+//      Stop slew in specified direction where d is n, s, e, w, a (the first four are the cardinal directions, a stands for All).
 //      Returns: nothing
 //
 // -- QUIT MOVEMENT Extensions --
@@ -190,6 +212,16 @@
 //      Get the adjustment factor used to speed up (>1.0) or slow down (<1.0) the tracking speed of the mount.
 //      Returns: float
 //
+// :XGH#
+//      Get HA
+//      Get the current HA of the mount.
+//      Returns: HHMMSS
+//
+// :XGL#
+//      Get LST
+//      Get the current LST of the mount.
+//      Returns: HHMMSS
+//
 // :XSRn#
 //      Set RA steps 
 //      Set the number of steps the RA stepper motor needs to take to rotate by one degree 
@@ -205,6 +237,22 @@
 // :XSSn.n#
 //      Set Tracking speed adjustment
 //      Set the adjustment factor used to speed up (>1.0) or slow down (<1.0) the tracking speed of the mount.
+//      Returns: nothing
+//
+// :XSMn#
+//      Set Manual Slewing Mode
+//      Toggle the manual slewing mode state where the RA and DEC motors run at a constant speed.
+//      Where n is '1' to turn it on, otherwise turn it off.
+//      Returns: nothing
+//
+// :XSXn.nnn#
+//      Set RA manual slewing speed
+//      Set the speed of the RA motor, immediately. Must be in manual slewing mode
+//      Returns: nothing
+//
+// :XSYn.nnn#
+//      Set DEC manual slewing speed
+//      Set the speed of the DEC motor, immediately.
 //      Returns: nothing
 //
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -288,6 +336,8 @@ String MeadeCommandProcessor::handleMeadeGetInfo(String inCmd) {
     }
     return retVal + "#";
   }
+
+  return "0#";
 }
 
 /////////////////////////////
@@ -332,8 +382,6 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     if ((inCmd[3] == ':') && (inCmd[6] == ':'))
     {
       _mount->targetRA().set(inCmd.substring(1, 3).toInt(), inCmd.substring(4, 6).toInt(), inCmd.substring(7, 9).toInt());
-      _mount->targetRA().addTime(_mount->getHACorrection());
-      _mount->targetRA().subtractTime(_mount->HA());
       return "1";
     }
     else {
@@ -351,10 +399,11 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
         secLST = inCmd.substring(6, 8).toInt();
       }
 
-      DayTime ha(hLST, minLST, secLST);
-      DayTime pol(PolarisRAHour, PolarisRAMinute, PolarisRASecond);
-      ha.subtractTime(pol);
-      _mount->setHA(ha);
+      DayTime lst(hLST, minLST, secLST);
+#ifdef DEBUG_MODE
+      logv("MeadeSetInfo: Received LST: %d:%d:%d", hLST,minLST,secLST);
+#endif
+      _mount->setLST(lst);
     }
     else if (inCmd[1] == 'P') {
       // Set home point
@@ -365,6 +414,9 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
       // Set HA
       int hHA = inCmd.substring(1, 3).toInt();
       int minHA = inCmd.substring(4, 6).toInt();
+#ifdef DEBUG_MODE
+      logv("MeadeSetInfo: Received HA: %d:%d:%d", hHA, minHA, 0);
+#endif
       _mount->setHA(DayTime(hHA, minHA, 0));
     }
 
@@ -444,22 +496,27 @@ String MeadeCommandProcessor::handleMeadeMovement(String inCmd) {
       else if (inCmd[1] == 'W') direction = WEST;
       int duration = (inCmd[2] - '0') * 1000 + (inCmd[3] - '0') * 100 + (inCmd[4] - '0') * 10 + (inCmd[5] - '0');
       _mount->guidePulse(direction, duration);
+      return "1";
     }
   }
   else if (inCmd[0] == 'e') {
     _mount->startSlewing(EAST);
+    return "";
   }
   else if (inCmd[0] == 'w') {
     _mount->startSlewing(WEST);
+    return "";
   }
   else if (inCmd[0] == 'n') {
     _mount->startSlewing(NORTH);
+    return "";
   }
   else if (inCmd[0] == 's') {
     _mount->startSlewing(SOUTH);
+    return "";
   }
 
-  return "";
+  return "0";
 }
 
 /////////////////////////////
@@ -474,6 +531,7 @@ String MeadeCommandProcessor::handleMeadeHome(String inCmd) {
   }
   else if (inCmd[0] == 'U') {  // Unpark
     _mount->startSlewing(TRACKING);
+    return "1";
   }
   return "";
 }
@@ -519,6 +577,16 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
     else if (inCmd[1] == 'S') {
       return String(_mount->getSpeedCalibration(), 5) + "#";
     }
+    else if (inCmd[1] == 'H') {
+      char scratchBuffer[10];
+      sprintf(scratchBuffer, "%02d%02d%02d#", _mount->HA().getHours(), _mount->HA().getMinutes(), _mount->HA().getSeconds());
+      return String(scratchBuffer);
+    }
+    else if (inCmd[1] == 'L') {
+      char scratchBuffer[10];
+      sprintf(scratchBuffer, "%02d%02d%02d#", _mount->LST().getHours(), _mount->LST().getMinutes(), _mount->LST().getSeconds());
+      return String(scratchBuffer);
+    }
   }
   else if (inCmd[0] == 'S') { // Set RA/DEC steps/deg, speedfactor
     if (inCmd[1] == 'R') {
@@ -529,6 +597,15 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
     }
     else if (inCmd[1] == 'S') {
       _mount->setSpeedCalibration(inCmd.substring(2).toFloat(), true);
+    }
+    else if (inCmd[1] == 'M') {
+      _mount->setManualSlewMode(inCmd[2] == '1');
+    }
+    else if (inCmd[1] == 'X') {
+      _mount->setSpeed(RA_STEPS, inCmd.substring(2).toFloat());
+    }
+    else if (inCmd[1] == 'Y') {
+      _mount->setSpeed(DEC_STEPS, inCmd.substring(2).toFloat());
     }
   }
   return "";
@@ -548,7 +625,10 @@ String MeadeCommandProcessor::handleMeadeQuit(String inCmd) {
   }
 
   switch (inCmd[0]) {
-  case 'e':
+    case 'a':
+      _mount->stopSlewing(ALL_DIRECTIONS);
+    break;
+    case 'e':
       _mount->stopSlewing(EAST);
       break;
   case 'w':
