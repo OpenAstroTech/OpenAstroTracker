@@ -52,6 +52,9 @@ void setup() {
 
   mount.setHA(haTime);
 
+  // For LCD screen, it's better to initialize the target to where we are (RA)
+  mount.targetRA() = mount.currentRA();
+
   // Start the tracker.
   mount.startSlewing(TRACKING);
 

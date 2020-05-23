@@ -44,6 +44,7 @@ void loop() {
 
 #endif
 
+
   // Give the mount a time slice to do its thing...
   mount.loop();
 
@@ -75,49 +76,50 @@ void loop() {
     }
     else
 #endif
+
     {
       switch (lcdMenu.getActive()) {
         case RA_Menu:
-          waitForButtonRelease = processRAKeys();
-          break;
+        waitForButtonRelease = processRAKeys();
+        break;
         case DEC_Menu:
-          waitForButtonRelease = processDECKeys();
-          break;
+        waitForButtonRelease = processDECKeys();
+        break;
 #ifdef SUPPORT_POINTS_OF_INTEREST
         case POI_Menu:
-          waitForButtonRelease = processPOIKeys();
-          break;
+        waitForButtonRelease = processPOIKeys();
+        break;
 #else
         case Home_Menu:
-          waitForButtonRelease = processHomeKeys();
-          break;
+        waitForButtonRelease = processHomeKeys();
+        break;
 #endif
 
         case HA_Menu:
-          waitForButtonRelease = processHAKeys();
-          break;
+        waitForButtonRelease = processHAKeys();
+        break;
 #ifdef SUPPORT_HEATING
         case Heat_Menu:
-          waitForButtonRelease = processHeatKeys();
-          break;
+        waitForButtonRelease = processHeatKeys();
+        break;
 #endif
 
 #ifdef SUPPORT_CALIBRATION
         case Calibration_Menu:
-          waitForButtonRelease = processCalibrationKeys();
-          break;
+        waitForButtonRelease = processCalibrationKeys();
+        break;
 #endif
 
 #ifdef SUPPORT_MANUAL_CONTROL
         case Control_Menu:
-          waitForButtonRelease = processControlKeys();
-          break;
+        waitForButtonRelease = processControlKeys();
+        break;
 #endif
 
 #ifdef SUPPORT_INFO_DISPLAY
         case Status_Menu:
-          waitForButtonRelease = processStatusKeys();
-          break;
+        waitForButtonRelease = processStatusKeys();
+        break;
 #endif
       }
     }
@@ -146,32 +148,52 @@ void loop() {
 #endif
     {
       if (!inSerialControl) {
-        switch (lcdMenu.getActive()) {
-          case RA_Menu: printRASubmenu(); break;
-          case DEC_Menu: printDECSubmenu(); break;
+        // For some strange reason, a switch statement here causes a crash and reboot....
+        int activeMenu = lcdMenu.getActive();
+        if (activeMenu == RA_Menu) {
+          printRASubmenu();
+        }
+        else if (activeMenu == DEC_Menu)
+        {
+          printDECSubmenu();
+        }
 #ifdef SUPPORT_POINTS_OF_INTEREST
-          case POI_Menu: printPOISubmenu(); break;
+        else if (activeMenu == POI_Menu) {
+          printPOISubmenu();
+        }
 #else
-          case Home_Menu: printHomeSubmenu(); break;
+        else if (activeMenu == Home_Menu) {
+          printHomeSubmenu();
+        }
 #endif
-          case HA_Menu: printHASubmenu(); break;
+        else if (activeMenu == HA_Menu) {
+          printHASubmenu();
+        }
 #ifdef SUPPORT_HEATING
-          case Heat_Menu: printHeatSubmenu(); break;
+        else if (activeMenu == Heat_Menu) {
+          printHeatSubmenu();
+        }
 #endif
 #ifdef SUPPORT_MANUAL_CONTROL
-          case Control_Menu: printControlSubmenu(); break;
+        else if (activeMenu == Control_Menu) {
+          printControlSubmenu();
+        }
 #endif
 #ifdef SUPPORT_CALIBRATION
-          case Calibration_Menu: printCalibrationSubmenu(); break;
+        else if (activeMenu == Calibration_Menu) {
+          printCalibrationSubmenu();
+        }
 #endif
 
 #ifdef SUPPORT_INFO_DISPLAY
-          case Status_Menu: printStatusSubmenu(); break;
-#endif
+        else if (activeMenu == Status_Menu) {
+          printStatusSubmenu();
         }
+#endif
       }
     }
   }
+
 
   BTin();
 }

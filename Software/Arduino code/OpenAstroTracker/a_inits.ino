@@ -2,6 +2,7 @@
 //#include <SoftwareSerial.h>
 #include <EEPROM.h>
 #include <AccelStepper.h>
+//#include <avr8-stub.h>
 #include <LiquidCrystal.h>
 
 #include "Utility.h"
@@ -48,9 +49,9 @@
 #endif
 
 // Menu IDs
-#define RA_Menu 0
-#define DEC_Menu 1
-#define HA_Menu 2
+#define RA_Menu 1
+#define DEC_Menu 2
+#define HA_Menu 3
 #define Heat_Menu 4
 #define Calibration_Menu 5
 #define Control_Menu 6

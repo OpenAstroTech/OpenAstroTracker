@@ -9,7 +9,6 @@
 LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(8, 9, 4, 5, 6, 7) {
   //_lcd = new LiquidCrystal(8, 9, 4, 5, 6, 7);
   _lcd.begin(cols, rows);
-  _activeId = 0;
   _numMenuItems = 0;
   _activeMenuIndex = 0;
   _longestDisplay = 0;
@@ -48,12 +47,11 @@ void LcdMenu::addItem(const char* disp, byte id) {
 
 // Get the currently active item ID
 byte LcdMenu::getActive() {
-  return _activeId;
+  return _menuItems[_activeMenuIndex]->id();
 }
 
 // Set the active menu item
 void LcdMenu::setActive(byte id) {
-  _activeId = id;
   for (byte i = 0; i < _numMenuItems; i++) {
     if (_menuItems[i]->id() == id) {
       _activeMenuIndex = i;
@@ -77,7 +75,6 @@ void LcdMenu::clear() {
 void LcdMenu::setNextActive() {
 
   _activeMenuIndex = adjustWrap(_activeMenuIndex, 1, 0, _numMenuItems - 1);
-  _activeId = _menuItems[_activeMenuIndex]->id();
 
   // Update the display
   updateDisplay();
@@ -105,7 +102,7 @@ void LcdMenu::updateDisplay() {
   // Build the entire menu string
   for (byte i = 0; i < _numMenuItems; i++) {
     MenuItem* item = _menuItems[i];
-    bool isActive = item->id() == _activeId;
+    bool isActive = i == _activeMenuIndex;
     sprintf(scratchBuffer, "%c%s%c", isActive ? '>' : ' ', item->display(), isActive ? '<' : ' ');
 
     // For the active item remember where it starts in the string and insert selector arrows

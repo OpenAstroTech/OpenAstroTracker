@@ -61,7 +61,7 @@ public:
 
   // Set the HA time (HA is derived from LST, the setter calculates and sets LST)
   void setHA(const DayTime& haTime);
-  const DayTime& HA() const;
+  const DayTime HA() const;
 
   // Set the LST time (HA is derived from LST)
   void setLST(const DayTime& haTime);

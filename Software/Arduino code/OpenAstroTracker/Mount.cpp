@@ -88,19 +88,30 @@ void Mount::readPersistentData()
 {
   // Read the magic marker byte and state
   int marker = EEPROM.read(4) + EEPROM.read(5) * 256;
-
-  if (marker & 0xFF01 == 0xBE01) {
+#ifdef DEBUG_MODE
+  logv("EEPROM: Marker is %d", marker);
+#endif
+  if ((marker & 0xFF01) == 0xBE01) {
     _stepsPerRADegree = EEPROM.read(6) + EEPROM.read(7) * 256;
+#ifdef DEBUG_MODE
+    logv("EEPROM: RA Marker OK! RA steps/deg is %d", _stepsPerRADegree);
+#endif
   }
 
-  if (marker & 0xFF02 == 0xBE02) {
+  if ((marker & 0xFF02) == 0xBE02) {
     _stepsPerDECDegree = EEPROM.read(8) + EEPROM.read(9) * 256;
+#ifdef DEBUG_MODE
+    logv("EEPROM: DEC Marker OK! DEC steps/deg is %d", _stepsPerDECDegree);
+#endif
   }
 
   float speed = 1.0;
-  if (marker & 0xFF04 == 0xBE04) {
+  if ((marker & 0xFF04) == 0xBE04) {
     int adjust = EEPROM.read(0) + EEPROM.read(3) * 256;
     speed = 1.0 + adjust / 10000;
+#ifdef DEBUG_MODE
+    logv("EEPROM: Speed Marker OK! Speed adjust is %d", adjust);
+#endif
   }
 
   setSpeedCalibration(speed, false);
@@ -274,7 +285,7 @@ void Mount::setHA(const DayTime& haTime) {
 // HA
 //
 /////////////////////////////////
-const DayTime& Mount::HA() const {
+const DayTime Mount::HA() const {
 #ifdef DEBUG_MODE
   logv("Mount: Get HA.");
   logv("Mount: Polaris adjust: %d:%d:%d", PolarisRAHour,PolarisRAMinute, PolarisRASecond);
@@ -342,21 +353,11 @@ const DayTime Mount::currentRA() const {
   // How many steps moves the RA ring one sidereal hour along. One sidereal hour moves just shy of 15 degrees
   float stepsPerSiderealHour = _stepsPerRADegree * siderealDegreesInHour;
   float hourPos = _stepperRA->currentPosition() / stepsPerSiderealHour / 2.0;
-#ifdef DEBUG_MODE
-  logv("currentRA: hourPos: %s", String(hourPos, 4).c_str());
-  logv("currentRA: adding zeroPosRA: %s", String(_zeroPosRA.getTotalHours(), 4).c_str());
-#endif
   hourPos += _zeroPosRA.getTotalHours();
-#ifdef DEBUG_MODE
-  logv("currentRA: hourPos: %s", String(hourPos, 4).c_str());
-#endif
   if (_stepperDEC->currentPosition() > 0)
   {
     hourPos += 12;
     if (hourPos > 24) hourPos -= 24;
-#ifdef DEBUG_MODE
-    logv("currentRA: Dec is %d (>0), so adding 12. New hourPos: %s", _stepperDEC->currentPosition(), String(hourPos, 4).c_str());
-#endif
   }
 
   return hourPos;
@@ -964,7 +965,7 @@ void Mount::loop() {
 
   unsigned long now = millis();
 #ifdef DEBUG_MODE
-  if (now - _lastMountPrint > 100) {
+  if (now - _lastMountPrint > 1000) {
     Serial.println(getStatusString());
     _lastMountPrint = now;
   }
@@ -1216,14 +1217,14 @@ void Mount::displayStepperPosition() {
     sprintf(scratchBuffer, "R %s %d%%", RAString(LCD_STRING | CURRENT_STRING).c_str(), (int)raDist);
     _lcdMenu->setCursor(0, 0);
     _lcdMenu->printMenu(String(scratchBuffer));
-    sprintf(scratchBuffer, "D %s %d%%", DECString(LCD_STRING | CURRENT_STRING).c_str(), (int)decDist);
+    sprintf(scratchBuffer, "D%s %d%%", DECString(LCD_STRING | CURRENT_STRING).c_str(), (int)decDist);
     _lcdMenu->setCursor(0, 1);
     _lcdMenu->printMenu(String(scratchBuffer));
     return;
   }
   else if (abs(_totalDECMove) > 0.001) {
     float decDist = 100.0 - 100.0 * _stepperDEC->distanceToGo() / _totalDECMove;
-    sprintf(scratchBuffer, "D %s %d%%", DECString(LCD_STRING | CURRENT_STRING).c_str(), (int)decDist);
+    sprintf(scratchBuffer, "D%s %d%%", DECString(LCD_STRING | CURRENT_STRING).c_str(), (int)decDist);
     _lcdMenu->setCursor(0, 1);
     _lcdMenu->printMenu(String(scratchBuffer));
   }
@@ -1245,20 +1246,14 @@ void Mount::displayStepperPosition() {
       _lcdMenu->printMenu(scratchBuffer);
     }
     else {
-      disp = "R:" + String(_stepperRA->currentPosition());
+      sprintf(scratchBuffer, "R%s D%s", RAString(COMPACT_STRING | CURRENT_STRING).c_str(), DECString(COMPACT_STRING | CURRENT_STRING).c_str());
       _lcdMenu->setCursor(0, 1);
-      _lcdMenu->printMenu(disp);
-      disp = "D:" + String(_stepperDEC->currentPosition());
-      _lcdMenu->setCursor(8, 1);
-      _lcdMenu->printMenu(disp);
+      _lcdMenu->printMenu(scratchBuffer);
     }
 #else
-    disp = "R:" + String(_stepperRA->currentPosition());
+     sprintf(scratchBuffer, "R%s D%s", RAString(COMPACT_STRING | CURRENT_STRING).c_str(), DECString(COMPACT_STRING | CURRENT_STRING).c_str());
     _lcdMenu->setCursor(0, 1);
-    _lcdMenu->printMenu(disp);
-    disp = "D:" + String(_stepperDEC->currentPosition());
-    _lcdMenu->setCursor(8, 1);
-    _lcdMenu->printMenu(disp);
+    _lcdMenu->printMenu(scratchBuffer);
 #endif
   }
 #endif
