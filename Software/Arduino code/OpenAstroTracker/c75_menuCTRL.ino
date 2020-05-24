@@ -115,6 +115,7 @@ bool processControlKeys() {
         lcdMenu.setCursor(0, 0);
         lcdMenu.printMenu("Set home point?");
         confirmZeroPoint = true;
+        waitForRelease = true;
       }
     }
     break;
@@ -127,7 +128,7 @@ bool processControlKeys() {
 
   mount.loop();
 
-  return false;
+  return waitForRelease;
 }
 
 
