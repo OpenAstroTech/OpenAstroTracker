@@ -1,14 +1,13 @@
 #ifndef HEADLESS_CLIENT
 bool processDECKeys() {
   byte key;
-  bool waitForRelease = true;
+  bool waitForRelease = false;
   if (lcdButtons.currentState() == btnUP) {
     if (DECselect == 0) mount.targetDEC().addDegrees(1);
     if (DECselect == 1) mount.targetDEC().addMinutes(1);
     if (DECselect == 2) mount.targetDEC().addSeconds(1);
     // slow down key repetitions
     mount.delay(200);
-    waitForRelease = false;
   }
   else if (lcdButtons.currentState() == btnDOWN) {
     if (DECselect == 0) mount.targetDEC().addDegrees(-1);
@@ -16,9 +15,9 @@ bool processDECKeys() {
     if (DECselect == 2) mount.targetDEC().addSeconds(-1);
     // slow down key repetitions
     mount.delay(200);
-    waitForRelease = false;
   }
-  else if (lcdButtons.keyChanged(key)) {
+  else if (lcdButtons.keyChanged(&key)) {
+    waitForRelease = true;
     switch (key)
     {
       case btnLEFT: {

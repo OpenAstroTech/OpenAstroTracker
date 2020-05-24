@@ -34,10 +34,12 @@ bool processKeyStateChanges(int key, int dir)
 
 bool processControlKeys() {
   byte key;
+  bool waitForRelease = false;
 
   // User must use SELECT to enter manual control.
   if (!inControlMode) {
-    if (lcdButtons.keyChanged(key)) {
+    if (lcdButtons.keyChanged(&key)) {
+      waitForRelease = true;
       if (key == btnSELECT) {
         inControlMode = true;
         mount.stopSlewing(ALL_DIRECTIONS);
@@ -46,11 +48,12 @@ bool processControlKeys() {
         lcdMenu.setNextActive();
       }
     }
-    return true;
+    return waitForRelease;
   }
 
   if (confirmZeroPoint) {
-    if (lcdButtons.keyChanged(key)) {
+    if (lcdButtons.keyChanged(&key)) {
+      waitForRelease = true;
       if (key == btnSELECT) {
         if (setZeroPoint) {
           // Leaving Control Menu, so set stepper motor positions to zero.
@@ -79,7 +82,7 @@ bool processControlKeys() {
         setZeroPoint = !setZeroPoint;
       }
     }
-    return true;
+    return waitForRelease;
   }
 
   mount.loop();

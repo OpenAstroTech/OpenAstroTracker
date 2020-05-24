@@ -7,7 +7,9 @@ byte subIndex = 0;
 
 bool processStatusKeys() {
   byte key;
-  if (lcdButtons.keyChanged(key)) {
+  bool waitForRelease = false;
+  if (lcdButtons.keyChanged(&key)) {
+    waitForRelease = true;
     switch (key) {
       case btnDOWN: {
         infoIndex = adjustWrap(infoIndex, 1, 0, maxInfoIndex);
@@ -29,14 +31,10 @@ bool processStatusKeys() {
         lcdMenu.setNextActive();
       }
       break;
-
-      case btnNONE: {
-      }
-      break;
     }
   }
 
-  return true;
+  return waitForRelease;
 }
 
 void printStatusSubmenu() {

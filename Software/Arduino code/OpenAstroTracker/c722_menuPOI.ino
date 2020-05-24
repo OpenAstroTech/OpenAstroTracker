@@ -33,7 +33,9 @@ byte homePOI = sizeof(pointOfInterest) / sizeof(pointOfInterest[0]) - 2;
 
 bool processPOIKeys() {
   byte key;
-  if (lcdButtons.keyChanged(key)) {
+  bool waitForRelease = false;
+  if (lcdButtons.keyChanged(&key)) {
+    waitForRelease = true;
     switch (key) {
       case btnSELECT: {
         mount.stopSlewing(ALL_DIRECTIONS);
@@ -70,7 +72,7 @@ bool processPOIKeys() {
     }
   }
 
-  return true;
+  return waitForRelease;
 }
 
 void printPOISubmenu() {

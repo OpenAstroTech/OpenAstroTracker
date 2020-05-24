@@ -2,7 +2,7 @@
 
 bool processHAKeys() {
   byte key;
-  bool waitForRelease = true;
+  bool waitForRelease = false;
   if (lcdButtons.currentState() == btnUP) {
     DayTime ha(mount.HA());
     if (HAselect == 0) ha.addHours(1);
@@ -11,7 +11,6 @@ bool processHAKeys() {
 
     // slow down key repetitions
     mount.delay(200);
-    waitForRelease = false;
   }
   else if (lcdButtons.currentState() == btnDOWN) {
     DayTime ha(mount.HA());
@@ -21,9 +20,9 @@ bool processHAKeys() {
 
     // slow down key repetitions
     mount.delay(200);
-    waitForRelease = false;
   }
-  else if (lcdButtons.keyChanged(key)) {
+  else if (lcdButtons.keyChanged(&key)) {
+    waitForRelease = true;
     switch (key) {
       case btnLEFT: {
         HAselect = adjustWrap(HAselect, 1, 0, 1);

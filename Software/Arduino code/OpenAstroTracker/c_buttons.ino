@@ -6,7 +6,8 @@ int loopsOfSameKey = 0;
 int lastLoopKey = -1;
 
 #ifdef LCD_BUTTON_TEST
-byte lastKey = 0;
+byte lastKey = btnNONE;
+
 #endif
 
 void loop() {
@@ -18,11 +19,14 @@ void loop() {
   lcdMenu.setCursor(0, 0);
   lcdMenu.printMenu("Key Diagnostic");
   lcd_key = lcdButtons.currentState();
+  int key = lcdButtons.currentKey();
+  bool changed = lcdButtons.keyChanged(&lastKey);
+
   adc_key_in = lcdButtons.currentAnalogState();
 
   lcdMenu.setCursor(0, 1);
   char buf[128];
-  sprintf(buf, "ADC:%4d >", adc_key_in);
+  sprintf(buf, "A:%4d %d ", adc_key_in, key);
   String state = String(buf);
   switch (lcd_key)
   {
@@ -35,9 +39,8 @@ void loop() {
   }
 
   lcdMenu.printMenu(state);
-  if (lcd_key != lastKey) {
-    Serial.println(state);
-    lastKey = lcd_key;
+  if (changed) {
+    Serial.println(lastKey);
   }
 
   return;
@@ -52,7 +55,7 @@ void loop() {
 
 #ifdef SUPPORT_SERIAL_CONTROL
   if (inSerialControl) {
-    if (lcdButtons.keyChanged(lcd_key)) {
+    if (lcdButtons.keyChanged(&lcd_key)) {
       if (lcd_key == btnSELECT) {
         quitSerialOnNextButtonRelease = true;
       }
@@ -125,10 +128,13 @@ void loop() {
     }
 
     if (waitForButtonRelease) {
-      if (lcdButtons.currentKey() != btnNONE) {
+      if (lcdButtons.currentState() != btnNONE) {
         do {
-          if (lcdButtons.currentKey() == btnNONE) {
-            break;
+          byte key;
+          if (lcdButtons.keyChanged(&key)) {
+            if (key == btnNONE) {
+              break;
+            }
           }
 
           // Make sure tracker can still run while fiddling with menus....
@@ -142,7 +148,7 @@ void loop() {
 
 #ifdef SUPPORT_GUIDED_STARTUP
     if (inStartup) {
-      prinStartupMenu();
+      printStartupMenu();
     }
     else
 #endif

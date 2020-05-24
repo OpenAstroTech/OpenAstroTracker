@@ -140,10 +140,10 @@ public:
     return _analogKeyValue;
   }
 
-  bool keyChanged(byte& newKey) {
+  bool keyChanged(byte* pNewKey) {
     checkKey();
     if (_newKey != _lastNewKey) {
-      newKey = _newKey;
+      *pNewKey = _newKey;
       _lastNewKey = _newKey;
       return true;
     }

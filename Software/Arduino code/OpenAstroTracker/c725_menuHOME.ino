@@ -3,7 +3,10 @@ byte subGoIndex = 0;
 
 bool processHomeKeys() {
   byte key;
-  if (lcdButtons.keyChanged(key)) {
+  bool waitForRelease = false;
+
+  if (lcdButtons.keyChanged(&key)) {
+    waitForRelease = true;
     switch (key) {
       case btnSELECT: {
         if (subGoIndex == 0) {
@@ -29,7 +32,7 @@ bool processHomeKeys() {
     }
   }
 
-  return true;
+  return waitForRelease;
 }
 
 void printHomeSubmenu() {

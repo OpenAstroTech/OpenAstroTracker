@@ -29,11 +29,12 @@ void startupIsCompleted() {
 
 bool processStartupKeys() {
   byte key;
-  bool waitForRelease = true;
+  bool waitForRelease = false;
   switch (startupState) {
     case StartupIsInHomePosition: {
-      if (lcdButtons.keyChanged(key))
+      if (lcdButtons.keyChanged(&key))
       {
+        waitForRelease = true;
         if (key == btnLEFT) {
           isInHomePosition = adjustWrap(isInHomePosition, 1, YES, CANCEL);
         }
@@ -88,7 +89,7 @@ bool processStartupKeys() {
 }
 
 
-void prinStartupMenu() {
+void printStartupMenu() {
 
   switch (startupState) {
     case StartupIsInHomePosition: {

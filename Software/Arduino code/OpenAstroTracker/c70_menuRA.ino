@@ -1,7 +1,7 @@
 #ifndef HEADLESS_CLIENT
 bool processRAKeys() {
   byte key;
-  bool waitForRelease = true;
+  bool waitForRelease = false;
   if (lcdButtons.currentState() == btnUP) {
     if (RAselect == 0) mount.targetRA().addHours(1);
     if (RAselect == 1) mount.targetRA().addMinutes(1);
@@ -9,7 +9,6 @@ bool processRAKeys() {
 
     // slow down key repetitions
     mount.delay(200);
-    waitForRelease = false;
   }
   else if (lcdButtons.currentState() == btnDOWN) {
     if (RAselect == 0) mount.targetRA().addHours(-1);
@@ -18,9 +17,9 @@ bool processRAKeys() {
 
     // slow down key repetitions
     mount.delay(200);
-    waitForRelease = false;
   }
-  else if (lcdButtons.keyChanged(key)) {
+  else if (lcdButtons.keyChanged(&key)) {
+    waitForRelease = true;
     switch (key)
     {
       case btnLEFT: {

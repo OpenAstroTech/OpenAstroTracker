@@ -151,7 +151,7 @@ bool processCalibrationKeys() {
     calState = HIGHLIGHT_DRIFT;
   }
 
-  if (checkForKeyChange && lcdButtons.keyChanged(key)) {
+  if (checkForKeyChange && lcdButtons.keyChanged(&key)) {
     waitForRelease = true;
 
     switch (calState) {
