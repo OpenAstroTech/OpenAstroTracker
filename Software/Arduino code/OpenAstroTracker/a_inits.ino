@@ -15,16 +15,30 @@
 //SoftwareSerial BT(10,11);
 
 // RA Motor pins
-#define RAmotorPin1  2    // IN1 auf ULN2003 driver 1    //  2 / 22
-#define RAmotorPin3  3    // IN2 auf ULN2003 driver 1    //  3 / 24
-#define RAmotorPin2  11    // IN3 auf ULN2003 driver 1   // 11 / 26
-#define RAmotorPin4  12    // IN4 auf ULN2003 driver 1   // 12 / 28
+#ifdef INVERTRADIR
+  #define RAmotorPin1  12    // IN1 auf ULN2003 driver 1    //  2 / 22
+  #define RAmotorPin3  11    // IN2 auf ULN2003 driver 1    //  3 / 24
+  #define RAmotorPin2  3     // IN3 auf ULN2003 driver 1    // 11 / 26
+  #define RAmotorPin4  2     // IN4 auf ULN2003 driver 1    // 12 / 28
+#else
+  #define RAmotorPin1  2     // IN1 auf ULN2003 driver 1    //  2 / 22
+  #define RAmotorPin3  3     // IN2 auf ULN2003 driver 1    //  3 / 24
+  #define RAmotorPin2  11    // IN3 auf ULN2003 driver 1    // 11 / 26
+  #define RAmotorPin4  12    // IN4 auf ULN2003 driver 1    // 12 / 28
+#endif
 
 // DEC Motor pins
-#define DECmotorPin1  15    // IN1 auf ULN2003 driver 2
-#define DECmotorPin2  17    // IN2 auf ULN2003 driver 2
-#define DECmotorPin3  16    // IN3 auf ULN2003 driver 2
-#define DECmotorPin4  18    // IN4 auf ULN2003 driver 2
+#ifdef INVERTDEC
+  #define DECmotorPin1  18    // IN1 auf ULN2003 driver 2
+  #define DECmotorPin2  16    // IN2 auf ULN2003 driver 2
+  #define DECmotorPin3  17    // IN3 auf ULN2003 driver 2
+  #define DECmotorPin4  15    // IN4 auf ULN2003 driver 2
+#else
+  #define DECmotorPin1  15    // IN1 auf ULN2003 driver 2
+  #define DECmotorPin2  17    // IN2 auf ULN2003 driver 2
+  #define DECmotorPin3  16    // IN3 auf ULN2003 driver 2
+  #define DECmotorPin4  18    // IN4 auf ULN2003 driver 2
+#endif
 
 // Menu IDs
 #define RA_Menu 0

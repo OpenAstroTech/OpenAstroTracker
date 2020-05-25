@@ -18,6 +18,12 @@ extern bool inSerialControl;
 // Uncomment to run a key diagnostic. No tracker functions are on at all.
 // #define LCD_BUTTON_TEST
 
+// Uncomment to reverse the direction of RA motor
+#define INVERTRADIR
+
+// Uncomment to reverse the direction of DEC motor
+//#define INVERTDECDIR
+
 ////////////////////////////////////////////////////////////////
 //
 // FEATURE SUPPORT SECTION

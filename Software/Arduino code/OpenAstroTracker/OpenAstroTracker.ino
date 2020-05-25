@@ -25,23 +25,26 @@ String version = "V1.6.33";
 // See NORTHERN_HEMISPHERE in Globals.h if you not in the northern hemisphere
 
 // The radius of the surface that the belt runs on (in V1 of the ring) was 168.24mm.
-// Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
+// Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth) or 32mm for one stepper revolution (2mm pitch, 16 teeth)
 // RA wheel is 2 x PI x 168.24mm (V2:180mm) circumference = 1057.1mm (V2:1131mm)
-// One RA revolution needs 26.43 (1057.1mm / 40mm) stepper revolutions (V2: 28.27 (1131mm/40mm))
-// Which means 108245 steps (26.43 x 4096) moves 360 degrees (V2: 115812 steps (28.27 x 4096))
-// So there are 300.1 steps/degree (108245 / 360)  (V2: 322 (115812 / 360))
-// Theoretically correct RA tracking speed is 1.246586 (300 x 14.95903 / 3600) (V2 : 1.333800 (322 x 14.95903 / 3600) steps/sec
-#error "Please uncomment one of the two following lines depending on which version of the RA ring you printed. And comment out this line."
-// int RAStepsPerDegree = 300;      // V1 Ring has a ridge on top of the ring that the belt runs on and the ring runs on the bearings
-// int RAStepsPerDegree = 322;      // V2 Ring has belt in a groove and belt runs on bearings
+// One RA revolution needs 26.43 (1057.1mm / 40mm) or 33.03 (1057.1mm / 32mm) stepper revolutions (V2: 28.27 (1131mm/40mm)or 35.34 (1131mm/32mm))
+// Which means 108245 steps (26.43 x 4096) or 135291 steps (33.03 x 4096) moves 360 degrees (V2: 115812 steps (28.27 x 4096) or 144753 steps (35.34 x 4096))
+// So there are 300.1 steps/degree (108245 / 360) or 375.8 (135291 / 360)  (V2: 322 (115812 / 360) or 402.1 (144753 / 360))
+// Theoretically correct RA tracking speed is 1.246586 (300 x 14.95903 / 3600) or 1.562388 (376 x 14.95903 / 3600) (V2 : 1.333800 (322 x 14.95903 / 3600) or 1.670425 (402 x 14.95903 / 3600) steps/sec
+// #error "Please uncomment one of the two following lines depending on which version of the RA ring you printed. And comment out this line."
+// int RAStepsPerDegree = 300;    // V1 Ring with 20T gear has a ridge on top of the ring that the belt runs on and the ring runs on the bearings
+// int RAStepsPerDegree = 376;    // V1 Ring with 16T gear has a ridge on top of the ring that the belt runs on and the ring runs on the bearings
+//int RAStepsPerDegree = 322;     // V2 Ring with 20T gear has belt in a groove and belt runs on bearings
+int RAStepsPerDegree = 402;       // V2 Ring with 16T gear has belt in a groove and belt runs on bearings
 
 
-// Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
+// Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth) or 32mm for one stepper revolution (2mm pitch, 16 teeth).
 // DEC wheel is 2 x PI x 90mm circumference which is 565.5mm
-// One DEC revolution needs 14.13 (565.5mm/40mm) stepper revolutions
-// Which means 57907 steps (14.14 x 4096) moves 360 degrees
-// So there are 160.85 steps/degree (57907/360)
-int DECStepsPerDegree = 161;     // Number of steps needed to move DEC motor 1 degree.
+// One DEC revolution needs 14.13 (565.5mm/40mm) or 17.67 (565.5mm/32mm) stepper revolutions
+// Which means 57907 steps (14.14 x 4096) or 72384 (17.67 x 4096) moves 360 degrees
+// So there are 160.85 (57907/360) or 201 (72384 / 360) steps/degree
+//int DECStepsPerDegree = 161;     // Number of steps needed to move DEC motor 1 degree with 20T gear.
+int DECStepsPerDegree = 201;       // Number of steps needed to move DEC motor 1 degree with 16T gear.
 
 // This is how many steps your 28BYJ-48 stepper needs for a full rotation. It is almost always 4096.
 // This code drives the steppers in halfstep mode for TRK and DEC, and full step for RA
