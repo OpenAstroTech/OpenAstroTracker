@@ -68,6 +68,7 @@ namespace OATControl.ViewModels
 		DelegateCommand _chooseScopeCommand;
 		DelegateCommand _connectScopeCommand;
 		DelegateCommand _slewToTargetCommand;
+		DelegateCommand _syncToTargetCommand;
 		DelegateCommand _startSlewingCommand;
 		DelegateCommand _stopSlewingCommand;
 		DelegateCommand _homeCommand;
@@ -102,6 +103,7 @@ namespace OATControl.ViewModels
 			_chooseScopeCommand = new DelegateCommand(() => OnChooseTelescope());
 			_connectScopeCommand = new DelegateCommand(() => OnConnectToTelescope(), () => _oatMount != null);
 			_slewToTargetCommand = new DelegateCommand(async () => await OnSlewToTarget(), () => MountConnected);
+			_syncToTargetCommand = new DelegateCommand(async () => await OnSyncToTarget(), () => MountConnected);
 			_startSlewingCommand = new DelegateCommand(async s => await OnStartSlewing(s.ToString()), () => MountConnected);
 			_stopSlewingCommand = new DelegateCommand(async () => await OnStopSlewing('a'), () => MountConnected);
 			_homeCommand = new DelegateCommand(async () => await OnHome(), () => MountConnected);
@@ -327,6 +329,11 @@ namespace OATControl.ViewModels
 			await _oatMount.Slew(new TelescopePosition(1.0 * TargetRASecond / 3600.0 + 1.0 * TargetRAMinute / 60.0 + TargetRAHour, 1.0 * TargetDECSecond / 3600.0 + 1.0 * TargetDECMinute / 60.0 + TargetDECDegree, Epoch.JNOW));
 		}
 
+		private async Task OnSyncToTarget()
+		{
+			await _oatMount.Sync(new TelescopePosition(1.0 * TargetRASecond / 3600.0 + 1.0 * TargetRAMinute / 60.0 + TargetRAHour, 1.0 * TargetDECSecond / 3600.0 + 1.0 * TargetDECMinute / 60.0 + TargetDECDegree, Epoch.JNOW));
+		}
+
 		private void FloatToHMS(double val, out int h, out int m, out int s)
 		{
 			h = (int)Math.Floor(val);
@@ -450,6 +457,7 @@ namespace OATControl.ViewModels
 		{
 			_connectScopeCommand.Requery();
 			_slewToTargetCommand.Requery();
+			_syncToTargetCommand.Requery();
 			_startSlewingCommand.Requery();
 			_stopSlewingCommand.Requery();
 			_homeCommand.Requery();
@@ -533,6 +541,7 @@ namespace OATControl.ViewModels
 		public ICommand ChooseScopeCommand { get { return _chooseScopeCommand; } }
 		public ICommand ConnectScopeCommand { get { return _connectScopeCommand; } }
 		public ICommand SlewToTargetCommand { get { return _slewToTargetCommand; } }
+		public ICommand SyncToTargetCommand { get { return _syncToTargetCommand; } }
 		public ICommand StartSlewingCommand { get { return _startSlewingCommand; } }
 		public ICommand StopSlewingCommand { get { return _stopSlewingCommand; } }
 		public ICommand HomeCommand { get { return _homeCommand; } }

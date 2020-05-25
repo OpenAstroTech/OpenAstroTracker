@@ -345,8 +345,7 @@ String MeadeCommandProcessor::handleMeadeGetInfo(String inCmd) {
 /////////////////////////////
 String MeadeCommandProcessor::handleMeadeSyncControl(String inCmd) {
   if (inCmd[0] == 'M') {
-    _mount->syncDEC(_mount->targetDEC().getHours(), _mount->targetDEC().getMinutes(), _mount->targetDEC().getSeconds());
-    _mount->syncRA(_mount->targetRA().getHours(), _mount->targetRA().getMinutes(), _mount->targetRA().getSeconds());
+    _mount->syncPosition(_mount->targetRA().getHours(), _mount->targetRA().getMinutes(), _mount->targetRA().getSeconds(), _mount->targetDEC().getHours(), _mount->targetDEC().getMinutes(), _mount->targetDEC().getSeconds());
     return "NONE#";
   }
 
@@ -429,8 +428,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     int sgn = inCmd[1] == '+' ? 1 : -1;
     if ((inCmd[4] == '*') && (inCmd[7] == ':') && (inCmd[10] == '.') && (inCmd[13] == ':') && (inCmd[16] == ':')) {
       int deg = inCmd.substring(2, 4).toInt();
-      _mount->syncDEC(sgn * deg + (NORTHERN_HEMISPHERE ? -90 : 90), inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
-      _mount->syncRA(inCmd.substring(11, 13).toInt(), inCmd.substring(14, 16).toInt(), inCmd.substring(17, 19).toInt());
+      _mount->syncPosition(inCmd.substring(11, 13).toInt(), inCmd.substring(14, 16).toInt(), inCmd.substring(17, 19).toInt(),sgn * deg + (NORTHERN_HEMISPHERE ? -90 : 90), inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
       return "1";
     }
     else {
@@ -527,7 +525,7 @@ String MeadeCommandProcessor::handleMeadeHome(String inCmd) {
     _mount->park();
   }
   else if (inCmd[0] == 'F') {  // Home
-    _mount->goHome(true);
+    _mount->goHome();
   }
   else if (inCmd[0] == 'U') {  // Unpark
     _mount->startSlewing(TRACKING);

@@ -25,8 +25,8 @@
 
 // DEC Motor pins
 #define DECmotorPin1  D5    // IN1 auf ULN2003 driver 2
-#define DECmotorPin2  D7    // IN2 auf ULN2003 driver 2
 #define DECmotorPin3  D6    // IN3 auf ULN2003 driver 2
+#define DECmotorPin2  D7    // IN2 auf ULN2003 driver 2
 #define DECmotorPin4  D8    // IN4 auf ULN2003 driver 2
 
 // ST4 Input Pins - TODO.
@@ -34,8 +34,9 @@
 #define st4South      SD1
 #define st4West       SD2
 #define st4East       SD3
+#endif
 
-#else // normal Arduino Mapping
+#ifdef __AVR_ATmega328P__ // normal Arduino Mapping
 #define RAmotorPin1  2    // IN1 auf ULN2003 driver 1    //  2 / 22
 #define RAmotorPin3  3    // IN2 auf ULN2003 driver 1    //  3 / 24
 #define RAmotorPin2  11    // IN3 auf ULN2003 driver 1   // 11 / 26
@@ -43,9 +44,21 @@
 
 // DEC Motor pins
 #define DECmotorPin1  15    // IN1 auf ULN2003 driver 2
-#define DECmotorPin2  17    // IN2 auf ULN2003 driver 2
 #define DECmotorPin3  16    // IN3 auf ULN2003 driver 2
+#define DECmotorPin2  17    // IN2 auf ULN2003 driver 2
 #define DECmotorPin4  18    // IN4 auf ULN2003 driver 2
+#endif
+
+#ifdef __AVR_ATmega2560__  // Arduino Mega
+#define RAmotorPin1  22    // IN1 auf ULN2003 driver 1    //  2 / 22
+#define RAmotorPin3  24    // IN2 auf ULN2003 driver 1    //  3 / 24
+#define RAmotorPin2  26    // IN3 auf ULN2003 driver 1   // 11 / 26
+#define RAmotorPin4  28    // IN4 auf ULN2003 driver 1   // 12 / 28
+
+#define DECmotorPin1  30    // IN1 auf ULN2003 driver 2
+#define DECmotorPin3  32    // IN3 auf ULN2003 driver 2
+#define DECmotorPin2  34    // IN2 auf ULN2003 driver 2
+#define DECmotorPin4  36    // IN4 auf ULN2003 driver 2
 #endif
 
 // Menu IDs

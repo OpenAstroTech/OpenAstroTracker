@@ -122,14 +122,24 @@ namespace OATCommunications
             var result = await SendCommand(string.Format(":Sd{0}{1:00}*{2:00}:{3:00}#,#", sign, deg, min, sec));
             if (!result.Success || result.Data != "1") return false;
             FloatToHMS(Math.Abs(position.RightAscension), out hour, out min, out sec);
-            await SendCommand(string.Format(":Sr{0:00}:{1:00}:{2:00}#,#", hour, min, sec));
+            result = await SendCommand(string.Format(":Sr{0:00}:{1:00}:{2:00}#,#", hour, min, sec));
             if (!result.Success || result.Data != "1") return false;
-            await SendCommand($":MS#");
+            result = await SendCommand($":MS#");
             return result.Success;
         }
 
-        public Task<bool> Sync(TelescopePosition position) {
-            throw new NotImplementedException();
+        public async Task<bool> Sync(TelescopePosition position) {
+            int deg, hour, min, sec;
+
+            FloatToHMS(Math.Abs(position.Declination), out deg, out min, out sec);
+            string sign = position.Declination < 0 ? "-" : "+";
+            var result = await SendCommand(string.Format(":Sd{0}{1:00}*{2:00}:{3:00}#,#", sign, deg, min, sec));
+            if (!result.Success || result.Data != "1") return false;
+            FloatToHMS(Math.Abs(position.RightAscension), out hour, out min, out sec);
+            result = await SendCommand(string.Format(":Sr{0:00}:{1:00}:{2:00}#,#", hour, min, sec));
+            if (!result.Success || result.Data != "1") return false;
+            result = await SendCommand($":CM#");
+            return result.Success;
         }
 
         public async Task<bool> GoHome() {

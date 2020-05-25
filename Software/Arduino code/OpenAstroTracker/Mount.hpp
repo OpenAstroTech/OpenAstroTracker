@@ -79,12 +79,8 @@ public:
   // Get current DEC value.
   const DegreeTime currentDEC() const;
 
-  // Set the current RA position to be the given time
-  void syncRA(int hour, int minute, int second);
-
-  // Set the current DEC position to be the given degrees
-  void syncDEC(int degree, int minute, int second);
-
+  // Set the current RA and DEC position to be the given coordinates
+  void syncPosition(int raHour, int raMinute, int raSecond, int decDegree, int decMinute, int decSecond);
   
   // Calculates movement parameters and program steppers to move
   // there. Must call loop() frequently to actually move.
@@ -121,8 +117,8 @@ public:
   // Set RA and DEC to the home position
   void setTargetToHome();
 
-  // Synchronously slews the mount to the home position and sets tracking to argument.
-  void goHome(bool tracking);
+  // Asynchronously slews the mount to the home position 
+  void goHome();
 
   // Set the current stepper positions to be home.
   void setHome();

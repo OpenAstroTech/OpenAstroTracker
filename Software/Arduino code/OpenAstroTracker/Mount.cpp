@@ -288,7 +288,7 @@ void Mount::setHA(const DayTime& haTime) {
 const DayTime Mount::HA() const {
 #ifdef DEBUG_MODE
   logv("Mount: Get HA.");
-  logv("Mount: Polaris adjust: %d:%d:%d", PolarisRAHour,PolarisRAMinute, PolarisRASecond);
+  logv("Mount: Polaris adjust: %d:%d:%d", PolarisRAHour, PolarisRAMinute, PolarisRASecond);
 #endif 
   DayTime ha = _LST;
 #ifdef DEBUG_MODE
@@ -382,39 +382,20 @@ const DegreeTime Mount::currentDEC() const {
 
 /////////////////////////////////
 //
-// syncRA
+// syncPosition
 //
 /////////////////////////////////
-// Set the current RA position to be the given time. We do this by adjusting HA by the
-// difference between the current RA and the RA that we were told we were actually at.
-void Mount::syncRA(int hour, int minute, int second) {
+// Set the current RA and DEC position to be the given coordinate. We do this by settign the stepper motor coordinate 
+// to be at the calculated positions (that they would be if we were slewing there).
+void Mount::syncPosition(int raHour, int raMinute, int raSecond, int decDegree, int decMinute, int decSecond)
+{
   // Given the display RA coordinates...
-  DayTime newRA = DayTime(hour, minute, second);
-
-  // Calculate the difference between the new system RA and the current system RA
-  DayTime deltaRA = DayTime(newRA);
-  deltaRA.subtractTime(currentRA());
-
-  // Now add this difference to HA.
-  DayTime newHA = DayTime(HA());
-  newHA.addTime(deltaRA);
-  setHA(newHA);
+  DayTime newRA = DayTime(raHour, raMinute, raSecond);
+  DayTime newDEC = DayTime(decDegree, decMinute, decSecond);
 
   float targetRA, targetDEC;
   calculateRAandDECSteppers(targetRA, targetDEC);
   _stepperRA->setCurrentPosition(targetRA);
-}
-
-/////////////////////////////////
-//
-// syncDEC
-//
-/////////////////////////////////
-// Set the current DEC position to be the given degrees (which are 0 .. -180 for Northern Hemisphere)
-void Mount::syncDEC(int degree, int minute, int second) {
-  _targetDEC = DegreeTime(degree, minute, second);;
-  float targetRA, targetDEC;
-  calculateRAandDECSteppers(targetRA, targetDEC);
   _stepperDEC->setCurrentPosition(targetDEC);
 }
 
@@ -623,20 +604,13 @@ void Mount::park() {
 //
 // goHome
 //
-// Synchronously moves mount to home position and
-// sets Tracking mode according to argument
+// Synchronously moves mount to home position 
 /////////////////////////////////
-void Mount::goHome(bool tracking)
+void Mount::goHome()
 {
   stopGuiding();
-  stopSlewing(TRACKING);
   setTargetToHome();
   startSlewingToTarget();
-  waitUntilStopped(ALL_DIRECTIONS);
-  setHome();
-  if (tracking) {
-    startSlewing(TRACKING);
-  }
 }
 
 /////////////////////////////////
@@ -714,7 +688,7 @@ String Mount::getStatusString() {
     else if (_mountStatus & STATUS_SLEWING_MANUAL) {
       status = "ManualSlew,";
     }
-    else if (slewStatus()& SLEWING_TRACKING){
+    else if (slewStatus() & SLEWING_TRACKING) {
       status = "Tracking,";
     }
   }
@@ -1251,7 +1225,7 @@ void Mount::displayStepperPosition() {
       _lcdMenu->printMenu(scratchBuffer);
     }
 #else
-     sprintf(scratchBuffer, "R%s D%s", RAString(COMPACT_STRING | CURRENT_STRING).c_str(), DECString(COMPACT_STRING | CURRENT_STRING).c_str());
+    sprintf(scratchBuffer, "R%s D%s", RAString(COMPACT_STRING | CURRENT_STRING).c_str(), DECString(COMPACT_STRING | CURRENT_STRING).c_str());
     _lcdMenu->setCursor(0, 1);
     _lcdMenu->printMenu(scratchBuffer);
 #endif
