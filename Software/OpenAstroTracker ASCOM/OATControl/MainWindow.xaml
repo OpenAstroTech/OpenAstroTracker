@@ -11,7 +11,7 @@
 		<converters:BoolToStringConverter x:Key="SlewModeConverter" TrueString="Pulsed" FalseString="Continuous" />
 		<converters:BoolToVisibilityConverter x:Key="CoarseBoolToVisible" Collapse="False" />
 		<converters:BoolToVisibilityConverter x:Key="CoarseBoolToHidden" Collapse="False" IsReversed="True"/>
-		
+
 		<Path x:Key="IconArrowUp" x:Shared="false" Data="M16,0L32,19.745 0,19.745z" Stretch="Uniform" RenderTransformOrigin="0.5,0.5" Fill="{DynamicResource AccentBaseColorBrush}" />
 		<Path x:Key="IconArrowLeft" x:Shared="false" Data="M25.3,0L25.3,32 0,16z" Stretch="Uniform" RenderTransformOrigin="0.5,0.5" Fill="{DynamicResource AccentBaseColorBrush}" />
 		<Path x:Key="IconArrowDown" x:Shared="false" Data="M0,0L32,0 16,19.745z" Stretch="Uniform" RenderTransformOrigin="0.5,0.5" Fill="{StaticResource AccentBaseColorBrush}"/>
@@ -175,8 +175,9 @@
 			<TextBlock Grid.Row="7" Grid.Column="0"  Text="Preset" Margin="0,20,0,0" Style="{StaticResource TextBlockHeading}"  />
 			<ComboBox Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="7"  Text="Preset" Margin="0,20,0,0" ItemsSource="{Binding AvailablePointsOfInterest}" DisplayMemberPath="Name" SelectedIndex="{Binding SelectedPointOfInterest}"/>
 
-			<Button Grid.Row="1" Grid.Column="7" Grid.RowSpan="6" Margin="8,0" Padding="30,20"  Content="Slew!" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding SlewToTargetCommand}">
-			</Button>
+			<Button Grid.Row="1" Grid.Column="7" Grid.RowSpan="5" Margin="8,0" Padding="30,20"  Content="Slew!" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding SlewToTargetCommand}" />
+			<Button Grid.Row="6" Grid.Column="7" Grid.RowSpan="1" Margin="8,8,8,0" Padding="0,0"  Content="Sync" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding SyncToTargetCommand}" />
+
 
 			<TextBlock Grid.Row="0" Grid.Column="8" Grid.ColumnSpan="7"  Text="Current" Style="{StaticResource TextBlockTitle}" HorizontalAlignment="Center"/>
 
