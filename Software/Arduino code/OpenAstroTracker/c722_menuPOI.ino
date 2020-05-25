@@ -40,7 +40,7 @@ bool processPOIKeys() {
       case btnSELECT: {
         mount.stopSlewing(ALL_DIRECTIONS);
         if (currentPOI == homePOI) {
-          mount.goHome(true);
+          mount.goHome();
         }
         else if (currentPOI == parkPOI) {
           mount.park();

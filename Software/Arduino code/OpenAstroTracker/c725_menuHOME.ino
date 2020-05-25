@@ -10,7 +10,7 @@ bool processHomeKeys() {
     switch (key) {
       case btnSELECT: {
         if (subGoIndex == 0) {
-          mount.goHome(true); // start tracking after home
+          mount.goHome();
         }
         else {
           mount.park();
