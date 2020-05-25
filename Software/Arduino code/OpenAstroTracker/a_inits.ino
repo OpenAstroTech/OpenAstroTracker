@@ -15,7 +15,7 @@
 //SoftwareSerial BT(10,11);
 
 // RA Motor pins
-#ifdef INVERTRADIR
+#ifdef INVERT_RA_DIR
   #define RAmotorPin1  12    // IN1 auf ULN2003 driver 1    //  2 / 22
   #define RAmotorPin3  11    // IN2 auf ULN2003 driver 1    //  3 / 24
   #define RAmotorPin2  3     // IN3 auf ULN2003 driver 1    // 11 / 26
@@ -28,7 +28,7 @@
 #endif
 
 // DEC Motor pins
-#ifdef INVERTDEC
+#ifdef INVERT_DEC_DIR
   #define DECmotorPin1  18    // IN1 auf ULN2003 driver 2
   #define DECmotorPin2  16    // IN2 auf ULN2003 driver 2
   #define DECmotorPin3  17    // IN3 auf ULN2003 driver 2

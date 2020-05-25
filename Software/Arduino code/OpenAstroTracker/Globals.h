@@ -19,10 +19,10 @@ extern bool inSerialControl;
 // #define LCD_BUTTON_TEST
 
 // Uncomment to reverse the direction of RA motor
-#define INVERTRADIR
+#define INVERT_RA_DIR
 
 // Uncomment to reverse the direction of DEC motor
-//#define INVERTDECDIR
+//#define INVERT_DEC_DIR
 
 ////////////////////////////////////////////////////////////////
 //
