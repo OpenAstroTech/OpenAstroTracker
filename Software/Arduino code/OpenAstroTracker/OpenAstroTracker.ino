@@ -55,7 +55,6 @@ int RAStepsPerDegree = (RACircumference / (RAPulleyTeeth * 2.0) * StepsPerRevolu
 
 int DECStepsPerDegree = (565.5 / (DecPulleyTeeth * 2.0) * StepsPerRevolution / 360.0);
 
-
 float speed = 1.000;    // Use this value to slightly increase or decrese tracking speed. The values from the "CAL" menu will be added to this.
 
 int RAspeed = 400;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. High speeds tend to make
