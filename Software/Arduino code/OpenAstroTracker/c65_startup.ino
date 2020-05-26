@@ -1,3 +1,4 @@
+#ifdef LCDscreen
 #ifndef HEADLESS_CLIENT
 #ifdef SUPPORT_GUIDED_STARTUP
 //////////////////////////////////////////////////////////////
@@ -123,5 +124,6 @@ void prinStartupMenu() {
     break;
   }
 }
+#endif
 #endif
 #endif

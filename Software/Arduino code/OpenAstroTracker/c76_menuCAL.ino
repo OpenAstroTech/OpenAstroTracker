@@ -1,3 +1,4 @@
+#ifdef LCDscreen
 #ifndef HEADLESS_CLIENT
 
 #ifdef SUPPORT_CALIBRATION
@@ -374,6 +375,8 @@ void printCalibrationSubmenu()
     lcdMenu.printMenu(scratchBuffer);
   }
 }
+#endif
+
 #endif
 
 #endif

@@ -1,3 +1,4 @@
+#ifdef LCDscreen
 #ifndef HEADLESS_CLIENT
 
 bool processHAKeys() {
@@ -66,4 +67,5 @@ void printHASubmenu() {
   scratchBuffer[HAselect * 4] = '>';
   lcdMenu.printMenu(scratchBuffer);
 }
+#endif
 #endif

@@ -8,7 +8,11 @@
 #define NORTHERN_HEMISPHERE 1
 
 // Time in ms between LCD screen updates during slewing operations
-#define DISPLAY_UPDATE_TIME 200
+#define DISPLAY_UPDATE_TIME 1000
+
+// Which screen is used?
+//#define LCDscreen   // 16x2 LCD with physical buttons
+#define TFTscreen   // 240x360 touchscreen
 
 // Make some variables in the sketch files available to the C++ code.
 extern bool inSerialControl;
@@ -44,7 +48,7 @@ extern int PolarisRASecond;
 
 // If you do not have a LCD shield on your Arduino Uno, uncomment the line below. This is
 // useful if you are always going to run the mount from a laptop anyway.
-// #define HEADLESS_CLIENT
+//#define HEADLESS_CLIENT
 
 #ifdef ESP8266
     #define HEADLESS_CLIENT
@@ -64,7 +68,7 @@ extern int PolarisRASecond;
 // NOTE: Heating is currently not supported!
 // #define SUPPORT_HEATING
 
-#ifndef HEADLESS_CLIENT
+#ifndef HEADLESS_CLIENT && LCDscreen
 
     // Uncomment to support Guided Startup 
     #define SUPPORT_GUIDED_STARTUP
@@ -84,10 +88,14 @@ extern int PolarisRASecond;
 // #define SUPPORT_INFO_DISPLAY
 
 // Uncomment to support Serial Meade LX200 protocol support
-// #define SUPPORT_SERIAL_CONTROL
+#define SUPPORT_SERIAL_CONTROL
 
 // If we are making a headleass (no screen, no keyboard) client, always enable Serial.
 #ifdef HEADLESS_CLIENT
+#define SUPPORT_SERIAL_CONTROL
+#endif
+
+#ifdef TFTscreen
 #define SUPPORT_SERIAL_CONTROL
 #endif
 

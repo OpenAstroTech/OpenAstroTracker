@@ -1,3 +1,4 @@
+#ifdef LCDscreen
 #ifndef HEADLESS_CLIENT
 bool processRAKeys() {
   byte key;
@@ -53,4 +54,5 @@ void printRASubmenu() {
     lcdMenu.printMenu(mount.RAString(LCDMENU_STRING | TARGET_STRING, RAselect));
   }
 }
+#endif
 #endif

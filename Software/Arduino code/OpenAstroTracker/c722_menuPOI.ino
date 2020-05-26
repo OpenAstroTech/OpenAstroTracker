@@ -1,3 +1,4 @@
+#ifdef LCDscreen
 #ifndef HEADLESS_CLIENT
 #ifdef SUPPORT_POINTS_OF_INTEREST
 struct PointOfInterest {
@@ -80,5 +81,6 @@ void printPOISubmenu() {
     lcdMenu.printMenu(pointOfInterest[currentPOI].pDisplay);
   }
 }
+#endif
 #endif
 #endif

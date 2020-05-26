@@ -1,5 +1,5 @@
 void BTin();
-
+#ifdef LCDscreen
 #ifndef HEADLESS_CLIENT
 
 int loopsOfSameKey = 0;
@@ -43,7 +43,7 @@ void loop() {
   return;
 
 #endif
-
+#endif
   // Give the mount a time slice to do its thing...
   mount.loop();
 
@@ -178,6 +178,7 @@ void loop() {
 #else
 
 void loop() {
+  tftloop();
   serialLoop();
   BTin();
 }

@@ -1,3 +1,4 @@
+#ifdef LCDscreen
 #ifndef HEADLESS_CLIENT
 byte subGoIndex = 0;
 
@@ -44,4 +45,5 @@ void printHomeSubmenu() {
   }
 }
 
+#endif
 #endif

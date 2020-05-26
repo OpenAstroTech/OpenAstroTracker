@@ -1,11 +1,14 @@
 #include "Utility.h"
 #include "LcdMenu.hpp"
 
+//#ifdef LCDscreen
 #ifndef HEADLESS_CLIENT
+
 
 // Class that drives the LCD screen with a menu
 // You add a string and an id item and this class handles the display and navigation
 // Create a new menu, using the given number of LCD display columns and rows
+
 LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(8, 9, 4, 5, 6, 7) {
   //_lcd = new LiquidCrystal(8, 9, 4, 5, 6, 7);
   _lcd.begin(cols, rows);
@@ -29,30 +32,39 @@ LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(8, 9, 4, 5, 6, 7) {
   _lcd.createChar(_downArrow, DownArrowBitmap);
 }
 
+
+
 // Find a menu item by its ID
 MenuItem* LcdMenu::findById(byte id)
 {
+#ifdef LCDscreen
   for (byte i = 0; i < _numMenuItems; i++) {
     if (_menuItems[i]->id() == id) {
       return _menuItems[i];
     }
   }
   return NULL;
+#endif
 }
 
 // Add a new menu item to the list (order matters)
 void LcdMenu::addItem(const char* disp, byte id) {
+#ifdef LCDscreen
   _menuItems[_numMenuItems++] = new MenuItem(disp, id);
   _longestDisplay = max(_longestDisplay, strlen(disp));
+#endif
 }
 
 // Get the currently active item ID
 byte LcdMenu::getActive() {
+#ifdef LCDscreen
   return _activeId;
+#endif
 }
 
 // Set the active menu item
 void LcdMenu::setActive(byte id) {
+#ifdef LCDscreen
   _activeId = id;
   for (byte i = 0; i < _numMenuItems; i++) {
     if (_menuItems[i]->id() == id) {
@@ -60,22 +72,27 @@ void LcdMenu::setActive(byte id) {
       break;
     }
   }
+#endif
 }
 
 // Pass thru utility function
 void LcdMenu::setCursor(byte col, byte row) {
+#ifdef LCDscreen
   _activeRow = row;
   _activeCol = col;
+#endif
 }
 
 // Pass thru utility function
 void LcdMenu::clear() {
+#ifdef LCDscreen
   _lcd.clear();
+#endif
 }
 
 // Go to the next menu item from currently active one
 void LcdMenu::setNextActive() {
-
+#ifdef LCDscreen
   _activeMenuIndex = adjustWrap(_activeMenuIndex, 1, 0, _numMenuItems - 1);
   _activeId = _menuItems[_activeMenuIndex]->id();
 
@@ -87,14 +104,16 @@ void LcdMenu::setNextActive() {
   for (byte i = 0; i < _columns; i++) {
     _lcd.print(" ");
   }
+#endif
 }
+
 
 // Update the display of the LCD with the current menu settings
 // This iterates over the menu items, building a menu string by concatenating their display string.
 // It also places the selector arrows around the active one.
 // It then sends the string to the LCD, keeping the selector arrows centered in the same place.
 void LcdMenu::updateDisplay() {
-
+#ifdef LCDscreen
   char bufMenu[17];
   char* pBufMenu = &bufMenu[0];
   String menuString = "";
@@ -142,9 +161,11 @@ void LcdMenu::updateDisplay() {
   printMenu(String(bufMenu));
 
   setCursor(0, 1);
+#endif
 }
 
 void LcdMenu::printChar(char ch) {
+#ifdef LCDscreen
   if (ch == '>') {
     _lcd.write(_rightArrow);
   }
@@ -166,10 +187,12 @@ void LcdMenu::printChar(char ch) {
   else {
     _lcd.print(ch);
   }
+#endif
 }
 
 // Print a string to the LCD at the current cursor position, substituting the special arrows and padding with spaces to the end
 void LcdMenu::printMenu(String line) {
+#ifdef LCDscreen
   if ((_lastDisplay[_activeRow] != line) || (_activeCol != 0)) {
 
     _lastDisplay[_activeRow] = line;
@@ -186,6 +209,7 @@ void LcdMenu::printMenu(String line) {
       spaces--;
     }
   }
+#endif
 }
 
 // The right arrow bitmap
@@ -255,10 +279,13 @@ byte LcdMenu::MinutesBitmap[8] = {
   B00000,
   B00000
 };
+
 #else
+
 
 LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) {
 }
+
 
 MenuItem* LcdMenu::findById(byte id) {
   return NULL;

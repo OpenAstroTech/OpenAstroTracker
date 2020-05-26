@@ -56,6 +56,7 @@ const float siderealDegreesInHour = 14.95902778;
 // CTOR
 //
 /////////////////////////////////
+
 Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
   _stepsPerRADegree = stepsPerRADegree;
   _stepsPerDECDegree = stepsPerDECDegree;
@@ -67,6 +68,7 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
   _totalRAMove = 0;
   readPersistentData();
 }
+
 
 /////////////////////////////////
 //
@@ -1099,6 +1101,7 @@ void Mount::moveSteppersTo(float targetRA, float targetDEC) {
 //
 /////////////////////////////////
 void Mount::displayStepperPosition() {
+#ifdef LCDscreen
 #ifndef HEADLESS_CLIENT
 
   String disp;
@@ -1156,6 +1159,7 @@ void Mount::displayStepperPosition() {
 #endif
   }
 #endif
+#endif
 }
 
 /////////////////////////////////
@@ -1164,12 +1168,14 @@ void Mount::displayStepperPosition() {
 //
 /////////////////////////////////
 void Mount::displayStepperPositionThrottled() {
+#ifdef LCDscreen
 #ifndef HEADLESS_CLIENT
   long elapsed = millis() - _lastDisplayUpdate;
   if (elapsed > DISPLAY_UPDATE_TIME) {
     displayStepperPosition();
     _lastDisplayUpdate = millis();
   }
+#endif
 #endif
 }
 
@@ -1221,4 +1227,3 @@ String Mount::RAString(byte type, byte active) {
   }
   return String(scratchBuffer);
 }
-

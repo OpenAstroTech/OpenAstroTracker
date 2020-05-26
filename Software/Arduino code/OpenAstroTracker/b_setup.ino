@@ -1,8 +1,11 @@
 // Create the LCD menu variable and initialize the LCD (16x2 characters)
+
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(0);
 
 Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
+
+
 
 #ifdef WIFI_ENABLED
 #include "WifiControl.hpp"
@@ -19,15 +22,25 @@ void setup() {
   Serial.println("Hello");
 #endif
 
+
+#ifdef LCDscreen
   // Show a splash screen
   lcdMenu.setCursor(0, 0);
   lcdMenu.printMenu("OpenAstroTracker");
   lcdMenu.setCursor(0, 1);
   lcdMenu.printMenu("     " + version);
+#endif
+#ifdef TFTscreen
+  TFTsetup();
+#endif
+
   unsigned long now = millis();
+
 
   // Create the command processor singleton
   MeadeCommandProcessor::createProcessor(&mount, &lcdMenu);
+
+
 
 #ifdef WIFI_ENABLED
   wifiControl.setup();
@@ -58,6 +71,7 @@ void setup() {
   // Start the tracker.
   mount.startSlewing(TRACKING);
 
+#ifdef LCDscreen
 #ifndef HEADLESS_CLIENT
   // Create the LCD top-level menu items
   lcdMenu.addItem("RA", RA_Menu);
@@ -93,6 +107,7 @@ void setup() {
 
   lcdMenu.updateDisplay();
 #endif // HEADLESS_CLIENT
+#endif // LCDscreen
 
 #ifdef DEBUG_MODE
   Serial.println("SetupDone");
