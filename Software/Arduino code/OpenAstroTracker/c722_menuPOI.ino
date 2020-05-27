@@ -33,45 +33,46 @@ byte homePOI = sizeof(pointOfInterest) / sizeof(pointOfInterest[0]) - 2;
 
 bool processPOIKeys() {
   byte key;
-  if (lcdButtons.keyChanged(key)) {
+  bool waitForRelease = false;
+  if (lcdButtons.keyChanged(&key)) {
+    waitForRelease = true;
     switch (key) {
       case btnSELECT: {
-          mount.stopSlewing(ALL_DIRECTIONS);
-          if (currentPOI == homePOI) {
-            mount.goHome(true);
-          } else if (currentPOI == parkPOI) {
-            mount.park();
-          }
-          else {
-            PointOfInterest* poi = &pointOfInterest[currentPOI];
-            mount.targetRA().set(poi->hourRA, poi->minRA, poi->secRA);
-            mount.targetRA().addTime(mount.getHACorrection());
-            mount.targetRA().subtractTime(mount.HA());
-            mount.targetDEC().set(poi->degreeDEC - (NORTHERN_HEMISPHERE ? 90 : -90), poi->minDEC, poi->secDEC); // internal DEC degree is 0 at celestial poles
-            mount.startSlewingToTarget();
-          }
+        mount.stopSlewing(ALL_DIRECTIONS);
+        if (currentPOI == homePOI) {
+          mount.goHome();
         }
-        break;
+        else if (currentPOI == parkPOI) {
+          mount.park();
+        }
+        else {
+          PointOfInterest* poi = &pointOfInterest[currentPOI];
+          mount.targetRA().set(poi->hourRA, poi->minRA, poi->secRA);
+          mount.targetDEC().set(poi->degreeDEC - (NORTHERN_HEMISPHERE ? 90 : -90), poi->minDEC, poi->secDEC); // internal DEC degree is 0 at celestial poles
+          mount.startSlewingToTarget();
+        }
+      }
+      break;
 
       case btnLEFT:
       case btnDOWN: {
-          currentPOI = adjustWrap(currentPOI, 1, 0, parkPOI);
-        }
-        break;
+        currentPOI = adjustWrap(currentPOI, 1, 0, parkPOI);
+      }
+      break;
 
       case btnUP: {
-          currentPOI = adjustWrap(currentPOI, -1, 0, parkPOI);
-        }
-        break;
+        currentPOI = adjustWrap(currentPOI, -1, 0, parkPOI);
+      }
+      break;
 
       case btnRIGHT: {
-          lcdMenu.setNextActive();
-        }
-        break;
+        lcdMenu.setNextActive();
+      }
+      break;
     }
   }
 
-  return true;
+  return waitForRelease;
 }
 
 void printPOISubmenu() {

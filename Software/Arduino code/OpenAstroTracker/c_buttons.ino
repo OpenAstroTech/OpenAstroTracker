@@ -5,6 +5,11 @@ void BTin();
 int loopsOfSameKey = 0;
 int lastLoopKey = -1;
 
+#ifdef LCD_BUTTON_TEST
+byte lastKey = btnNONE;
+
+#endif
+
 void loop() {
   byte lcd_key;
   int adc_key_in;
@@ -13,12 +18,15 @@ void loop() {
 
   lcdMenu.setCursor(0, 0);
   lcdMenu.printMenu("Key Diagnostic");
-  int lcd_key = lcdButtons.currentState();
+  lcd_key = lcdButtons.currentState();
+  int key = lcdButtons.currentKey();
+  bool changed = lcdButtons.keyChanged(&lastKey);
+
   adc_key_in = lcdButtons.currentAnalogState();
 
   lcdMenu.setCursor(0, 1);
   char buf[128];
-  sprintf(buf, "ADC:%4d >", adc_key_in);
+  sprintf(buf, "A:%4d %d ", adc_key_in, key);
   String state = String(buf);
   switch (lcd_key)
   {
@@ -31,14 +39,14 @@ void loop() {
   }
 
   lcdMenu.printMenu(state);
-  if (lcd_key != lastKey) {
-    Serial.println(state);
-    lastKey = lcd_key;
+  if (changed) {
+    Serial.println(lastKey);
   }
 
   return;
 
 #endif
+
 
   // Give the mount a time slice to do its thing...
   mount.loop();
@@ -47,12 +55,12 @@ void loop() {
 
 #ifdef SUPPORT_SERIAL_CONTROL
   if (inSerialControl) {
-    if (lcdButtons.keyChanged(lcd_key)) {
+    if (lcdButtons.keyChanged(&lcd_key)) {
       if (lcd_key == btnSELECT) {
         quitSerialOnNextButtonRelease = true;
       }
-      else if ((lcd_key == btnNONE) && quitSerialOnNextButtonRelease)  {
-        handleMeadeQuit("q#");
+      else if ((lcd_key == btnNONE) && quitSerialOnNextButtonRelease) {
+        MeadeCommandProcessor::instance()->processCommand(":Qq#");
         quitSerialOnNextButtonRelease = false;
       }
     }
@@ -71,61 +79,67 @@ void loop() {
     }
     else
 #endif
+
     {
       switch (lcdMenu.getActive()) {
         case RA_Menu:
-          waitForButtonRelease = processRAKeys();
-          break;
+        waitForButtonRelease = processRAKeys();
+        break;
         case DEC_Menu:
-          waitForButtonRelease = processDECKeys();
-          break;
+        waitForButtonRelease = processDECKeys();
+        break;
 #ifdef SUPPORT_POINTS_OF_INTEREST
         case POI_Menu:
-          waitForButtonRelease = processPOIKeys();
-          break;
+        waitForButtonRelease = processPOIKeys();
+        break;
 #else
         case Home_Menu:
-          waitForButtonRelease = processHomeKeys();
-          break;
+        waitForButtonRelease = processHomeKeys();
+        break;
 #endif
 
         case HA_Menu:
-          waitForButtonRelease = processHAKeys();
-          break;
+        waitForButtonRelease = processHAKeys();
+        break;
 #ifdef SUPPORT_HEATING
         case Heat_Menu:
-          waitForButtonRelease = processHeatKeys();
-          break;
+        waitForButtonRelease = processHeatKeys();
+        break;
 #endif
+
+#ifdef SUPPORT_CALIBRATION
         case Calibration_Menu:
-          waitForButtonRelease = processCalibrationKeys();
-          break;
+        waitForButtonRelease = processCalibrationKeys();
+        break;
+#endif
 
 #ifdef SUPPORT_MANUAL_CONTROL
         case Control_Menu:
-          waitForButtonRelease = processControlKeys();
-          break;
+        waitForButtonRelease = processControlKeys();
+        break;
 #endif
 
 #ifdef SUPPORT_INFO_DISPLAY
         case Status_Menu:
-          waitForButtonRelease = processStatusKeys();
-          break;
+        waitForButtonRelease = processStatusKeys();
+        break;
 #endif
       }
     }
 
     if (waitForButtonRelease) {
-      if (lcdButtons.currentKey() != btnNONE) {
+      if (lcdButtons.currentState() != btnNONE) {
         do {
-          if (lcdButtons.currentKey() == btnNONE) {
-            break;
+          byte key;
+          if (lcdButtons.keyChanged(&key)) {
+            if (key == btnNONE) {
+              break;
+            }
           }
 
           // Make sure tracker can still run while fiddling with menus....
           mount.loop();
-        }
-        while (true);
+        } while (true);
       }
     }
 
@@ -134,42 +148,64 @@ void loop() {
 
 #ifdef SUPPORT_GUIDED_STARTUP
     if (inStartup) {
-      prinStartupMenu();
+      printStartupMenu();
     }
     else
 #endif
     {
       if (!inSerialControl) {
-        switch (lcdMenu.getActive()) {
-          case RA_Menu: printRASubmenu(); break;
-          case DEC_Menu: printDECSubmenu(); break;
+        // For some strange reason, a switch statement here causes a crash and reboot....
+        int activeMenu = lcdMenu.getActive();
+        if (activeMenu == RA_Menu) {
+          printRASubmenu();
+        }
+        else if (activeMenu == DEC_Menu)
+        {
+          printDECSubmenu();
+        }
 #ifdef SUPPORT_POINTS_OF_INTEREST
-          case POI_Menu: printPOISubmenu(); break;
+        else if (activeMenu == POI_Menu) {
+          printPOISubmenu();
+        }
 #else
-          case Home_Menu: printHomeSubmenu(); break;
+        else if (activeMenu == Home_Menu) {
+          printHomeSubmenu();
+        }
 #endif
-          case HA_Menu: printHASubmenu(); break;
+        else if (activeMenu == HA_Menu) {
+          printHASubmenu();
+        }
 #ifdef SUPPORT_HEATING
-          case Heat_Menu: printHeatSubmenu(); break;
+        else if (activeMenu == Heat_Menu) {
+          printHeatSubmenu();
+        }
 #endif
 #ifdef SUPPORT_MANUAL_CONTROL
-          case Control_Menu: printControlSubmenu(); break;
+        else if (activeMenu == Control_Menu) {
+          printControlSubmenu();
+        }
 #endif
-          case Calibration_Menu: printCalibrationSubmenu(); break;
+#ifdef SUPPORT_CALIBRATION
+        else if (activeMenu == Calibration_Menu) {
+          printCalibrationSubmenu();
+        }
+#endif
 
 #ifdef SUPPORT_INFO_DISPLAY
-          case Status_Menu: printStatusSubmenu(); break;
-#endif
+        else if (activeMenu == Status_Menu) {
+          printStatusSubmenu();
         }
+#endif
       }
     }
   }
+
 
   BTin();
 }
 #else
 
-void loop(){
+void loop() {
   serialLoop();
   BTin();
 }
