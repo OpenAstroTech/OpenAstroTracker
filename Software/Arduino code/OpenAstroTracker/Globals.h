@@ -10,7 +10,11 @@ void EEPROMupdate(int loc, byte val);
 #define NORTHERN_HEMISPHERE 1
 
 // Time in ms between LCD screen updates during slewing operations
-#define DISPLAY_UPDATE_TIME 200
+#define DISPLAY_UPDATE_TIME 400
+
+// Stepper selection ///////////
+#define RAStepper 1    // 28BYJ-48 = 0   |   NEMA = 1
+#define DECStepper 0    // 28BYJ-48 = 0   |   NEMA = 1
 
 // Make some variables in the sketch files available to the C++ code.
 extern bool inSerialControl;

@@ -173,6 +173,7 @@ void Mount::writePersistentData(int which, int val)
 // configureRAStepper
 //
 /////////////////////////////////
+#if RAStepper == 0    // 28BYJ
 void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
 {
   _stepperRA = new AccelStepper(stepMode, pin1, pin2, pin3, pin4);
@@ -186,12 +187,28 @@ void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, b
   _stepperTRK->setMaxSpeed(10);
   _stepperTRK->setAcceleration(2500);
 }
+#endif
+#if RAStepper == 1    //NEMA
+void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration)
+{
+  _stepperRA = new AccelStepper(stepMode, pin1, pin2);
+  _stepperRA->setMaxSpeed(maxSpeed);
+  _stepperRA->setAcceleration(maxAcceleration);
+  _maxRASpeed = maxSpeed;
+  _maxRAAcceleration = maxAcceleration;
 
+  // Use another AccelStepper to run the RA motor as well. This instance tracks earths rotation.
+  _stepperTRK = new AccelStepper(DRIVER, pin1, pin2);
+  _stepperTRK->setMaxSpeed(10);
+  _stepperTRK->setAcceleration(2500);
+}
+#endif
 /////////////////////////////////
 //
 // configureDECStepper
 //
 /////////////////////////////////
+#if DECStepper == 0
 void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
 {
   _stepperDEC = new AccelStepper(stepMode, pin4, pin3, pin2, pin1);
@@ -200,7 +217,17 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, 
   _maxDECSpeed = maxSpeed;
   _maxDECAcceleration = maxAcceleration;
 }
-
+#endif
+#if DECStepper == 1
+void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration)
+{
+  _stepperDEC = new AccelStepper(stepMode, pin2, pin1);
+  _stepperDEC->setMaxSpeed(maxSpeed);
+  _stepperDEC->setAcceleration(maxAcceleration);
+  _maxDECSpeed = maxSpeed;
+  _maxDECAcceleration = maxAcceleration;
+}
+#endif
 /////////////////////////////////
 //
 // getSpeedCalibration
@@ -1111,7 +1138,7 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
   float stepsPerSiderealHour = _stepsPerRADegree * siderealDegreesInHour;
 
   // Where do we want to move RA to?
-  float moveRA = hourPos * stepsPerSiderealHour / 2;
+  float moveRA = hourPos * stepsPerSiderealHour;
 
   // Where do we want to move DEC to?
   // the variable targetDEC 0deg for the celestial pole (90deg), and goes negative only.
@@ -1122,7 +1149,7 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 #endif
 
   // We can move 6 hours in either direction. Outside of that we need to flip directions.
-  float RALimit = (6.0f * stepsPerSiderealHour / 2);
+  float RALimit = (6.0f * stepsPerSiderealHour);
 
   // If we reach the limit in the positive direction ...
   if (moveRA > RALimit) {
@@ -1132,7 +1159,7 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 
     // ... turn both RA and DEC axis around
     float oldRA = moveRA;
-    moveRA -= long(12.0f * stepsPerSiderealHour / 2);
+    moveRA -= long(12.0f * stepsPerSiderealHour);
     moveDEC = -moveDEC;
 #ifdef DEBUG_MODE
     logv("Mount::CalcSteppers: Adjusted Target Step pos RA: %f, DEC: %f", moveRA, moveDEC);
@@ -1145,7 +1172,7 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 #endif
     // ... turn both RA and DEC axis around
     float oldRA = moveRA;
-    moveRA += long(12.0f * stepsPerSiderealHour / 2);
+    moveRA += long(12.0f * stepsPerSiderealHour);
     moveDEC = -moveDEC;
 #ifdef DEBUG_MODE
     logv("Mount::CalcSteppers: Adjusted Target Step pos RA: %f, DEC: %f", moveRA, moveDEC);

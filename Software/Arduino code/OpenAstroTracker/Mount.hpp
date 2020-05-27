@@ -26,6 +26,7 @@
 
 #define HALFSTEP 8
 #define FULLSTEP 4
+#define DRIVER 1
 
 #define RA_STEPS  1
 #define DEC_STEPS 2
@@ -41,10 +42,21 @@ public:
   Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu);
 
   // Configure the RA stepper motor. This also sets up the TRK stepper on the same pins.
-  void configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
+  #if RAStepper == 0
+    void configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
+  #endif
+  #if RAStepper == 1
+    void configureRAStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration);
+  #endif
 
   // Configure the DEC stepper motor.
+  #if DECStepper == 0
   void configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
+  #endif
+  #if DECStepper == 1
+  void configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration);
+  #endif
+  
 
   // Get the current RA tracking speed factor
   float getSpeedCalibration();
