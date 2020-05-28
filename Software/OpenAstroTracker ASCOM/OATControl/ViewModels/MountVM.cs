@@ -157,25 +157,30 @@ namespace OATControl.ViewModels
 		async private Task<string> RunCustomOATCommandAsync(string command)
 		{
 			string result = string.Empty;
-			try
+			Log("OATCustom:  StartRunning [{0}], checking access", command);
+			if (Interlocked.CompareExchange(ref _runningOATCommand, 1, 0) == 0)
 			{
-				Interlocked.Increment(ref _runningOATCommand);
-				bool needsReturn = false;
-				Log("OATCustom:  StartRunning [{0}], awaiting access", command);
-				await exclusiveAccess.WaitAsync();
-				Log("OATCustom:  Acces granted. -> Sending {0} ", command);
-				var commandResult = await _oatMount.SendCommand(command);
-				if (!string.IsNullOrEmpty(commandResult.Data))
+				try
 				{
-					Log("OATCustomResult [{0}]: '{1}'", command, commandResult.Data);
-					result = commandResult.Data;
+					await exclusiveAccess.WaitAsync();
+					Log("OATCustom:  Access granted. -> Sending {0} ", command);
+					var commandResult = await _oatMount.SendCommand(command);
+					if (!string.IsNullOrEmpty(commandResult.Data))
+					{
+						Log("OATCustomResult [{0}]: '{1}'", command, commandResult.Data);
+						result = commandResult.Data;
+					}
+					Interlocked.Decrement(ref _runningOATCommand);
+				}
+				finally
+				{
+					Log("OATCustom:  StopRunning [{0}]", command);
+					exclusiveAccess.Release();
 				}
 			}
-			finally
+			else
 			{
-				Log("OATCustom:  StopRunning [{0}]", command);
-				exclusiveAccess.Release();
-				Interlocked.Decrement(ref _runningOATCommand);
+				Log("OATCustom:  Already running, skipping '{0}'", command);
 			}
 
 			return result.TrimEnd("#".ToCharArray());
@@ -184,42 +189,11 @@ namespace OATControl.ViewModels
 		private async Task OnTimer(object s, EventArgs e)
 		{
 			_timerStatus.Stop();
-			//if (_tryConnect)
-			//{
-			//	_tryConnect = false;
-
-			//	MountStatus = "Connecting...";
-
-			//	ScopeName = Settings.Default.Scope;
-			//	if (!string.IsNullOrEmpty(ScopeName))
-			//	{
-			//		_oatMount = new OatmealTelescopeCommandHandlers(ScopeName);
-			//		try
-			//		{
-			//			OnConnectToTelescope();
-			//		}
-			//		catch (Exception)
-			//		{
-			//		}
-
-			//		RequeryCommands();
-			//	}
-			//}
-
-			if (Interlocked.CompareExchange(ref _runningOATCommand,1,0)==0)
+			if (MountConnected)
 			{
-				Log("OATTimer:  Not Running");
-				if (MountConnected)
-				{
-					//UpdateCurrentCoordinates();
-					await UpdateStatus();
-				}
-				Interlocked.Decrement(ref _runningOATCommand);
+				await UpdateStatus();
 			}
-			else
-			{
-				Log("OATTimer:  Running -> Skip");
-			}
+
 			_timerStatus.Start();
 		}
 
@@ -251,7 +225,10 @@ namespace OATControl.ViewModels
 						default: IsSlewingNorth = false; IsSlewingSouth = false; break;
 					}
 
-					IsTracking = parts[1][2] == 'T';
+					// Don't use property here since it sends a command.
+					_isTracking = parts[1][2] == 'T';
+					OnPropertyChanged("IsTracking");
+
 
 					RAStepper = int.Parse(parts[2]);
 					DECStepper = int.Parse(parts[3]);
@@ -271,7 +248,7 @@ namespace OATControl.ViewModels
 		private async Task OnHome()
 		{
 			await RunCustomOATCommandAsync(":hF#");
-			
+
 			// The next call actually blocks because Homeing is synchronous
 			await UpdateStatus();
 
@@ -284,7 +261,8 @@ namespace OATControl.ViewModels
 			{
 				await RunCustomOATCommandAsync(":hP#");
 				ParkCommandString = "Unpark";
-			}else
+			}
+			else
 			{
 				await RunCustomOATCommandAsync(":hU#,#");
 				ParkCommandString = "Park";
@@ -429,13 +407,14 @@ namespace OATControl.ViewModels
 
 		private async Task OnRunDriftAlignment(int driftDuration)
 		{
+			_timerStatus.Stop();
+
 			DriftAlignStatus = "Drift Alignment running...";
 			var tracking = await RunCustomOATCommandAsync(":GIT#,#");
 			bool wasTracking = tracking == "1";
 			IsTracking = false;
 			DateTime startTime = DateTime.UtcNow;
 			TimeSpan duration = TimeSpan.FromSeconds(2 * driftDuration + 2);
-			_timerStatus.Stop();
 			await Task.Delay(200);
 
 			try
@@ -460,6 +439,7 @@ namespace OATControl.ViewModels
 
 			DriftAlignStatus = "Drift Alignment";
 			IsDriftAligning = false;
+			IsTracking = wasTracking;
 			RequeryCommands();
 			_timerStatus.Start();
 		}
