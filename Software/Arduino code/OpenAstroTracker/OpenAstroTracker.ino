@@ -24,9 +24,13 @@ String version = "V1.6.56";
 
 // See NORTHERN_HEMISPHERE in Globals.h if you not in the northern hemisphere
 
-// This is how many steps your 28BYJ-48 stepper needs for a full rotation. It is almost always 4096.
-// This code drives the steppers in halfstep mode for TRK and DEC, and full step for RA
-float StepsPerRevolution = 4096;
+
+// RA stepper //////////////////////////////////////////////////////////////////////////////////
+
+
+// This is how many steps your stepper needs for a full rotation. E.g. a 0.9° stepper in Fullstep has 400,
+// with 1/16 microstepping it has 6400. If youre using the 28BYJ, use 4096
+float RAStepsPerRevolution = 6400;
 
 // The radius of the surface that the belt runs on (in V1 of the ring) was 168.24mm.
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
@@ -43,8 +47,12 @@ float StepsPerRevolution = 4096;
 // V2: 1131
 #define RACircumference 1131
 
-int RAStepsPerDegree = (RACircumference / (RAPulleyTeeth * 2.0) * StepsPerRevolution / 360.0);      // V2 Ring has belt in a groove and belt runs on bearings
+int RAStepsPerDegree = (RACircumference / (RAPulleyTeeth * 2.0) * RAStepsPerRevolution / 360.0);      // V2 Ring has belt in a groove and belt runs on bearings
 
+
+// DEC stepper //////////////////////////////////////////////////////////////////////////////////
+
+float DECStepsPerRevolution = 4096;
 
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
 // DEC wheel is 2 x PI x 90mm circumference which is 565.5mm
@@ -53,15 +61,15 @@ int RAStepsPerDegree = (RACircumference / (RAPulleyTeeth * 2.0) * StepsPerRevolu
 // So there are 160.85 steps/degree (57907/360)
 #define DecPulleyTeeth 20
 
-int DECStepsPerDegree = (565.5 / (DecPulleyTeeth * 2.0) * StepsPerRevolution / 360.0);
+int DECStepsPerDegree = (565.5 / (DecPulleyTeeth * 2.0) * DECStepsPerRevolution / 360.0);
 
 
 float speed = 1.000;    // Use this value to slightly increase or decrese tracking speed. The values from the "CAL" menu will be added to this.
 
-int RAspeed = 400;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. High speeds tend to make
-int RAacceleration = 600;   // these cheap steppers unprecice
-int DECspeed = 800;
-int DECacceleration = 400;
+int RAspeed = 2000;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. High speeds tend to make
+int RAacceleration = 4000;   // these cheap steppers unprecice
+int DECspeed = 1200;
+int DECacceleration = 4000;
 
 // Define some stepper limits to prevent physical damage to the tracker. This assumes that the home
 // point (zero point) has been correctly set to be pointing at the celestial pole.

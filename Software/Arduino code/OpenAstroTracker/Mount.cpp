@@ -67,7 +67,11 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
   _stepperWasRunning = false;
   _totalDECMove = 0;
   _totalRAMove = 0;
+#if RA_Stepper_TYPE == 1
   _backlashCorrectionSteps = 16;
+#else
+  _backlashCorrectionSteps = 0;
+#endif
   _correctForBacklash = false;
   _slewingToHome = false;
   readPersistentData();
@@ -145,36 +149,36 @@ void Mount::writePersistentData(int which, int val)
   }
   switch (which) {
     case RA_STEPS:
-    {
-      // ... set bit 0 to indicate RA value has been written to 6/7
-      flag |= 0x01;
-      loByteLocation = 6;
-      hiByteLocation = 7;
-    }
-    break;
+      {
+        // ... set bit 0 to indicate RA value has been written to 6/7
+        flag |= 0x01;
+        loByteLocation = 6;
+        hiByteLocation = 7;
+      }
+      break;
     case DEC_STEPS:
-    {
-      // ... set bit 1 to indicate DEC value has been written to 8/9
-      flag |= 0x02;
-      loByteLocation = 8;
-      hiByteLocation = 9;
-    }
-    break;
+      {
+        // ... set bit 1 to indicate DEC value has been written to 8/9
+        flag |= 0x02;
+        loByteLocation = 8;
+        hiByteLocation = 9;
+      }
+      break;
     case SPEED_FACTOR_DECIMALS:
-    {
-      // ... set bit 2 to indicate speed factor value has been written to 0/3
-      flag |= 0x04;
-      loByteLocation = 0;
-      hiByteLocation = 3;
-    }
+      {
+        // ... set bit 2 to indicate speed factor value has been written to 0/3
+        flag |= 0x04;
+        loByteLocation = 0;
+        hiByteLocation = 3;
+      }
     case BACKLASH_CORRECTION:
-    {
-      // ... set bit 2 to indicate speed factor value has been written to 0/3
-      flag |= 0x08;
-      loByteLocation = 10;
-      hiByteLocation = 11;
-    }
-    break;
+      {
+        // ... set bit 2 to indicate speed factor value has been written to 0/3
+        flag |= 0x08;
+        loByteLocation = 10;
+        hiByteLocation = 11;
+      }
+      break;
   }
 
 
@@ -190,6 +194,8 @@ void Mount::writePersistentData(int which, int val)
 // configureRAStepper
 //
 /////////////////////////////////
+
+#if RA_Stepper_TYPE == 0    // 28BYJ
 void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
 {
   _stepperRA = new AccelStepper(stepMode, pin1, pin2, pin3, pin4);
@@ -203,12 +209,30 @@ void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, b
   _stepperTRK->setMaxSpeed(10);
   _stepperTRK->setAcceleration(2500);
 }
+#endif
+#if RA_Stepper_TYPE == 1    //NEMA
+void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration)
+{
+  _stepperRA = new AccelStepper(stepMode, pin1, pin2);
+  _stepperRA->setMaxSpeed(maxSpeed);
+  _stepperRA->setAcceleration(maxAcceleration);
+  _maxRASpeed = maxSpeed;
+  _maxRAAcceleration = maxAcceleration;
+
+  // Use another AccelStepper to run the RA motor as well. This instance tracks earths rotation.
+  _stepperTRK = new AccelStepper(DRIVER, pin1, pin2);
+  _stepperTRK->setMaxSpeed(10);
+  _stepperTRK->setAcceleration(2500);
+}
+#endif
 
 /////////////////////////////////
 //
 // configureDECStepper
 //
 /////////////////////////////////
+
+#if DEC_Stepper_TYPE == 0
 void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
 {
   _stepperDEC = new AccelStepper(stepMode, pin4, pin3, pin2, pin1);
@@ -217,6 +241,17 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, 
   _maxDECSpeed = maxSpeed;
   _maxDECAcceleration = maxAcceleration;
 }
+#endif
+#if DEC_Stepper_TYPE == 1
+void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration)
+{
+  _stepperDEC = new AccelStepper(stepMode, pin2, pin1);
+  _stepperDEC->setMaxSpeed(maxSpeed);
+  _stepperDEC->setAcceleration(maxAcceleration);
+  _maxDECSpeed = maxSpeed;
+  _maxDECAcceleration = maxAcceleration;
+}
+#endif
 
 /////////////////////////////////
 //
@@ -328,7 +363,7 @@ const DayTime Mount::HA() const {
 #ifdef DEBUG_MODE
   logv("Mount: Get HA.");
   logv("Mount: Polaris adjust: %s", DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond).ToString());
-#endif 
+#endif
   DayTime ha = _LST;
 #ifdef DEBUG_MODE
   logv("Mount: LST: %s", _LST.ToString());
@@ -424,7 +459,7 @@ const DegreeTime Mount::currentDEC() const {
 // syncPosition
 //
 /////////////////////////////////
-// Set the current RA and DEC position to be the given coordinate. We do this by settign the stepper motor coordinate 
+// Set the current RA and DEC position to be the given coordinate. We do this by settign the stepper motor coordinate
 // to be at the calculated positions (that they would be if we were slewing there).
 void Mount::syncPosition(int raHour, int raMinute, int raSecond, int decDegree, int decMinute, int decSecond)
 {
@@ -501,30 +536,30 @@ void Mount::guidePulse(byte direction, int duration) {
 
   switch (direction) {
     case NORTH:
-    _stepperDEC->setAcceleration(2500);
-    _stepperDEC->setMaxSpeed(decTrackingSpeed * 1.2);
-    _stepperDEC->setSpeed(decTrackingSpeed);
-    _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_DEC;
-    break;
+      _stepperDEC->setAcceleration(2500);
+      _stepperDEC->setMaxSpeed(decTrackingSpeed * 1.2);
+      _stepperDEC->setSpeed(decTrackingSpeed);
+      _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_DEC;
+      break;
 
     case SOUTH:
-    _stepperDEC->setAcceleration(2500);
-    _stepperDEC->setMaxSpeed(decTrackingSpeed * 1.2);
-    _stepperDEC->setSpeed(-decTrackingSpeed);
-    _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_DEC;
-    break;
+      _stepperDEC->setAcceleration(2500);
+      _stepperDEC->setMaxSpeed(decTrackingSpeed * 1.2);
+      _stepperDEC->setSpeed(-decTrackingSpeed);
+      _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_DEC;
+      break;
 
     case WEST:
-    _stepperTRK->setMaxSpeed(raTrackingSpeed * 2.2);
-    _stepperTRK->setSpeed(raTrackingSpeed * 2);
-    _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_RA;
-    break;
+      _stepperTRK->setMaxSpeed(raTrackingSpeed * 2.2);
+      _stepperTRK->setSpeed(raTrackingSpeed * 2);
+      _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_RA;
+      break;
 
     case EAST:
-    _stepperTRK->setMaxSpeed(raTrackingSpeed * 2.2);
-    _stepperTRK->setSpeed(0);
-    _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_RA;
-    break;
+      _stepperTRK->setMaxSpeed(raTrackingSpeed * 2.2);
+      _stepperTRK->setSpeed(0);
+      _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_RA;
+      break;
   }
 
   _guideEndTime = millis() + duration;
@@ -544,43 +579,43 @@ void Mount::runDriftAlignmentPhase(int direction, int durationSecs) {
   float speed = 400.0 / durationSecs;
   switch (direction) {
     case EAST:
-    // Move 400 steps east at the calculated speed, synchronously
-    _stepperRA->setAcceleration(1500);
-    _stepperRA->setMaxSpeed(speed);
-    _stepperRA->move(400);
-    while (_stepperRA->run()) {
-      yield();
-    }
+      // Move 400 steps east at the calculated speed, synchronously
+      _stepperRA->setAcceleration(1500);
+      _stepperRA->setMaxSpeed(speed);
+      _stepperRA->move(400);
+      while (_stepperRA->run()) {
+        yield();
+      }
 
-    // Overcome the gearing gap
-    _stepperRA->setMaxSpeed(300);
-    _stepperRA->move(-20);
-    while (_stepperRA->run()) {
-      yield();
-    }
-    break;
+      // Overcome the gearing gap
+      _stepperRA->setMaxSpeed(300);
+      _stepperRA->move(-20);
+      while (_stepperRA->run()) {
+        yield();
+      }
+      break;
 
     case WEST:
-    // Move 400 steps west at the calculated speed, synchronously
-    _stepperRA->setMaxSpeed(speed);
-    _stepperRA->move(-400);
-    while (_stepperRA->run()) {
-      yield();
-    }
-    break;
+      // Move 400 steps west at the calculated speed, synchronously
+      _stepperRA->setMaxSpeed(speed);
+      _stepperRA->move(-400);
+      while (_stepperRA->run()) {
+        yield();
+      }
+      break;
 
     case 0:
-    // Fix the gearing to go back the other way
-    _stepperRA->setMaxSpeed(300);
-    _stepperRA->move(20);
-    while (_stepperRA->run()) {
-      yield();
-    }
+      // Fix the gearing to go back the other way
+      _stepperRA->setMaxSpeed(300);
+      _stepperRA->move(20);
+      while (_stepperRA->run()) {
+        yield();
+      }
 
-    // Re-configure the stepper to the correct parameters.
-    _stepperRA->setAcceleration(_maxRAAcceleration);
-    _stepperRA->setMaxSpeed(_maxRASpeed);
-    break;
+      // Re-configure the stepper to the correct parameters.
+      _stepperRA->setAcceleration(_maxRAAcceleration);
+      _stepperRA->setMaxSpeed(_maxRASpeed);
+      break;
   }
 }
 
@@ -643,7 +678,7 @@ void Mount::park() {
 //
 // goHome
 //
-// Synchronously moves mount to home position 
+// Synchronously moves mount to home position
 /////////////////////////////////
 void Mount::goHome()
 {
@@ -928,7 +963,7 @@ void Mount::waitUntilStopped(byte direction) {
   while (((direction & (EAST | WEST)) && _stepperRA->isRunning())
          || ((direction & (NORTH | SOUTH)) && _stepperDEC->isRunning())
          || ((direction & TRACKING) && (((_mountStatus & STATUS_TRACKING) == 0) && _stepperTRK->isRunning()))
-         ) {
+        ) {
     loop();
     yield();
   }
@@ -1149,7 +1184,7 @@ void Mount::setTargetToHome() {
   // Set DEC to pole
   _targetDEC.set(0, 0, 0);
   _slewingToHome = true;
-  // Stop the tracking stepper 
+  // Stop the tracking stepper
   stopSlewing(TRACKING);
 }
 
@@ -1205,8 +1240,11 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
   float stepsPerSiderealHour = _stepsPerRADegree * siderealDegreesInHour;
 
   // Where do we want to move RA to?
+#if RA_Stepper_TYPE == 0
   float moveRA = hourPos * stepsPerSiderealHour / 2;
-
+#else
+  float moveRA = hourPos * stepsPerSiderealHour;
+#endif
   // Where do we want to move DEC to?
   // the variable targetDEC 0deg for the celestial pole (90deg), and goes negative only.
   float moveDEC = -_targetDEC.getTotalDegrees() * _stepsPerDECDegree;
@@ -1217,8 +1255,11 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 #endif
 
   // We can move 6 hours in either direction. Outside of that we need to flip directions.
+#if RA_Stepper_TYPE == 0
   float RALimit = (6.0f * stepsPerSiderealHour / 2);
-
+#else
+  float RALimit = (6.0f * stepsPerSiderealHour);
+#endif
   // If we reach the limit in the positive direction ...
   if (moveRA > RALimit) {
 #ifdef DEBUG_MODE
@@ -1227,7 +1268,11 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 
     // ... turn both RA and DEC axis around
     float oldRA = moveRA;
+#if RA_Stepper_TYPE == 0
     moveRA -= long(12.0f * stepsPerSiderealHour / 2);
+#else
+    moveRA -= long(12.0f * stepsPerSiderealHour);
+#endif
     moveDEC = -moveDEC;
 #ifdef DEBUG_MODE
     logv("Mount::CalcSteppers: Adjusted Target Step pos RA: %f, DEC: %f", moveRA, moveDEC);
@@ -1240,7 +1285,11 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 #endif
     // ... turn both RA and DEC axis around
     float oldRA = moveRA;
+#if RA_Stepper_TYPE == 0
     moveRA += long(12.0f * stepsPerSiderealHour / 2);
+#else
+    moveRA += long(12.0f * stepsPerSiderealHour);
+#endif
     moveDEC = -moveDEC;
 #ifdef DEBUG_MODE
     logv("Mount::CalcSteppers: Adjusted Target Step pos RA: %f, DEC: %f", moveRA, moveDEC);
