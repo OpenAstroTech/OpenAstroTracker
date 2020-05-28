@@ -1036,15 +1036,14 @@ void Mount::loop() {
 
       if (_stepperWasRunning) {
 #ifdef DEBUG_MODE
-        logv("Loop:  Reached target.");
+        logv("Loop: Reached target.");
 #endif
         // Mount is at Target!
         // If we we're parking, we just reached home. Clear the flag, reset the motors and stop tracking.
         if (isParking()) {
 #ifdef DEBUG_MODE
-          logv("Loop:  Was Parking.");
+          logv("Loop:   Was Parking, stop tracking and set home.");
 #endif
-          _mountStatus &= ~STATUS_PARKING;
           stopSlewing(TRACKING);
           setHome();
         }
@@ -1053,29 +1052,40 @@ void Mount::loop() {
         _currentRAStepperPosition = _stepperRA->currentPosition();
         if (_correctForBacklash) {
 #ifdef DEBUG_MODE
-          logv("Loop:  Reached target at %d. Compensating by %d", _currentRAStepperPosition, _backlashCorrectionSteps);
+          logv("Loop:   Reached target at %d. Compensating by %d", _currentRAStepperPosition, _backlashCorrectionSteps);
 #endif
           _currentRAStepperPosition += _backlashCorrectionSteps;
           _stepperRA->runToNewPosition(_currentRAStepperPosition);
           _correctForBacklash = false;
 #ifdef DEBUG_MODE
-          logv("Loop:  Backlash correction done. Pos: %d", _currentRAStepperPosition);
+          logv("Loop:   Backlash correction done. Pos: %d", _currentRAStepperPosition);
 #endif
         }
         else
         {
 #ifdef DEBUG_MODE
-          logv("Loop:  Reached target at %d, no backlash compensation needed", _currentRAStepperPosition);
+          logv("Loop:   Reached target at %d, no backlash compensation needed", _currentRAStepperPosition);
 #endif
         }
 
         if (_slewingToHome) {
 #ifdef DEBUG_MODE
-          logv("Loop:  Was Slewing home, so setting stepper RA and TRK to zero.");
+          logv("Loop:   Was Slewing home, so setting stepper RA and TRK to zero.");
 #endif
           _stepperRA->setCurrentPosition(0);
           _stepperTRK->setCurrentPosition(0);
-          startSlewing(TRACKING);
+          if (isParking()) {
+#ifdef DEBUG_MODE
+            logv("Loop:   Was parking, so no tracking.");
+#endif
+            _mountStatus &= ~STATUS_PARKING;
+          }
+          else {
+#ifdef DEBUG_MODE
+            logv("Loop:   Restart tracking.");
+#endif
+            startSlewing(TRACKING);
+          }
           _slewingToHome = false;
         }
         _totalDECMove = _totalRAMove = 0;
