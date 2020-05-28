@@ -56,7 +56,8 @@ public:
   void subtractTime(const DayTime& other);
 
   // Convert to a standard string (like 14:45:06)
-  String ToString();
+  virtual const char* ToString() const;
+
   //protected:
   virtual void checkHours();
 };
@@ -75,12 +76,15 @@ public:
   int getDegrees();
 
   // Get degrees for printing component
-  int getPrintDegrees();
+  int getPrintDegrees() const;
 
   // Get total degrees
   float getTotalDegrees() const;
   //protected:
   virtual void checkHours() override;
+
+  // Convert to a standard string (like 14:45:06)
+  virtual const char* ToString() const override;
 
 private:
   void clampDegrees();
