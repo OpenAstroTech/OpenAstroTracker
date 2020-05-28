@@ -23,7 +23,7 @@ bool processKeyStateChanges(int key, int dir)
       if (dir != 0) {
         mount.startSlewing(dir);
       }
-      loopsWithKeyPressed++;      
+      loopsWithKeyPressed++;
       ret = true;
     }
     else if (loopsWithKeyPressed < LOOPS_TO_CONFIRM_KEY) {
@@ -34,22 +34,26 @@ bool processKeyStateChanges(int key, int dir)
 
 bool processControlKeys() {
   byte key;
+  bool waitForRelease = false;
 
   // User must use SELECT to enter manual control.
-  if (!inControlMode ) {
-    if (lcdButtons.keyChanged(key)) {
+  if (!inControlMode) {
+    if (lcdButtons.keyChanged(&key)) {
+      waitForRelease = true;
       if (key == btnSELECT) {
         inControlMode = true;
         mount.stopSlewing(ALL_DIRECTIONS);
-      } else if (key == btnRIGHT) {
+      }
+      else if (key == btnRIGHT) {
         lcdMenu.setNextActive();
       }
     }
-    return true;
+    return waitForRelease;
   }
 
   if (confirmZeroPoint) {
-    if (lcdButtons.keyChanged(key)) {
+    if (lcdButtons.keyChanged(&key)) {
+      waitForRelease = true;
       if (key == btnSELECT) {
         if (setZeroPoint) {
           // Leaving Control Menu, so set stepper motor positions to zero.
@@ -73,11 +77,12 @@ bool processControlKeys() {
 
         confirmZeroPoint = false;
         setZeroPoint = true;
-      } else if (key == btnLEFT) {
+      }
+      else if (key == btnLEFT) {
         setZeroPoint = !setZeroPoint;
       }
     }
-    return true;
+    return waitForRelease;
   }
 
   mount.loop();
@@ -85,49 +90,50 @@ bool processControlKeys() {
   key = lcdButtons.currentState();
   switch (key) {
     case btnUP: {
-        processKeyStateChanges(btnUP, NORTH);
-      }
-      break;
+      processKeyStateChanges(btnUP, NORTH);
+    }
+    break;
 
     case btnDOWN: {
-        processKeyStateChanges(btnDOWN, SOUTH);
-      }
-      break;
+      processKeyStateChanges(btnDOWN, SOUTH);
+    }
+    break;
 
     case btnLEFT: {
-        processKeyStateChanges(btnLEFT, WEST);
-      }
-      break;
+      processKeyStateChanges(btnLEFT, WEST);
+    }
+    break;
 
     case btnRIGHT: {
-        processKeyStateChanges(btnRIGHT, EAST);
-      }
-      break;
+      processKeyStateChanges(btnRIGHT, EAST);
+    }
+    break;
 
     case btnSELECT: {
-        if (processKeyStateChanges(btnSELECT, 0))
-        {
-          lcdMenu.setCursor(0, 0);
-          lcdMenu.printMenu("Set home point?");
-          confirmZeroPoint = true;
-        }
+      if (processKeyStateChanges(btnSELECT, 0))
+      {
+        lcdMenu.setCursor(0, 0);
+        lcdMenu.printMenu("Set home point?");
+        confirmZeroPoint = true;
+        waitForRelease = true;
       }
-      break;
+    }
+    break;
 
     case btnNONE: {
-        processKeyStateChanges(btnNONE, 0);
-      }
-      break;
+      processKeyStateChanges(btnNONE, 0);
+    }
+    break;
   }
 
   mount.loop();
 
-  return false;
+  return waitForRelease;
 }
 
 
 void printControlSubmenu() {
-  if (!inControlMode ) {
+  if (!inControlMode) {
     lcdMenu.printMenu(">Manual control");
   }
   else if (confirmZeroPoint) {

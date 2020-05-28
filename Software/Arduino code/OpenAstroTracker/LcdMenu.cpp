@@ -9,13 +9,15 @@
 LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(8, 9, 4, 5, 6, 7) {
   //_lcd = new LiquidCrystal(8, 9, 4, 5, 6, 7);
   _lcd.begin(cols, rows);
-
-  _activeId = 0;
   _numMenuItems = 0;
   _activeMenuIndex = 0;
   _longestDisplay = 0;
   _columns = cols;
-  _menuItems = new MenuItem*[maxItems];
+  _activeRow = -1;
+  _activeCol = -1;
+  _lastDisplay[0] = "";
+  _lastDisplay[1] = "";
+  _menuItems = new MenuItem * [maxItems];
 
   // Create special characters for degrees and arrows
   _lcd.createChar(_degrees, DegreesBitmap);
@@ -38,19 +40,18 @@ MenuItem* LcdMenu::findById(byte id)
 }
 
 // Add a new menu item to the list (order matters)
-void LcdMenu::addItem(const char *disp, byte id) {
+void LcdMenu::addItem(const char* disp, byte id) {
   _menuItems[_numMenuItems++] = new MenuItem(disp, id);
   _longestDisplay = max(_longestDisplay, strlen(disp));
 }
 
 // Get the currently active item ID
 byte LcdMenu::getActive() {
-  return _activeId;
+  return _menuItems[_activeMenuIndex]->id();
 }
 
 // Set the active menu item
 void LcdMenu::setActive(byte id) {
-  _activeId = id;
   for (byte i = 0; i < _numMenuItems; i++) {
     if (_menuItems[i]->id() == id) {
       _activeMenuIndex = i;
@@ -61,7 +62,8 @@ void LcdMenu::setActive(byte id) {
 
 // Pass thru utility function
 void LcdMenu::setCursor(byte col, byte row) {
-  _lcd.setCursor(col, row);
+  _activeRow = row;
+  _activeCol = col;
 }
 
 // Pass thru utility function
@@ -71,8 +73,8 @@ void LcdMenu::clear() {
 
 // Go to the next menu item from currently active one
 void LcdMenu::setNextActive() {
+
   _activeMenuIndex = adjustWrap(_activeMenuIndex, 1, 0, _numMenuItems - 1);
-  _activeId = _menuItems[_activeMenuIndex]->id();
 
   // Update the display
   updateDisplay();
@@ -89,7 +91,9 @@ void LcdMenu::setNextActive() {
 // It also places the selector arrows around the active one.
 // It then sends the string to the LCD, keeping the selector arrows centered in the same place.
 void LcdMenu::updateDisplay() {
-  _lcd.setCursor(0, 0);
+
+  char bufMenu[17];
+  char* pBufMenu = &bufMenu[0];
   String menuString = "";
   byte offsetToActive = 0;
   byte offset = 0;
@@ -98,14 +102,18 @@ void LcdMenu::updateDisplay() {
   // Build the entire menu string
   for (byte i = 0; i < _numMenuItems; i++) {
     MenuItem* item = _menuItems[i];
-    bool isActive = item->id() == _activeId;
+    bool isActive = i == _activeMenuIndex;
     sprintf(scratchBuffer, "%c%s%c", isActive ? '>' : ' ', item->display(), isActive ? '<' : ' ');
 
     // For the active item remember where it starts in the string and insert selector arrows
-    offsetToActive = isActive ? offset : offsetToActive ;
+    offsetToActive = isActive ? offset : offsetToActive;
     menuString += String(scratchBuffer);
     offset += strlen(scratchBuffer);
   }
+
+  _lcd.setCursor(0, 0);
+  _activeRow = 0;
+  _activeCol = 0;
 
   // Determine where to place the active menu item. (empty space around longest item divided by two).
   int margin = (_columns - (_longestDisplay)) / 2;
@@ -113,60 +121,67 @@ void LcdMenu::updateDisplay() {
 
   // Pad the front if we don't have enough to offset the string to the arrow locations (happens on first item(s))
   while (offsetIntoString < 0) {
-    _lcd.print(" ");
+    *(pBufMenu++) = ' ';
     offsetIntoString++;
   }
 
   // Display the actual menu string
-  String displayString = menuString.substring(offsetIntoString, offsetIntoString + _columns);
-
-  // Pad the end with spaces so the display is cleared when getting to the last item(s).
-  while (displayString.length() < _columns) {
-    displayString += " ";
+  while ((pBufMenu < bufMenu + _columns) && (offsetIntoString < menuString.length())) {
+    *(pBufMenu++) = menuString[offsetIntoString++];
   }
 
-  printMenu(displayString);
-
   // Pad the end with spaces so the display is cleared when getting to the last item(s).
-  byte len = displayString.length();
-  while ( len < _columns) {
-    _lcd.print(" ");
-    len++;
+  while (pBufMenu < bufMenu + _columns) {
+    *(pBufMenu++) = ' ';
   }
+  *(pBufMenu++) = 0;
 
-  _lcd.setCursor(0, 1);
+  printMenu(String(bufMenu));
+
+  setCursor(0, 1);
 }
 
 void LcdMenu::printChar(char ch) {
   if (ch == '>') {
     _lcd.write(_rightArrow);
-  } else if (ch == '<') {
+  }
+  else if (ch == '<') {
     _lcd.write(_leftArrow);
-  } else if (ch == '^') {
+  }
+  else if (ch == '^') {
     _lcd.write(_upArrow);
-  } else if (ch == '~') {
+  }
+  else if (ch == '~') {
     _lcd.write(_downArrow);
-  } else if (ch == '@') {
+  }
+  else if (ch == '@') {
     _lcd.write(_degrees);
-  } else if (ch == '\'') {
+  }
+  else if (ch == '\'') {
     _lcd.write(_minutes);
-  } else {
+  }
+  else {
     _lcd.print(ch);
   }
 }
 
 // Print a string to the LCD at the current cursor position, substituting the special arrows and padding with spaces to the end
-void LcdMenu::printMenu(String line)
-{
-  int spaces = _columns - line.length();
-  for (int i = 0; i < line.length(); i++) {
-    printChar(line[i]);
-  }
+void LcdMenu::printMenu(String line) {
+  if ((_lastDisplay[_activeRow] != line) || (_activeCol != 0)) {
 
-  // Clear the rest of the display
-  while (spaces > 0) {
-    _lcd.print(" ");
-    spaces--;
+    _lastDisplay[_activeRow] = line;
+
+    _lcd.setCursor(_activeCol, _activeRow);
+    int spaces = _columns - line.length();
+    for (int i = 0; i < line.length(); i++) {
+      printChar(line[i]);
+    }
+
+    // Clear the rest of the display
+    while (spaces > 0) {
+      _lcd.print(" ");
+      spaces--;
+    }
   }
 }
 
@@ -246,7 +261,7 @@ MenuItem* LcdMenu::findById(byte id) {
   return NULL;
 }
 
-void LcdMenu::addItem(const char *disp, byte id) {}
+void LcdMenu::addItem(const char* disp, byte id) {}
 
 byte LcdMenu::getActive() {
   return 0;

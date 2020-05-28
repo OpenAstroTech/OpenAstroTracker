@@ -355,3 +355,11 @@ Software/PC control/bin
 Software/OpenAstroTracker ASCOM/OpenAstroTracker ASCOM/bin
 
 Software/OpenAstroTracker ASCOM/OpenAstroTracker ASCOM/OpenAstroTracker Setup.iss
+Software/Arduino code/OpenAstroTracker/.vscode
+Software/Arduino code/OpenAstroTracker/Debug
+Software/Arduino code/OpenAstroTracker/Release
+Software/Arduino code/OpenAstroTracker/__vm
+*.exe
+test
+
+bin/
