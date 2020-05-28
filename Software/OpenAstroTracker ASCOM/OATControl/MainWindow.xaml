@@ -111,7 +111,7 @@
 		<Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="10">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="30"/>
+				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
@@ -175,8 +175,9 @@
 			<TextBlock Grid.Row="7" Grid.Column="0"  Text="Preset" Margin="0,20,0,0" Style="{StaticResource TextBlockHeading}"  />
 			<ComboBox Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="7"  Text="Preset" Margin="0,20,0,0" ItemsSource="{Binding AvailablePointsOfInterest}" DisplayMemberPath="Name" SelectedIndex="{Binding SelectedPointOfInterest}"/>
 
-			<Button Grid.Row="1" Grid.Column="7" Grid.RowSpan="5" Margin="8,0" Padding="30,20"  Content="Slew!" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding SlewToTargetCommand}" />
-			<Button Grid.Row="6" Grid.Column="7" Grid.RowSpan="1" Margin="8,8,8,0" Padding="0,0"  Content="Sync" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding SyncToTargetCommand}" />
+			<Button Grid.Row="1" Grid.Column="7" Grid.RowSpan="1" Margin="8,0,8,4" Padding="0,4,0,8"  Content="&lt;- Sync" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding SyncToCurrentCommand}" />
+			<Button Grid.Row="2" Grid.Column="7" Grid.RowSpan="4" Margin="8,0" Padding="30,20"  Content="Slew!" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding SlewToTargetCommand}" />
+			<Button Grid.Row="6" Grid.Column="7" Grid.RowSpan="1" Margin="8,4,8,0" Padding="0,4,0,8"  Content="Sync -&gt;" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding SyncToTargetCommand}" />
 
 
 			<TextBlock Grid.Row="0" Grid.Column="8" Grid.ColumnSpan="7"  Text="Current" Style="{StaticResource TextBlockTitle}" HorizontalAlignment="Center"/>

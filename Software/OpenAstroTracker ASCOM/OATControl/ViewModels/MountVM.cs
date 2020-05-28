@@ -51,7 +51,7 @@ namespace OATControl.ViewModels
 		bool _isSlewingEast = false;
 		bool _tryConnect = false;
 		bool _driftAlignRunning = false;
-		bool _runningOATCommand = false;
+		int _runningOATCommand = 0;
 		SemaphoreSlim exclusiveAccess = new SemaphoreSlim(1, 1);
 		string _driftAlignStatus = "Drift Alignment";
 		float _driftPhase = 0;
@@ -69,6 +69,7 @@ namespace OATControl.ViewModels
 		DelegateCommand _connectScopeCommand;
 		DelegateCommand _slewToTargetCommand;
 		DelegateCommand _syncToTargetCommand;
+		DelegateCommand _syncToCurrentCommand;
 		DelegateCommand _startSlewingCommand;
 		DelegateCommand _stopSlewingCommand;
 		DelegateCommand _homeCommand;
@@ -104,6 +105,7 @@ namespace OATControl.ViewModels
 			_connectScopeCommand = new DelegateCommand(() => OnConnectToTelescope(), () => _oatMount != null);
 			_slewToTargetCommand = new DelegateCommand(async () => await OnSlewToTarget(), () => MountConnected);
 			_syncToTargetCommand = new DelegateCommand(async () => await OnSyncToTarget(), () => MountConnected);
+			_syncToCurrentCommand = new DelegateCommand(() => OnSyncToCurrent(), () => MountConnected);
 			_startSlewingCommand = new DelegateCommand(async s => await OnStartSlewing(s.ToString()), () => MountConnected);
 			_stopSlewingCommand = new DelegateCommand(async () => await OnStopSlewing('a'), () => MountConnected);
 			_homeCommand = new DelegateCommand(async () => await OnHome(), () => MountConnected);
@@ -130,7 +132,7 @@ namespace OATControl.ViewModels
 		{
 			var now = DateTime.UtcNow;
 			var elapsed = now - _startTime;
-			var timestamp = string.Format("[{0:00}:{1:00}:{2:00}.{3:00}] ", elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds / 10);
+			var timestamp = string.Format("[{0:00}:{1:00}:{2:00}.{3:00}] <{4}>:", elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds / 10, Thread.CurrentThread.ManagedThreadId);
 			Console.WriteLine(String.Format(timestamp + format, p));
 		}
 
@@ -157,11 +159,11 @@ namespace OATControl.ViewModels
 			string result = string.Empty;
 			try
 			{
-				_runningOATCommand = true;
+				Interlocked.Increment(ref _runningOATCommand);
 				bool needsReturn = false;
-				Log("OATCustom:  StartRunning [{0}]", command);
+				Log("OATCustom:  StartRunning [{0}], awaiting access", command);
 				await exclusiveAccess.WaitAsync();
-				Log("OATCustom:  -> {0} ", command);
+				Log("OATCustom:  Acces granted. -> Sending {0} ", command);
 				var commandResult = await _oatMount.SendCommand(command);
 				if (!string.IsNullOrEmpty(commandResult.Data))
 				{
@@ -172,8 +174,8 @@ namespace OATControl.ViewModels
 			finally
 			{
 				Log("OATCustom:  StopRunning [{0}]", command);
-				_runningOATCommand = false;
 				exclusiveAccess.Release();
+				Interlocked.Decrement(ref _runningOATCommand);
 			}
 
 			return result.TrimEnd("#".ToCharArray());
@@ -204,7 +206,7 @@ namespace OATControl.ViewModels
 			//	}
 			//}
 
-			if (!_runningOATCommand)
+			if (Interlocked.CompareExchange(ref _runningOATCommand,1,0)==0)
 			{
 				Log("OATTimer:  Not Running");
 				if (MountConnected)
@@ -212,6 +214,7 @@ namespace OATControl.ViewModels
 					//UpdateCurrentCoordinates();
 					await UpdateStatus();
 				}
+				Interlocked.Decrement(ref _runningOATCommand);
 			}
 			else
 			{
@@ -334,6 +337,13 @@ namespace OATControl.ViewModels
 			await _oatMount.Sync(new TelescopePosition(1.0 * TargetRASecond / 3600.0 + 1.0 * TargetRAMinute / 60.0 + TargetRAHour, 1.0 * TargetDECSecond / 3600.0 + 1.0 * TargetDECMinute / 60.0 + TargetDECDegree, Epoch.JNOW));
 		}
 
+		private void OnSyncToCurrent()
+		{
+			TargetRAHour = CurrentRAHour;
+			TargetRAMinute = CurrentRAMinute;
+			TargetRASecond = CurrentRASecond;
+		}
+
 		private void FloatToHMS(double val, out int h, out int m, out int s)
 		{
 			h = (int)Math.Floor(val);
@@ -370,7 +380,8 @@ namespace OATControl.ViewModels
 					//await +.WaitAsync();
 
 					var result = await _oatMount.SendCommand("GVP#,#");
-					ScopeName = result.Data;
+					var resultNr = await _oatMount.SendCommand("GVN#,#");
+					ScopeName = $"{result.Data} {resultNr.Data}";
 
 					_transform.SiteElevation = 100;// _oatMount.SiteElevation;
 					_transform.SiteLatitude = 47.74; //_oatMount.SiteLatitude;
@@ -458,6 +469,7 @@ namespace OATControl.ViewModels
 			_connectScopeCommand.Requery();
 			_slewToTargetCommand.Requery();
 			_syncToTargetCommand.Requery();
+			_syncToCurrentCommand.Requery();
 			_startSlewingCommand.Requery();
 			_stopSlewingCommand.Requery();
 			_homeCommand.Requery();
@@ -542,6 +554,7 @@ namespace OATControl.ViewModels
 		public ICommand ConnectScopeCommand { get { return _connectScopeCommand; } }
 		public ICommand SlewToTargetCommand { get { return _slewToTargetCommand; } }
 		public ICommand SyncToTargetCommand { get { return _syncToTargetCommand; } }
+		public ICommand SyncToCurrentCommand { get { return _syncToCurrentCommand; } }
 		public ICommand StartSlewingCommand { get { return _startSlewingCommand; } }
 		public ICommand StopSlewingCommand { get { return _stopSlewingCommand; } }
 		public ICommand HomeCommand { get { return _homeCommand; } }
