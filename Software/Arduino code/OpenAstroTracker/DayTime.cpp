@@ -189,7 +189,10 @@ const char*  DayTime::ToString() const
   }
 
   *p++ = '0' + (secs % 10);
-  sprintf(p, " (%.4f)", this->getTotalHours());
+  *p++ = ' ';
+  *p++ = '(';
+  strcpy(p, String(this->getTotalHours(), 4).c_str());
+  strcat(p, ")");
   return achBuf;
 }
 
@@ -270,7 +273,10 @@ const char* DegreeTime::ToString() const
   }
 
   *p++ = '0' + (secs % 10);
-  sprintf(p, " (%.4f)", NORTHERN_HEMISPHERE ? getTotalHours() + 90 : getTotalHours() - 90);
+  *p++ = ' ';
+  *p++ = '(';
+  strcpy(p, String(NORTHERN_HEMISPHERE ? getTotalHours() + 90 : getTotalHours() - 90, 4).c_str());
+  strcat(p, ")");
 
   return achBufDeg;
 }
