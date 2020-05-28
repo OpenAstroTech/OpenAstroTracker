@@ -13,7 +13,6 @@
 
 #define HALFSTEP 8
 #define FULLSTEP 4
-#define DRIVER 1
 
 //SoftwareSerial BT(10,11);
 
@@ -51,26 +50,15 @@
 #endif
 
 #ifdef __AVR_ATmega2560__  // Arduino Mega
-#if RAStepper == 0  // 28BYJ
- #define RAmotorPin1  22    // IN1 auf ULN2003 driver 1    //  2 / 22
- #define RAmotorPin3  24    // IN2 auf ULN2003 driver 1    //  3 / 24
- #define RAmotorPin2  26    // IN3 auf ULN2003 driver 1   // 11 / 26
- #define RAmotorPin4  28    // IN4 auf ULN2003 driver 1   // 12 / 28
-#endif
-#if RAStepper == 1  // NEMA
- #define RAmotorPin1  22
- #define RAmotorPin2  24
-#endif
-#if DECStepper == 0  // 28BYJ
- #define DECmotorPin1  30    // IN1 auf ULN2003 driver 2
- #define DECmotorPin3  32    // IN3 auf ULN2003 driver 2
- #define DECmotorPin2  34    // IN2 auf ULN2003 driver 2
- #define DECmotorPin4  36    // IN4 auf ULN2003 driver 2
-#endif
-#if DECStepper == 1  // NEMA
- #define DECmotorPin1  26
- #define DECmotorPin2  28
-#endif
+#define RAmotorPin1  22    // IN1 auf ULN2003 driver 1    //  2 / 22
+#define RAmotorPin3  24    // IN2 auf ULN2003 driver 1    //  3 / 24
+#define RAmotorPin2  26    // IN3 auf ULN2003 driver 1   // 11 / 26
+#define RAmotorPin4  28    // IN4 auf ULN2003 driver 1   // 12 / 28
+
+#define DECmotorPin1  30    // IN1 auf ULN2003 driver 2
+#define DECmotorPin3  32    // IN3 auf ULN2003 driver 2
+#define DECmotorPin2  34    // IN2 auf ULN2003 driver 2
+#define DECmotorPin4  36    // IN4 auf ULN2003 driver 2
 #endif
 
 // Menu IDs

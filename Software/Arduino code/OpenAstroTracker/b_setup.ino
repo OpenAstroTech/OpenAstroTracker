@@ -10,16 +10,6 @@ WifiControl wifiControl(&mount, &lcdMenu);
 #endif
 
 void setup() {
-  //Enable Microstepping
-  //RA
-  digitalWrite(40, HIGH);
-  digitalWrite(42, HIGH);
-  digitalWrite(44, HIGH);
-  //DEC
-  digitalWrite(41, HIGH);
-  digitalWrite(43, HIGH);
-  digitalWrite(45, HIGH);
-  
 
   //debug_init();
   //Serial.begin(38400);
@@ -47,19 +37,9 @@ void setup() {
   // Configure the mount
   
   // Set the stepper motor parameters
-  #if RAStepper == 0 && DECStepper == 0
   mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);
   mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
-  #endif
-  #if RAStepper == 1 && DECStepper == 0
-  mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
-  mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
-  #endif
-  #if RAStepper == 1 && DECStepper == 1
-  mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
-  mount.configureDECStepper(DRIVER, DECmotorPin1, DECmotorPin2, DECspeed, DECacceleration);
-  #endif
-  
+
   // The mount uses EEPROM storage locations 0-10 that it reads during construction
 
   // Read other persisted values and set in mount
