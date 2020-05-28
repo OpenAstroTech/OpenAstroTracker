@@ -81,8 +81,9 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
 //
 // EEPROM storage location 5 must be 0xBE for the mount to read any data
 // Location 4 indicates what has been stored so far: 00000000
-//                                                        ^^^
-//                                                        |||
+//                                                       ^^^^
+//                                                       ||||
+//                      Backlash steps (10/11) ----------+|||
 //                           Speed factor (0/3) ----------+||
 //     DEC stepper motor steps per degree (8/9) -----------+|
 //      RA stepper motor steps per degree (6/7) ------------+
