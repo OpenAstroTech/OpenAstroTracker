@@ -1,0 +1,86 @@
+# .NET Desktop
+# Build and run tests for .NET Desktop or Windows classic desktop solutions.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
+
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solutionDir: 'Software\OpenAstroTracker ASCOM'
+  solution: '$(solutionDir)\OpenAstroTracker.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  version: '1.0.$(Build.BuildID).0'
+
+steps:
+
+- task: Update AssemblyInfo@1
+  inputs:
+    rootFolder: '$(Build.SourcesDirectory)'
+    filePattern: 'AssemblyInfo.cs'
+    assemblyVersion: '$(version)'
+    assemblyFileVersion: '$(version)'
+    
+- task: NuGetToolInstaller@1
+
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '$(solutionDir)\OpenAstroTracker\packages.config'
+    feedsToUse: 'select'
+    restoreDirectory: 'packages'
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '$(solutionDir)\TelescopeDriver\packages.config'
+    feedsToUse: 'select'
+    restoreDirectory: 'packages'
+
+
+- task: VSBuild@1
+  inputs:
+    solution: '$(solution)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: '.\OpenAstroTracker\packages\Tools.InnoSetup.5.6.1\tools\ISCC.exe /F"OpenAstroTracker ASCOM-$(version)" ''.\OpenAstroTracker Setup.iss'''
+    workingDirectory: '$(solutionDir)'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(solutionDir)'
+    Contents: 'OpenAstroTracker ASCOM-$(version).exe'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: VSTest@2
+  inputs:
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'OpenAstroTracker'
+    publishLocation: 'Container'
+
+- task: GitHubRelease@1
+  inputs:
+    gitHubConnection: 'jwellman80'
+    repositoryName: 'jwellman80/OpenAstroTracker-ASCOM'
+    action: 'create'
+    target: '$(Build.SourceVersion)'
+    tagSource: 'userSpecifiedTag'
+    tag: '$(version)'
+    title: 'OpenAstroTracker ASCOM - $(version)'
+    releaseNotesFilePath: '$(solutionDir)\OpenAstroTracker\ReadMe.txt'
+    changeLogCompareToRelease: 'lastFullRelease'
+    changeLogType: 'commitBased'
