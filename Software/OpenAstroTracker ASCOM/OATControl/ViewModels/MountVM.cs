@@ -98,8 +98,8 @@ namespace OATControl.ViewModels
 		public MountVM()
 		{
 			_startTime = DateTime.UtcNow;
-			_timerStatus = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Normal, (s, e) => OnTimer(s, e), Application.Current.Dispatcher);
-			_timerFineSlew = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Normal, (s, e) => OnFineSlewTimer(s, e), Application.Current.Dispatcher);
+			_timerStatus = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Normal, async (s, e) => await OnTimer(s, e), Application.Current.Dispatcher);
+			_timerFineSlew = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Normal, async (s, e) => await OnFineSlewTimer(s, e), Application.Current.Dispatcher);
 			_arrowCommand = new DelegateCommand(s => OnAdjustTarget(s.ToString()));
 			_chooseScopeCommand = new DelegateCommand(() => OnChooseTelescope());
 			_connectScopeCommand = new DelegateCommand(() => OnConnectToTelescope(), () => _oatMount != null);
@@ -126,6 +126,8 @@ namespace OATControl.ViewModels
 				_pointsOfInterest.Insert(0, new PointOfInterest("--- Select Target Object ---"));
 				_selectedPointOfInterest = 0;
 			}
+
+			this.Version = Assembly.GetExecutingAssembly().GetName().Version;
 		}
 
 		private void Log(string format, params object[] p)
@@ -144,15 +146,19 @@ namespace OATControl.ViewModels
 
 		private async Task ReadHA()
 		{
-			var ha = await RunCustomOATCommandAsync(":XGH#,#");
-			CurrentHA = String.Format("{0}h {1}m {2}s", ha.Substring(0, 2), ha.Substring(2, 2), ha.Substring(4, 2));
+			for (int i = 0; i < 20; i++)
+			{
+				var ha = await RunCustomOATCommandAsync(":XGH#,#");
+				if (!string.IsNullOrEmpty(ha))
+				{
+					CurrentHA = String.Format("{0}h {1}m {2}s", ha.Substring(0, 2), ha.Substring(2, 2), ha.Substring(4, 2));
+					break;
+				}
+				await Task.Delay(50);
+			}
 		}
 
-		//private string RunCustomOATCommand(string command)
-		//{
-		//	var t = RunCustomOATCommandAsync(command);
-		//	return t.GetAwaiter().GetResult();
-		//}
+
 
 		async private Task<string> RunCustomOATCommandAsync(string command)
 		{
@@ -294,14 +300,15 @@ namespace OATControl.ViewModels
 
 		private async Task OnStartSlewing(string direction)
 		{
-			char dir = char.ToLower(direction[0]);
-			if (IsSlewing(dir))
+			bool turnOn = direction[0] == '+';
+			char dir = char.ToLower(direction[1]);
+			if (turnOn)
 			{
-				await OnStopSlewing(dir);
+				await OnStartSlewing(dir);
 			}
 			else
 			{
-				await OnStartSlewing(dir);
+				await OnStopSlewing(dir);
 			}
 		}
 
@@ -469,7 +476,7 @@ namespace OATControl.ViewModels
 			//{
 			//	ScopeName = name;
 			_oatMount = new OatmealTelescopeCommandHandlers(
-			  new TcpCommunicationHandler(new IPAddress(new byte[] { 192, 168, 86, 21 }), 4030));
+			  new TcpCommunicationHandler(new IPAddress(new byte[] { 192, 168, 86, 61 }), 4030));
 
 			try
 			{
@@ -985,6 +992,8 @@ namespace OATControl.ViewModels
 			get { return _parkString; }
 			set { SetPropertyValue(ref _parkString, value); }
 		}
+
+		public Version Version { get; private set; }
 	}
 }
 
