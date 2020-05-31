@@ -10,5 +10,6 @@ namespace OATCommunications
         Task<CommandResponse> SendBlind(string command);
         Task<CommandResponse> SendCommand(string command);
         bool Connected { get; }
+        void Disconnect();
     }
 }

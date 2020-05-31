@@ -8,7 +8,7 @@ namespace OATCommunications.ClientAdapters
 {
     class UdpClientAdapter
     {
-        public event EventHandler ClientFound;
+        public event EventHandler<ClientFoundEventArgs> ClientFound;
 
         private readonly string _hostToFind;
         private int _port;

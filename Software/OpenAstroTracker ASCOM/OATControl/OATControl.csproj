@@ -116,6 +116,9 @@
     </Compile>
     <Compile Include="Converters\DoubleDividerConverter.cs" />
     <Compile Include="Converters\StretchModeConverter.cs" />
+    <Compile Include="DlgChooseOat.xaml.cs">
+      <DependentUpon>DlgChooseOat.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\DelegateCommand.cs" />
     <Compile Include="ViewModels\Log.cs" />
     <Compile Include="ViewModels\MountVM.cs" />
@@ -127,6 +130,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\Joystick.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DlgChooseOat.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

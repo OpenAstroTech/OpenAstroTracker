@@ -1,0 +1,27 @@
+﻿<Controls:MetroWindow x:Class="OATControl.DlgChooseOat"
+		xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OATControl"
+        mc:Ignorable="d"
+        Title="Connect to OpenAstroTracker" Height="148.39" Width="394.862" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition Width="*" />
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<TextBlock Grid.Row="0" Grid.Column="0"  Text="Available Connections" Margin="10,24,10,0" Style="{StaticResource TextBlockHeading}"  />
+		<ComboBox Grid.Row="0" Grid.Column="1" Text="--- Choose Connection ---" Margin="0,20,10,0" ItemsSource="{Binding AvailableDevices}" SelectedIndex="{Binding SelectedDevice}"/>
+		<StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button Content="OK" Command="{Binding OKCommand}" Margin="10" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" IsDefault="True" />
+			<Button Content="Cancel" Command="{Binding CancelCommand}" Margin="10" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" IsCancel="True" />
+		</StackPanel>
+	</Grid>
+</Controls:MetroWindow>

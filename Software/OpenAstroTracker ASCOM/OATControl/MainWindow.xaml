@@ -4,9 +4,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:OATControl" xmlns:controls="clr-namespace:OATControl.Controls" xmlns:converters="clr-namespace:OATControl.Converters"
-					  mc:Ignorable="d"
-        Title="{Binding Version, StringFormat={} OpenAstroTracker Control V{0}}" MinHeight="675" MinWidth="790" Height="718" Width="790">
+        xmlns:local="clr-namespace:OATControl" 
+		xmlns:controls="clr-namespace:OATControl.Controls" 
+		xmlns:converters="clr-namespace:OATControl.Converters"
+		mc:Ignorable="d"
+		Title="{Binding Version, StringFormat={} OpenAstroTracker Control V{0}}" MinHeight="675" MinWidth="790" Height="718" Width="790">
 	<Window.Resources>
 		<converters:BoolToStringConverter x:Key="SlewModeConverter" TrueString="Pulsed" FalseString="Continuous" />
 		<converters:BoolToVisibilityConverter x:Key="CoarseBoolToVisible" Collapse="False" />
@@ -454,8 +456,7 @@
 					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="*" />
 				</Grid.ColumnDefinitions>
-				<Button Grid.Column="0" Margin="10,12,0,0" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding ChooseScopeCommand}" >Choose</Button>
-				<Button Grid.Column="1" Margin="10,12,0,0" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding ConnectScopeCommand}" Content="{Binding ConnectCommandString}" />
+				<Button Grid.Column="0" Margin="10,12,0,0" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding ConnectScopeCommand}" Content="{Binding ConnectCommandString}"/>
 			</Grid>
 			<TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="4" Text="{Binding ScopeName}" Style="{StaticResource TextBlockLabel}" Margin="0,2,0,0" />
 

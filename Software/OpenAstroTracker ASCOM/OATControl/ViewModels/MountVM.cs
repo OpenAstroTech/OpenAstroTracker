@@ -80,6 +80,7 @@ namespace OATControl.ViewModels
 		DispatcherTimer _timerStatus;
 		DispatcherTimer _timerFineSlew;
 
+		private ICommunicationHandler _commHandler;
 		private OatmealTelescopeCommandHandlers _oatMount;
 		private List<PointOfInterest> _pointsOfInterest;
 		int _selectedPointOfInterest;
@@ -97,11 +98,12 @@ namespace OATControl.ViewModels
 
 		public MountVM()
 		{
+			CommunicationHandlerFactory.DiscoverDevices();
+
 			_startTime = DateTime.UtcNow;
 			_timerStatus = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Normal, async (s, e) => await OnTimer(s, e), Application.Current.Dispatcher);
 			_timerFineSlew = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Normal, async (s, e) => await OnFineSlewTimer(s, e), Application.Current.Dispatcher);
 			_arrowCommand = new DelegateCommand(s => OnAdjustTarget(s.ToString()));
-			_chooseScopeCommand = new DelegateCommand(() => OnChooseTelescope());
 			_connectScopeCommand = new DelegateCommand(() => OnConnectToTelescope(), () => _oatMount != null);
 			_slewToTargetCommand = new DelegateCommand(async () => await OnSlewToTarget(), () => MountConnected);
 			_syncToTargetCommand = new DelegateCommand(async () => await OnSyncToTarget(), () => MountConnected);
@@ -355,59 +357,68 @@ namespace OATControl.ViewModels
 
 		private async void OnConnectToTelescope()
 		{
-			//_oatMount.Connected = !_oatMount.Connected;
-			RequeryCommands();
-
-			//if (_oatMount.Connected)
+			if (MountConnected)
 			{
-				try
+				_commHandler.Disconnect();
+				_oatMount = null;
+				_commHandler = null;
+				RequeryCommands();
+			}
+			else
+			{
+				RequeryCommands();
+
+				if (this.ChooseTelescope())
 				{
-					//await +.WaitAsync();
+					try
+					{
+						//await +.WaitAsync();
 
-					var result = await _oatMount.SendCommand("GVP#,#");
-					var resultNr = await _oatMount.SendCommand("GVN#,#");
-					ScopeName = $"{result.Data} {resultNr.Data}";
+						var result = await _oatMount.SendCommand("GVP#,#");
+						var resultNr = await _oatMount.SendCommand("GVN#,#");
+						ScopeName = $"{result.Data} {resultNr.Data}";
 
-					_transform.SiteElevation = 100;// _oatMount.SiteElevation;
-					_transform.SiteLatitude = 47.74; //_oatMount.SiteLatitude;
-					_transform.SiteLongitude = -121.96;// _oatMount.SiteLongitude;
-					_transform.SetAzimuthElevation(0, 90);
-					var lst = _transform.RATopocentric;
-					var lstS = _util.HoursToHMS(lst, "", "", "");
+						_transform.SiteElevation = 100;// _oatMount.SiteElevation;
+						_transform.SiteLatitude = 47.74; //_oatMount.SiteLatitude;
+						_transform.SiteLongitude = -121.96;// _oatMount.SiteLongitude;
+						_transform.SetAzimuthElevation(0, 90);
+						var lst = _transform.RATopocentric;
+						var lstS = _util.HoursToHMS(lst, "", "", "");
 
-					Log("LST: {0}", _util.HoursToHMS(lst, "h", "m", "s"));
-					var stringResult = await RunCustomOATCommandAsync(string.Format(":SHL{0}#,#", _util.HoursToHMS(lst, "", "", "")));
-					lst -= _util.HMSToHours("02:58:04");
-					Log("HA: {0}", _util.HoursToHMS(lst, "h", "m", "s"));
-					await UpdateCurrentCoordinates();
-					TargetDECDegree = CurrentDECDegree;
-					TargetDECMinute = CurrentDECMinute;
-					TargetDECSecond = CurrentDECSecond;
+						Log("LST: {0}", _util.HoursToHMS(lst, "h", "m", "s"));
+						var stringResult = await RunCustomOATCommandAsync(string.Format(":SHL{0}#,#", _util.HoursToHMS(lst, "", "", "")));
+						lst -= _util.HMSToHours("02:58:04");
+						Log("HA: {0}", _util.HoursToHMS(lst, "h", "m", "s"));
+						await UpdateCurrentCoordinates();
+						TargetDECDegree = CurrentDECDegree;
+						TargetDECMinute = CurrentDECMinute;
+						TargetDECSecond = CurrentDECSecond;
 
-					TargetRAHour = CurrentRAHour;
-					TargetRAMinute = CurrentRAMinute;
-					TargetRASecond = CurrentRASecond;
+						TargetRAHour = CurrentRAHour;
+						TargetRAMinute = CurrentRAMinute;
+						TargetRASecond = CurrentRASecond;
 
-					string steps = await RunCustomOATCommandAsync(string.Format(":XGR#,#"));
-					_raStepsPerDegree = int.Parse(steps);
-					steps = await RunCustomOATCommandAsync(string.Format(":XGD#,#"));
-					_decStepsPerDegree = int.Parse(steps);
-					OnPropertyChanged("RAStepsPerDegree");
-					OnPropertyChanged("DECStepsPerDegree");
+						string steps = await RunCustomOATCommandAsync(string.Format(":XGR#,#"));
+						_raStepsPerDegree = int.Parse(steps);
+						steps = await RunCustomOATCommandAsync(string.Format(":XGD#,#"));
+						_decStepsPerDegree = int.Parse(steps);
+						OnPropertyChanged("RAStepsPerDegree");
+						OnPropertyChanged("DECStepsPerDegree");
 
-					steps = await RunCustomOATCommandAsync(string.Format(":XGS#,#"));
-					SpeedCalibrationFactor = float.Parse(steps);
+						steps = await RunCustomOATCommandAsync(string.Format(":XGS#,#"));
+						SpeedCalibrationFactor = float.Parse(steps);
 
-					await ReadHA();
-					MountConnected = true;
-				}
-				catch (Exception ex)
-				{
-					MessageBox.Show("Error trying to connect to OpenAstroTracker. " + ex.Message, "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
-				}
-				finally
-				{
-					//exclusiveAccess.Release();
+						await ReadHA();
+						MountConnected = true;
+					}
+					catch (Exception ex)
+					{
+						MessageBox.Show("Error trying to connect to OpenAstroTracker. " + ex.Message, "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+					}
+					finally
+					{
+						//exclusiveAccess.Release();
+					}
 				}
 			}
 		}
@@ -467,25 +478,25 @@ namespace OATControl.ViewModels
 			OnPropertyChanged("ConnectCommandString");
 		}
 
-		private void OnChooseTelescope()
+		private bool ChooseTelescope()
 		{
-			//var chooser = new Chooser();
-			//chooser.DeviceType = "Telescope";
-			//var name = chooser.Choose("ASCOM.OpenAstroTracker.Telescope");
-			//if (!string.IsNullOrEmpty(name))
-			//{
-			//	ScopeName = name;
-			_oatMount = new OatmealTelescopeCommandHandlers(
-			  new TcpCommunicationHandler(new IPAddress(new byte[] { 192, 168, 86, 61 }), 4030));
+			var dlg = new DlgChooseOat();
 
-			try
+			var result  = dlg.ShowDialog();
+			if (result == true)
 			{
-				OnConnectToTelescope();
-			}
-			catch (Exception)
-			{
-			}
+				//var chooser = new Chooser();
+				//chooser.DeviceType = "Telescope";
+				//var name = chooser.Choose("ASCOM.OpenAstroTracker.Telescope");
+				//if (!string.IsNullOrEmpty(name))
+				//{
+				//	ScopeName = name;
+				_commHandler = CommunicationHandlerFactory.ConnectToDevice(dlg.SelectedDevice);
+				//_commHandler = new TcpCommunicationHandler(new IPAddress(new byte[] { 192, 168, 86, 61 }), 4030);
+				_oatMount = new OatmealTelescopeCommandHandlers(_commHandler);
 
+				return true;
+			}
 
 			//	Settings.Default.Scope = name;
 
@@ -493,6 +504,7 @@ namespace OATControl.ViewModels
 			//}
 
 			RequeryCommands();
+			return false;
 		}
 
 		// Adjust the given number by the given adjustment, wrap around the limits.
