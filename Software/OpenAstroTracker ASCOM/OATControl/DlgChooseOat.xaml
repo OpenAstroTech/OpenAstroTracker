@@ -6,7 +6,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OATControl"
         mc:Ignorable="d"
-        Title="Connect to OpenAstroTracker" Height="225.39" Width="349.862" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
+        Title="Connect to OpenAstroTracker" Height="312.39" Width="359.862" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
+	<Controls:MetroWindow.Resources>
+		<Style x:Key="ListItemsStyle" TargetType="ListBoxItem">
+			<Setter Property="Margin" Value="5,3,5,1" />
+			<Setter Property="Padding" Value="3" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="BorderBrush" Value="{StaticResource AccentBaseColorBrush}" />
+			<Setter Property="Background" Value="{StaticResource AccentColorBrush2}" />
+			<Setter Property="Foreground" Value="{StaticResource AccentSelectedColorBrush}" />
+		</Style>
+		<ItemsPanelTemplate x:Key="ListBoxItemsPanel">
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{StaticResource WhiteBrush}"/>
+		</ItemsPanelTemplate>
+	</Controls:MetroWindow.Resources>
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="Auto" />
@@ -14,14 +27,35 @@
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
-			<RowDefinition Height="*" />
+			<RowDefinition Height="129*" />
+			<RowDefinition Height="61*"/>
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
-		<TextBlock Grid.Row="0" Grid.Column="0"  Text="Available Connections" Margin="10,24,10,0" Style="{StaticResource MetroTextBlock}"  />
-		<ComboBox Grid.Row="0" Grid.Column="1" Text="--- Choose Connection ---" Margin="0,20,10,0" ItemsSource="{Binding AvailableDevices}" SelectedItem="{Binding SelectedDevice}"/>
-		<StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+		<TextBlock Grid.Row="0" Grid.Column="0"  Text="Available Connections" Margin="10,24,10,0" Foreground="{StaticResource AccentSelectedColorBrush}"  />
+		<StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Grid.ColumnSpan="2">
+			<Button Content="Rescan" Command="{Binding RescanCommand}" Margin="10,10,60,10" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" />
 			<Button Content="OK" Command="{Binding OKCommand}" Margin="10" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" IsDefault="True" />
 			<Button Content="Cancel"  Margin="10" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" IsCancel="True" />
 		</StackPanel>
+		<ListBox Grid.Row="1" Grid.ColumnSpan="2" 
+				 VerticalAlignment="Top"
+				 ItemsSource="{Binding AvailableDevices,Mode=OneWay}" 
+				 ItemsPanel="{StaticResource ListBoxItemsPanel}" 
+				 SelectedItem="{Binding SelectedDevice}"
+				 BorderThickness="0" 
+				 ItemContainerStyle="{StaticResource ListItemsStyle}" 
+				 MinHeight="18" 
+				 HorizontalAlignment="Stretch" 
+				 MinWidth="20" 
+				 Background="Transparent" >
+			<ListBox.ItemTemplate>
+				<DataTemplate DataType="string">
+					<Grid >
+						<TextBlock Text="{Binding}" Style="{StaticResource MetroTextBlock}"/>
+					</Grid>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+
 	</Grid>
 </Controls:MetroWindow>

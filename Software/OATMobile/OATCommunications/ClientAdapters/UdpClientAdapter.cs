@@ -44,10 +44,10 @@ namespace OATCommunications.ClientAdapters
 			IPEndPoint remoteIpEndPoint = new IPEndPoint(IPAddress.Any, _port);
 			byte[] received = _udpClient.EndReceive(ar, ref remoteIpEndPoint);
 			string result = Encoding.UTF8.GetString(received);
-			var parts = result.Split('@');
-			if (parts.Length == 2)
+			var parts = result.Split(":@".ToCharArray(),StringSplitOptions.RemoveEmptyEntries);
+			if ((parts.Length == 3) && parts[0].Equals("skyfi"))
 			{
-				OnClientFound(new ClientFoundEventArgs("OAT", IPAddress.Parse(parts[1])));
+				OnClientFound(new ClientFoundEventArgs(parts[1], IPAddress.Parse(parts[2])));
 			}
 			_udpClient.BeginReceive(new AsyncCallback(this.ReceiveCallback), null);
 		}

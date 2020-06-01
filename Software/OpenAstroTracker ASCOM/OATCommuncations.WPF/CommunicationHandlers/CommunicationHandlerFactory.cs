@@ -7,6 +7,7 @@ using OATCommunications.ClientAdapters;
 using static OATCommunications.ClientAdapters.UdpClientAdapter;
 using OATCommunications.CommunicationHandlers;
 using System.Collections.ObjectModel;
+using OATCommuncations.WPF;
 
 namespace OATCommunications.WPF.CommunicationHandlers
 {
@@ -15,20 +16,24 @@ namespace OATCommunications.WPF.CommunicationHandlers
 		static ObservableCollection<string> _available = new ObservableCollection<string>();
 		public static void DiscoverDevices()
 		{
+			_available.Clear();
 			foreach (var port in SerialPort.GetPortNames())
 			{
 				_available.Add("Serial : " + port);
 			}
 
-			var searcher = new UdpClientAdapter("OATerScope", 4031);
+			var searcher = new UdpClientAdapter("OAT", 4031);
 			searcher.ClientFound += OnWifiClientFound;
 			searcher.StartClientSearch();
 		}
 
-		private static void OnWifiClientFound(object sender, ClientFoundEventArgs e)
-		{
-			_available.Add($"WiFi : {e.Name} ({e.Address}:4030)");
-		}
+		private static void OnWifiClientFound(object sender, ClientFoundEventArgs e) => WpfUtilities.RunOnUiThread(
+						   () =>
+						   {
+							   _available.Insert(0, $"WiFi : {e.Name} ({e.Address}:4030)");
+
+						   },
+						   System.Windows.Application.Current.Dispatcher);
 
 		public static ObservableCollection<String> AvailableDevices { get { return _available; } }
 

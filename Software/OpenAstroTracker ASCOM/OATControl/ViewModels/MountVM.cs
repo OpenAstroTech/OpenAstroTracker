@@ -353,6 +353,7 @@ namespace OATControl.ViewModels
 		{
 			if (MountConnected)
 			{
+				MountConnected = false;
 				_commHandler.Disconnect();
 				_oatMount = null;
 				_commHandler = null;

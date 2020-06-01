@@ -23,9 +23,11 @@ namespace OATControl
 	public partial class DlgChooseOat : MetroWindow
 	{
 		private DelegateCommand _okCommand;
+		private DelegateCommand _rescanCommand;
 		public DlgChooseOat()
 		{
 			_okCommand = new DelegateCommand(() => { this.DialogResult = true; Close(); });
+			_rescanCommand = new DelegateCommand(() => { CommunicationHandlerFactory.DiscoverDevices(); });
 
 			this.DataContext = this;
 			InitializeComponent();
@@ -33,6 +35,7 @@ namespace OATControl
 		}
 
 		public ICommand OKCommand { get { return _okCommand; } }
+		public ICommand RescanCommand { get { return _rescanCommand; } }
 
 		public IList<string> AvailableDevices
 		{
