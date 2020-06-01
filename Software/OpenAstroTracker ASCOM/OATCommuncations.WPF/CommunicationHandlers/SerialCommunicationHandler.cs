@@ -16,6 +16,10 @@ namespace OATCommunications.WPF.CommunicationHandlers
 		{
 			_portName = comPort;
 			_port = new SerialPort(comPort);
+			_port.BaudRate = 57600;
+			_port.DtrEnable = false;
+			_port.ReadTimeout = 250;
+			_port.WriteTimeout = 250;
 		}
 
 		public bool Connected => _port.IsOpen;
@@ -50,9 +54,9 @@ namespace OATCommunications.WPF.CommunicationHandlers
 						var response = _port.ReadTo("#");
 						return new CommandResponse(response, true);
 					}
-					catch
+					catch (Exception ex)
 					{
-						return new CommandResponse(string.Empty, false, $"Unable to read response to {command} from {_portName}");
+						return new CommandResponse(string.Empty, false, $"Unable to read response to {command} from {_portName}. {ex.Message}");
 					}
 				}
 				return new CommandResponse(string.Empty, true);
@@ -87,6 +91,7 @@ namespace OATCommunications.WPF.CommunicationHandlers
 			if (_port.IsOpen)
 			{
 				_port.Close();
+				_port = null;
 			}
 		}
 

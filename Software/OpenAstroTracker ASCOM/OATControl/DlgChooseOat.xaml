@@ -9,8 +9,8 @@
         Title="Connect to OpenAstroTracker" Height="312.39" Width="359.862" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
 	<Controls:MetroWindow.Resources>
 		<Style x:Key="ListItemsStyle" TargetType="ListBoxItem">
-			<Setter Property="Margin" Value="5,3,5,1" />
-			<Setter Property="Padding" Value="3" />
+			<Setter Property="Margin" Value="10,3,5,1" />
+			<Setter Property="Padding" Value="6,3" />
 			<Setter Property="BorderThickness" Value="1" />
 			<Setter Property="BorderBrush" Value="{StaticResource AccentBaseColorBrush}" />
 			<Setter Property="Background" Value="{StaticResource AccentColorBrush2}" />

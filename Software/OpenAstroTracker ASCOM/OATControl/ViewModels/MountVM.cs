@@ -370,6 +370,10 @@ namespace OATControl.ViewModels
 						//await +.WaitAsync();
 
 						var result = await _oatMount.SendCommand("GVP#,#");
+						if (!result.Success)
+						{
+							throw new AccessViolationException("Cannot connect. " + result.StatusMessage);
+						}
 						var resultNr = await _oatMount.SendCommand("GVN#,#");
 						ScopeName = $"{result.Data} {resultNr.Data}";
 
