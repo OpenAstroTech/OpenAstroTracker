@@ -67,6 +67,9 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
   _stepperWasRunning = false;
   _totalDECMove = 0;
   _totalRAMove = 0;
+  _backlashCorrectionSteps = 16;
+  _correctForBacklash = false;
+  _slewingToHome = false;
   readPersistentData();
 }
 
@@ -78,8 +81,9 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
 //
 // EEPROM storage location 5 must be 0xBE for the mount to read any data
 // Location 4 indicates what has been stored so far: 00000000
-//                                                        ^^^
-//                                                        |||
+//                                                       ^^^^
+//                                                       ||||
+//                      Backlash steps (10/11) ----------+|||
 //                           Speed factor (0/3) ----------+||
 //     DEC stepper motor steps per degree (8/9) -----------+|
 //      RA stepper motor steps per degree (6/7) ------------+
@@ -111,6 +115,13 @@ void Mount::readPersistentData()
     speed = 1.0 + adjust / 10000;
 #ifdef DEBUG_MODE
     logv("EEPROM: Speed Marker OK! Speed adjust is %d", adjust);
+#endif
+  }
+
+  if ((marker & 0xFF08) == 0xBE08) {
+    _backlashCorrectionSteps = EEPROM.read(10) + EEPROM.read(11) * 256;
+#ifdef DEBUG_MODE
+    logv("EEPROM: Backash Steps Marker OK! Backlash correction is %d", _backlashCorrectionSteps);
 #endif
   }
 
@@ -156,6 +167,13 @@ void Mount::writePersistentData(int which, int val)
       flag |= 0x04;
       loByteLocation = 0;
       hiByteLocation = 3;
+    }
+    case BACKLASH_CORRECTION:
+    {
+      // ... set bit 2 to indicate speed factor value has been written to 0/3
+      flag |= 0x08;
+      loByteLocation = 10;
+      hiByteLocation = 11;
     }
     break;
   }
@@ -267,12 +285,34 @@ void Mount::setStepsPerDegree(int which, int steps) {
 
 /////////////////////////////////
 //
+// getBacklashCorrection
+//
+/////////////////////////////////
+int Mount::getBacklashCorrection()
+{
+  return _backlashCorrectionSteps;
+}
+/////////////////////////////////
+//
+// setBacklashCorrection
+//
+/////////////////////////////////
+// Function to set steps per degree for each axis. This function stores the value in persistent storage.
+// The EEPROM storage location 5 is set to 0xBE if this value has ever been written. The storage location 4
+// contains a bitfield indicating which values have been stored. Currently bit 0 is used for RA and bit 1 for DEC.
+void Mount::setBacklashCorrection(int steps) {
+  writePersistentData(BACKLASH_CORRECTION, steps);
+  _backlashCorrectionSteps = steps;
+}
+
+/////////////////////////////////
+//
 // setHA
 //
 /////////////////////////////////
 void Mount::setHA(const DayTime& haTime) {
 #ifdef DEBUG_MODE
-  logv("setHA:  HA: %d:%d:%d", haTime.getHours(), haTime.getMinutes(), haTime.getSeconds());
+  logv("setHA:  HA: %s", haTime.ToString());
 #endif
   DayTime lst = DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond);
   lst.addTime(haTime);
@@ -288,15 +328,15 @@ void Mount::setHA(const DayTime& haTime) {
 const DayTime Mount::HA() const {
 #ifdef DEBUG_MODE
   logv("Mount: Get HA.");
-  logv("Mount: Polaris adjust: %d:%d:%d", PolarisRAHour, PolarisRAMinute, PolarisRASecond);
+  logv("Mount: Polaris adjust: %s", DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond).ToString());
 #endif 
   DayTime ha = _LST;
 #ifdef DEBUG_MODE
-  logv("Mount: LST: %d:%d:%d", _LST.getHours(), _LST.getMinutes(), _LST.getSeconds());
+  logv("Mount: LST: %s", _LST.ToString());
 #endif
   ha.subtractTime(DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond));
 #ifdef DEBUG_MODE
-  logv("Mount: LST-Polaris is HA: %d:%d:%d", ha.getHours(), ha.getMinutes(), ha.getSeconds());
+  logv("Mount: LST-Polaris is HA: %s", ha.ToString());
 #endif
   return ha;
 }
@@ -319,7 +359,7 @@ void Mount::setLST(const DayTime& lst) {
   _LST = lst;
   _zeroPosRA = lst;
 #ifdef DEBUG_MODE
-  logv("Mount: LST and ZeroPosRA set to: %d:%d:%d", lst.getHours(), lst.getMinutes(), lst.getSeconds());
+  logv("Mount: LST and ZeroPosRA set to: %s", _LST.ToString());
 #endif
 }
 
@@ -939,7 +979,7 @@ void Mount::loop() {
 
   unsigned long now = millis();
 #ifdef DEBUG_MODE
-  if (now - _lastMountPrint > 1000) {
+  if (now - _lastMountPrint > 2000) {
     Serial.println(getStatusString());
     _lastMountPrint = now;
   }
@@ -996,16 +1036,59 @@ void Mount::loop() {
       _mountStatus &= ~(STATUS_SLEWING | STATUS_SLEWING_TO_TARGET);
 
       if (_stepperWasRunning) {
+#ifdef DEBUG_MODE
+        logv("Loop: Reached target.");
+#endif
         // Mount is at Target!
         // If we we're parking, we just reached home. Clear the flag, reset the motors and stop tracking.
         if (isParking()) {
-          _mountStatus &= ~STATUS_PARKING;
+#ifdef DEBUG_MODE
+          logv("Loop:   Was Parking, stop tracking and set home.");
+#endif
           stopSlewing(TRACKING);
           setHome();
         }
 
         _currentDECStepperPosition = _stepperDEC->currentPosition();
         _currentRAStepperPosition = _stepperRA->currentPosition();
+        if (_correctForBacklash) {
+#ifdef DEBUG_MODE
+          logv("Loop:   Reached target at %d. Compensating by %d", _currentRAStepperPosition, _backlashCorrectionSteps);
+#endif
+          _currentRAStepperPosition += _backlashCorrectionSteps;
+          _stepperRA->runToNewPosition(_currentRAStepperPosition);
+          _correctForBacklash = false;
+#ifdef DEBUG_MODE
+          logv("Loop:   Backlash correction done. Pos: %d", _currentRAStepperPosition);
+#endif
+        }
+        else
+        {
+#ifdef DEBUG_MODE
+          logv("Loop:   Reached target at %d, no backlash compensation needed", _currentRAStepperPosition);
+#endif
+        }
+
+        if (_slewingToHome) {
+#ifdef DEBUG_MODE
+          logv("Loop:   Was Slewing home, so setting stepper RA and TRK to zero.");
+#endif
+          _stepperRA->setCurrentPosition(0);
+          _stepperTRK->setCurrentPosition(0);
+          if (isParking()) {
+#ifdef DEBUG_MODE
+            logv("Loop:   Was parking, so no tracking.");
+#endif
+            _mountStatus &= ~STATUS_PARKING;
+          }
+          else {
+#ifdef DEBUG_MODE
+            logv("Loop:   Restart tracking.");
+#endif
+            startSlewing(TRACKING);
+          }
+          _slewingToHome = false;
+        }
         _totalDECMove = _totalRAMove = 0;
 
         // Make sure we do one last update when the steppers have stopped.
@@ -1031,7 +1114,7 @@ void Mount::setHome() {
   _stepperTRK->setCurrentPosition(0);
   _zeroPosRA = currentRA();
 #ifdef DEBUG_MODE
-  logv("Mount::setHome: ZeroPosRA set to %d:%d:%d", _zeroPosRA.getHours(), _zeroPosRA.getMinutes(), _zeroPosRA.getSeconds());
+  logv("Mount::setHome: ZeroPosRA set to %s", _zeroPosRA.ToString());
 #endif
 }
 
@@ -1047,18 +1130,28 @@ void Mount::setTargetToHome() {
   // In order for RA coordinates to work correctly, we need to
   // offset HATime by elapsed time since last HA set and also
   // adjust RA by the elapsed time and set it to zero.
-  _targetRA = _zeroPosRA;
-  _targetRA.addSeconds(trackedSeconds);
 #ifdef DEBUG_MODE
-  logv("Mount::setTargetToHome: ZeroPosRA is %d:%d:%d", _zeroPosRA.getHours(), _zeroPosRA.getMinutes(), _zeroPosRA.getSeconds());
-  logv("Mount::setTargetToHome: TrackedSeconds is %f", trackedSeconds);
+  logv("Mount::setTargetToHome: Pre-ZeroPosRA is %s", _zeroPosRA.ToString());
+  logv("Mount::setTargetToHome: TrackedSeconds is %f, TRK Stepper: %l", trackedSeconds, _stepperTRK->currentPosition());
+  logv("Mount::setTargetToHome: Pre-LST is %s", _LST.ToString());
 #endif
   DayTime lst(_LST);
   lst.addSeconds(trackedSeconds);
   setLST(lst);
+  _targetRA = _zeroPosRA;
+  _targetRA.addSeconds(trackedSeconds);
+
+#ifdef DEBUG_MODE
+  logv("Mount::setTargetToHome: Post-ZeroPosRA is %s", _zeroPosRA.ToString());
+  logv("Mount::setTargetToHome: Post-LST is %s", _LST.ToString());
+  logv("Mount::setTargetToHome: Post-TargetRA is %s", _targetRA.ToString());
+#endif
 
   // Set DEC to pole
   _targetDEC.set(0, 0, 0);
+  _slewingToHome = true;
+  // Stop the tracking stepper 
+  stopSlewing(TRACKING);
 }
 
 /////////////////////////////////
@@ -1089,13 +1182,15 @@ float Mount::getSpeed(int direction) {
 /////////////////////////////////
 void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 #ifdef DEBUG_MODE
-  logv("Mount::CalcSteppers: Target RA: %f, DEC: %f    ZeroRA: %f      Steppers: RA: %d, DEC: %d", _targetRA.getTotalHours(), _targetDEC.getTotalDegrees(), _zeroPosRA.getTotalHours(), _stepperRA->currentPosition(), _stepperDEC->currentPosition());
+  logv("Mount::CalcSteppers: Target RA: %s, Target DEC: %s", _targetRA.ToString(), _targetDEC.ToString());
+  logv("Mount::CalcSteppers: ZeroRA: %s", _zeroPosRA.ToString());
+  logv("Mount::CalcSteppers: Steppers: RA: %l, DEC: %l, TRK: %l", _stepperRA->currentPosition(), _stepperDEC->currentPosition(), _stepperTRK->currentPosition());
 #endif
   DayTime raTarget = _targetRA;
 
   raTarget.subtractTime(_zeroPosRA);
 #ifdef DEBUG_MODE
-  logv("Mount::CalcSteppers: Adjust RA by Zeropos. New Target RA: %f, DEC: %f", raTarget.getTotalHours(), _targetDEC.getTotalDegrees());
+  logv("Mount::CalcSteppers: Adjust RA by Zeropos. New Target RA: %s, DEC: %s", raTarget.ToString(), _targetDEC.ToString());
 #endif
 
   float hourPos = raTarget.getTotalHours();
@@ -1103,7 +1198,7 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
   if (hourPos > 12) {
     hourPos = hourPos - 24;
 #ifdef DEBUG_MODE
-    logv("Mount::CalcSteppers: RA>12 so -24. New Target RA: %f, DEC: %f", hourPos, _targetDEC.getTotalDegrees());
+    logv("Mount::CalcSteppers: RA>12 so -24. New Target RA: %s, DEC: %s", DayTime(hourPos).ToString(), _targetDEC.ToString());
 #endif
   }
 
@@ -1118,6 +1213,7 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
   float moveDEC = -_targetDEC.getTotalDegrees() * _stepsPerDECDegree;
 
 #ifdef DEBUG_MODE
+  logv("Mount::CalcSteppers: RA Steps/deg: %d   Steps/srhour: %f", _stepsPerRADegree, stepsPerSiderealHour);
   logv("Mount::CalcSteppers: Target Step pos RA: %f, DEC: %f", moveRA, moveDEC);
 #endif
 
@@ -1169,6 +1265,19 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 }
 void Mount::moveSteppersTo(float targetRA, float targetDEC) {
   // Show time: tell the steppers where to go!
+  _correctForBacklash = false;
+#ifdef DEBUG_MODE
+  logv("Mount::MoveSteppersTo: RA Cur: %l, Trg: %f", _stepperRA->currentPosition(), targetRA);
+#endif
+
+  if ((_stepperRA->currentPosition() - targetRA) > 0) {
+#ifdef DEBUG_MODE
+    logv("Mount::MoveSteppersTo: Needs backlash correction!");
+#endif
+    targetRA -= _backlashCorrectionSteps;
+    _correctForBacklash = true;
+  }
+
   _stepperRA->moveTo(targetRA);
   _stepperDEC->moveTo(targetDEC);
 }

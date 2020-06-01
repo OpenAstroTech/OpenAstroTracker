@@ -115,6 +115,12 @@
 //      Where HH is hours, MM is minutes.
 //      Returns: 1 if successfully set, otherwise 0
 //
+// :SHLHH:MM#
+//      Set LST Time 
+//      This sets the scopes LST (and HA).
+//      Where HH is hours, MM is minutes.
+//      Returns: 1 if successfully set, otherwise 0
+//
 // :SYsDD*MM:SS.HH:MM:SS#
 //      Synchronize Declination and Right Ascension.
 //      This tells the scope what it is currently pointing at.
@@ -197,6 +203,11 @@
 //      Where nnn is the number of seconds the entire alignment should take.
 //      Returns: nothing
 //
+// :XGB#
+//      Get Backlash correction steps 
+//      Get the number of steps the RA stepper motor needs to overshoot and backtrack when slewing east.
+//      Returns: integer
+//
 // :XGR#
 //      Get RA steps 
 //      Get the number of steps the RA stepper motor needs to take to rotate by one degree 
@@ -221,6 +232,11 @@
 //      Get LST
 //      Get the current LST of the mount.
 //      Returns: HHMMSS
+//
+// :XSBn#
+//      Set Backlash correction steps 
+//      Sets the number of steps the RA stepper motor needs to overshoot and backtrack when slewing east.
+//      Returns: nothing
 //
 // :XSRn#
 //      Set RA steps 
@@ -575,6 +591,9 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
     else if (inCmd[1] == 'S') {
       return String(_mount->getSpeedCalibration(), 5) + "#";
     }
+    else if (inCmd[1] == 'B') {
+      return String(_mount->getBacklashCorrection()) + "#";
+    }
     else if (inCmd[1] == 'H') {
       char scratchBuffer[10];
       sprintf(scratchBuffer, "%02d%02d%02d#", _mount->HA().getHours(), _mount->HA().getMinutes(), _mount->HA().getSeconds());
@@ -604,6 +623,9 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
     }
     else if (inCmd[1] == 'Y') {
       _mount->setSpeed(DEC_STEPS, inCmd.substring(2).toFloat());
+    }
+    else if (inCmd[1] == 'B') {
+      _mount->setBacklashCorrection(inCmd.substring(2).toInt());
     }
   }
   return "";

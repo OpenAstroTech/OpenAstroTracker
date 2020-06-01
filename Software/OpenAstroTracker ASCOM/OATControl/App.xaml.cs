@@ -1,4 +1,5 @@
 ﻿using MahApps.Metro;
+using OATControl.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -28,8 +29,9 @@ namespace OATControl
             // now set the Green accent and dark theme
             ThemeManager.ChangeAppStyle(Application.Current,
                                         ThemeManager.GetAccent("RedAccent"),
-                                        ThemeManager.GetAppTheme("RedTheme")); 
+                                        ThemeManager.GetAppTheme("RedTheme"));
 
+            Log.Init("OatControl");
             base.OnStartup(e);
         }
     }

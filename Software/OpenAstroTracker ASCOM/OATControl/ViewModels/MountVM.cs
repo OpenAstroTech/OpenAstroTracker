@@ -51,7 +51,7 @@ namespace OATControl.ViewModels
 		bool _isSlewingEast = false;
 		bool _tryConnect = false;
 		bool _driftAlignRunning = false;
-		bool _runningOATCommand = false;
+		int _runningOATCommand = 0;
 		SemaphoreSlim exclusiveAccess = new SemaphoreSlim(1, 1);
 		string _driftAlignStatus = "Drift Alignment";
 		float _driftPhase = 0;
@@ -69,6 +69,7 @@ namespace OATControl.ViewModels
 		DelegateCommand _connectScopeCommand;
 		DelegateCommand _slewToTargetCommand;
 		DelegateCommand _syncToTargetCommand;
+		DelegateCommand _syncToCurrentCommand;
 		DelegateCommand _startSlewingCommand;
 		DelegateCommand _stopSlewingCommand;
 		DelegateCommand _homeCommand;
@@ -104,6 +105,7 @@ namespace OATControl.ViewModels
 			_connectScopeCommand = new DelegateCommand(() => OnConnectToTelescope(), () => _oatMount != null);
 			_slewToTargetCommand = new DelegateCommand(async () => await OnSlewToTarget(), () => MountConnected);
 			_syncToTargetCommand = new DelegateCommand(async () => await OnSyncToTarget(), () => MountConnected);
+			_syncToCurrentCommand = new DelegateCommand(() => OnSyncToCurrent(), () => MountConnected);
 			_startSlewingCommand = new DelegateCommand(async s => await OnStartSlewing(s.ToString()), () => MountConnected);
 			_stopSlewingCommand = new DelegateCommand(async () => await OnStopSlewing('a'), () => MountConnected);
 			_homeCommand = new DelegateCommand(async () => await OnHome(), () => MountConnected);
@@ -130,7 +132,7 @@ namespace OATControl.ViewModels
 		{
 			var now = DateTime.UtcNow;
 			var elapsed = now - _startTime;
-			var timestamp = string.Format("[{0:00}:{1:00}:{2:00}.{3:00}] ", elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds / 10);
+			var timestamp = string.Format("[{0:00}:{1:00}:{2:00}.{3:00}] <{4}>:", elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds / 10, Thread.CurrentThread.ManagedThreadId);
 			Console.WriteLine(String.Format(timestamp + format, p));
 		}
 
@@ -155,25 +157,30 @@ namespace OATControl.ViewModels
 		async private Task<string> RunCustomOATCommandAsync(string command)
 		{
 			string result = string.Empty;
-			try
+			Log("OATCustom:  StartRunning [{0}], checking access", command);
+			if (Interlocked.CompareExchange(ref _runningOATCommand, 1, 0) == 0)
 			{
-				_runningOATCommand = true;
-				bool needsReturn = false;
-				Log("OATCustom:  StartRunning [{0}]", command);
-				await exclusiveAccess.WaitAsync();
-				Log("OATCustom:  -> {0} ", command);
-				var commandResult = await _oatMount.SendCommand(command);
-				if (!string.IsNullOrEmpty(commandResult.Data))
+				try
 				{
-					Log("OATCustomResult [{0}]: '{1}'", command, commandResult.Data);
-					result = commandResult.Data;
+					await exclusiveAccess.WaitAsync();
+					Log("OATCustom:  Access granted. -> Sending {0} ", command);
+					var commandResult = await _oatMount.SendCommand(command);
+					if (!string.IsNullOrEmpty(commandResult.Data))
+					{
+						Log("OATCustomResult [{0}]: '{1}'", command, commandResult.Data);
+						result = commandResult.Data;
+					}
+					Interlocked.Decrement(ref _runningOATCommand);
+				}
+				finally
+				{
+					Log("OATCustom:  StopRunning [{0}]", command);
+					exclusiveAccess.Release();
 				}
 			}
-			finally
+			else
 			{
-				Log("OATCustom:  StopRunning [{0}]", command);
-				_runningOATCommand = false;
-				exclusiveAccess.Release();
+				Log("OATCustom:  Already running, skipping '{0}'", command);
 			}
 
 			return result.TrimEnd("#".ToCharArray());
@@ -182,41 +189,11 @@ namespace OATControl.ViewModels
 		private async Task OnTimer(object s, EventArgs e)
 		{
 			_timerStatus.Stop();
-			//if (_tryConnect)
-			//{
-			//	_tryConnect = false;
-
-			//	MountStatus = "Connecting...";
-
-			//	ScopeName = Settings.Default.Scope;
-			//	if (!string.IsNullOrEmpty(ScopeName))
-			//	{
-			//		_oatMount = new OatmealTelescopeCommandHandlers(ScopeName);
-			//		try
-			//		{
-			//			OnConnectToTelescope();
-			//		}
-			//		catch (Exception)
-			//		{
-			//		}
-
-			//		RequeryCommands();
-			//	}
-			//}
-
-			if (!_runningOATCommand)
+			if (MountConnected)
 			{
-				Log("OATTimer:  Not Running");
-				if (MountConnected)
-				{
-					//UpdateCurrentCoordinates();
-					await UpdateStatus();
-				}
+				await UpdateStatus();
 			}
-			else
-			{
-				Log("OATTimer:  Running -> Skip");
-			}
+
 			_timerStatus.Start();
 		}
 
@@ -248,7 +225,10 @@ namespace OATControl.ViewModels
 						default: IsSlewingNorth = false; IsSlewingSouth = false; break;
 					}
 
-					IsTracking = parts[1][2] == 'T';
+					// Don't use property here since it sends a command.
+					_isTracking = parts[1][2] == 'T';
+					OnPropertyChanged("IsTracking");
+
 
 					RAStepper = int.Parse(parts[2]);
 					DECStepper = int.Parse(parts[3]);
@@ -268,7 +248,7 @@ namespace OATControl.ViewModels
 		private async Task OnHome()
 		{
 			await RunCustomOATCommandAsync(":hF#");
-			
+
 			// The next call actually blocks because Homeing is synchronous
 			await UpdateStatus();
 
@@ -281,7 +261,8 @@ namespace OATControl.ViewModels
 			{
 				await RunCustomOATCommandAsync(":hP#");
 				ParkCommandString = "Unpark";
-			}else
+			}
+			else
 			{
 				await RunCustomOATCommandAsync(":hU#,#");
 				ParkCommandString = "Park";
@@ -334,6 +315,13 @@ namespace OATControl.ViewModels
 			await _oatMount.Sync(new TelescopePosition(1.0 * TargetRASecond / 3600.0 + 1.0 * TargetRAMinute / 60.0 + TargetRAHour, 1.0 * TargetDECSecond / 3600.0 + 1.0 * TargetDECMinute / 60.0 + TargetDECDegree, Epoch.JNOW));
 		}
 
+		private void OnSyncToCurrent()
+		{
+			TargetRAHour = CurrentRAHour;
+			TargetRAMinute = CurrentRAMinute;
+			TargetRASecond = CurrentRASecond;
+		}
+
 		private void FloatToHMS(double val, out int h, out int m, out int s)
 		{
 			h = (int)Math.Floor(val);
@@ -370,7 +358,8 @@ namespace OATControl.ViewModels
 					//await +.WaitAsync();
 
 					var result = await _oatMount.SendCommand("GVP#,#");
-					ScopeName = result.Data;
+					var resultNr = await _oatMount.SendCommand("GVN#,#");
+					ScopeName = $"{result.Data} {resultNr.Data}";
 
 					_transform.SiteElevation = 100;// _oatMount.SiteElevation;
 					_transform.SiteLatitude = 47.74; //_oatMount.SiteLatitude;
@@ -418,13 +407,14 @@ namespace OATControl.ViewModels
 
 		private async Task OnRunDriftAlignment(int driftDuration)
 		{
+			_timerStatus.Stop();
+
 			DriftAlignStatus = "Drift Alignment running...";
 			var tracking = await RunCustomOATCommandAsync(":GIT#,#");
 			bool wasTracking = tracking == "1";
 			IsTracking = false;
 			DateTime startTime = DateTime.UtcNow;
 			TimeSpan duration = TimeSpan.FromSeconds(2 * driftDuration + 2);
-			_timerStatus.Stop();
 			await Task.Delay(200);
 
 			try
@@ -449,6 +439,7 @@ namespace OATControl.ViewModels
 
 			DriftAlignStatus = "Drift Alignment";
 			IsDriftAligning = false;
+			IsTracking = wasTracking;
 			RequeryCommands();
 			_timerStatus.Start();
 		}
@@ -458,6 +449,7 @@ namespace OATControl.ViewModels
 			_connectScopeCommand.Requery();
 			_slewToTargetCommand.Requery();
 			_syncToTargetCommand.Requery();
+			_syncToCurrentCommand.Requery();
 			_startSlewingCommand.Requery();
 			_stopSlewingCommand.Requery();
 			_homeCommand.Requery();
@@ -542,6 +534,7 @@ namespace OATControl.ViewModels
 		public ICommand ConnectScopeCommand { get { return _connectScopeCommand; } }
 		public ICommand SlewToTargetCommand { get { return _slewToTargetCommand; } }
 		public ICommand SyncToTargetCommand { get { return _syncToTargetCommand; } }
+		public ICommand SyncToCurrentCommand { get { return _syncToCurrentCommand; } }
 		public ICommand StartSlewingCommand { get { return _startSlewingCommand; } }
 		public ICommand StopSlewingCommand { get { return _stopSlewingCommand; } }
 		public ICommand HomeCommand { get { return _homeCommand; } }

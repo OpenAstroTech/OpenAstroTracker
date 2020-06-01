@@ -30,6 +30,7 @@
 #define RA_STEPS  1
 #define DEC_STEPS 2
 #define SPEED_FACTOR_DECIMALS 3
+#define BACKLASH_CORRECTION 4
 
 //////////////////////////////////////////////////////////////////
 //
@@ -155,7 +156,13 @@ public:
 
   // Set the speed of the given motoer
   void setSpeed(int which, float speed);
-   
+
+  // Set the number of steps to use for backlash correction
+  void setBacklashCorrection(int steps);
+
+  // Get the number of steps to use for backlash correction
+  int getBacklashCorrection();
+
 private:
 
   // Reads values from EEPROM that configure the mount (if previously stored)
@@ -188,6 +195,7 @@ private:
   int _maxDECSpeed;
   int _maxRAAcceleration;
   int _maxDECAcceleration;
+  int _backlashCorrectionSteps;
 
   long _lastHASet;
   DayTime _LST;
@@ -215,6 +223,8 @@ private:
   int _mountStatus;
   char scratchBuffer[24];
   bool _stepperWasRunning;
+  bool _correctForBacklash;
+  bool _slewingToHome;
 };
 
 #endif
