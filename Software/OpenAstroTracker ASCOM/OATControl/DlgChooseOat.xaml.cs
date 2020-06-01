@@ -1,5 +1,6 @@
 ﻿using MahApps.Metro.Controls;
-using OATCommunications.CommunicationHandlers;
+using OATCommunications.WPF.CommunicationHandlers;
+using OATControl.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,11 +22,17 @@ namespace OATControl
 	/// </summary>
 	public partial class DlgChooseOat : MetroWindow
 	{
+		private DelegateCommand _okCommand;
 		public DlgChooseOat()
 		{
+			_okCommand = new DelegateCommand(() => { this.DialogResult = true; Close(); });
+
+			this.DataContext = this;
 			InitializeComponent();
+			
 		}
 
+		public ICommand OKCommand { get { return _okCommand; } }
 
 		public IList<string> AvailableDevices
 		{

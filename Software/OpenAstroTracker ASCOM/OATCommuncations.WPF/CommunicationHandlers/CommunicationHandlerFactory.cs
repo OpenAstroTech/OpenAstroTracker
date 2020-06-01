@@ -5,12 +5,14 @@ using System.Text;
 using System.IO.Ports;
 using OATCommunications.ClientAdapters;
 using static OATCommunications.ClientAdapters.UdpClientAdapter;
+using OATCommunications.CommunicationHandlers;
+using System.Collections.ObjectModel;
 
-namespace OATCommunications.CommunicationHandlers
+namespace OATCommunications.WPF.CommunicationHandlers
 {
 	public static class CommunicationHandlerFactory
 	{
-		static IList<string> _available = new List<string>();
+		static ObservableCollection<string> _available = new ObservableCollection<string>();
 		public static void DiscoverDevices()
 		{
 			foreach (var port in SerialPort.GetPortNames())
@@ -18,17 +20,17 @@ namespace OATCommunications.CommunicationHandlers
 				_available.Add("Serial : " + port);
 			}
 
-			var searcher = new UdpClientAdapter("OATerScope", 4030);
+			var searcher = new UdpClientAdapter("OATerScope", 4031);
 			searcher.ClientFound += OnWifiClientFound;
 			searcher.StartClientSearch();
 		}
 
 		private static void OnWifiClientFound(object sender, ClientFoundEventArgs e)
 		{
-			_available.Add($"WiFi : {e.Name} ({e.Address})");
+			_available.Add($"WiFi : {e.Name} ({e.Address}:4030)");
 		}
 
-		public static IList<String> AvailableDevices { get { return _available; } }
+		public static ObservableCollection<String> AvailableDevices { get { return _available; } }
 
 		public static ICommunicationHandler ConnectToDevice(string device)
 		{
@@ -39,7 +41,8 @@ namespace OATCommunications.CommunicationHandlers
 			}
 			else if (device.StartsWith("WiFi : "))
 			{
-				string ipAddress = device.Substring("WiFi : ".Length);
+				var parts = device.Split("()".ToCharArray());
+				string ipAddress = parts[1];
 				return new TcpCommunicationHandler(ipAddress);
 			}
 

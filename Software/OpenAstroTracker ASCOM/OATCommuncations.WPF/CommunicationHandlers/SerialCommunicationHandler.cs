@@ -1,11 +1,12 @@
-﻿using System;
+﻿using OATCommunications.CommunicationHandlers;
+using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OATCommunications.CommunicationHandlers
+namespace OATCommunications.WPF.CommunicationHandlers
 {
 	public class SerialCommunicationHandler : ICommunicationHandler
 	{

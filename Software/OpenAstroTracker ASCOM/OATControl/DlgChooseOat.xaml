@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OATControl"
         mc:Ignorable="d"
-        Title="Connect to OpenAstroTracker" Height="148.39" Width="394.862" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
+        Title="Connect to OpenAstroTracker" Height="225.39" Width="349.862" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="Auto" />
@@ -17,11 +17,11 @@
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
-		<TextBlock Grid.Row="0" Grid.Column="0"  Text="Available Connections" Margin="10,24,10,0" Style="{StaticResource TextBlockHeading}"  />
-		<ComboBox Grid.Row="0" Grid.Column="1" Text="--- Choose Connection ---" Margin="0,20,10,0" ItemsSource="{Binding AvailableDevices}" SelectedIndex="{Binding SelectedDevice}"/>
+		<TextBlock Grid.Row="0" Grid.Column="0"  Text="Available Connections" Margin="10,24,10,0" Style="{StaticResource MetroTextBlock}"  />
+		<ComboBox Grid.Row="0" Grid.Column="1" Text="--- Choose Connection ---" Margin="0,20,10,0" ItemsSource="{Binding AvailableDevices}" SelectedItem="{Binding SelectedDevice}"/>
 		<StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
 			<Button Content="OK" Command="{Binding OKCommand}" Margin="10" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" IsDefault="True" />
-			<Button Content="Cancel" Command="{Binding CancelCommand}" Margin="10" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" IsCancel="True" />
+			<Button Content="Cancel"  Margin="10" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" IsCancel="True" />
 		</StackPanel>
 	</Grid>
 </Controls:MetroWindow>

@@ -1,25 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using System.Xml.Linq;
-using ASCOM.Astrometry.AstroUtils;
 using ASCOM.Utilities;
-using MahApps.Metro.Controls;
 using OATCommunications;
-using OATCommunications.CommunicationHandlers;
 using OATCommunications.Model;
-using OATControl.Properties;
+using OATCommunications.WPF.CommunicationHandlers;
 
 namespace OATControl.ViewModels
 {
@@ -104,7 +98,7 @@ namespace OATControl.ViewModels
 			_timerStatus = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Normal, async (s, e) => await OnTimer(s, e), Application.Current.Dispatcher);
 			_timerFineSlew = new DispatcherTimer(TimeSpan.FromMilliseconds(200), DispatcherPriority.Normal, async (s, e) => await OnFineSlewTimer(s, e), Application.Current.Dispatcher);
 			_arrowCommand = new DelegateCommand(s => OnAdjustTarget(s.ToString()));
-			_connectScopeCommand = new DelegateCommand(() => OnConnectToTelescope(), () => _oatMount != null);
+			_connectScopeCommand = new DelegateCommand(() => OnConnectToTelescope());
 			_slewToTargetCommand = new DelegateCommand(async () => await OnSlewToTarget(), () => MountConnected);
 			_syncToTargetCommand = new DelegateCommand(async () => await OnSyncToTarget(), () => MountConnected);
 			_syncToCurrentCommand = new DelegateCommand(() => OnSyncToCurrent(), () => MountConnected);
