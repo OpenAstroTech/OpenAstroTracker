@@ -392,14 +392,29 @@ DegreeTime& Mount::targetDEC() {
 const DayTime Mount::currentRA() const {
   // How many steps moves the RA ring one sidereal hour along. One sidereal hour moves just shy of 15 degrees
   float stepsPerSiderealHour = _stepsPerRADegree * siderealDegreesInHour;
-  float hourPos = _stepperRA->currentPosition() / stepsPerSiderealHour / 2.0;
+  float hourPos = 2.0 * -_stepperRA->currentPosition() / stepsPerSiderealHour;
+#ifdef DEBUG_MODE
+  logv("CurrentRA: Steps/h    : %s (%d x %s)", String(stepsPerSiderealHour, 2).c_str(), _stepsPerRADegree, String(siderealDegreesInHour, 5).c_str());
+  logv("CurrentRA: RA Steps   : %d", _stepperRA->currentPosition());
+  logv("CurrentRA: POS        : %s", String(hourPos).c_str());
+#endif
   hourPos += _zeroPosRA.getTotalHours();
+#ifdef DEBUG_MODE
+  logv("CurrentRA: ZeroPos    : %s", _zeroPosRA.ToString());
+  logv("CurrentRA: POS (+zp)  : %s", DayTime(hourPos).ToString());
+#endif
   if (_stepperDEC->currentPosition() > 0)
   {
     hourPos += 12;
     if (hourPos > 24) hourPos -= 24;
+#ifdef DEBUG_MODE
+    logv("CurrentRA: RA (+12h): %s", DayTime(hourPos).ToString());
+#endif
   }
 
+#ifdef DEBUG_MODE
+  logv("CurrentRA: RA Pos  -> : %s", DayTime(hourPos).ToString());
+#endif
   return hourPos;
 }
 
@@ -1109,10 +1124,12 @@ void Mount::loop() {
 //
 /////////////////////////////////
 void Mount::setHome() {
+  _zeroPosRA = currentRA();
+
   _stepperRA->setCurrentPosition(0);
   _stepperDEC->setCurrentPosition(0);
   _stepperTRK->setCurrentPosition(0);
-  _zeroPosRA = currentRA();
+
 #ifdef DEBUG_MODE
   logv("Mount::setHome: ZeroPosRA set to %s", _zeroPosRA.ToString());
 #endif

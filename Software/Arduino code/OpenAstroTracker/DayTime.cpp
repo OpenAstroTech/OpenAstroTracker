@@ -158,18 +158,23 @@ void DayTime::subtractTime(const DayTime& other)
 char achBuf[32];
 
 // Convert to a standard string (like 14:45:06)
-const char*  DayTime::ToString() const
+const char* DayTime::ToString() const
 {
   char* p = achBuf;
 
-  if (hours < 10) {
+  int absHours = hours < 0 ? -hours : hours;
+  if (hours < 0)
+  {
+    *p++ = '-';
+  }
+  if (absHours < 10) {
     *p++ = '0';
   }
   else {
-    *p++ = '0' + (hours / 10);
+    *p++ = '0' + (absHours / 10);
   }
 
-  *p++ = '0' + (hours % 10);
+  *p++ = '0' + (absHours % 10);
 
   *p++ = ':';
   if (mins < 10) {
@@ -191,7 +196,7 @@ const char*  DayTime::ToString() const
   *p++ = '0' + (secs % 10);
   *p++ = ' ';
   *p++ = '(';
-  strcpy(p, String(this->getTotalHours(), 4).c_str());
+  strcpy(p, String(this->getTotalHours(), 5).c_str());
   strcat(p, ")");
   return achBuf;
 }
@@ -263,7 +268,7 @@ const char* DegreeTime::ToString() const
     *p++ = '0' + (mins / 10);
   }
   *p++ = '0' + (mins % 10);
-  
+
   *p++ = ':';
   if (secs < 10) {
     *p++ = '0';
