@@ -103,15 +103,15 @@
 
 // DEC Motor pins
   #ifdef INVERT_DEC_DIR
-    #define DECmotorPin1  30    // IN1 auf ULN2003 driver 2
-    #define DECmotorPin3  32    // IN2 auf ULN2003 driver 2
-    #define DECmotorPin2  34    // IN3 auf ULN2003 driver 2
-    #define DECmotorPin4  36    // IN4 auf ULN2003 driver 2
-  #else
     #define DECmotorPin1  36    // IN1 auf ULN2003 driver 2
     #define DECmotorPin3  34    // IN2 auf ULN2003 driver 2
     #define DECmotorPin2  32    // IN3 auf ULN2003 driver 2
     #define DECmotorPin4  30    // IN4 auf ULN2003 driver 2
+  #else
+    #define DECmotorPin1  30    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin3  32    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin2  34    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin4  36    // IN4 auf ULN2003 driver 2
   #endif
 #endif
 
