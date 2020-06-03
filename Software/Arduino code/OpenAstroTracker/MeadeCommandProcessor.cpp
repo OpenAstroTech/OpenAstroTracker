@@ -1,6 +1,7 @@
 #include "MeadeCommandProcessor.h"
 #include "Globals.h"
 #include "Utility.h"
+#include "WifiControl.hpp"
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -227,6 +228,12 @@
 //      Get HA
 //      Get the current HA of the mount.
 //      Returns: HHMMSS
+//
+// :XGN#
+//      Get network settings
+//      Gets the current status of the Wifi connection. Reply only available when running on ESP8266 boards.
+//      Returns: 1,<stats>,<hostname>,<ip>:<port>#     - if Wifi is enabled
+//      Returns: 0,#                                   - if Wifi is not enabled
 //
 // :XGL#
 //      Get LST
@@ -603,6 +610,13 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
       char scratchBuffer[10];
       sprintf(scratchBuffer, "%02d%02d%02d#", _mount->LST().getHours(), _mount->LST().getMinutes(), _mount->LST().getSeconds());
       return String(scratchBuffer);
+    }
+    else if (inCmd[1] == 'N') {
+#ifdef WIFI_ENABLED
+      return wifiControl.getStatus() + "#";
+#endif
+
+      return "0,#";
     }
   }
   else if (inCmd[0] == 'S') { // Set RA/DEC steps/deg, speedfactor

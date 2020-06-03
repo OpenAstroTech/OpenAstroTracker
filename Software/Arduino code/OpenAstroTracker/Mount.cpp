@@ -403,7 +403,7 @@ const DayTime Mount::currentRA() const {
   logv("CurrentRA: ZeroPos    : %s", _zeroPosRA.ToString());
   logv("CurrentRA: POS (+zp)  : %s", DayTime(hourPos).ToString());
 #endif
-  if (_stepperDEC->currentPosition() > 0)
+  if (_stepperDEC->currentPosition() < 0)
   {
     hourPos += 12;
     if (hourPos > 24) hourPos -= 24;

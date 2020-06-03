@@ -14,7 +14,7 @@ public:
     WifiControl(Mount* mount, LcdMenu* lcdMenu);
     void setup();
     void loop();
-
+    String getStatus();
 private: 
     void startInfrastructureMode();
     void startAccessPointMode();
@@ -33,4 +33,7 @@ private:
     long _infraStart = 0;
     int _infraWait = 30000; // 30 second timeout for 
 };
+
+extern WifiControl wifiControl;
+
 #endif
