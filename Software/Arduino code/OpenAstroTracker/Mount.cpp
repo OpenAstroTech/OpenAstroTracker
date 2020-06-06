@@ -92,9 +92,6 @@ void Mount::readPersistentData()
 {
   // Read the magic marker byte and state
   int marker = EEPROM.read(4) + EEPROM.read(5) * 256;
-#ifdef DEBUG_MODE
-  logv("EEPROM: Marker is %d", marker);
-#endif
   if ((marker & 0xFF01) == 0xBE01) {
     _stepsPerRADegree = EEPROM.read(6) + EEPROM.read(7) * 256;
 #ifdef DEBUG_MODE
@@ -121,7 +118,7 @@ void Mount::readPersistentData()
   if ((marker & 0xFF08) == 0xBE08) {
     _backlashCorrectionSteps = EEPROM.read(10) + EEPROM.read(11) * 256;
 #ifdef DEBUG_MODE
-    logv("EEPROM: Backash Steps Marker OK! Backlash correction is %d", _backlashCorrectionSteps);
+    logv("EEPROM: Backlash Steps Marker OK! Backlash correction is %d", _backlashCorrectionSteps);
 #endif
   }
 
@@ -301,8 +298,8 @@ int Mount::getBacklashCorrection()
 // The EEPROM storage location 5 is set to 0xBE if this value has ever been written. The storage location 4
 // contains a bitfield indicating which values have been stored. Currently bit 0 is used for RA and bit 1 for DEC.
 void Mount::setBacklashCorrection(int steps) {
-  writePersistentData(BACKLASH_CORRECTION, steps);
   _backlashCorrectionSteps = steps;
+  writePersistentData(BACKLASH_CORRECTION, steps);
 }
 
 /////////////////////////////////
@@ -403,7 +400,11 @@ const DayTime Mount::currentRA() const {
   logv("CurrentRA: ZeroPos    : %s", _zeroPosRA.ToString());
   logv("CurrentRA: POS (+zp)  : %s", DayTime(hourPos).ToString());
 #endif
-  if (_stepperDEC->currentPosition() < 0)
+
+  bool flipRA = NORTHERN_HEMISPHERE ? 
+      _stepperDEC->currentPosition() < 0 
+    : _stepperDEC->currentPosition() > 0;
+  if (flipRA)
   {
     hourPos += 12;
     if (hourPos > 24) hourPos -= 24;
@@ -427,11 +428,23 @@ const DayTime Mount::currentRA() const {
 const DegreeTime Mount::currentDEC() const {
 
   float degreePos = 1.0 * _stepperDEC->currentPosition() / _stepsPerDECDegree;
+#ifdef DEBUG_MODE
+  logv("CurrentDEC: Steps/deg  : %d", _stepsPerDECDegree);
+  logv("CurrentDEC: DEC Steps  : %d", _stepperDEC->currentPosition());
+  logv("CurrentDEC: POS        : %s", String(degreePos).c_str());
+#endif
+
   if (degreePos > 0)
   {
     degreePos = -degreePos;
+#ifdef DEBUG_MODE
+    logv("CurrentDEC: Greater Zero, flipping.");
+#endif
   }
 
+#ifdef DEBUG_MODE
+  logv("CurrentDEC: POS      : %s", DegreeTime(degreePos).ToString());
+#endif
   return degreePos;
 }
 
@@ -666,6 +679,7 @@ void Mount::goHome()
   stopGuiding();
   setTargetToHome();
   startSlewingToTarget();
+  _slewingToHome = true;
 }
 
 /////////////////////////////////
@@ -1090,6 +1104,7 @@ void Mount::loop() {
 #endif
           _stepperRA->setCurrentPosition(0);
           _stepperTRK->setCurrentPosition(0);
+          _targetRA = currentRA();
           if (isParking()) {
 #ifdef DEBUG_MODE
             logv("Loop:   Was parking, so no tracking.");
@@ -1124,14 +1139,23 @@ void Mount::loop() {
 //
 /////////////////////////////////
 void Mount::setHome() {
+#ifdef DEBUG_MODE
+  logv("Mount::setHomePre: currentRA is %s", currentRA().ToString());
+  logv("Mount::setHomePre: zeroPos is %s", _zeroPosRA.ToString());
+  logv("Mount::setHomePre: targetRA is %s", targetRA().ToString());
+#endif
   _zeroPosRA = currentRA();
 
   _stepperRA->setCurrentPosition(0);
   _stepperDEC->setCurrentPosition(0);
   _stepperTRK->setCurrentPosition(0);
 
+  _targetRA = currentRA();
+
 #ifdef DEBUG_MODE
-  logv("Mount::setHome: ZeroPosRA set to %s", _zeroPosRA.ToString());
+  logv("Mount::setHomePost: currentRA is %s", currentRA().ToString());
+  logv("Mount::setHomePost: zeroPos is %s", _zeroPosRA.ToString());
+  logv("Mount::setHomePost: targetRA is %s", targetRA().ToString());
 #endif
 }
 
@@ -1148,9 +1172,10 @@ void Mount::setTargetToHome() {
   // offset HATime by elapsed time since last HA set and also
   // adjust RA by the elapsed time and set it to zero.
 #ifdef DEBUG_MODE
-  logv("Mount::setTargetToHome: Pre-ZeroPosRA is %s", _zeroPosRA.ToString());
-  logv("Mount::setTargetToHome: TrackedSeconds is %f, TRK Stepper: %l", trackedSeconds, _stepperTRK->currentPosition());
-  logv("Mount::setTargetToHome: Pre-LST is %s", _LST.ToString());
+  logv("Mount::setTargetToHomePre:  currentRA is %s", currentRA().ToString());
+  logv("Mount::setTargetToHomePre:  ZeroPosRA is %s", _zeroPosRA.ToString());
+  logv("Mount::setTargetToHomePre:  TrackedSeconds is %f, TRK Stepper: %l", trackedSeconds, _stepperTRK->currentPosition());
+  logv("Mount::setTargetToHomePre:  LST is %s", _LST.ToString());
 #endif
   DayTime lst(_LST);
   lst.addSeconds(trackedSeconds);
@@ -1159,9 +1184,10 @@ void Mount::setTargetToHome() {
   _targetRA.addSeconds(trackedSeconds);
 
 #ifdef DEBUG_MODE
-  logv("Mount::setTargetToHome: Post-ZeroPosRA is %s", _zeroPosRA.ToString());
-  logv("Mount::setTargetToHome: Post-LST is %s", _LST.ToString());
-  logv("Mount::setTargetToHome: Post-TargetRA is %s", _targetRA.ToString());
+  logv("Mount::setTargetToHomePost:  currentRA is %s", currentRA().ToString());
+  logv("Mount::setTargetToHomePost: ZeroPosRA is %s", _zeroPosRA.ToString());
+  logv("Mount::setTargetToHomePost: LST is %s", _LST.ToString());
+  logv("Mount::setTargetToHomePost: TargetRA is %s", _targetRA.ToString());
 #endif
 
   // Set DEC to pole
@@ -1199,15 +1225,16 @@ float Mount::getSpeed(int direction) {
 /////////////////////////////////
 void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 #ifdef DEBUG_MODE
-  logv("Mount::CalcSteppers: Target RA: %s, Target DEC: %s", _targetRA.ToString(), _targetDEC.ToString());
-  logv("Mount::CalcSteppers: ZeroRA: %s", _zeroPosRA.ToString());
-  logv("Mount::CalcSteppers: Steppers: RA: %l, DEC: %l, TRK: %l", _stepperRA->currentPosition(), _stepperDEC->currentPosition(), _stepperTRK->currentPosition());
+  logv("Mount::CalcSteppersPre: Current: RA: %s, DEC: %s", currentRA().ToString(), currentDEC().ToString());
+  logv("Mount::CalcSteppersPre: Target : RA: %s, DEC: %s", _targetRA.ToString(), _targetDEC.ToString());
+  logv("Mount::CalcSteppersPre: ZeroRA : %s", _zeroPosRA.ToString());
+  logv("Mount::CalcSteppersPre: Stepper: RA: %l, DEC: %l, TRK: %l", _stepperRA->currentPosition(), _stepperDEC->currentPosition(), _stepperTRK->currentPosition());
 #endif
   DayTime raTarget = _targetRA;
 
   raTarget.subtractTime(_zeroPosRA);
 #ifdef DEBUG_MODE
-  logv("Mount::CalcSteppers: Adjust RA by Zeropos. New Target RA: %s, DEC: %s", raTarget.ToString(), _targetDEC.ToString());
+  logv("Mount::CalcSteppersIn: Adjust RA by Zeropos. New Target RA: %s, DEC: %s", raTarget.ToString(), _targetDEC.ToString());
 #endif
 
   float hourPos = raTarget.getTotalHours();
@@ -1215,7 +1242,7 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
   if (hourPos > 12) {
     hourPos = hourPos - 24;
 #ifdef DEBUG_MODE
-    logv("Mount::CalcSteppers: RA>12 so -24. New Target RA: %s, DEC: %s", DayTime(hourPos).ToString(), _targetDEC.ToString());
+    logv("Mount::CalcSteppersIn: RA>12 so -24. New Target RA: %s, DEC: %s", DayTime(hourPos).ToString(), _targetDEC.ToString());
 #endif
   }
 
@@ -1230,8 +1257,8 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
   float moveDEC = -_targetDEC.getTotalDegrees() * _stepsPerDECDegree;
 
 #ifdef DEBUG_MODE
-  logv("Mount::CalcSteppers: RA Steps/deg: %d   Steps/srhour: %f", _stepsPerRADegree, stepsPerSiderealHour);
-  logv("Mount::CalcSteppers: Target Step pos RA: %f, DEC: %f", moveRA, moveDEC);
+  logv("Mount::CalcSteppersIn: RA Steps/deg: %d   Steps/srhour: %f", _stepsPerRADegree, stepsPerSiderealHour);
+  logv("Mount::CalcSteppersIn: Target Step pos RA: %f, DEC: %f", moveRA, moveDEC);
 #endif
 
   // We can move 6 hours in either direction. Outside of that we need to flip directions.
@@ -1240,7 +1267,7 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
   // If we reach the limit in the positive direction ...
   if (moveRA > RALimit) {
 #ifdef DEBUG_MODE
-    logv("Mount::CalcSteppers: RA is past +limit: %f, DEC: %f", RALimit);
+    logv("Mount::CalcSteppersIn: RA is past +limit: %f, DEC: %f", RALimit);
 #endif
 
     // ... turn both RA and DEC axis around
@@ -1248,23 +1275,26 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
     moveRA -= long(12.0f * stepsPerSiderealHour / 2);
     moveDEC = -moveDEC;
 #ifdef DEBUG_MODE
-    logv("Mount::CalcSteppers: Adjusted Target Step pos RA: %f, DEC: %f", moveRA, moveDEC);
+    logv("Mount::CalcSteppersIn: Adjusted Target Step pos RA: %f, DEC: %f", moveRA, moveDEC);
 #endif
   }
   // If we reach the limit in the negative direction...
   else if (moveRA < -RALimit) {
 #ifdef DEBUG_MODE
-    logv("Mount::CalcSteppers: RA is past -limit: %f, DEC: %f", -RALimit);
+    logv("Mount::CalcSteppersIn: RA is past -limit: %f, DEC: %f", -RALimit);
 #endif
     // ... turn both RA and DEC axis around
     float oldRA = moveRA;
     moveRA += long(12.0f * stepsPerSiderealHour / 2);
     moveDEC = -moveDEC;
 #ifdef DEBUG_MODE
-    logv("Mount::CalcSteppers: Adjusted Target Step pos RA: %f, DEC: %f", moveRA, moveDEC);
+    logv("Mount::CalcSteppersPost: Adjusted Target. Moved RA, inverted DEC");
 #endif
   }
 
+#ifdef DEBUG_MODE
+  logv("Mount::CalcSteppersPost: Target Steps RA: %f, DEC: %f", moveRA, moveDEC);
+#endif
   //    float targetRA = clamp(-moveRA, -RAStepperLimit, RAStepperLimit);
   //    float targetDEC = clamp(moveDEC, DECStepperUpLimit, DECStepperDownLimit);
   targetRA = -moveRA;
@@ -1280,11 +1310,13 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
   //    Serial.println("Moving DEC from " + String(stepperDEC.currentPosition()) + " to " + targetDEC);
   //  }
 }
+
 void Mount::moveSteppersTo(float targetRA, float targetDEC) {
   // Show time: tell the steppers where to go!
   _correctForBacklash = false;
 #ifdef DEBUG_MODE
-  logv("Mount::MoveSteppersTo: RA Cur: %l, Trg: %f", _stepperRA->currentPosition(), targetRA);
+  logv("Mount::MoveSteppersTo: RA  From: %l  To: %f", _stepperRA->currentPosition(), targetRA);
+  logv("Mount::MoveSteppersTo: DEC From: %l  To: %f", _stepperDEC->currentPosition(), targetDEC);
 #endif
 
   if ((_stepperRA->currentPosition() - targetRA) > 0) {
@@ -1383,12 +1415,24 @@ void Mount::displayStepperPositionThrottled() {
 String Mount::DECString(byte type, byte active) {
   DegreeTime dec;
   if ((type & TARGET_STRING) == TARGET_STRING) {
+#ifdef DEBUG_MODE
+    logv("DECString: TARGET!");
+#endif
     dec = DegreeTime(_targetDEC);
   }
   else {
+#ifdef DEBUG_MODE
+    logv("DECString: CURRENT!");
+#endif
     dec = DegreeTime(currentDEC());
   }
+#ifdef DEBUG_MODE
+  logv("DECString: Precheck  : %s", dec.ToString());
+#endif
   dec.checkHours();
+#ifdef DEBUG_MODE
+  logv("DECString: Postcheck : %s", dec.ToString());
+#endif
 
   sprintf(scratchBuffer, formatStringsDEC[type & FORMAT_STRING_MASK], dec.getPrintDegrees() > 0 ? '+' : '-', int(fabs(dec.getPrintDegrees())), dec.getMinutes(), dec.getSeconds());
   if ((type & FORMAT_STRING_MASK) == LCDMENU_STRING) {
