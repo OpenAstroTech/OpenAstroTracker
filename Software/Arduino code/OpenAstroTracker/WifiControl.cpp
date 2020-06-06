@@ -31,7 +31,6 @@ void WifiControl::setup() {
   }
 }
 
-
 void WifiControl::startInfrastructureMode()
 {
 #ifdef DEBUG_MODE
@@ -69,6 +68,15 @@ String wifiStatus(int status){
     return "#"+String(status);
 }
 
+String WifiControl::getStatus()
+{
+  String result = "1," + wifiStatus(WiFi.status()) + ",";
+  result += WiFi.hostname() + ",";
+  result += WiFi.localIP().toString() + ":" + String(_tcpServer->port());
+
+  return result;
+}
+
 void WifiControl::loop()
 {
 
@@ -81,7 +89,7 @@ void WifiControl::loop()
             _tcpServer = new WiFiServer(4030);
             _tcpServer->begin();
             _tcpServer->setNoDelay(true);
-#ifdef DEBUG_MODE            
+#ifdef DEBUG_MODE           
             Serial.println("Server status is "+ wifiStatus( _tcpServer->status()));
 #endif
             _udp = new WiFiUDP();

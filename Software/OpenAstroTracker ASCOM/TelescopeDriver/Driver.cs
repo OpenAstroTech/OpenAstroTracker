@@ -18,7 +18,7 @@ namespace ASCOM.OpenAstroTracker {
         // 
         // Driver ID and descriptive string that shows in the Chooser
         // 
-        private string Version = "0.2.0.0b";
+        private string Version => GetType().Assembly.GetName().Version.ToString();
         private string _driverId;
         private static string driverDescription = "OpenAstroTracker Telescope";
 

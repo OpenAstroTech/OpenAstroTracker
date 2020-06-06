@@ -16,7 +16,7 @@
 */
 #include "Globals.h"
 
-String version = "V1.6.56";
+String version = "V1.6.60";
 
 ///////////////////////////////////////////////////////////////////////////
 // Please see the Globals.h file for configuration of the firmware.
@@ -62,7 +62,6 @@ float DECStepsPerRevolution = 4096;
 #define DecPulleyTeeth 20
 
 int DECStepsPerDegree = (565.5 / (DecPulleyTeeth * 2.0) * DECStepsPerRevolution / 360.0);
-
 
 float speed = 1.000;    // Use this value to slightly increase or decrese tracking speed. The values from the "CAL" menu will be added to this.
 

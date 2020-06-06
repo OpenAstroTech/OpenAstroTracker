@@ -17,39 +17,77 @@
 
 //SoftwareSerial BT(10,11);
 
+///////////////////////////////////////////////////////////////////////////
+// ESP8266 Wifi Board (NodeMCU)
+///////////////////////////////////////////////////////////////////////////
 #ifdef ESP8266
 // RA Motor pins
-#define RAmotorPin1  D0    // IN1 auf ULN2003 driver 1    //  2 / 22
-#define RAmotorPin3  D1    // IN2 auf ULN2003 driver 1    //  3 / 24d
-#define RAmotorPin2  D2    // IN3 auf ULN2003 driver 1   // 11 / 26
-#define RAmotorPin4  D3    // IN4 auf ULN2003 driver 1   // 12 / 28
+  #ifdef INVERT_RA_DIR
+    #define RAmotorPin1  D0    // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  D1    // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  D2    // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  D3    // IN4 auf ULN2003 driver 1
+  #else
+    #define RAmotorPin1  D3    // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  D2    // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  D1    // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  D0    // IN4 auf ULN2003 driver 1
+  #endif
 
 // DEC Motor pins
-#define DECmotorPin1  D5    // IN1 auf ULN2003 driver 2
-#define DECmotorPin3  D6    // IN3 auf ULN2003 driver 2
-#define DECmotorPin2  D7    // IN2 auf ULN2003 driver 2
-#define DECmotorPin4  D8    // IN4 auf ULN2003 driver 2
+  #ifdef INVERT_DEC_DIR
+    #define DECmotorPin1  D5    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin2  D6    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin3  D7    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin4  D8    // IN4 auf ULN2003 driver 2
+  #else
+    #define DECmotorPin1  D8    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin2  D7    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin3  D6    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin4  D5    // IN4 auf ULN2003 driver 2
+  #endif
 
 // ST4 Input Pins - TODO.
-#define st4North      SD0 
-#define st4South      SD1
-#define st4West       SD2
-#define st4East       SD3
+    #define st4North      SD0 
+    #define st4South      SD1
+    #define st4West       SD2
+    #define st4East       SD3
 #endif
 
+///////////////////////////////////////////////////////////////////////////
+// Arduino Uno
+///////////////////////////////////////////////////////////////////////////
 #ifdef __AVR_ATmega328P__ // normal Arduino Mapping
-#define RAmotorPin1  2    // IN1 auf ULN2003 driver 1    //  2 / 22
-#define RAmotorPin3  3    // IN2 auf ULN2003 driver 1    //  3 / 24
-#define RAmotorPin2  11    // IN3 auf ULN2003 driver 1   // 11 / 26
-#define RAmotorPin4  12    // IN4 auf ULN2003 driver 1   // 12 / 28
+// RA Motor pins
+  #ifdef INVERT_RA_DIR
+    #define RAmotorPin1  12    // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  11    // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  3     // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  2     // IN4 auf ULN2003 driver 1
+  #else
+    #define RAmotorPin1  2     // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  3     // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  11    // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  12    // IN4 auf ULN2003 driver 1
+  #endif
 
 // DEC Motor pins
-#define DECmotorPin1  15    // IN1 auf ULN2003 driver 2
-#define DECmotorPin3  16    // IN3 auf ULN2003 driver 2
-#define DECmotorPin2  17    // IN2 auf ULN2003 driver 2
-#define DECmotorPin4  18    // IN4 auf ULN2003 driver 2
+  #ifdef INVERT_DEC_DIR
+    #define DECmotorPin1  18    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin2  16    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin3  17    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin4  15    // IN4 auf ULN2003 driver 2
+  #else
+    #define DECmotorPin1  15    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin2  17    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin3  16    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin4  18    // IN4 auf ULN2003 driver 2
+  #endif
 #endif
 
+///////////////////////////////////////////////////////////////////////////
+// Arduino Mega
+///////////////////////////////////////////////////////////////////////////
 #ifdef __AVR_ATmega2560__  // Arduino Mega
 #if RA_Stepper_TYPE == 0  // 28BYJ
  #define RAmotorPin1  22    // IN1 auf ULN2003 driver 1    //  2 / 22
@@ -71,6 +109,33 @@
  #define DECmotorPin1  30
  #define DECmotorPin2  32
 #endif
+/*
+// RA Motor pins
+  #ifdef INVERT_RA_DIR
+    #define RAmotorPin1  22    // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  24    // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  26    // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  28    // IN4 auf ULN2003 driver 1
+  #else
+    #define RAmotorPin1  28    // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  26    // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  24    // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  22    // IN4 auf ULN2003 driver 1
+  #endif
+
+// DEC Motor pins
+  #ifdef INVERT_DEC_DIR
+    #define DECmotorPin1  36    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin3  34    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin2  32    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin4  30    // IN4 auf ULN2003 driver 2
+  #else
+    #define DECmotorPin1  30    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin3  32    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin2  34    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin4  36    // IN4 auf ULN2003 driver 2
+  #endif
+*/
 #endif
 
 // Menu IDs

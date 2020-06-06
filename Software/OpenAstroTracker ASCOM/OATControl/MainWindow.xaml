@@ -4,9 +4,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:OATControl" xmlns:controls="clr-namespace:OATControl.Controls" xmlns:converters="clr-namespace:OATControl.Converters"
-					  mc:Ignorable="d"
-        Title="OpenAstroTracker Control" MinHeight="675" MinWidth="790" Height="718" Width="790">
+        xmlns:local="clr-namespace:OATControl" 
+		xmlns:controls="clr-namespace:OATControl.Controls" 
+		xmlns:converters="clr-namespace:OATControl.Converters"
+		mc:Ignorable="d"
+		Title="{Binding Version, StringFormat={} OpenAstroTracker Control V{0}}" MinHeight="675" MinWidth="790" Height="718" Width="790">
 	<Window.Resources>
 		<converters:BoolToStringConverter x:Key="SlewModeConverter" TrueString="Pulsed" FalseString="Continuous" />
 		<converters:BoolToVisibilityConverter x:Key="CoarseBoolToVisible" Collapse="False" />
@@ -218,12 +220,10 @@
 				<ColumnDefinition />
 			</Grid.ColumnDefinitions>
 
-			<!--<local:PushButton Grid.Column="1" Grid.Row="0" Width="90" Height="90" />-->
-
-			<Button Grid.Column="1" Grid.Row="1" Width="90" Height="90" Content="{StaticResource IconArrowLeft}"  Style="{StaticResource ArrowStyle}" Command="{Binding StartSlewingCommand}" CommandParameter="W" />
-			<Button Grid.Column="2" Grid.Row="0" Width="90" Height="90" Content="{StaticResource IconArrowUp}" Style="{StaticResource ArrowStyle}" Command="{Binding StartSlewingCommand}" CommandParameter="N" Margin="9,0" />
-			<Button Grid.Column="3" Grid.Row="1" Width="90" Height="90" Content="{StaticResource IconArrowRight}"  Style="{StaticResource ArrowStyle}" Command="{Binding StartSlewingCommand}" CommandParameter="E" />
-			<Button Grid.Column="2" Grid.Row="3" Width="90" Height="90" Content="{StaticResource IconArrowDown}"  Style="{StaticResource ArrowStyle}" Command="{Binding StartSlewingCommand}" CommandParameter="S" Margin="9,0" />
+			<controls:PushButton Grid.Column="1" Grid.Row="1" Width="90" Height="90" Direction="W" IsEnabled="{Binding MountConnected}" Command="{Binding StartSlewingCommand}" CommandParameter="W" />
+			<controls:PushButton Grid.Column="2" Grid.Row="0" Width="90" Height="90" Direction="N" Margin="9,0" IsEnabled="{Binding MountConnected}" Command="{Binding StartSlewingCommand}" CommandParameter="N" />
+			<controls:PushButton Grid.Column="3" Grid.Row="1" Width="90" Height="90" Direction="E" IsEnabled="{Binding MountConnected}" Command="{Binding StartSlewingCommand}" CommandParameter="E" />
+			<controls:PushButton Grid.Column="2" Grid.Row="3" Width="90" Height="90" Direction="S" Margin="9,0" IsEnabled="{Binding MountConnected}" Command="{Binding StartSlewingCommand}" CommandParameter="S" />
 
 			<StackPanel Grid.Column="2" Grid.Row="1" Orientation="Vertical">
 				<Button Margin="2,0,2,2" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding StopSlewingCommand}" >Stop</Button>
@@ -456,8 +456,7 @@
 					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="*" />
 				</Grid.ColumnDefinitions>
-				<Button Grid.Column="0" Margin="10,12,0,0" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding ChooseScopeCommand}" >Choose</Button>
-				<Button Grid.Column="1" Margin="10,12,0,0" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding ConnectScopeCommand}" Content="{Binding ConnectCommandString}" />
+				<Button Grid.Column="0" Margin="10,12,0,0" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding ConnectScopeCommand}" Content="{Binding ConnectCommandString}"/>
 			</Grid>
 			<TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="4" Text="{Binding ScopeName}" Style="{StaticResource TextBlockLabel}" Margin="0,2,0,0" />
 

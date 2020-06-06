@@ -11,7 +11,11 @@ namespace ASCOM.OpenAstroTracker {
         public SetupDialogForm(ProfileData profile) {
             _profile = profile;
             InitializeComponent();
+
+            Text = $"OpenAstroTracker Setup - {Version}";
         }
+
+        private string Version => GetType().Assembly.GetName().Version.ToString();
 
         private void OK_Button_Click(System.Object sender, System.EventArgs e) // OK button event handler
         {

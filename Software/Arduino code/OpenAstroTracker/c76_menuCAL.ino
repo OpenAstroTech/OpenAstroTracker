@@ -3,12 +3,14 @@
 #ifdef SUPPORT_CALIBRATION
 
 // HIGHLIGHT states allow you to pick one of the three sub functions.
+#define HIGHLIGHT_FIRST 1
 #define HIGHLIGHT_POLAR 1
 #define HIGHLIGHT_SPEED 2
 #define HIGHLIGHT_DRIFT 3
 #define HIGHLIGHT_RA_STEPS 4
 #define HIGHLIGHT_DEC_STEPS 5
-#define HIGHLIGHT_LAST 5
+#define HIGHLIGHT_BACKLASH_STEPS 6
+#define HIGHLIGHT_LAST 6
 
 // Polar calibration goes through these three states:
 //  11- moving to RA of Polaris and then waiting on confirmation that Polaris is centered
@@ -34,8 +36,11 @@
 // DEC step calibration only has one state, allowing you to adjust the number of steps with UP and DOWN
 #define DEC_STEP_CALIBRATION 18
 
+// Backlash calibration only has one state, allowing you to adjust the number of steps with UP and DOWN
+#define BACKLASH_CALIBRATION 19
+
 // Start off with Polar Alignment higlighted.
-byte calState = HIGHLIGHT_POLAR;
+byte calState = HIGHLIGHT_FIRST;
 
 // SPeed adjustment variable. Added to 1.0 after dividing by 10000 to get final speed
 float inputcal;              
@@ -48,6 +53,9 @@ byte driftSubIndex = 1;
 
 // The requested total duration of the drift alignment run.
 byte driftDuration = 0;
+
+// The number of steps to use for backlash compensation (read from the mount).
+int BacklashSteps = 0;
 
 bool checkProgressiveUpDown(int* val) {
   bool ret = true;
@@ -72,13 +80,17 @@ bool checkProgressiveUpDown(int* val) {
 // Since the mount persists this in EEPROM and no longer in global 
 // variables, we need to update it from the mount to globals when
 // we are about to edit it.
-void gotoNextCalState(int dir) {
-  calState += dir;
-  if (calState == RA_STEP_CALIBRATION) {
+void gotoNextHighlightState(int dir) {
+  calState = adjustWrap(calState, dir, HIGHLIGHT_FIRST, HIGHLIGHT_LAST);
+
+  if (calState == HIGHLIGHT_RA_STEPS) {
     RAStepsPerDegree = mount.getStepsPerDegree(RA_STEPS);
   }
-  else if (calState == DEC_STEP_CALIBRATION) {
+  else if (calState == HIGHLIGHT_DEC_STEPS) {
     DECStepsPerDegree = mount.getStepsPerDegree(DEC_STEPS);
+  }
+  else if (calState == HIGHLIGHT_BACKLASH_STEPS) {
+    BacklashSteps = mount.getBacklashCorrection();
   }
 }
 
@@ -117,6 +129,9 @@ bool processCalibrationKeys() {
   }
   else if (calState == DEC_STEP_CALIBRATION) {
     checkForKeyChange = checkProgressiveUpDown(&DECStepsPerDegree);
+  }
+  else if (calState == BACKLASH_CALIBRATION) {
+    checkForKeyChange = checkProgressiveUpDown(&BacklashSteps);
   }
   else if (calState == POLAR_CALIBRATION_WAIT_HOME) {
     if (!mount.isSlewingRAorDEC()) {
@@ -176,13 +191,13 @@ bool processCalibrationKeys() {
         if (key == btnSELECT) {
           int cal = floor(inputcal);
           mount.setSpeedCalibration(speed + inputcal / 10000, true);
-          lcdMenu.printMenu("Stored.");
+          lcdMenu.printMenu("Speed Stored.");
           mount.delay(500);
           calState = HIGHLIGHT_SPEED;
         }
         else if (key == btnRIGHT) {
           lcdMenu.setNextActive();
-          calState = HIGHLIGHT_POLAR;
+          calState = HIGHLIGHT_SPEED;
         }
       }
       break;
@@ -198,30 +213,49 @@ bool processCalibrationKeys() {
         }
         else if (key == btnRIGHT) {
           lcdMenu.setNextActive();
-          calState = HIGHLIGHT_POLAR;
+          calState = HIGHLIGHT_RA_STEPS;
         }
       }
       break;
 
-      case DEC_STEP_CALIBRATION: 
+      case DEC_STEP_CALIBRATION:
       {
         // UP and DOWN are handled above
         if (key == btnSELECT) {
           mount.setStepsPerDegree(DEC_STEPS, DECStepsPerDegree);
-          lcdMenu.printMenu("DEC steps stored");
+          lcdMenu.printMenu("DEC steps stored.");
           mount.delay(500);
           calState = HIGHLIGHT_DEC_STEPS;
         }
         else if (key == btnRIGHT) {
           lcdMenu.setNextActive();
-          calState = HIGHLIGHT_POLAR;
+          calState = HIGHLIGHT_DEC_STEPS;
+        }
+      }
+      break;
+
+      case BACKLASH_CALIBRATION:
+      {
+        // UP and DOWN are handled above
+        if (key == btnSELECT) {
+#ifdef DEBUG_MODE
+          logv("CAL: Set backlash to %d", BacklashSteps);
+#endif
+          mount.setBacklashCorrection(BacklashSteps);
+          lcdMenu.printMenu("Backlash stored.");
+          mount.delay(500);
+          calState = HIGHLIGHT_BACKLASH_STEPS;
+        }
+        else if (key == btnRIGHT) {
+          lcdMenu.setNextActive();
+          calState = HIGHLIGHT_BACKLASH_STEPS;
         }
       }
       break;
 
       case HIGHLIGHT_POLAR: {
-        if (key == btnDOWN) gotoNextCalState(1);
-        else if (key == btnUP) calState = HIGHLIGHT_LAST;
+        if (key == btnDOWN) gotoNextHighlightState(1);
+        else if (key == btnUP) gotoNextHighlightState(-1);
         else if (key == btnSELECT) {
           calState = POLAR_CALIBRATION_WAIT;
 
@@ -256,8 +290,8 @@ bool processCalibrationKeys() {
       break;
 
       case HIGHLIGHT_SPEED: {
-        if (key == btnDOWN) gotoNextCalState(1);
-        if (key == btnUP) gotoNextCalState(-1);
+        if (key == btnDOWN) gotoNextHighlightState(1);
+        if (key == btnUP) gotoNextHighlightState(-1);
         else if (key == btnSELECT) calState = SPEED_CALIBRATION;
         else if (key == btnRIGHT) {
           lcdMenu.setNextActive();
@@ -267,8 +301,8 @@ bool processCalibrationKeys() {
       break;
 
       case HIGHLIGHT_DRIFT: {
-        if (key == btnDOWN) gotoNextCalState(1);
-        if (key == btnUP) gotoNextCalState(-1);
+        if (key == btnDOWN) gotoNextHighlightState(1);
+        if (key == btnUP) gotoNextHighlightState(-1);
         else if (key == btnSELECT) calState = DRIFT_CALIBRATION_WAIT;
         else if (key == btnRIGHT) {
           lcdMenu.setNextActive();
@@ -300,23 +334,34 @@ bool processCalibrationKeys() {
       break;
 
       case HIGHLIGHT_RA_STEPS: {
-        if (key == btnDOWN) gotoNextCalState(1);
-        if (key == btnUP) gotoNextCalState(-1);
+        if (key == btnDOWN) gotoNextHighlightState(1);
+        if (key == btnUP) gotoNextHighlightState(-1);
         else if (key == btnSELECT) calState = RA_STEP_CALIBRATION;
         else if (key == btnRIGHT) {
           lcdMenu.setNextActive();
-          calState = HIGHLIGHT_POLAR;
+          calState = HIGHLIGHT_FIRST;
         }
       }
       break;
 
       case HIGHLIGHT_DEC_STEPS: {
-        if (key == btnDOWN) calState = HIGHLIGHT_POLAR;
-        if (key == btnUP) gotoNextCalState(-1);
+        if (key == btnDOWN) gotoNextHighlightState(1);
+        if (key == btnUP) gotoNextHighlightState(-1);
         else if (key == btnSELECT) calState = DEC_STEP_CALIBRATION;
         else if (key == btnRIGHT) {
           lcdMenu.setNextActive();
-          calState = HIGHLIGHT_POLAR;
+          calState = HIGHLIGHT_FIRST;
+        }
+      }
+      break;
+
+      case HIGHLIGHT_BACKLASH_STEPS : {
+        if (key == btnDOWN) gotoNextHighlightState(1); 
+        if (key == btnUP) gotoNextHighlightState(-1);
+        else if (key == btnSELECT) calState = BACKLASH_CALIBRATION;
+        else if (key == btnRIGHT) {
+          lcdMenu.setNextActive();
+          calState = HIGHLIGHT_FIRST;
         }
       }
       break;
@@ -344,6 +389,9 @@ void printCalibrationSubmenu()
   else if (calState == HIGHLIGHT_DEC_STEPS) {
     lcdMenu.printMenu(">DEC Step Adjust");
   }
+  else if (calState == HIGHLIGHT_BACKLASH_STEPS) {
+    lcdMenu.printMenu(">Backlash Adjust");
+  }
   else if ((calState == POLAR_CALIBRATION_WAIT_HOME) || (calState == POLAR_CALIBRATION_WAIT) || (calState == POLAR_CALIBRATION_GO)) {
     if (!mount.isSlewingRAorDEC()) {
       lcdMenu.setCursor(0, 0);
@@ -368,6 +416,10 @@ void printCalibrationSubmenu()
   }
   else if (calState == DEC_STEP_CALIBRATION) {
     sprintf(scratchBuffer, "DEC Steps: %d", DECStepsPerDegree);
+    lcdMenu.printMenu(scratchBuffer);
+  }
+  else if (calState == BACKLASH_CALIBRATION) {
+    sprintf(scratchBuffer, "Backlash: %d", BacklashSteps);
     lcdMenu.printMenu(scratchBuffer);
   }
 }

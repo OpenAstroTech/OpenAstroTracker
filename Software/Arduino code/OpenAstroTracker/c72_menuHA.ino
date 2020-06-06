@@ -34,6 +34,7 @@ bool processHAKeys() {
         EEPROM.update(2, mount.HA().getMinutes());
         lcdMenu.printMenu("Stored.");
         mount.delay(500);
+        mount.setHome();
 
 #ifdef SUPPORT_GUIDED_STARTUP
         if (startupState == StartupWaitForHACompletion) {

@@ -28,6 +28,12 @@ extern int PolarisRASecond;
 // Uncomment to run a key diagnostic. No tracker functions are on at all.
 // #define LCD_BUTTON_TEST
 
+// Uncomment to reverse the direction of RA motor
+//#define INVERT_RA_DIR
+
+// Uncomment to reverse the direction of DEC motor
+//#define INVERT_DEC_DIR
+
 ////////////////////////////////////////////////////////////////
 //
 // FEATURE SUPPORT SECTION
@@ -94,7 +100,7 @@ extern int PolarisRASecond;
 
 // If we are making a headleass (no screen, no keyboard) client, always enable Serial.
 #ifdef HEADLESS_CLIENT
-#define SUPPORT_SERIAL_CONTROL
+    #define SUPPORT_SERIAL_CONTROL
 #endif
 
 #endif

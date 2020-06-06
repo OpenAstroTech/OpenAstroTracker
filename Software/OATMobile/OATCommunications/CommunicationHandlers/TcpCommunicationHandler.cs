@@ -5,93 +5,145 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OATCommunications.CommunicationHandlers {
-    public class TcpCommunicationHandler : ICommunicationHandler {
-        private IPAddress _ip;
-        private int _port;
-        private TcpClient _client;
+namespace OATCommunications.CommunicationHandlers
+{
+	public class TcpCommunicationHandler : ICommunicationHandler
+	{
+		private IPAddress _ip;
+		private int _port;
+		private TcpClient _client;
 
-        public TcpCommunicationHandler(IPAddress ip, int port) {
-            _ip = ip;
-            _port = port;
-            _client = new TcpClient();
-        }
-
-        public async Task<CommandResponse> SendBlind(string command) {
-            return await SendCommand(command, false);
-        }
-
-        public async Task<CommandResponse> SendCommand(string command) {
-            return await SendCommand(command, true);
-        }
-
-        public bool Connected
+		public TcpCommunicationHandler(string spec)
 		{
-			get
+			string ip = string.Empty;
+			string port = string.Empty;
+
+			var colon = spec.IndexOf(':');
+			if (colon > 0)
 			{
-                return _client != null && _client.Connected;
+				try
+				{
+					ip = spec.Substring(0, colon);
+					port = spec.Substring(colon + 1);
+					_ip = IPAddress.Parse(ip);
+					_port = int.Parse(port);
+					_client = new TcpClient();
+				}
+				catch
+				{
+
+				}
 			}
 		}
 
-        private async Task<CommandResponse> SendCommand(string command, bool needsResponse) {
-            if (!_client.Connected) {
-                try {
-                    _client = new TcpClient();
-                    _client.Connect(_ip, _port);
-                }
-                catch (Exception e) {
-                    Debug.WriteLine($"Failed To connect or create client: \n{e.Message}");
-                    return new CommandResponse("", false, $"Failed To Connect to Client: {e.Message}");
-                }
-            }
+		public TcpCommunicationHandler(IPAddress ip, int port)
+		{
+			_ip = ip;
+			_port = port;
+			_client = new TcpClient();
+		}
 
-            _client.ReceiveTimeout = 250;
-            _client.SendTimeout = 250;
-            
-            string error = String.Empty;
+		public async Task<CommandResponse> SendBlind(string command)
+		{
+			return await SendCommand(command, ResponseType.NoResponse);
+		}
 
-            var stream = _client.GetStream();
-            var bytes = Encoding.ASCII.GetBytes(command);
-            try {
-                await stream.WriteAsync(bytes, 0, bytes.Length);
-            }
-            catch (Exception e) {
-                Debug.WriteLine(e.Message);
-                return new CommandResponse("", false, $"Failed to send message: {e.Message}");
-            }
+		public async Task<CommandResponse> SendCommand(string command)
+		{
+			return await SendCommand(command, ResponseType.FullResponse);
+		}
 
-            Debug.WriteLine($"Sent {command}");
+		public async Task<CommandResponse> SendCommandConfirm(string command)
+		{
+			return await SendCommand(command, ResponseType.DigitResponse);
+		}
 
-            var respString = String.Empty;
+		private async Task<CommandResponse> SendCommand(string command, ResponseType needsResponse)
+		{
+			if (_client == null)
+			{
+				return new CommandResponse(string.Empty, false, $"Configuration error, IP [{_ip}] or port [{_port}] is invalid.");
+			}
 
-            if (needsResponse) {
-                try {
-                    var response = new byte[256];
-                    var respCount = await stream.ReadAsync(response, 0, response.Length);
-                    respString = Encoding.ASCII.GetString(response, 0, respCount).TrimEnd("#".ToCharArray());
-                    Debug.WriteLine($"Received {respString}");
-                }
-                catch (Exception e) {
-                    Debug.WriteLine(e.Message);
-                    return new CommandResponse("", false, $"Failed to receive message: {e.Message}");
-                }
-            }
+			if (!_client.Connected)
+			{
+				try
+				{
+					_client = new TcpClient();
+					_client.Connect(_ip, _port);
+				}
+				catch (Exception e)
+				{
+					Debug.WriteLine($"Failed To connect or create client: \n{e.Message}");
+					return new CommandResponse("", false, $"Failed To Connect to Client: {e.Message}");
+				}
+			}
 
-            stream.Close();
+			_client.ReceiveTimeout = 250;
+			_client.SendTimeout = 250;
 
-            return new CommandResponse(respString);
-        }
-    }
+			string error = String.Empty;
 
-    public class CommandResponse {
-        public string Data { get; }
-        public bool Success { get; }
-        public string StatusMessage { get; }
+			var stream = _client.GetStream();
+			var bytes = Encoding.ASCII.GetBytes(command);
+			try
+			{
+				await stream.WriteAsync(bytes, 0, bytes.Length);
+			}
+			catch (Exception e)
+			{
+				Debug.WriteLine(e.Message);
+				return new CommandResponse("", false, $"Failed to send message: {e.Message}");
+			}
 
-        public CommandResponse(string data, bool success = true, string statusMessage = "") {
-            Data = data;
-            Success = success;
-            StatusMessage = statusMessage;
-        }
-    }
+			Debug.WriteLine($"Sent {command}");
+
+			var respString = String.Empty;
+
+			try
+			{
+				switch (needsResponse)
+				{
+					case ResponseType.NoResponse:
+						break;
+
+					case ResponseType.DigitResponse:
+					case ResponseType.FullResponse:
+						{
+							var response = new byte[256];
+							var respCount = await stream.ReadAsync(response, 0, response.Length);
+							respString = Encoding.ASCII.GetString(response, 0, respCount).TrimEnd("#".ToCharArray());
+							Debug.WriteLine($"Received {respString}");
+						}
+						break;
+				}
+			}
+			catch (Exception e)
+			{
+				Debug.WriteLine(e.Message);
+				return new CommandResponse("", false, $"Failed to receive message: {e.Message}");
+			}
+
+			stream.Close();
+
+			return new CommandResponse(respString);
+		}
+
+		public bool Connected
+		{
+			get
+			{
+				return _client != null && _client.Connected;
+			}
+		}
+
+		public void Disconnect()
+		{
+			if (_client != null && _client.Connected)
+			{
+				_client.Close();
+				_client = null;
+			}
+		}
+	}
 }
