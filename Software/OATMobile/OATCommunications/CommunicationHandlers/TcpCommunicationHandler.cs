@@ -45,23 +45,20 @@ namespace OATCommunications.CommunicationHandlers
 
 		public async Task<CommandResponse> SendBlind(string command)
 		{
-			return await SendCommand(command, false);
+			return await SendCommand(command, ResponseType.NoResponse);
 		}
 
 		public async Task<CommandResponse> SendCommand(string command)
 		{
-			return await SendCommand(command, true);
+			return await SendCommand(command, ResponseType.FullResponse);
 		}
 
-		public bool Connected
+		public async Task<CommandResponse> SendCommandConfirm(string command)
 		{
-			get
-			{
-				return _client != null && _client.Connected;
-			}
+			return await SendCommand(command, ResponseType.DigitResponse);
 		}
 
-		private async Task<CommandResponse> SendCommand(string command, bool needsResponse)
+		private async Task<CommandResponse> SendCommand(string command, ResponseType needsResponse)
 		{
 			if (_client == null)
 			{
@@ -103,25 +100,41 @@ namespace OATCommunications.CommunicationHandlers
 
 			var respString = String.Empty;
 
-			if (needsResponse)
+			try
 			{
-				try
+				switch (needsResponse)
 				{
-					var response = new byte[256];
-					var respCount = await stream.ReadAsync(response, 0, response.Length);
-					respString = Encoding.ASCII.GetString(response, 0, respCount).TrimEnd("#".ToCharArray());
-					Debug.WriteLine($"Received {respString}");
+					case ResponseType.NoResponse:
+						break;
+
+					case ResponseType.DigitResponse:
+					case ResponseType.FullResponse:
+						{
+							var response = new byte[256];
+							var respCount = await stream.ReadAsync(response, 0, response.Length);
+							respString = Encoding.ASCII.GetString(response, 0, respCount).TrimEnd("#".ToCharArray());
+							Debug.WriteLine($"Received {respString}");
+						}
+						break;
 				}
-				catch (Exception e)
-				{
-					Debug.WriteLine(e.Message);
-					return new CommandResponse("", false, $"Failed to receive message: {e.Message}");
-				}
+			}
+			catch (Exception e)
+			{
+				Debug.WriteLine(e.Message);
+				return new CommandResponse("", false, $"Failed to receive message: {e.Message}");
 			}
 
 			stream.Close();
 
 			return new CommandResponse(respString);
+		}
+
+		public bool Connected
+		{
+			get
+			{
+				return _client != null && _client.Connected;
+			}
 		}
 
 		public void Disconnect()

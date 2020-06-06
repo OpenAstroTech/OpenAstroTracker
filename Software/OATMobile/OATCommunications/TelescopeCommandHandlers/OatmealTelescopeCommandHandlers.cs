@@ -119,10 +119,10 @@ namespace OATCommunications
 
             FloatToHMS(Math.Abs(position.Declination), out deg, out min, out sec);
             string sign = position.Declination < 0 ? "-" : "+";
-            var result = await SendCommand(string.Format(":Sd{0}{1:00}*{2:00}:{3:00}#,#", sign, deg, min, sec));
+            var result = await SendCommand(string.Format(":Sd{0}{1:00}*{2:00}:{3:00}#,n", sign, deg, min, sec));
             if (!result.Success || result.Data != "1") return false;
             FloatToHMS(Math.Abs(position.RightAscension), out hour, out min, out sec);
-            result = await SendCommand(string.Format(":Sr{0:00}:{1:00}:{2:00}#,#", hour, min, sec));
+            result = await SendCommand(string.Format(":Sr{0:00}:{1:00}:{2:00}#,n", hour, min, sec));
             if (!result.Success || result.Data != "1") return false;
             result = await SendCommand($":MS#");
             return result.Success;
@@ -133,10 +133,10 @@ namespace OATCommunications
 
             FloatToHMS(Math.Abs(position.Declination), out deg, out min, out sec);
             string sign = position.Declination < 0 ? "-" : "+";
-            var result = await SendCommand(string.Format(":Sd{0}{1:00}*{2:00}:{3:00}#,#", sign, deg, min, sec));
+            var result = await SendCommand(string.Format(":Sd{0}{1:00}*{2:00}:{3:00}#,n", sign, deg, min, sec));
             if (!result.Success || result.Data != "1") return false;
             FloatToHMS(Math.Abs(position.RightAscension), out hour, out min, out sec);
-            result = await SendCommand(string.Format(":Sr{0:00}:{1:00}:{2:00}#,#", hour, min, sec));
+            result = await SendCommand(string.Format(":Sr{0:00}:{1:00}:{2:00}#,n", hour, min, sec));
             if (!result.Success || result.Data != "1") return false;
             result = await SendCommand($":CM#");
             return result.Success;
@@ -155,7 +155,7 @@ namespace OATCommunications
 
         public async Task<bool> SetTracking(bool enabled) {
             var b = enabled ? 1 : 0;
-            var status = await SendCommand($":MT{b}#,#");
+            var status = await SendCommand($":MT{b}#,n");
             if (status.Success) {
                 MountState.IsTracking = enabled;
             }
@@ -171,7 +171,7 @@ namespace OATCommunications
             }
             int lonFront = (int)lon;
             int lonBack = (int)((lon - lonFront) * 100.0);
-            var lonCmd = $":Sg{lonFront:000}*{lonBack:00}#,#";
+            var lonCmd = $":Sg{lonFront:000}*{lonBack:00}#,n";
             var status = await SendCommand(lonCmd);
             if (!status.Success)  return false;
 
@@ -181,7 +181,7 @@ namespace OATCommunications
             var absLat = Math.Abs(lat);
             int latFront = (int)absLat;
             int latBack = (int)((absLat - latFront) * 100.0);
-            var latCmd = $":St{latSign}{latFront:00}*{latBack:00}#,#";
+            var latCmd = $":St{latSign}{latFront:00}*{latBack:00}#,n";
             status = await SendCommand(latCmd);
             if (!status.Success) return false;
 
@@ -189,15 +189,15 @@ namespace OATCommunications
             // GMT Offset
             var offsetSign = DateTimeOffset.Now.Offset.TotalHours > 0 ? "+" : "-";
             var offset = Math.Abs(DateTimeOffset.Now.Offset.TotalHours);
-            status = await SendCommand($":SG{offsetSign}{offset:00}#,#");
+            status = await SendCommand($":SG{offsetSign}{offset:00}#,n");
             if (!status.Success) return false;
 
 
             // Local Time and Date
             var n = DateTime.Now;
-            status = await SendCommand($":SL{n:HH:mm:ss}#,#");
+            status = await SendCommand($":SL{n:HH:mm:ss}#,n");
             if (!status.Success) return false;
-            status = await SendCommand($":SC{n:MM/dd/yy}#,#");
+            status = await SendCommand($":SC{n:MM/dd/yy}#,n");
             return status.Success;
         }
 
@@ -206,12 +206,18 @@ namespace OATCommunications
                 cmd = $":{cmd}";
             }
             
-               if (!cmd.EndsWith("#")) {
-                cmd += "#";
-            }
             if (cmd.EndsWith("#,#"))
             {
                 return await _commHandler.SendCommand(cmd.Substring(0,cmd.Length-2));
+            }
+            else if (cmd.EndsWith("#,n"))
+            {
+                return await _commHandler.SendCommandConfirm(cmd.Substring(0, cmd.Length - 2));
+            }
+
+            if (!cmd.EndsWith("#"))
+            {
+                cmd += "#";
             }
             return await _commHandler.SendBlind(cmd);
         }

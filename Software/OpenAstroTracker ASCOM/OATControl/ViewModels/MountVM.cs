@@ -136,7 +136,7 @@ namespace OATControl.ViewModels
 
 		private async Task OnSetHome()
 		{
-			await RunCustomOATCommandAsync(":SHP#,#");
+			await RunCustomOATCommandAsync(":SHP#,n");
 			await ReadHA();
 		}
 
@@ -211,38 +211,45 @@ namespace OATControl.ViewModels
 
 				if (!string.IsNullOrWhiteSpace(status))
 				{
-					var parts = status.Split(",".ToCharArray());
-					MountStatus = parts[0];
-
-					switch (parts[1][0])
+					try
 					{
-						case 'R': IsSlewingEast = true; IsSlewingWest = false; break;
-						case 'r': IsSlewingEast = false; IsSlewingWest = true; break;
-						default: IsSlewingEast = false; IsSlewingWest = false; break;
+						var parts = status.Split(",".ToCharArray());
+						MountStatus = parts[0];
+
+						switch (parts[1][0])
+						{
+							case 'R': IsSlewingEast = true; IsSlewingWest = false; break;
+							case 'r': IsSlewingEast = false; IsSlewingWest = true; break;
+							default: IsSlewingEast = false; IsSlewingWest = false; break;
+						}
+						switch (parts[1][1])
+						{
+							case 'd': IsSlewingNorth = true; IsSlewingSouth = false; break;
+							case 'D': IsSlewingNorth = false; IsSlewingSouth = true; break;
+							default: IsSlewingNorth = false; IsSlewingSouth = false; break;
+						}
+
+						// Don't use property here since it sends a command.
+						_isTracking = parts[1][2] == 'T';
+						OnPropertyChanged("IsTracking");
+
+
+						RAStepper = int.Parse(parts[2]);
+						DECStepper = int.Parse(parts[3]);
+						TrkStepper = int.Parse(parts[4]);
+
+						CurrentRAHour = int.Parse(parts[5].Substring(0, 2));
+						CurrentRAMinute = int.Parse(parts[5].Substring(2, 2));
+						CurrentRASecond = int.Parse(parts[5].Substring(4, 2));
+
+						CurrentDECDegree = int.Parse(parts[6].Substring(0, 3));
+						CurrentDECMinute = int.Parse(parts[6].Substring(3, 2));
+						CurrentDECSecond = int.Parse(parts[6].Substring(5, 2));
 					}
-					switch (parts[1][1])
+					catch (Exception ex)
 					{
-						case 'd': IsSlewingNorth = true; IsSlewingSouth = false; break;
-						case 'D': IsSlewingNorth = false; IsSlewingSouth = true; break;
-						default: IsSlewingNorth = false; IsSlewingSouth = false; break;
+						Log("UpdateStatus: Failed to process GX reply [{0}]", status);
 					}
-
-					// Don't use property here since it sends a command.
-					_isTracking = parts[1][2] == 'T';
-					OnPropertyChanged("IsTracking");
-
-
-					RAStepper = int.Parse(parts[2]);
-					DECStepper = int.Parse(parts[3]);
-					TrkStepper = int.Parse(parts[4]);
-
-					CurrentRAHour = int.Parse(parts[5].Substring(0, 2));
-					CurrentRAMinute = int.Parse(parts[5].Substring(2, 2));
-					CurrentRASecond = int.Parse(parts[5].Substring(4, 2));
-
-					CurrentDECDegree = int.Parse(parts[6].Substring(0, 3));
-					CurrentDECMinute = int.Parse(parts[6].Substring(3, 2));
-					CurrentDECSecond = int.Parse(parts[6].Substring(5, 2));
 				}
 			}
 		}
@@ -266,7 +273,7 @@ namespace OATControl.ViewModels
 			}
 			else
 			{
-				await RunCustomOATCommandAsync(":hU#,#");
+				await RunCustomOATCommandAsync(":hU#,n");
 				ParkCommandString = "Park";
 			}
 
@@ -385,7 +392,7 @@ namespace OATControl.ViewModels
 						var lstS = _util.HoursToHMS(lst, "", "", "");
 
 						Log("LST: {0}", _util.HoursToHMS(lst, "h", "m", "s"));
-						var stringResult = await RunCustomOATCommandAsync(string.Format(":SHL{0}#,#", _util.HoursToHMS(lst, "", "", "")));
+						var stringResult = await RunCustomOATCommandAsync(string.Format(":SHL{0}#,n", _util.HoursToHMS(lst, "", "", "")));
 						lst -= _util.HMSToHours("02:58:04");
 						Log("HA: {0}", _util.HoursToHMS(lst, "h", "m", "s"));
 						await UpdateCurrentCoordinates();

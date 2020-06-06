@@ -12,6 +12,7 @@ namespace OATCommunications.WPF.CommunicationHandlers
 	{
 		private string _portName;
 		private SerialPort _port;
+
 		public SerialCommunicationHandler(string comPort)
 		{
 			_portName = comPort;
@@ -26,15 +27,20 @@ namespace OATCommunications.WPF.CommunicationHandlers
 
 		public async Task<CommandResponse> SendBlind(string command)
 		{
-			return await SendCommand(command, false);
+			return await SendCommand(command, ResponseType.NoResponse);
 		}
 
 		public async Task<CommandResponse> SendCommand(string command)
 		{
-			return await SendCommand(command, true);
+			return await SendCommand(command, ResponseType.FullResponse);
 		}
 
-		public async Task<CommandResponse> SendCommand(string command, bool needsResponse)
+		public async Task<CommandResponse> SendCommandConfirm(string command)
+		{
+			return await SendCommand(command, ResponseType.DigitResponse);
+		}
+
+		private async Task<CommandResponse> SendCommand(string command, ResponseType needsResponse)
 		{
 			if (await EnsurePortIsOpen())
 			{
@@ -47,19 +53,34 @@ namespace OATCommunications.WPF.CommunicationHandlers
 					return new CommandResponse(string.Empty, false, $"Unable to write to {_portName}");
 				}
 
-				if (needsResponse)
+				try
 				{
-					try
+					switch (needsResponse)
 					{
-						var response = _port.ReadTo("#");
-						return new CommandResponse(response, true);
-					}
-					catch (Exception ex)
-					{
-						return new CommandResponse(string.Empty, false, $"Unable to read response to {command} from {_portName}. {ex.Message}");
+						case ResponseType.NoResponse:
+							{
+								return new CommandResponse(string.Empty, true);
+							}
+
+						case ResponseType.DigitResponse:
+							{
+								string response = new string((char)_port.ReadChar(), 1);
+								return new CommandResponse(response, true);
+							}
+
+						case ResponseType.FullResponse:
+							{
+								string response = _port.ReadTo("#");
+								return new CommandResponse(response, true);
+							}
 					}
 				}
-				return new CommandResponse(string.Empty, true);
+				catch (Exception ex)
+				{
+					return new CommandResponse(string.Empty, false, $"Unable to read response to {command} from {_portName}. {ex.Message}");
+				}
+
+				return new CommandResponse(string.Empty, false, "Something weird going on...");
 			}
 			else
 			{
