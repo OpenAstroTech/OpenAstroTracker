@@ -68,6 +68,11 @@ public:
   void setLST(const DayTime& haTime);
   const DayTime& LST() const;
 
+  void setLatitude(float lat);
+  void setLongitude(float lon);
+  const float latitude() const;
+  const float longitude() const;
+
   // Get a reference to the target RA value.
   DayTime& targetRA();
 
@@ -82,7 +87,7 @@ public:
 
   // Set the current RA and DEC position to be the given coordinates
   void syncPosition(int raHour, int raMinute, int raSecond, int decDegree, int decMinute, int decSecond);
-  
+
   // Calculates movement parameters and program steppers to move
   // there. Must call loop() frequently to actually move.
   void startSlewingToTarget();
@@ -209,6 +214,8 @@ private:
 
   float _totalDECMove;
   float _totalRAMove;
+  float _latitude;
+  float _longitude;
 
   // Stepper control for RA, DEC and TRK.
   AccelStepper* _stepperRA;

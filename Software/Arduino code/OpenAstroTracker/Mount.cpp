@@ -190,14 +190,22 @@ void Mount::writePersistentData(int which, int val)
 /////////////////////////////////
 void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
 {
+#ifdef NORTHERN_HEMISPHERE
   _stepperRA = new AccelStepper(stepMode, pin1, pin2, pin3, pin4);
+#else
+  _stepperRA = new AccelStepper(stepMode, pin4, pin3, pin2, pin1);
+#endif
   _stepperRA->setMaxSpeed(maxSpeed);
   _stepperRA->setAcceleration(maxAcceleration);
   _maxRASpeed = maxSpeed;
   _maxRAAcceleration = maxAcceleration;
 
   // Use another AccelStepper to run the RA motor as well. This instance tracks earths rotation.
+#ifdef NORTHERN_HEMISPHERE
   _stepperTRK = new AccelStepper(HALFSTEP, pin1, pin2, pin3, pin4);
+#else
+  _stepperTRK = new AccelStepper(HALFSTEP, pin4, pin3, pin2, pin1);
+#endif
   _stepperTRK->setMaxSpeed(10);
   _stepperTRK->setAcceleration(2500);
 }
@@ -358,6 +366,40 @@ void Mount::setLST(const DayTime& lst) {
 #ifdef DEBUG_MODE
   logv("Mount: LST and ZeroPosRA set to: %s", _LST.ToString());
 #endif
+}
+
+/////////////////////////////////
+//
+// setLatitude
+//
+/////////////////////////////////
+void Mount::setLatitude(float lat)  {
+  _latitude = lat;
+}
+/////////////////////////////////
+//
+// setLongitude
+//
+/////////////////////////////////
+void Mount::setLongitude(float lon)  {
+  _longitude = lon;
+}
+
+/////////////////////////////////
+//
+// latitude
+//
+/////////////////////////////////
+const float Mount::latitude() const {
+  return _latitude ;
+}
+/////////////////////////////////
+//
+// longitude
+//
+/////////////////////////////////
+const float Mount::longitude() const {
+  return _longitude;
 }
 
 /////////////////////////////////
