@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using System.Xml.Linq;
 using ASCOM.Utilities;
+using MahApps.Metro.Controls.Dialogs;
 using OATCommunications;
 using OATCommunications.Model;
 using OATCommunications.WPF.CommunicationHandlers;
@@ -330,6 +331,9 @@ namespace OATControl.ViewModels
 			TargetRAHour = CurrentRAHour;
 			TargetRAMinute = CurrentRAMinute;
 			TargetRASecond = CurrentRASecond;
+			TargetDECDegree= CurrentDECDegree;
+			TargetDECMinute = CurrentDECMinute;
+			TargetDECSecond = CurrentDECSecond;
 		}
 
 		private void FloatToHMS(double val, out int h, out int m, out int s)
@@ -370,7 +374,7 @@ namespace OATControl.ViewModels
 			{
 				RequeryCommands();
 
-				if (this.ChooseTelescope())
+				if (await this.ChooseTelescope())
 				{
 					try
 					{
@@ -384,9 +388,9 @@ namespace OATControl.ViewModels
 						var resultNr = await _oatMount.SendCommand("GVN#,#");
 						ScopeName = $"{result.Data} {resultNr.Data}";
 
-						_transform.SiteElevation = 100;// _oatMount.SiteElevation;
-						_transform.SiteLatitude = 47.74; //_oatMount.SiteLatitude;
-						_transform.SiteLongitude = -121.96;// _oatMount.SiteLongitude;
+						_transform.SiteElevation = 0; //  _oatMount.SiteElevation;
+						_transform.SiteLatitude = await _oatMount.GetSiteLatitude();
+						_transform.SiteLongitude = await _oatMount.GetSiteLongitude();
 						_transform.SetAzimuthElevation(0, 90);
 						var lst = _transform.RATopocentric;
 						var lstS = _util.HoursToHMS(lst, "", "", "");
@@ -484,9 +488,9 @@ namespace OATControl.ViewModels
 			OnPropertyChanged("ConnectCommandString");
 		}
 
-		private bool ChooseTelescope()
+		private async Task<bool> ChooseTelescope()
 		{
-			var dlg = new DlgChooseOat();
+			var dlg = new DlgChooseOat() { Owner = Application.Current.MainWindow, WindowStartupLocation = WindowStartupLocation.CenterOwner };
 
 			var result  = dlg.ShowDialog();
 			if (result == true)
@@ -500,7 +504,8 @@ namespace OATControl.ViewModels
 				_commHandler = CommunicationHandlerFactory.ConnectToDevice(dlg.SelectedDevice);
 				//_commHandler = new TcpCommunicationHandler(new IPAddress(new byte[] { 192, 168, 86, 61 }), 4030);
 				_oatMount = new OatmealTelescopeCommandHandlers(_commHandler);
-
+				await _oatMount.SetSiteLatitude((float)dlg.Latitude);
+				await _oatMount.SetSiteLongitude((float)dlg.Longitude);
 				return true;
 			}
 

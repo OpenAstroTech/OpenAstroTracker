@@ -5,5 +5,11 @@
     <Setting Name="Scope" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="SiteLatitude" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">45</Value>
+    </Setting>
+    <Setting Name="SiteLongitude" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">-75</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
