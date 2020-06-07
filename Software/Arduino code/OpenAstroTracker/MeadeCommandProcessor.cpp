@@ -44,23 +44,23 @@
 //
 // :Gd#
 //      Get Target Declination
-//      Where s is + or -, DD is degrees, MM is minutes, SS is seconds.
 //      Returns: sDD*MM'SS
+//               Where s is + or -, DD is degrees, MM is minutes, SS is seconds.
 //
 // :GD#
 //      Get Current Declination
-//      Where s is + or -, DD is degrees, MM is minutes, SS is seconds.
 //      Returns: sDD*MM'SS
+//               Where s is + or -, DD is degrees, MM is minutes, SS is seconds.
 //
 // :Gr#
 //      Get Target Right Ascension
-//      Where HH is hour, MM is minutes, SS is seconds.
 //      Returns: HH:MM:SS
+//               Where HH is hour, MM is minutes, SS is seconds.
 //
 // :GR#
 //      Get Current Right Ascension
-//      Where HH is hour, MM is minutes, SS is seconds.
 //      Returns: HH:MM:SS
+//               Where HH is hour, MM is minutes, SS is seconds.
 //
 // -- GET Extensions --
 // :GIS#
@@ -93,7 +93,16 @@
 //                 |                                                    Third character is TRK slewing state ('T' is Tracking, '-' is stopped). 
 //                 +----------------------------------------------- [0] The mount status. One of 'Idle', 'Parked', 'Parking', 'Guiding', 'SlewToTarget', 'FreeSlew', 'ManualSlew', 'Tracking'
 //
-//
+// : Gt#
+//      Get Site Latitude
+//      Returns: sDD*MM
+//               Where s is + or - and DD is the latitude in degrees and MM the minutes.
+//       
+// : Gg#
+//      Get Site Latitude
+//      Returns: DDD*MM
+//               Where DDD is the longitude in degrees and MM the minutes. Negative (W) longitudes have had 360 added to them.
+//       
 //------------------------------------------------------------------
 // SET FAMILY
 //
@@ -109,12 +118,50 @@
 //      Where HH is hours, MM is minutes, SS is seconds.
 //      Returns: 1 if successfully set, otherwise 0
 //
+// :StsDD*MM#
+//      Set Site Latitude
+//      This sets the latitude of the location of the mount.
+//      Where s is the sign ('+' or '-'), DD is the degree (90 or less), MM is minutes.
+//      Returns: 1 if successfully set, otherwise 0
+//
+// :SgDDD*MM#
+//      Set Site Longitude
+//      This sets the longitude of the location of the mount.
+//      Where DDD the nmber of degrees (0 to 360), MM is minutes. W Latitudes get 360 added to them. So W122 (or -122) would be 238.
+//      Returns: 1 if successfully set, otherwise 0
+//
+// :SGsHH#
+//      Set Site UTC Offset
+//      This sets the offset of the timezone in which the mount is in hours from UTC.
+//      Where s is the sign and HH is the number of hours.
+//      CURRENTLY IGNORED.
+//      Returns: 1 
+//
+// :SLHH:MM:SS#
+//      Set Site Local Time
+//      This sets the local time of the timezone in which the mount is located.
+//      Where HH is hours, MM is minutes and SS is seconds.
+//      CURRENTLY IGNORED.
+//      Returns: 1 
+//
+// :SCMM/DD/YY#
+//      Set Site Date
+//      This sets the date
+//      Where HHMM is the month, DD is teh day and YY is the year since 2000.
+//      CURRENTLY IGNORED.
+//      Returns: 1Updating Planetary Data 
+//
 // -- SET Extensions --
 // :SHHH:MM#
 //      Set Hour Time (HA)
 //      This sets the scopes HA.
 //      Where HH is hours, MM is minutes.
 //      Returns: 1 if successfully set, otherwise 0
+//
+// :SHP#
+//      Set Home Point
+//      This sets the current orientation of the scope as its home point.
+//      Returns: 1 
 //
 // :SHLHH:MM#
 //      Set LST Time 
@@ -129,6 +176,14 @@
 //      Returns: 1 if successfully set, otherwise 0
 //
 //------------------------------------------------------------------
+// RATE CONTROL FAMILY
+//
+// :Rs#
+//      Set Slew rate
+//      Where s is one of 'S', 'M', 'C', or 'G' in order of decreasing speed
+//      CURRENTLY IGNORED
+//      Returns: nothing
+//------------------------------------------------------------------
 // MOVEMENT FAMILY
 //
 // :MS#
@@ -140,7 +195,7 @@
 //
 // :MGdnnnn#
 //      Run a Guide pulse
-//      This runs the motors for a short period of time.
+//      This runs the motors at increased speed for a short period of time.
 //      Where d is one of 'N', 'E', 'W', or 'S' and nnnn is the duration in ms.
 //      Returns: 1
 //
@@ -155,6 +210,12 @@
 //      This starts slewing the mount in the given direction.
 //      Where c is one of 'n', 'e', 'w', or 's'. 
 //      Returns: nothing
+//
+//------------------------------------------------------------------
+// SYNC FAMILY
+//
+// :CM#
+//      Synchronizes the mount to the current target RA and DEC values.
 //
 //------------------------------------------------------------------
 // HOME FAMILY
@@ -347,17 +408,35 @@ String MeadeCommandProcessor::handleMeadeGetInfo(String inCmd) {
     case 'X': return _mount->getStatusString() + "#";
 
     case 'I':
-    String retVal = "";
-    if (cmdTwo == 'S') {
-      retVal = _mount->isSlewingRAorDEC() ? "1" : "0";
+    {
+      String retVal = "";
+      if (cmdTwo == 'S') {
+        retVal = _mount->isSlewingRAorDEC() ? "1" : "0";
+      }
+      else if (cmdTwo == 'T') {
+        retVal = _mount->isSlewingTRK() ? "1" : "0";
+      }
+      else if (cmdTwo == 'G') {
+        retVal = _mount->isGuiding() ? "1" : "0";
+      }
+      return retVal + "#";
     }
-    else if (cmdTwo == 'T') {
-      retVal = _mount->isSlewingTRK() ? "1" : "0";
+    case 't': {
+      auto lat = DegreeTime(_mount->latitude());
+      char achBuffer[20];
+      sprintf(achBuffer, "%c%02d*%02d#", lat.getTotalDegrees() >= 0 ? '+' : '-', int(fabs(lat.getDegrees())), lat.getMinutes());
+      return String(achBuffer);
     }
-    else if (cmdTwo == 'G') {
-      retVal = _mount->isGuiding() ? "1" : "0";
+    case 'g': {
+      float lon = _mount->longitude();
+      if (lon < 0) {
+        lon += 360;
+      }
+      int lonMin = (lon - (int)lon) * 60;
+      char achBuffer[20];
+      sprintf(achBuffer, "%03d*%02d#", (int)lon, lonMin);
+      return String(achBuffer);
     }
-    return retVal + "#";
   }
 
   return "0#";
@@ -423,7 +502,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
 
       DayTime lst(hLST, minLST, secLST);
 #ifdef DEBUG_MODE
-      logv("MeadeSetInfo: Received LST: %d:%d:%d", hLST,minLST,secLST);
+      logv("MeadeSetInfo: Received LST: %d:%d:%d", hLST, minLST, secLST);
 #endif
       _mount->setLST(lst);
     }
@@ -445,26 +524,41 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     return "1";
   }
   else if ((inCmd[0] == 'Y') && inCmd.length() == 19) {
-    // Sync RA, DEC - current position is teh given coordinate
+    // Sync RA, DEC - current position is the given coordinate
     //   0123456789012345678
     // :SY+84*03:02.18:34:12
     int sgn = inCmd[1] == '+' ? 1 : -1;
     if ((inCmd[4] == '*') && (inCmd[7] == ':') && (inCmd[10] == '.') && (inCmd[13] == ':') && (inCmd[16] == ':')) {
       int deg = inCmd.substring(2, 4).toInt();
-      _mount->syncPosition(inCmd.substring(11, 13).toInt(), inCmd.substring(14, 16).toInt(), inCmd.substring(17, 19).toInt(),sgn * deg + (NORTHERN_HEMISPHERE ? -90 : 90), inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
+      _mount->syncPosition(inCmd.substring(11, 13).toInt(), inCmd.substring(14, 16).toInt(), inCmd.substring(17, 19).toInt(), sgn * deg + (NORTHERN_HEMISPHERE ? -90 : 90), inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
       return "1";
     }
-    else {
-      return "0";
+    return "0";
+  }
+  else if ((inCmd[0] == 't')) // latitude: :St+30*29#
+  {
+    float sgn = inCmd[1] == '+' ? 1.0f : -1.0f;
+    if (inCmd[4] == '*') {
+      int deg = inCmd.substring(2, 4).toInt();
+      int minute = inCmd.substring(5, 7).toInt();
+      _mount->setLatitude(sgn * (1.0f * deg + (minute / 60.0f)));
+      return "1";
     }
+    return "0";
   }
-  else if ((inCmd[0] == 't')) // longitude: :St+30*29#
+  else if (inCmd[0] == 'g') // longitude :Sg097*34#
   {
-    return "1";
-  }
-  else if (inCmd[0] == 'g') // latitude :Sg097*34#
-  {
-    return "1";
+    if (inCmd[4] == '*') {
+      int deg = inCmd.substring(1, 4).toInt();
+      int minute = inCmd.substring(5, 7).toInt();
+      float lon = 1.0f * deg + (1.0f * minute / 60.0f);
+      if (lon > 180) {
+        lon -= 360;
+      }
+      _mount->setLongitude(lon);
+      return "1";
+    }
+    return "0";
   }
   else if (inCmd[0] == 'G') // utc offset :SG+05#
   {
@@ -660,25 +754,25 @@ String MeadeCommandProcessor::handleMeadeQuit(String inCmd) {
 
   switch (inCmd[0]) {
     case 'a':
-      _mount->stopSlewing(ALL_DIRECTIONS);
+    _mount->stopSlewing(ALL_DIRECTIONS);
     break;
     case 'e':
-      _mount->stopSlewing(EAST);
-      break;
-  case 'w':
-      _mount->stopSlewing(WEST);
-      break;
-  case 'n':
-      _mount->stopSlewing(NORTH);
-      break;
-  case 's':
-      _mount->stopSlewing(SOUTH);
-      break;
-  case 'q':
-      inSerialControl = false;
-      _lcdMenu->setCursor(0, 0);
-      _lcdMenu->updateDisplay();
-      break;
+    _mount->stopSlewing(EAST);
+    break;
+    case 'w':
+    _mount->stopSlewing(WEST);
+    break;
+    case 'n':
+    _mount->stopSlewing(NORTH);
+    break;
+    case 's':
+    _mount->stopSlewing(SOUTH);
+    break;
+    case 'q':
+    inSerialControl = false;
+    _lcdMenu->setCursor(0, 0);
+    _lcdMenu->updateDisplay();
+    break;
   }
 
   return "";
@@ -694,8 +788,8 @@ String MeadeCommandProcessor::handleMeadeSetSlewRate(String inCmd) {
     case 'C': // Center - 2nd Slowest
     case 'G': // Guide  - Slowest
     default:
-    return "";
   }
+  return "";
 }
 
 String MeadeCommandProcessor::processCommand(String inCmd) {

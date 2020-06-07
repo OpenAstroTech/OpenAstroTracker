@@ -82,8 +82,15 @@ class Mount {
     // Get a reference to the target RA value.
     DayTime& targetRA();
 
-    // Get a reference to the target DEC value.
-    DegreeTime& targetDEC();
+
+  void setLatitude(float lat);
+  void setLongitude(float lon);
+  const float latitude() const;
+  const float longitude() const;
+
+  // Get a reference to the target RA value.
+  DayTime& targetRA();
+
 
     // Get current RA value.
     const DayTime currentRA() const;
@@ -94,9 +101,14 @@ class Mount {
     // Set the current RA and DEC position to be the given coordinates
     void syncPosition(int raHour, int raMinute, int raSecond, int decDegree, int decMinute, int decSecond);
 
-    // Calculates movement parameters and program steppers to move
-    // there. Must call loop() frequently to actually move.
-    void startSlewingToTarget();
+
+  // Set the current RA and DEC position to be the given coordinates
+  void syncPosition(int raHour, int raMinute, int raSecond, int decDegree, int decMinute, int decSecond);
+
+  // Calculates movement parameters and program steppers to move
+  // there. Must call loop() frequently to actually move.
+  void startSlewingToTarget();
+
 
     // Various status query functions
     bool isSlewingDEC() const;
@@ -197,45 +209,46 @@ class Mount {
     String mountStatusString();
 #endif
 
+private:
+  LcdMenu* _lcdMenu;
+  int  _stepsPerRADegree;
+  int _stepsPerDECDegree;
+  int _maxRASpeed;
+  int _maxDECSpeed;
+  int _maxRAAcceleration;
+  int _maxDECAcceleration;
+  int _backlashCorrectionSteps;
 
-  private:
-    LcdMenu* _lcdMenu;
-    int  _stepsPerRADegree;
-    int _stepsPerDECDegree;
-    int _maxRASpeed;
-    int _maxDECSpeed;
-    int _maxRAAcceleration;
-    int _maxDECAcceleration;
-    int _backlashCorrectionSteps;
+  long _lastHASet;
+  DayTime _LST;
+  DayTime _zeroPosRA;
 
-    long _lastHASet;
-    DayTime _LST;
-    DayTime _zeroPosRA;
+  DayTime _targetRA;
+  long _currentRAStepperPosition;
 
-    DayTime _targetRA;
-    long _currentRAStepperPosition;
+  DegreeTime _targetDEC;
+  long _currentDECStepperPosition;
 
-    DegreeTime _targetDEC;
-    long _currentDECStepperPosition;
+  float _totalDECMove;
+  float _totalRAMove;
+  float _latitude;
+  float _longitude;
 
-    float _totalDECMove;
-    float _totalRAMove;
+  // Stepper control for RA, DEC and TRK.
+  AccelStepper* _stepperRA;
+  AccelStepper* _stepperDEC;
+  AccelStepper* _stepperTRK;
 
-    // Stepper control for RA, DEC and TRK.
-    AccelStepper* _stepperRA;
-    AccelStepper* _stepperDEC;
-    AccelStepper* _stepperTRK;
-
-    unsigned long _guideEndTime;
-    unsigned long _lastMountPrint = 0;
-    float _trackingSpeed;
-    float _trackingSpeedCalibration;
-    unsigned long _lastDisplayUpdate;
-    int _mountStatus;
-    char scratchBuffer[24];
-    bool _stepperWasRunning;
-    bool _correctForBacklash;
-    bool _slewingToHome;
+  unsigned long _guideEndTime;
+  unsigned long _lastMountPrint = 0;
+  float _trackingSpeed;
+  float _trackingSpeedCalibration;
+  unsigned long _lastDisplayUpdate;
+  int _mountStatus;
+  char scratchBuffer[24];
+  bool _stepperWasRunning;
+  bool _correctForBacklash;
+  bool _slewingToHome;
 };
 
 #endif

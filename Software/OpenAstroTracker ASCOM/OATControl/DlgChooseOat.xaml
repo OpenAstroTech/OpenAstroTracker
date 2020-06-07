@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OATControl"
         mc:Ignorable="d"
-        Title="Connect to OpenAstroTracker" Height="312.39" Width="359.862" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
+        Title="Connect to OpenAstroTracker" Height="400" Width="600" ResizeMode="NoResize" WindowStyle="ToolWindow" FontSize="16" FontWeight="Bold">
 	<Controls:MetroWindow.Resources>
 		<Style x:Key="ListItemsStyle" TargetType="ListBoxItem">
 			<Setter Property="Margin" Value="10,3,5,1" />
@@ -27,17 +27,14 @@
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
-			<RowDefinition Height="129*" />
-			<RowDefinition Height="61*"/>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<TextBlock Grid.Row="0" Grid.Column="0"  Text="Available Connections" Margin="10,24,10,0" Foreground="{StaticResource AccentSelectedColorBrush}"  />
-		<StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Grid.ColumnSpan="2">
-			<Button Content="Rescan" Command="{Binding RescanCommand}" Margin="10,10,60,10" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" />
-			<Button Content="OK" Command="{Binding OKCommand}" Margin="10" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" IsDefault="True" />
-			<Button Content="Cancel"  Margin="10" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" IsCancel="True" />
-		</StackPanel>
-		<ListBox Grid.Row="1" Grid.ColumnSpan="2" 
+		<ListBox Grid.Row="1" Grid.Column="1" 
 				 VerticalAlignment="Top"
 				 ItemsSource="{Binding AvailableDevices,Mode=OneWay}" 
 				 ItemsPanel="{StaticResource ListBoxItemsPanel}" 
@@ -56,6 +53,19 @@
 				</DataTemplate>
 			</ListBox.ItemTemplate>
 		</ListBox>
+		<TextBlock Grid.Row="2" Grid.Column="0" Text="Latitude" HorizontalAlignment="Right" Margin="10" Foreground="{StaticResource AccentSelectedColorBrush}"/>
+		<TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Latitude}" FontWeight="Bold" FontSize="16" Foreground="{StaticResource AccentSelectedColorBrush}" Background="{StaticResource AccentColorBrush2}" Margin="5"/>
+		
+		<TextBlock Grid.Row="3" Grid.Column="0" Text="Longitude" HorizontalAlignment="Right" Margin="10" Foreground="{StaticResource AccentSelectedColorBrush}"/>
+		<TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Longitude}" FontWeight="Bold" FontSize="16" Foreground="{StaticResource AccentSelectedColorBrush}" Background="{StaticResource AccentColorBrush2}" Margin="5"/>
 
+		<TextBlock Grid.Row="4" Grid.Column="0" Text="Altitude" HorizontalAlignment="Right" Margin="10" Foreground="{StaticResource AccentSelectedColorBrush}"/>
+		<TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Altitude}" FontWeight="Bold" FontSize="16" Foreground="{StaticResource AccentSelectedColorBrush}" Background="{StaticResource AccentColorBrush2}" Margin="5"/>
+
+		<StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Grid.ColumnSpan="2">
+			<Button Content="Rescan" Command="{Binding RescanCommand}" Margin="10,10,60,10" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" />
+			<Button Content="OK" Command="{Binding OKCommand}" Margin="10" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" IsDefault="True" />
+			<Button Content="Cancel"  Margin="10" Width="80" Style="{StaticResource AccentedSquareButtonStyle}" IsCancel="True" />
+		</StackPanel>
 	</Grid>
 </Controls:MetroWindow>
