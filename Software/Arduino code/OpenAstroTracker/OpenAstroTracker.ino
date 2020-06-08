@@ -28,9 +28,9 @@ String version = "V1.7.01";
 // RA stepper //////////////////////////////////////////////////////////////////////////////////
 
 
-// This is how many steps your stepper needs for a full rotation. E.g. a 0.9° stepper in Fullstep has 400,
-// with 1/16 microstepping it has 6400. If youre using the 28BYJ, use 4096
-float RAStepsPerRevolution = 6400;
+// This is how many steps your 28BYJ-48 stepper needs for a full rotation. It is almost always 4096.
+// This code drives the steppers in halfstep mode for TRK and DEC, and full step for RA
+float RAStepsPerRevolution = 4096;
 
 // The radius of the surface that the belt runs on (in V1 of the ring) was 168.24mm.
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
@@ -65,10 +65,10 @@ int DECStepsPerDegree = (565.5 / (DecPulleyTeeth * 2.0) * DECStepsPerRevolution 
 
 float speed = 1.000;    // Use this value to slightly increase or decrese tracking speed. The values from the "CAL" menu will be added to this.
 
-int RAspeed = 2000;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. High speeds tend to make
-int RAacceleration = 4000;   // these cheap steppers unprecice
-int DECspeed = 1200;
-int DECacceleration = 4000;
+int RAspeed = 400;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. High speeds tend to make
+int RAacceleration = 600;   // these cheap steppers unprecice
+int DECspeed = 800;
+int DECacceleration = 400;
 
 // Define some stepper limits to prevent physical damage to the tracker. This assumes that the home
 // point (zero point) has been correctly set to be pointing at the celestial pole.

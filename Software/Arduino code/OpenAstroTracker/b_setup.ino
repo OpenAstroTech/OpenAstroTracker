@@ -11,16 +11,23 @@ WifiControl wifiControl(&mount, &lcdMenu);
 
 void setup() {
 
-  #if RA_Stepper_TYPE == 1           // enable microstep pins for RA
-  digitalWrite(40, HIGH);
-  digitalWrite(42, HIGH);
-  digitalWrite(44, HIGH);
-  #endif
-  #if DEC_Stepper_TYPE == 1
-  digitalWrite(41, HIGH);
-  digitalWrite(43, HIGH);
-  digitalWrite(45, HIGH);
-  #endif
+// Microstepping ---------------
+#if RA_Stepper_TYPE == 1   // RA driver startup (for TMC2209)
+  pinMode(41, OUTPUT);
+  //digitalWrite(43, HIGH);  // SPREAD
+  digitalWrite(41, LOW);  // ENABLE
+
+  digitalWrite(42, LOW);  // MS2
+  digitalWrite(40, HIGH);  // MS1
+#endif
+#if DEC_Stepper_TYPE == 1  // DEC driver startup (for TMC2209)
+  pinMode(45, OUTPUT);
+  digitalWrite(45, LOW);  // ENABLE
+
+  digitalWrite(46, LOW);  // MS2
+  digitalWrite(44, HIGH);  // MS1
+#endif
+
   //debug_init();
   //Serial.begin(38400);
   Serial.begin(57600);
@@ -47,17 +54,18 @@ void setup() {
   // Configure the mount
   
   // Set the stepper motor parameters
+  // Set the stepper motor parameters
   #if RA_Stepper_TYPE == 0 && DEC_Stepper_TYPE == 0
-  mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);
-  mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
+    mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);
+    mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
   #endif
   #if RA_Stepper_TYPE == 1 && DEC_Stepper_TYPE == 0
-  mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
-  mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
+    mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
+    mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
   #endif
   #if RA_Stepper_TYPE == 1 && DEC_Stepper_TYPE == 1
-  mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
-  mount.configureDECStepper(DRIVER, DECmotorPin1, DECmotorPin2, DECspeed, DECacceleration);
+    mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
+    mount.configureDECStepper(DRIVER, DECmotorPin1, DECmotorPin2, DECspeed, DECacceleration);
   #endif
 
   // The mount uses EEPROM storage locations 0-10 that it reads during construction
