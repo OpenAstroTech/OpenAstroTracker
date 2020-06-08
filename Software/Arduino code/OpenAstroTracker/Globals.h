@@ -56,7 +56,8 @@ extern int PolarisRASecond;
 // useful if you are always going to run the mount from a laptop anyway.
 // #define HEADLESS_CLIENT
 
-#ifdef ESP8266
+#if defined(ESP8266) || defined(ESP32)
+    #define ESPBOARD
     #define HEADLESS_CLIENT
     #define WIFI_ENABLED 
     #define INFRA_SSID "yourSSID"
