@@ -373,7 +373,7 @@ void Mount::setLST(const DayTime& lst) {
 // setLatitude
 //
 /////////////////////////////////
-void Mount::setLatitude(float lat)  {
+void Mount::setLatitude(float lat) {
   _latitude = lat;
 }
 /////////////////////////////////
@@ -381,7 +381,7 @@ void Mount::setLatitude(float lat)  {
 // setLongitude
 //
 /////////////////////////////////
-void Mount::setLongitude(float lon)  {
+void Mount::setLongitude(float lon) {
   _longitude = lon;
 }
 
@@ -391,7 +391,7 @@ void Mount::setLongitude(float lon)  {
 //
 /////////////////////////////////
 const float Mount::latitude() const {
-  return _latitude ;
+  return _latitude;
 }
 /////////////////////////////////
 //
@@ -443,8 +443,8 @@ const DayTime Mount::currentRA() const {
   logv("CurrentRA: POS (+zp)  : %s", DayTime(hourPos).ToString());
 #endif
 
-  bool flipRA = NORTHERN_HEMISPHERE ? 
-      _stepperDEC->currentPosition() < 0 
+  bool flipRA = NORTHERN_HEMISPHERE ?
+    _stepperDEC->currentPosition() < 0
     : _stepperDEC->currentPosition() > 0;
   if (flipRA)
   {
@@ -948,20 +948,21 @@ void Mount::startSlewing(int direction) {
       _mountStatus |= STATUS_TRACKING;
     }
     else {
+      int sign = NORTHERN_HEMISPHERE ? 1 : -1;
       if (direction & NORTH) {
-        _stepperDEC->moveTo(30000);
+        _stepperDEC->moveTo(sign * 30000);
         _mountStatus |= STATUS_SLEWING;
       }
       if (direction & SOUTH) {
-        _stepperDEC->moveTo(-30000);
+        _stepperDEC->moveTo(-sign * 30000);
         _mountStatus |= STATUS_SLEWING;
       }
       if (direction & EAST) {
-        _stepperRA->moveTo(-30000);
+        _stepperRA->moveTo(-sign * 30000);
         _mountStatus |= STATUS_SLEWING;
       }
       if (direction & WEST) {
-        _stepperRA->moveTo(30000);
+        _stepperRA->moveTo(sign * 30000);
         _mountStatus |= STATUS_SLEWING;
       }
     }
@@ -1049,7 +1050,7 @@ void Mount::loop() {
   bool decStillRunning = false;
 
   unsigned long now = millis();
-#ifdef DEBUG_MODE
+#if defined DEBUG_MODE && defined SEND_PERIODIC_UPDATES
   if (now - _lastMountPrint > 2000) {
     Serial.println(getStatusString());
     _lastMountPrint = now;
@@ -1280,8 +1281,11 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 #endif
 
   float hourPos = raTarget.getTotalHours();
+  if (!NORTHERN_HEMISPHERE) {
+    hourPos += 12;
+  }
   // Map [0 to 24] range to [-12 to +12] range
-  if (hourPos > 12) {
+  while (hourPos > 12) {
     hourPos = hourPos - 24;
 #ifdef DEBUG_MODE
     logv("Mount::CalcSteppersIn: RA>12 so -24. New Target RA: %s, DEC: %s", DayTime(hourPos).ToString(), _targetDEC.ToString());
@@ -1460,7 +1464,7 @@ String Mount::DECString(byte type, byte active) {
 #ifdef DEBUG_MODE
     logv("DECString: TARGET!");
 #endif
-    dec = DegreeTime(_targetDEC);
+    dec = _targetDEC;
   }
   else {
 #ifdef DEBUG_MODE

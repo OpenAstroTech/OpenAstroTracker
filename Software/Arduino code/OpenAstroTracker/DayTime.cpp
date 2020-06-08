@@ -219,7 +219,7 @@ int DegreeTime::getDegrees() {
 }
 
 int DegreeTime::getPrintDegrees() const {
-  return NORTHERN_HEMISPHERE ? hours + 90 : hours - 90;
+  return NORTHERN_HEMISPHERE ? hours + 90 : -90 - hours;
 }
 
 float DegreeTime::getTotalDegrees() const {
@@ -227,13 +227,17 @@ float DegreeTime::getTotalDegrees() const {
 }
 
 void DegreeTime::checkHours() {
-  if (NORTHERN_HEMISPHERE) {
-    if (hours > 0) hours = 0;
-    if (hours < -180) hours = -180;
+  if (hours > 0) {
+#ifdef DEBUG_MODE
+    logv("CheckHours: Degrees is more than 0, clamping");
+#endif
+    hours = 0;
   }
-  else {
-    if (hours > 180) hours = 180;
-    if (hours < 0) hours = 0;
+  if (hours < -180) {
+#ifdef DEBUG_MODE
+    logv("CheckHours: Degrees is less than -180, clamping");
+#endif
+      hours = -180;
   }
 }
 
@@ -280,7 +284,7 @@ const char* DegreeTime::ToString() const
   *p++ = '0' + (secs % 10);
   *p++ = ' ';
   *p++ = '(';
-  strcpy(p, String(NORTHERN_HEMISPHERE ? getTotalHours() + 90 : getTotalHours() - 90, 4).c_str());
+  strcpy(p, String(NORTHERN_HEMISPHERE ? getTotalHours() + 90 : -90 - getTotalHours(), 4).c_str());
   strcat(p, ")");
 
   return achBufDeg;
