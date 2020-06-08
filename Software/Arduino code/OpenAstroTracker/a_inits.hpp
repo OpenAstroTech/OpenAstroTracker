@@ -57,28 +57,28 @@
 #ifdef ESP32
 // RA Motor pins
   #ifdef INVERT_RA_DIR
-    #define RAmotorPin1  35    // IN1 auf ULN2003 driver 1
-    #define RAmotorPin3  34    // IN2 auf ULN2003 driver 1
-    #define RAmotorPin2  39    // IN3 auf ULN2003 driver 1
-    #define RAmotorPin4  36    // IN4 auf ULN2003 driver 1
+    #define RAmotorPin1  GPIO36    // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  D1    // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  D2    // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  D3    // IN4 auf ULN2003 driver 1
   #else
-    #define RAmotorPin1  23    // IN1 auf ULN2003 driver 1
-    #define RAmotorPin3  22    // IN2 auf ULN2003 driver 1
-    #define RAmotorPin2  21    // IN3 auf ULN2003 driver 1
-    #define RAmotorPin4  19    // IN4 auf ULN2003 driver 1
+    #define RAmotorPin1  36    // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  39    // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  34    // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  35    // IN4 auf ULN2003 driver 1
   #endif
 
 // DEC Motor pins
   #ifdef INVERT_DEC_DIR
-    #define DECmotorPin1  26    // IN1 auf ULN2003 driver 2
-    #define DECmotorPin3  25    // IN3 auf ULN2003 driver 2
-    #define DECmotorPin2  33    // IN2 auf ULN2003 driver 2
-    #define DECmotorPin4  32    // IN4 auf ULN2003 driver 2
+    #define DECmotorPin1  D5    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin3  D6    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin2  D7    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin4  D8    // IN4 auf ULN2003 driver 2
   #else
-    #define DECmotorPin1  18    // IN1 auf ULN2003 driver 2
-    #define DECmotorPin3  5     // IN3 auf ULN2003 driver 2
-    #define DECmotorPin2  17    // IN2 auf ULN2003 driver 2
-    #define DECmotorPin4  16    // IN4 auf ULN2003 driver 2
+    #define DECmotorPin1  32    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin3  33    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin2  25    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin4  26    // IN4 auf ULN2003 driver 2
   #endif
 
 // ST4 Input Pins - TODO.
