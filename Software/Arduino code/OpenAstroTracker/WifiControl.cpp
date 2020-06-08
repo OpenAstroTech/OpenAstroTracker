@@ -1,6 +1,5 @@
 #include "WifiControl.hpp"
 #ifdef WIFI_ENABLED
-#include "ESP8266Wifi.h"
 
 #define PORT 4030
 
@@ -40,7 +39,12 @@ void WifiControl::startInfrastructureMode()
     Serial.println("         for SSID: "+String(INFRA_SSID));
     Serial.println("      and WPA key: "+String(INFRA_WPAKEY));
 #endif
+
+#if defined(ESP8266)
     WiFi.hostname(HOSTNAME);
+#elif defined(ESP32)
+    WiFi.setHostname(HOSTNAME);
+#endif
     WiFi.begin(INFRA_SSID, INFRA_WPAKEY);
 }
 
@@ -53,8 +57,14 @@ void WifiControl::startAccessPointMode()
     IPAddress gateway(192, 168, 1, 1);
     IPAddress subnet(255, 255, 255, 0);
     
+#if defined(ESP8266)
     WiFi.hostname(HOSTNAME);
+#elif defined(ESP32)
+    WiFi.setHostname(HOSTNAME);
+#endif
+
     WiFi.softAP(HOSTNAME, OAT_WPAKEY);
+
     WiFi.softAPConfig(local_ip, gateway, subnet);
 }
 
@@ -71,7 +81,15 @@ String wifiStatus(int status){
 
 String WifiControl::getStatus()
 {
-  return "1," + wifiStatus(WiFi.status()) + "," + WiFi.hostname() + "," += WiFi.localIP().toString() + ":" + PORT;
+  String result = "1," + wifiStatus(WiFi.status()) + ",";
+#ifdef ESP8266
+  result += WiFi.hostname();
+#elif defined(ESP32)
+  result += WiFi.getHostname();
+#endif
+
+  result += "," + WiFi.localIP().toString() + ":" + PORT; 
+  return result;
 }
 
 void WifiControl::loop()
@@ -86,7 +104,7 @@ void WifiControl::loop()
             _tcpServer = new WiFiServer(PORT);
             _tcpServer->begin();
             _tcpServer->setNoDelay(true);
-#ifdef DEBUG_MODE           
+#if defined(DEBUG_MODE) && defined(ESP8266)
             Serial.println("Server status is "+ wifiStatus( _tcpServer->status()));
 #endif
             _udp = new WiFiUDP();
@@ -98,7 +116,7 @@ void WifiControl::loop()
             Serial.print("  IP: ");
             Serial.print(WiFi.localIP());
             Serial.print(":");
-            Serial.println(String(PORT));
+            Serial.println(PORT);
 #endif
         }
     }
@@ -181,7 +199,12 @@ void WifiControl::udpLoop()
             reply.getBytes(bytes, 255);
             _udp->write(bytes, reply.length());*/
 
+#if defined(ESP8266)
             _udp->write(reply.c_str());
+#elif defined(ESP32)
+            _udp->print(reply.c_str());
+#endif
+            
             _udp->endPacket();
 #ifdef DEBUG_MODE
             Serial.printf("Replied: %s\n", reply.c_str());
