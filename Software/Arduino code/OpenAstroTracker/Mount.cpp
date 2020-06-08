@@ -190,10 +190,10 @@ void Mount::writePersistentData(int which, int val)
 /////////////////////////////////
 void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
 {
-#ifdef NORTHERN_HEMISPHERE
-  _stepperRA = new AccelStepper(stepMode, pin1, pin2, pin3, pin4);
-#else
+#if NORTHERN_HEMISPHERE
   _stepperRA = new AccelStepper(stepMode, pin4, pin3, pin2, pin1);
+#else
+  _stepperRA = new AccelStepper(stepMode, pin1, pin2, pin3, pin4);
 #endif
   _stepperRA->setMaxSpeed(maxSpeed);
   _stepperRA->setAcceleration(maxAcceleration);
@@ -201,10 +201,10 @@ void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, b
   _maxRAAcceleration = maxAcceleration;
 
   // Use another AccelStepper to run the RA motor as well. This instance tracks earths rotation.
-#ifdef NORTHERN_HEMISPHERE
-  _stepperTRK = new AccelStepper(HALFSTEP, pin1, pin2, pin3, pin4);
-#else
+#if NORTHERN_HEMISPHERE
   _stepperTRK = new AccelStepper(HALFSTEP, pin4, pin3, pin2, pin1);
+#else
+  _stepperTRK = new AccelStepper(HALFSTEP, pin1, pin2, pin3, pin4);
 #endif
   _stepperTRK->setMaxSpeed(10);
   _stepperTRK->setAcceleration(2500);
@@ -217,7 +217,11 @@ void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, b
 /////////////////////////////////
 void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
 {
+#if NORTHERN_HEMISPHERE
+  _stepperDEC = new AccelStepper(stepMode, pin1, pin2, pin3, pin4);
+#else
   _stepperDEC = new AccelStepper(stepMode, pin4, pin3, pin2, pin1);
+#endif
   _stepperDEC->setMaxSpeed(maxSpeed);
   _stepperDEC->setAcceleration(maxAcceleration);
   _maxDECSpeed = maxSpeed;
