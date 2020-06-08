@@ -67,7 +67,11 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
   _stepperWasRunning = false;
   _totalDECMove = 0;
   _totalRAMove = 0;
+#if RA_Stepper_TYPE == 0
   _backlashCorrectionSteps = 16;
+#else
+  _backlashCorrectionSteps = 0;
+#endif
   _correctForBacklash = false;
   _slewingToHome = false;
   readPersistentData();
@@ -188,6 +192,7 @@ void Mount::writePersistentData(int which, int val)
 // configureRAStepper
 //
 /////////////////////////////////
+#if RA_Stepper_TYPE == 0    // 28BYJ
 void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
 {
 #if NORTHERN_HEMISPHERE
@@ -209,12 +214,30 @@ void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, b
   _stepperTRK->setMaxSpeed(10);
   _stepperTRK->setAcceleration(2500);
 }
+#endif
+
+#if RA_Stepper_TYPE == 1    //NEMA
+void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration)
+{
+  _stepperRA = new AccelStepper(stepMode, pin1, pin2);
+  _stepperRA->setMaxSpeed(maxSpeed);
+  _stepperRA->setAcceleration(maxAcceleration);
+  _maxRASpeed = maxSpeed;
+  _maxRAAcceleration = maxAcceleration;
+
+  // Use another AccelStepper to run the RA motor as well. This instance tracks earths rotation.
+  _stepperTRK = new AccelStepper(DRIVER, pin1, pin2);
+  _stepperTRK->setMaxSpeed(10);
+  _stepperTRK->setAcceleration(2500);
+}
+#endif
 
 /////////////////////////////////
 //
 // configureDECStepper
 //
 /////////////////////////////////
+#if DEC_Stepper_TYPE == 0   // 28BYJ
 void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
 {
 #if NORTHERN_HEMISPHERE
@@ -227,7 +250,18 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, 
   _maxDECSpeed = maxSpeed;
   _maxDECAcceleration = maxAcceleration;
 }
+#endif
 
+#if DEC_Stepper_TYPE == 1   // NEMA
+void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration)
+{
+  _stepperDEC = new AccelStepper(stepMode, pin2, pin1);
+  _stepperDEC->setMaxSpeed(maxSpeed);
+  _stepperDEC->setAcceleration(maxAcceleration);
+  _maxDECSpeed = maxSpeed;
+  _maxDECAcceleration = maxAcceleration;
+}
+#endif
 /////////////////////////////////
 //
 // getSpeedCalibration
@@ -1300,7 +1334,11 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
   float stepsPerSiderealHour = _stepsPerRADegree * siderealDegreesInHour;
 
   // Where do we want to move RA to?
+#if RA_Stepper_TYPE == 0  
   float moveRA = hourPos * stepsPerSiderealHour / 2;
+#else
+  float moveRA = hourPos * stepsPerSiderealHour;
+#endif
 
   // Where do we want to move DEC to?
   // the variable targetDEC 0deg for the celestial pole (90deg), and goes negative only.
@@ -1312,7 +1350,11 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 #endif
 
   // We can move 6 hours in either direction. Outside of that we need to flip directions.
+#if RA_Stepper_TYPE == 0
   float RALimit = (6.0f * stepsPerSiderealHour / 2);
+#else
+  float RALimit = (6.0f * stepsPerSiderealHour);
+#endif
 
   // If we reach the limit in the positive direction ...
   if (moveRA > RALimit) {
@@ -1322,7 +1364,11 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 
     // ... turn both RA and DEC axis around
     float oldRA = moveRA;
+#if RA_Stepper_TYPE == 0
     moveRA -= long(12.0f * stepsPerSiderealHour / 2);
+#else
+    moveRA -= long(12.0f * stepsPerSiderealHour);
+#endif
     moveDEC = -moveDEC;
 #ifdef DEBUG_MODE
     logv("Mount::CalcSteppersIn: Adjusted Target Step pos RA: %f, DEC: %f", moveRA, moveDEC);
@@ -1335,7 +1381,11 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 #endif
     // ... turn both RA and DEC axis around
     float oldRA = moveRA;
+#if RA_Stepper_TYPE == 0
     moveRA += long(12.0f * stepsPerSiderealHour / 2);
+#else
+    moveRA += long(12.0f * stepsPerSiderealHour);
+#endif
     moveDEC = -moveDEC;
 #ifdef DEBUG_MODE
     logv("Mount::CalcSteppersPost: Adjusted Target. Moved RA, inverted DEC");
