@@ -466,8 +466,17 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     int sgn = inCmd[1] == '+' ? 1 : -1;
     if ((inCmd[4] == '*') && (inCmd[7] == ':'))
     {
-      int deg = inCmd.substring(2, 4).toInt();
-      _mount->targetDEC().set(sgn * deg + (NORTHERN_HEMISPHERE ? -90 : 90), inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
+      int deg = sgn * inCmd.substring(2, 4).toInt();
+      if (NORTHERN_HEMISPHERE) {
+        deg = deg - 90;
+      }
+      else {
+        deg = -90 - deg;
+      }
+      _mount->targetDEC().set(deg, inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
+#ifdef DEBUG_MODE
+      logv("MeadeSetInfo: Received Target DEC: %s", _mount->targetDEC().ToString());
+#endif
       return "1";
     }
     else {
@@ -483,6 +492,9 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     if ((inCmd[3] == ':') && (inCmd[6] == ':'))
     {
       _mount->targetRA().set(inCmd.substring(1, 3).toInt(), inCmd.substring(4, 6).toInt(), inCmd.substring(7, 9).toInt());
+#ifdef DEBUG_MODE
+      logv("MeadeSetInfo: Received Target RA: %s", _mount->targetRA().ToString());
+#endif
       return "1";
     }
     else {
@@ -788,6 +800,7 @@ String MeadeCommandProcessor::handleMeadeSetSlewRate(String inCmd) {
     case 'C': // Center - 2nd Slowest
     case 'G': // Guide  - Slowest
     default:
+    break;
   }
   return "";
 }

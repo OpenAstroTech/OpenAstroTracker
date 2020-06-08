@@ -24,15 +24,17 @@ extern int PolarisRAMinute;
 extern int PolarisRASecond;
 // Comment this out to save some code space
 // #define DEBUG_MODE
-
+#ifdef DEBUG_MODE
+  // #define SEND_PERIODIC_UPDATES 
+#endif
 // Uncomment to run a key diagnostic. No tracker functions are on at all.
 // #define LCD_BUTTON_TEST
 
 // Uncomment to reverse the direction of RA motor
-//#define INVERT_RA_DIR
+// #define INVERT_RA_DIR
 
 // Uncomment to reverse the direction of DEC motor
-//#define INVERT_DEC_DIR
+// #define INVERT_DEC_DIR
 
 ////////////////////////////////////////////////////////////////
 //
@@ -91,15 +93,13 @@ extern int PolarisRASecond;
     // Uncomment to support CAL menu, allowing you to calibrate various things
     #define SUPPORT_CALIBRATION
 
-#endif
-// Uncomment to support INFO menu that displays various pieces of information about the mount. 
-// #define SUPPORT_INFO_DISPLAY
+    // Uncomment to support INFO menu that displays various pieces of information about the mount. 
+    // #define SUPPORT_INFO_DISPLAY
 
-// Uncomment to support Serial Meade LX200 protocol support
-// #define SUPPORT_SERIAL_CONTROL
-
-// If we are making a headleass (no screen, no keyboard) client, always enable Serial.
-#ifdef HEADLESS_CLIENT
+    // Uncomment to support Serial Meade LX200 protocol support
+    // #define SUPPORT_SERIAL_CONTROL
+#else
+    // If we are making a headleass (no screen, no keyboard) client, always enable Serial.
     #define SUPPORT_SERIAL_CONTROL
 #endif
 
