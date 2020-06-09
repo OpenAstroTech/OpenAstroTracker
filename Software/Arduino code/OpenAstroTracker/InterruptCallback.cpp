@@ -15,7 +15,7 @@
   #define USE_TIMER_3     false
   #define USE_TIMER_4     false
   #define USE_TIMER_5     false
-  #include "Timers/TimerInterrupt.h"
+  #include "TimerInterrupt.h"
 #else
   // Need to add support for ESP32 boards here
 
