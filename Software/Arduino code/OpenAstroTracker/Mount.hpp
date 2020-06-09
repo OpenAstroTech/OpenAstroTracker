@@ -128,8 +128,11 @@ public:
   // Gets the position in one of eight directions or tracking
   long getCurrentStepperPosition(int direction);
 
-  // Process any stepper movement. Must be called frequently
+  // Process any stepper movement. 
   void loop();
+
+  // Low-leve process any stepper movement on interrupt callback.
+  void interruptLoop();
 
   // Set RA and DEC to the home position
   void setTargetToHome();
@@ -178,6 +181,9 @@ public:
 
   // Get the number of steps to use for backlash correction
   int getBacklashCorrection();
+  
+  // Called when startup is complete and the mount needs to start updating steppers.
+  void  startTimerInterrupts();
 
 private:
 
@@ -238,7 +244,7 @@ private:
   float _trackingSpeed;
   float _trackingSpeedCalibration;
   unsigned long _lastDisplayUpdate;
-  int _mountStatus;
+  volatile int _mountStatus;
   char scratchBuffer[24];
   bool _stepperWasRunning;
   bool _correctForBacklash;

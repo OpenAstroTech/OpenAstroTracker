@@ -23,13 +23,15 @@ PointOfInterest pointOfInterest[] = {
   { ">M101 Pinwheel",   14,  3, 56,   54, 15,  0 },
   // Add new items above here, not below.
   { ">Home"           ,  0,  0,  0,   90,  0,  0 },
+  { ">Unpark"         ,  0,  0,  0,   90,  0,  0 },
   { ">Park"           ,  0,  0,  0,   90,  0,  0 },
   // And definitely don't add here.
 };
 
 int currentPOI = 0;
 int parkPOI = sizeof(pointOfInterest) / sizeof(pointOfInterest[0]) - 1;
-byte homePOI = sizeof(pointOfInterest) / sizeof(pointOfInterest[0]) - 2;
+int unparkPOI = sizeof(pointOfInterest) / sizeof(pointOfInterest[0]) - 2;
+byte homePOI = sizeof(pointOfInterest) / sizeof(pointOfInterest[0]) - 3;
 
 bool processPOIKeys() {
   byte key;
@@ -44,6 +46,9 @@ bool processPOIKeys() {
         }
         else if (currentPOI == parkPOI) {
           mount.park();
+        }
+        else if (currentPOI == unparkPOI) {
+          mount.startSlewing(TRACKING);
         }
         else {
           PointOfInterest* poi = &pointOfInterest[currentPOI];

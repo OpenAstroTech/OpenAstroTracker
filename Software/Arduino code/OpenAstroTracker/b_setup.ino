@@ -29,12 +29,11 @@ void setup() {
 #endif
 
   //debug_init();
-  //Serial.begin(38400);
   Serial.begin(57600);
   //BT.begin(9600);
 
 #ifdef DEBUG_MODE
-  Serial.println("Hello");
+  Serial.println("Hello, universe!");
 #endif
 
   // Show a splash screen
@@ -83,6 +82,9 @@ void setup() {
   // For LCD screen, it's better to initialize the target to where we are (RA)
   mount.targetRA() = mount.currentRA();
 
+  // Hook into the timers for periodic interrupts to run the steppers. 
+  mount.startTimerInterrupts();
+
   // Start the tracker.
   mount.startSlewing(TRACKING);
 
@@ -123,7 +125,7 @@ void setup() {
 #endif // HEADLESS_CLIENT
 
 #ifdef DEBUG_MODE
-  Serial.println("SetupDone");
+  Serial.println("Setup done!");
 #endif
 
 }

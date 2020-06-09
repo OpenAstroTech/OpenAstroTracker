@@ -1,5 +1,7 @@
 #include <EEPROM.h>
 
+#include "InterruptCallback.h"
+
 #include "LcdMenu.hpp"
 #include "Mount.hpp"
 #include "Utility.h"
@@ -52,6 +54,15 @@ char* formatStringsRA[] = {
   "%02d%02d%02d",           // Compact
 };
 
+/////////////////////////////////
+// This is the callback function for the timer interrupt. It does very minimal work,
+// only stepping the stepper motors as needed.
+/////////////////////////////////
+void mountLoop(void* payload) {
+  Mount* mount = reinterpret_cast<Mount*>(payload);
+  mount->interruptLoop();
+}
+
 const float siderealDegreesInHour = 14.95902778;
 /////////////////////////////////
 //
@@ -76,6 +87,25 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
   _slewingToHome = false;
   readPersistentData();
 }
+
+/////////////////////////////////
+//
+// startTimerInterrupts
+//
+/////////////////////////////////
+void Mount::startTimerInterrupts()
+{
+#ifndef ESP8266
+  // 2 kHz updates
+  if (!InterruptCallback::setInterval(0.5f, mountLoop, this))
+  {
+#ifdef DEBUG_MODE
+    logv("CANNOT set Timer!");
+#endif
+  }
+#endif // !ESP8266
+}
+
 
 /////////////////////////////////
 //
@@ -1079,33 +1109,17 @@ void Mount::delay(int ms) {
 
 /////////////////////////////////
 //
-// loop
+// interruptLoop()
 //
-// Process any stepper movement. Must be called frequently
 /////////////////////////////////
-void Mount::loop() {
-  bool raStillRunning = false;
-  bool decStillRunning = false;
-
-  unsigned long now = millis();
-#if defined DEBUG_MODE && defined SEND_PERIODIC_UPDATES
-  if (now - _lastMountPrint > 2000) {
-    Serial.println(getStatusString());
-    _lastMountPrint = now;
-  }
-#endif
-  if (isGuiding()) {
-    if (millis() > _guideEndTime) {
-      stopGuiding();
+void Mount::interruptLoop()
+{
+  if (_mountStatus & STATUS_GUIDE_PULSE) {
+    if (_mountStatus & STATUS_GUIDE_PULSE_RA) {
+      _stepperTRK->runSpeed();
     }
-    else
-    {
-      if (_mountStatus & STATUS_GUIDE_PULSE_RA) {
-        _stepperTRK->runSpeed();
-      }
-      if (_mountStatus & STATUS_GUIDE_PULSE_DEC) {
-        _stepperDEC->runSpeed();
-      }
+    if (_mountStatus & STATUS_GUIDE_PULSE_DEC) {
+      _stepperDEC->runSpeed();
     }
     return;
   }
@@ -1123,6 +1137,37 @@ void Mount::loop() {
       _stepperDEC->run();
       _stepperRA->run();
     }
+  }
+}
+
+/////////////////////////////////
+//
+// loop
+//
+// Process any stepper change in movement. 
+/////////////////////////////////
+void Mount::loop() {
+  bool raStillRunning = false;
+  bool decStillRunning = false;
+
+// Since the ESP8266 cannot process timer interrupts at the required 
+  // speed, we'll just stick to deterministic calls here.
+#ifdef ESP8266
+  interruptLoop();
+#endif
+
+  unsigned long now = millis();
+#if defined DEBUG_MODE && defined SEND_PERIODIC_UPDATES
+  if (now - _lastMountPrint > 2000) {
+    Serial.println(getStatusString());
+    _lastMountPrint = now;
+  }
+#endif
+  if (isGuiding()) {
+    if (millis() > _guideEndTime) {
+      stopGuiding();
+    }
+    return;
   }
 
   if (_stepperDEC->isRunning()) {
