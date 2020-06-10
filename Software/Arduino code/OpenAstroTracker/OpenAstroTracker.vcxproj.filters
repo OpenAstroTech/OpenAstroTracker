@@ -60,16 +60,16 @@
     <ClInclude Include="InterruptCallback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Timers\ESP8266TimerInterrupt.h">
+    <ClInclude Include="ESP8266TimerInterrupt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Timers\ESP8266_ISR_Timer-Impl.h">
+    <ClInclude Include="ESP8266_ISR_Timer-Impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Timers\ESP8266_ISR_Timer.h">
+    <ClInclude Include="ESP8266_ISR_Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Timers\TimerInterrupt.h">
+    <ClInclude Include="TimerInterrupt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -98,7 +98,7 @@
     <ClCompile Include="InterruptCallback.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Timers\TimerInterrupt.cpp">
+    <ClCompile Include="TimerInterrupt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

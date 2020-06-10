@@ -2,6 +2,7 @@
 #ifdef WIFI_ENABLED
 #include "ESP8266Wifi.h"
 
+#define PORT 4030
 
 WifiControl::WifiControl(Mount* mount, LcdMenu* lcdMenu) 
 {
@@ -70,11 +71,7 @@ String wifiStatus(int status){
 
 String WifiControl::getStatus()
 {
-  String result = "1," + wifiStatus(WiFi.status()) + ",";
-  result += WiFi.hostname() + ",";
-  result += WiFi.localIP().toString() + ":" + String(_tcpServer->port());
-
-  return result;
+  return "1," + wifiStatus(WiFi.status()) + "," + WiFi.hostname() + "," += WiFi.localIP().toString() + ":" + PORT;
 }
 
 void WifiControl::loop()
@@ -86,7 +83,7 @@ void WifiControl::loop()
         Serial.println("Connected status changed to " + wifiStatus(_status));
 #endif
         if (_status == WL_CONNECTED) {
-            _tcpServer = new WiFiServer(4030);
+            _tcpServer = new WiFiServer(PORT);
             _tcpServer->begin();
             _tcpServer->setNoDelay(true);
 #ifdef DEBUG_MODE           
@@ -101,7 +98,7 @@ void WifiControl::loop()
             Serial.print("  IP: ");
             Serial.print(WiFi.localIP());
             Serial.print(":");
-            Serial.println(String(_tcpServer->port()));
+            Serial.println(String(PORT));
 #endif
         }
     }

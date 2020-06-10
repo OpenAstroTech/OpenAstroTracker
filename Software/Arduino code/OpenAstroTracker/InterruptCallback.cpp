@@ -8,7 +8,7 @@
 
 // NOTE: ESP8266 support is not complete and does not work. This code is never called.
 #ifdef ESP8266
-  #include "Timers/ESP8266TimerInterrupt.h"
+  #include "ESP8266TimerInterrupt.h"
 #elif defined __AVR_ATmega328P__ || defined __AVR_ATmega2560__   // Arduino Uno or Mega
   #define USE_TIMER_1     true
   #define USE_TIMER_2     true
