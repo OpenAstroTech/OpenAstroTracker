@@ -12,6 +12,10 @@ void EEPROMupdate(int loc, byte val);
 // Time in ms between LCD screen updates during slewing operations
 #define DISPLAY_UPDATE_TIME 200
 
+// Stepper selection ///////////
+#define RA_Stepper_TYPE  0     // 28BYJ-48 = 0   |   NEMA = 1
+#define DEC_Stepper_TYPE  0    // 28BYJ-48 = 0   |   NEMA = 1
+
 // Make some variables in the sketch files available to the C++ code.
 extern bool inSerialControl;
 extern String version;

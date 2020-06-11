@@ -16,7 +16,7 @@
 */
 #include "Globals.h"
 
-String version = "V1.7.01";
+String version = "V1.7.02";
 
 ///////////////////////////////////////////////////////////////////////////
 // Please see the Globals.h file for configuration of the firmware.
@@ -24,9 +24,13 @@ String version = "V1.7.01";
 
 // See NORTHERN_HEMISPHERE in Globals.h if you not in the northern hemisphere
 
+
+// RA stepper //////////////////////////////////////////////////////////////////////////////////
+
+
 // This is how many steps your 28BYJ-48 stepper needs for a full rotation. It is almost always 4096.
 // This code drives the steppers in halfstep mode for TRK and DEC, and full step for RA
-float StepsPerRevolution = 4096;
+float RAStepsPerRevolution = 4096;
 
 // The radius of the surface that the belt runs on (in V1 of the ring) was 168.24mm.
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
@@ -37,23 +41,27 @@ float StepsPerRevolution = 4096;
 // Theoretically correct RA tracking speed is 1.246586 (300 x 14.95903 / 3600) (V2 : 1.333800 (322 x 14.95903 / 3600) steps/sec
 
 // Your drive pulley tooth count:
-#define RAPulleyTeeth 20
+#define RAPulleyTeeth 16
 // the Circumference of the RA wheel
 // V1: 1057.1  
 // V2: 1131
 #define RACircumference 1131
 
-int RAStepsPerDegree = (RACircumference / (RAPulleyTeeth * 2.0) * StepsPerRevolution / 360.0);      // V2 Ring has belt in a groove and belt runs on bearings
+int RAStepsPerDegree = (RACircumference / (RAPulleyTeeth * 2.0) * RAStepsPerRevolution / 360.0);      // V2 Ring has belt in a groove and belt runs on bearings
 
+
+// DEC stepper //////////////////////////////////////////////////////////////////////////////////
+
+float DECStepsPerRevolution = 4096;
 
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
 // DEC wheel is 2 x PI x 90mm circumference which is 565.5mm
 // One DEC revolution needs 14.13 (565.5mm/40mm) stepper revolutions
 // Which means 57907 steps (14.14 x 4096) moves 360 degrees
 // So there are 160.85 steps/degree (57907/360)
-#define DecPulleyTeeth 20
+#define DecPulleyTeeth 16
 
-int DECStepsPerDegree = (565.5 / (DecPulleyTeeth * 2.0) * StepsPerRevolution / 360.0);
+int DECStepsPerDegree = (565.5 / (DecPulleyTeeth * 2.0) * DECStepsPerRevolution / 360.0);
 
 float speed = 1.000;    // Use this value to slightly increase or decrese tracking speed. The values from the "CAL" menu will be added to this.
 

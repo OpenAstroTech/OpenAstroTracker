@@ -57,7 +57,13 @@ bool processControlKeys() {
       if (key == btnSELECT) {
         if (setZeroPoint) {
           // Leaving Control Menu, so set stepper motor positions to zero.
+#ifdef DEBUG_MODE
+          logv("Mount::CALC: Calling setHome()!");
+#endif
           mount.setHome();
+#ifdef DEBUG_MODE
+          logv("Mount::CALC: setHome() returned: RA Current %s, Target: %f", mount.RAString(CURRENT_STRING|COMPACT_STRING).c_str(), mount.RAString(TARGET_STRING | COMPACT_STRING).c_str());
+#endif
           mount.startSlewing(TRACKING);
         }
 
@@ -84,8 +90,6 @@ bool processControlKeys() {
     }
     return waitForRelease;
   }
-
-  mount.loop();
 
   key = lcdButtons.currentState();
   switch (key) {
@@ -125,8 +129,6 @@ bool processControlKeys() {
     }
     break;
   }
-
-  mount.loop();
 
   return waitForRelease;
 }

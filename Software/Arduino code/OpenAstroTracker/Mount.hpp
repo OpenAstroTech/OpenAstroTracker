@@ -26,6 +26,7 @@
 
 #define HALFSTEP 8
 #define FULLSTEP 4
+#define DRIVER 1
 
 #define RA_STEPS  1
 #define DEC_STEPS 2
@@ -42,10 +43,20 @@ public:
   Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu);
 
   // Configure the RA stepper motor. This also sets up the TRK stepper on the same pins.
-  void configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
+#if RA_Stepper_TYPE == 0
+    void configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
+#endif
+#if RA_Stepper_TYPE == 1
+    void configureRAStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration);
+#endif
 
   // Configure the DEC stepper motor.
-  void configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
+#if DEC_Stepper_TYPE == 0
+    void configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
+#endif
+#if DEC_Stepper_TYPE == 1
+    void configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration);
+#endif
 
   // Get the current RA tracking speed factor
   float getSpeedCalibration();
@@ -117,8 +128,11 @@ public:
   // Gets the position in one of eight directions or tracking
   long getCurrentStepperPosition(int direction);
 
-  // Process any stepper movement. Must be called frequently
+  // Process any stepper movement. 
   void loop();
+
+  // Low-leve process any stepper movement on interrupt callback.
+  void interruptLoop();
 
   // Set RA and DEC to the home position
   void setTargetToHome();
@@ -167,6 +181,9 @@ public:
 
   // Get the number of steps to use for backlash correction
   int getBacklashCorrection();
+  
+  // Called when startup is complete and the mount needs to start updating steppers.
+  void  startTimerInterrupts();
 
 private:
 
@@ -227,7 +244,7 @@ private:
   float _trackingSpeed;
   float _trackingSpeedCalibration;
   unsigned long _lastDisplayUpdate;
-  int _mountStatus;
+  volatile int _mountStatus;
   char scratchBuffer[24];
   bool _stepperWasRunning;
   bool _correctForBacklash;

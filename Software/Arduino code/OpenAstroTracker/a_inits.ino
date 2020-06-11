@@ -13,6 +13,7 @@
 
 #define HALFSTEP 8
 #define FULLSTEP 4
+#define DRIVER 1
 
 //SoftwareSerial BT(10,11);
 
@@ -126,6 +127,7 @@
 // Arduino Mega
 ///////////////////////////////////////////////////////////////////////////
 #ifdef __AVR_ATmega2560__  // Arduino Mega
+#if RA_Stepper_TYPE == 0  // 28BYJ
 // RA Motor pins
   #ifdef INVERT_RA_DIR
     #define RAmotorPin1  22    // IN1 auf ULN2003 driver 1
@@ -138,8 +140,14 @@
     #define RAmotorPin2  24    // IN3 auf ULN2003 driver 1
     #define RAmotorPin4  22    // IN4 auf ULN2003 driver 1
   #endif
+#endif
+#if RA_Stepper_TYPE == 1  // NEMA
+    #define RAmotorPin1  22
+    #define RAmotorPin2  24
+#endif
 
 // DEC Motor pins
+#if DEC_Stepper_TYPE == 0  // 28BYJ
   #ifdef INVERT_DEC_DIR
     #define DECmotorPin1  36    // IN1 auf ULN2003 driver 2
     #define DECmotorPin3  34    // IN2 auf ULN2003 driver 2
@@ -152,6 +160,13 @@
     #define DECmotorPin4  36    // IN4 auf ULN2003 driver 2
   #endif
 #endif
+#if DEC_Stepper_TYPE == 1  // NEMA
+    #define DECmotorPin1  32
+    #define DECmotorPin2  30
+#endif
+  
+#endif
+
 
 // Menu IDs
 #define RA_Menu 1

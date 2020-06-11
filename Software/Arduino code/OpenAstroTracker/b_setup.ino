@@ -11,13 +11,29 @@ WifiControl wifiControl(&mount, &lcdMenu);
 
 void setup() {
 
+// Microstepping ---------------
+#if RA_Stepper_TYPE == 1   // RA driver startup (for TMC2209)
+  pinMode(41, OUTPUT);
+  //digitalWrite(43, HIGH);  // SPREAD
+  digitalWrite(41, LOW);  // ENABLE
+
+  digitalWrite(42, LOW);  // MS2
+  digitalWrite(40, HIGH);  // MS1
+#endif
+#if DEC_Stepper_TYPE == 1  // DEC driver startup (for TMC2209)
+  pinMode(45, OUTPUT);
+  digitalWrite(45, LOW);  // ENABLE
+
+  digitalWrite(46, LOW);  // MS2
+  digitalWrite(44, HIGH);  // MS1
+#endif
+
   //debug_init();
-  //Serial.begin(38400);
   Serial.begin(57600);
   //BT.begin(9600);
 
 #ifdef DEBUG_MODE
-  Serial.println("Hello");
+  Serial.println("Hello, universe!");
 #endif
 
   // Show a splash screen
@@ -37,8 +53,19 @@ void setup() {
   // Configure the mount
   
   // Set the stepper motor parameters
-  mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);
-  mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
+  // Set the stepper motor parameters
+  #if RA_Stepper_TYPE == 0 && DEC_Stepper_TYPE == 0
+    mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);
+    mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
+  #endif
+  #if RA_Stepper_TYPE == 1 && DEC_Stepper_TYPE == 0
+    mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
+    mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
+  #endif
+  #if RA_Stepper_TYPE == 1 && DEC_Stepper_TYPE == 1
+    mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
+    mount.configureDECStepper(DRIVER, DECmotorPin1, DECmotorPin2, DECspeed, DECacceleration);
+  #endif
 
   // The mount uses EEPROM storage locations 0-10 that it reads during construction
 
@@ -54,6 +81,9 @@ void setup() {
 
   // For LCD screen, it's better to initialize the target to where we are (RA)
   mount.targetRA() = mount.currentRA();
+
+  // Hook into the timers for periodic interrupts to run the steppers. 
+  mount.startTimerInterrupts();
 
   // Start the tracker.
   mount.startSlewing(TRACKING);
@@ -95,7 +125,7 @@ void setup() {
 #endif // HEADLESS_CLIENT
 
 #ifdef DEBUG_MODE
-  Serial.println("SetupDone");
+  Serial.println("Setup done!");
 #endif
 
 }
