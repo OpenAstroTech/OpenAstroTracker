@@ -62,10 +62,10 @@
     #define RAmotorPin2  39    // IN3 auf ULN2003 driver 1
     #define RAmotorPin4  36    // IN4 auf ULN2003 driver 1
   #else
-    #define RAmotorPin1  21    // IN1 auf ULN2003 driver 1
-    #define RAmotorPin3  19    // IN2 auf ULN2003 driver 1
-    #define RAmotorPin2  18    // IN3 auf ULN2003 driver 1
-    #define RAmotorPin4  5    // IN4 auf ULN2003 driver 1
+    #define RAmotorPin1  23    // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  22    // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  21    // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  19    // IN4 auf ULN2003 driver 1
   #endif
 
 // DEC Motor pins
@@ -75,10 +75,10 @@
     #define DECmotorPin2  33    // IN2 auf ULN2003 driver 2
     #define DECmotorPin4  32    // IN4 auf ULN2003 driver 2
   #else
-    #define DECmotorPin1  17    // IN1 auf ULN2003 driver 2
-    #define DECmotorPin3  16    // IN3 auf ULN2003 driver 2
-    #define DECmotorPin2  4    // IN2 auf ULN2003 driver 2
-    #define DECmotorPin4  26    // IN4 auf ULN2003 driver 2
+    #define DECmotorPin1  18    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin3  5     // IN3 auf ULN2003 driver 2
+    #define DECmotorPin2  17    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin4  16    // IN4 auf ULN2003 driver 2
   #endif
 
 // ST4 Input Pins - TODO.
