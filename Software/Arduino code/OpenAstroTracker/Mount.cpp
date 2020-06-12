@@ -97,15 +97,15 @@ void Mount::startTimerInterrupts()
 {
 #ifndef ESPBOARD
   // 2 kHz updates
-  if (!InterruptCallback::setInterval(1.0f, mountLoop, this))
+  if (!InterruptCallback::setInterval(0.5f, mountLoop, this))
   {
 #ifdef DEBUG_MODE
     logv("CANNOT set Timer!");
 #endif
   }
-#endif // !ESPBOARD
-
+#endif // !ESP8266
 }
+
 
 /////////////////////////////////
 //
@@ -1168,8 +1168,8 @@ void Mount::loop() {
   // Since some of the boards cannot process timer interrupts at the required 
   // speed (or at all), we'll just stick to deterministic calls here.
   #ifdef RUN_STEPPERS_IN_MAIN_LOOP 
-    interruptLoop();
-  #endif
+  interruptLoop();
+#endif
 
 #if defined DEBUG_MODE && defined SEND_PERIODIC_UPDATES
   unsigned long now = millis();
