@@ -103,7 +103,7 @@ void Mount::startTimerInterrupts()
     logv("CANNOT set Timer!");
 #endif
   }
-#endif // !ESP8266
+#endif // !ESPBOARD
 }
 
 
