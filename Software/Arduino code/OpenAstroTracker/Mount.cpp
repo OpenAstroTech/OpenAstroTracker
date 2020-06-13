@@ -95,9 +95,9 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
 /////////////////////////////////
 void Mount::startTimerInterrupts()
 {
-#ifndef ESPBOARD
+#ifndef INTERRUPT_STEPPING_DISABLED
   // 2 kHz updates
-  if (!InterruptCallback::setInterval(0.5f, mountLoop, this))
+  if (!InterruptCallback::setInterval(1.0f, mountLoop, this))
   {
 #ifdef DEBUG_MODE
     logv("CANNOT set Timer!");
@@ -126,10 +126,6 @@ void Mount::readPersistentData()
 {
   // Read the magic marker byte and state
   int marker = EEPROM.read(4) + EEPROM.read(5) * 256;
-#ifdef DEBUG_MODE
-  logv("EEPROM: Marker: %x ", marker);
-#endif
-
   if ((marker & 0xFF01) == 0xBE01) {
     _stepsPerRADegree = EEPROM.read(6) + EEPROM.read(7) * 256;
 #ifdef DEBUG_MODE
@@ -217,9 +213,6 @@ void Mount::writePersistentData(int which, int val)
     break;
   }
 
-#ifdef DEBUG_MODE
-  logv("EEPROM Write: New Marker is 0xBE, flag is %x (%d)", flag, flag);
-#endif
 
   EEPROMupdate(4, flag);
   EEPROMupdate(5, 0xBE);
@@ -1165,9 +1158,9 @@ void Mount::loop() {
   bool raStillRunning = false;
   bool decStillRunning = false;
 
-  // Since some of the boards cannot process timer interrupts at the required 
-  // speed (or at all), we'll just stick to deterministic calls here.
-  #ifdef RUN_STEPPERS_IN_MAIN_LOOP 
+  // Since the ESP8266 cannot process timer interrupts at the required 
+    // speed, we'll just stick to deterministic calls here.
+#ifdef INTERRUPT_STEPPING_DISABLED 
   interruptLoop();
 #endif
 
