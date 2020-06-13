@@ -1176,7 +1176,7 @@ void Mount::loop() {
   if (now - _lastMountPrint > 2000) {
     Serial.println(getStatusString());
     _lastMountPrint = now;
-  }
+}
 #endif
   if (isGuiding()) {
     if (millis() > _guideEndTime) {
