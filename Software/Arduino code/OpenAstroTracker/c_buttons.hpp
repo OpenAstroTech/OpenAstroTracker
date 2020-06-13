@@ -212,8 +212,10 @@ void loop() {
 #else
 
 void loop() {
+#ifndef ESP32
   serialLoop();
   BTin();
+#endif
 }
 
 #endif
