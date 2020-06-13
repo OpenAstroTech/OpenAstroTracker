@@ -59,18 +59,20 @@ void InterruptCallback::stop()
 
 #elif defined(ESP32)
 
-bool _lock = false;
+volatile bool _lock = false;
 
 void IRAM_ATTR callbackProxy() {
     if (_lock) {
         return;
     }
 
+    timerAlarmDisable(_timer);
     _lock = true;
     if (func != NULL) {
         func(data);
     }
     _lock = false;
+    timerAlarmEnable(_timer);
 }
 
 bool InterruptCallback::setInterval(float intervalMs, interrupt_callback_p callback, void* payload){
@@ -80,7 +82,7 @@ bool InterruptCallback::setInterval(float intervalMs, interrupt_callback_p callb
     // 80 divisor = 1uS resolution.
     _timer = timerBegin(0, 80, true);
     timerAttachInterrupt(_timer, callbackProxy, true);
-    timerAlarmWrite(_timer, intervalMs * 1000.0f, true);
+    timerAlarmWrite(_timer, (uint64_t)(intervalMs * 1000.0f), true);
     timerAlarmEnable(_timer);
 
 #ifdef DEBUG_MODE
