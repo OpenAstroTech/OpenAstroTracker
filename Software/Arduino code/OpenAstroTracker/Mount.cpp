@@ -58,7 +58,7 @@ char* formatStringsRA[] = {
 // This is the callback function for the timer interrupt. It does very minimal work,
 // only stepping the stepper motors as needed.
 /////////////////////////////////
-void mountLoop(void* payload) {
+void IRAM_ATTR mountLoop(void* payload) {
   Mount* mount = reinterpret_cast<Mount*>(payload);
   mount->interruptLoop();
 }
@@ -95,15 +95,15 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
 /////////////////////////////////
 void Mount::startTimerInterrupts()
 {
-#ifndef ESP8266
+#ifndef INTERRUPT_STEPPING_DISABLED
   // 2 kHz updates
-  if (!InterruptCallback::setInterval(0.5f, mountLoop, this))
+  if (!InterruptCallback::setInterval(1.0f, mountLoop, this))
   {
 #ifdef DEBUG_MODE
     logv("CANNOT set Timer!");
 #endif
   }
-#endif // !ESPBOARD
+#endif // !ESP8266
 }
 
 
@@ -1112,7 +1112,7 @@ void Mount::delay(int ms) {
 // interruptLoop()
 //
 /////////////////////////////////
-void Mount::interruptLoop()
+void IRAM_ATTR Mount::interruptLoop()
 {
   if (_mountStatus & STATUS_GUIDE_PULSE) {
     if (_mountStatus & STATUS_GUIDE_PULSE_RA) {
@@ -1152,7 +1152,7 @@ void Mount::loop() {
 
 // Since the ESP8266 cannot process timer interrupts at the required 
   // speed, we'll just stick to deterministic calls here.
-#ifdef ESP8266
+#ifdef INTERRUPT_STEPPING_DISABLED 
   interruptLoop();
 #endif
 

@@ -2,7 +2,7 @@
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(0);
 
-Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
+DRAM_ATTR Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
 
 #ifdef WIFI_ENABLED
 #include "WifiControl.hpp"
