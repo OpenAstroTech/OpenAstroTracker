@@ -126,6 +126,10 @@ void Mount::readPersistentData()
 {
   // Read the magic marker byte and state
   int marker = EEPROM.read(4) + EEPROM.read(5) * 256;
+#ifdef DEBUG_MODE
+  logv("EEPROM: Marker: %x ", marker);
+#endif
+
   if ((marker & 0xFF01) == 0xBE01) {
     _stepsPerRADegree = EEPROM.read(6) + EEPROM.read(7) * 256;
 #if DEBUG_LEVEL&DEBUG_MOUNT
@@ -213,6 +217,9 @@ void Mount::writePersistentData(int which, int val)
     break;
   }
 
+#ifdef DEBUG_MODE
+  logv("EEPROM Write: New Marker is 0xBE, flag is %x (%d)", flag, flag);
+#endif
 
   EEPROMupdate(4, flag);
   EEPROMupdate(5, 0xBE);
@@ -1566,9 +1573,9 @@ void Mount::displayStepperPosition() {
     _lcdMenu->setCursor(0, 1);
     _lcdMenu->printMenu(scratchBuffer);
 #endif
-  }
+    }
 #endif
-}
+  }
 
 /////////////////////////////////
 //
