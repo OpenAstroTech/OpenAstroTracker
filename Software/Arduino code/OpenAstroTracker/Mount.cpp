@@ -126,6 +126,10 @@ void Mount::readPersistentData()
 {
   // Read the magic marker byte and state
   int marker = EEPROM.read(4) + EEPROM.read(5) * 256;
+#ifdef DEBUG_MODE
+  logv("EEPROM: Marker: %x ", marker);
+#endif
+
   if ((marker & 0xFF01) == 0xBE01) {
     _stepsPerRADegree = EEPROM.read(6) + EEPROM.read(7) * 256;
 #ifdef DEBUG_MODE
@@ -143,9 +147,9 @@ void Mount::readPersistentData()
   float speed = 1.0;
   if ((marker & 0xFF04) == 0xBE04) {
     int adjust = EEPROM.read(0) + EEPROM.read(3) * 256;
-    speed = 1.0 + adjust / 10000;
+    speed = 1.0 + 1.0 * adjust / 10000.0;
 #ifdef DEBUG_MODE
-    logv("EEPROM: Speed Marker OK! Speed adjust is %d", adjust);
+    logv("EEPROM: Speed Marker OK! Speed adjust is %d, speedFactor is %f", adjust, speed);
 #endif
   }
 
@@ -174,6 +178,9 @@ void Mount::writePersistentData(int which, int val)
   if (EEPROM.read(5) == 0xBE) {
     // ... read the current state ...
     flag = EEPROM.read(4);
+#ifdef DEBUG_MODE
+    logv("EEPROM Write: Marker is 0xBE, flag is %x (%d)", flag, flag);
+#endif
   }
   switch (which) {
     case RA_STEPS:
@@ -199,6 +206,7 @@ void Mount::writePersistentData(int which, int val)
       loByteLocation = 0;
       hiByteLocation = 3;
     }
+    break;
     case BACKLASH_CORRECTION:
     {
       // ... set bit 2 to indicate speed factor value has been written to 0/3
@@ -209,6 +217,9 @@ void Mount::writePersistentData(int which, int val)
     break;
   }
 
+#ifdef DEBUG_MODE
+  logv("EEPROM Write: New Marker is 0xBE, flag is %x (%d)", flag, flag);
+#endif
 
   EEPROMupdate(4, flag);
   EEPROMupdate(5, 0xBE);
@@ -309,6 +320,10 @@ float Mount::getSpeedCalibration() {
 void Mount::setSpeedCalibration(float val, bool saveToStorage) {
   _trackingSpeedCalibration = val;
 
+  // The tracker simply needs to rotate at 15degrees/hour, adjusted for sidereal
+  // time (i.e. the 15degrees is per 23h56m04s. 86164s/86400 = 0.99726852. 3590/3600 is the same ratio) So we only go 15 x 0.99726852 in an hour.
+  _trackingSpeed = _trackingSpeedCalibration * _stepsPerRADegree * siderealDegreesInHour / 3600.0f;
+
   if (saveToStorage) {
     val = (val - 1.0) * 10000;
     if (val > 32766) val = 32766;
@@ -316,9 +331,10 @@ void Mount::setSpeedCalibration(float val, bool saveToStorage) {
     writePersistentData(SPEED_FACTOR_DECIMALS, (int)floor(val));
   }
 
-  // The tracker simply needs to rotate at 15degrees/hour, adjusted for sidereal
-  // time (i.e. the 15degrees is per 23h56m04s. 86164s/86400 = 0.99726852. 3590/3600 is the same ratio) So we only go 15 x 0.99726852 in an hour.
-  _trackingSpeed = _trackingSpeedCalibration * _stepsPerRADegree * siderealDegreesInHour / 3600.0f;
+  // If we are currently tracking, update the speed.
+  if (isSlewingTRK()) {
+    _stepperTRK->setSpeed(_trackingSpeed);
+  }
 }
 
 /////////////////////////////////
@@ -1150,8 +1166,8 @@ void Mount::loop() {
   bool raStillRunning = false;
   bool decStillRunning = false;
 
-// Since the ESP8266 cannot process timer interrupts at the required 
-  // speed, we'll just stick to deterministic calls here.
+  // Since the ESP8266 cannot process timer interrupts at the required 
+    // speed, we'll just stick to deterministic calls here.
 #ifdef ESP8266
   interruptLoop();
 #endif
@@ -1161,7 +1177,7 @@ void Mount::loop() {
   if (now - _lastMountPrint > 2000) {
     Serial.println(getStatusString());
     _lastMountPrint = now;
-  }
+}
 #endif
   if (isGuiding()) {
     if (millis() > _guideEndTime) {
@@ -1532,9 +1548,9 @@ void Mount::displayStepperPosition() {
     _lcdMenu->setCursor(0, 1);
     _lcdMenu->printMenu(scratchBuffer);
 #endif
-  }
+    }
 #endif
-}
+  }
 
 /////////////////////////////////
 //

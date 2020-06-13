@@ -43,10 +43,10 @@
 byte calState = HIGHLIGHT_FIRST;
 
 // SPeed adjustment variable. Added to 1.0 after dividing by 10000 to get final speed
-float inputcal;              
+float SpeedCalibration;
 
 // The current delay in ms when changing calibration value. The longer a button is depressed, the smaller this gets.
-int calDelay = 150;          
+int calDelay = 150;
 
 // The index of durations that the user has selected.
 byte driftSubIndex = 1;
@@ -92,6 +92,9 @@ void gotoNextHighlightState(int dir) {
   else if (calState == HIGHLIGHT_BACKLASH_STEPS) {
     BacklashSteps = mount.getBacklashCorrection();
   }
+  else if (calState == HIGHLIGHT_SPEED) {
+    SpeedCalibration = (mount.getSpeedCalibration() - 1.0) * 10000.0 + 0.5;
+  }
 }
 
 bool processCalibrationKeys() {
@@ -101,9 +104,10 @@ bool processCalibrationKeys() {
 
   if (calState == SPEED_CALIBRATION) {
     if (lcdButtons.currentState() == btnUP) {
-      if (inputcal < 32760) { // Don't overflow 16 bit signed
-        inputcal += 1;  //0.0001;
-        mount.setSpeedCalibration(speed + inputcal / 10000, false);
+      if (SpeedCalibration < 32760) { // Don't overflow 16 bit signed
+        SpeedCalibration += 1;  //0.0001;
+        mount.setSpeedCalibration(1.0 + SpeedCalibration / 10000.0, false);
+        mount.setSpeedCalibration(1.0 + SpeedCalibration / 10000.0, false);
       }
 
       mount.delay(calDelay);
@@ -111,9 +115,9 @@ bool processCalibrationKeys() {
       checkForKeyChange = false;
     }
     else if (lcdButtons.currentState() == btnDOWN) {
-      if (inputcal > -32760) { // Don't overflow 16 bit signed
-        inputcal -= 1; //0.0001;
-        mount.setSpeedCalibration(speed + inputcal / 10000, false);
+      if (SpeedCalibration > -32760) { // Don't overflow 16 bit signed
+        SpeedCalibration -= 1; //0.0001;
+        mount.setSpeedCalibration(1.0 + SpeedCalibration / 10000.0, false);
       }
 
       mount.delay(calDelay);
@@ -184,25 +188,25 @@ bool processCalibrationKeys() {
           calState = HIGHLIGHT_POLAR;
         }
       }
-      break;
+                               break;
 
       case SPEED_CALIBRATION: {
         // UP and DOWN are handled above
         if (key == btnSELECT) {
-          int cal = floor(inputcal);
-          mount.setSpeedCalibration(speed + inputcal / 10000, true);
+          mount.setSpeedCalibration(1.0 + SpeedCalibration / 10000.0, true);
           lcdMenu.printMenu("Speed Stored.");
           mount.delay(500);
           calState = HIGHLIGHT_SPEED;
         }
         else if (key == btnRIGHT) {
+          mount.setSpeedCalibration(1.0 + SpeedCalibration / 10000.0, true);
           lcdMenu.setNextActive();
           calState = HIGHLIGHT_SPEED;
         }
       }
-      break;
+                            break;
 
-      case RA_STEP_CALIBRATION: 
+      case RA_STEP_CALIBRATION:
       {
         // UP and DOWN are handled above
         if (key == btnSELECT) {
@@ -271,7 +275,7 @@ bool processCalibrationKeys() {
           lcdMenu.setNextActive();
         }
       }
-      break;
+                          break;
 
       case POLAR_CALIBRATION_WAIT: {
         if (key == btnSELECT) {
@@ -287,7 +291,7 @@ bool processCalibrationKeys() {
           calState = HIGHLIGHT_POLAR;
         }
       }
-      break;
+                                 break;
 
       case HIGHLIGHT_SPEED: {
         if (key == btnDOWN) gotoNextHighlightState(1);
@@ -298,7 +302,7 @@ bool processCalibrationKeys() {
           calState = HIGHLIGHT_POLAR;
         }
       }
-      break;
+                          break;
 
       case HIGHLIGHT_DRIFT: {
         if (key == btnDOWN) gotoNextHighlightState(1);
@@ -309,7 +313,7 @@ bool processCalibrationKeys() {
           calState = HIGHLIGHT_POLAR;
         }
       }
-      break;
+                          break;
 
       case DRIFT_CALIBRATION_WAIT: {
         if (key == btnDOWN || key == btnLEFT) {
@@ -331,7 +335,7 @@ bool processCalibrationKeys() {
           driftSubIndex = 1;
         }
       }
-      break;
+                                 break;
 
       case HIGHLIGHT_RA_STEPS: {
         if (key == btnDOWN) gotoNextHighlightState(1);
@@ -342,7 +346,7 @@ bool processCalibrationKeys() {
           calState = HIGHLIGHT_FIRST;
         }
       }
-      break;
+                             break;
 
       case HIGHLIGHT_DEC_STEPS: {
         if (key == btnDOWN) gotoNextHighlightState(1);
@@ -353,10 +357,10 @@ bool processCalibrationKeys() {
           calState = HIGHLIGHT_FIRST;
         }
       }
-      break;
+                              break;
 
-      case HIGHLIGHT_BACKLASH_STEPS : {
-        if (key == btnDOWN) gotoNextHighlightState(1); 
+      case HIGHLIGHT_BACKLASH_STEPS: {
+        if (key == btnDOWN) gotoNextHighlightState(1);
         if (key == btnUP) gotoNextHighlightState(-1);
         else if (key == btnSELECT) calState = BACKLASH_CALIBRATION;
         else if (key == btnRIGHT) {
@@ -364,7 +368,7 @@ bool processCalibrationKeys() {
           calState = HIGHLIGHT_FIRST;
         }
       }
-      break;
+                                   break;
     }
   }
 
