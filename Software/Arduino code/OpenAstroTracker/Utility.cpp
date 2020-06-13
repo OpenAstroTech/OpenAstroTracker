@@ -54,6 +54,7 @@ float clamp(float current, float minVal, float maxVal)
 #ifdef DEBUG_MODE
 
 String formatArg(const char* input, va_list args) {
+  char* nibble = "0123456789ABCDEF";
   char achBuffer[255];
   char* p = achBuffer;
 
@@ -86,6 +87,23 @@ String formatArg(const char* input, va_list args) {
         String s = String((int)va_arg(args, int));
         strcpy(p, s.c_str());
         p += s.length();
+      }
+              break;
+
+      case 'x': {
+        int n = (int)va_arg(args, int);
+        int shift = 12;
+        unsigned int mask = 0xF000;
+        *p++ = '0';
+        *p++ = 'x';
+        while (shift >= 0) {
+          int d=(n & mask) >> shift;
+          *p++ = *(nibble + d);
+          mask = mask >> 4;
+          shift -= 4;
+        }
+
+        *p = 0;
       }
               break;
 
