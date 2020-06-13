@@ -58,11 +58,62 @@ void InterruptCallback::stop()
 {
 }
 
-#else
+#elif defined(ESP32)
+
+volatile bool _lock = false;
+
+void IRAM_ATTR callbackProxy() {
+    if (_lock) {
+        return;
+    }
+
+    timerAlarmDisable(_timer);
+    _lock = true;
+    if (func != NULL) {
+        func(data);
+    }
+    _lock = false;
+    timerAlarmEnable(_timer);
+}
+
+bool InterruptCallback::setInterval(float intervalMs, interrupt_callback_p callback, void* payload){
+    func = callback;
+    data = payload;
+
+    // 80 divisor = 1uS resolution.
+    _timer = timerBegin(0, 80, true);
+    timerAttachInterrupt(_timer, callbackProxy, true);
+    timerAlarmWrite(_timer, (uint64_t)(intervalMs * 1000.0f), true);
+    timerAlarmEnable(_timer);
+
+#ifdef DEBUG_MODE
+    Serial.println("Setup ESP32 Timer");
+#endif // DEBUG_MODE
+
+}
+
+void InterruptCallback::stop(){
+#ifdef DEBUG_MODE
+    Serial.println("Stop ESP32 Timer");
+#endif // DEBUG_MODE
+    if (timerAlarmEnabled(_timer)) {
+        timerAlarmDisable(_timer);
+    }
+}
+
+void InterruptCallback::start(){
+#ifdef DEBUG_MODE
+    Serial.println("Start ESP32 Timer");
+#endif // DEBUG_MODE
+    if (!timerAlarmEnabled(_timer)){
+        timerAlarmEnable(_timer);
+    }
+}
+
 
 #elif defined __AVR_ATmega328P__ || defined __AVR_ATmega2560__
 
-bool InterruptCallback::setInterval(float intervalMs, interrupt_callback_p callback, void* payload)
+  bool InterruptCallback::setInterval(float intervalMs, interrupt_callback_p callback, void* payload)
 {
   // We have requested to use Timer2 (see above)
   ITimer2.init();
