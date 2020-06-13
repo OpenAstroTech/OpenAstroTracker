@@ -9,9 +9,47 @@ DRAM_ATTR Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
 WifiControl wifiControl(&mount, &lcdMenu);
 #endif
 
+#if defined(ESP32) && !defined(INTERRUPT_STEPPING_DISABLED)
+TaskHandle_t StepperTask;
+TaskHandle_t  CommunicationsTask;
+
+void IRAM_ATTR stepperControlFunc(void* payload)
+{
+#ifdef DEBUG_MODE
+  logv("Starting Stepper control!");
+#endif
+
+
+  Mount* mount = reinterpret_cast<Mount*>(payload);
+  for (;;) {
+    mount->interruptLoop();
+    vTaskDelay(1);
+  }
+}
+
+void serialLoop();
+void  finishSetup(); 
+
+void IRAM_ATTR mainLoopFunc(void* payload)
+{
+#ifdef DEBUG_MODE
+  logv("Finishing setup...");
+#endif
+  finishSetup();
+#ifdef DEBUG_MODE
+  logv("Setup complete...");
+#endif
+
+  for (;;) {
+    serialLoop();
+    vTaskDelay(1);
+  }
+}
+#endif
+
 void setup() {
 
-// Microstepping ---------------
+  // Microstepping ---------------
 #if RA_Stepper_TYPE == 1   // RA driver startup (for TMC2209)
   pinMode(41, OUTPUT);
   //digitalWrite(43, HIGH);  // SPREAD
@@ -36,6 +74,41 @@ void setup() {
   Serial.println("Hello, universe!");
 #endif
 
+#if defined(ESP32) && !defined(INTERRUPT_STEPPING_DISABLED)
+  disableCore0WDT();
+  xTaskCreatePinnedToCore(
+    stepperControlFunc,
+    "StepperControl",
+    32767,
+    &mount,
+    2,
+    &StepperTask,
+    0);
+
+  delay(100);
+
+  xTaskCreatePinnedToCore(
+    mainLoopFunc,
+    "CommunicationControl",
+    32767,
+    NULL,
+    1,
+    &CommunicationsTask,
+    1);
+
+  delay(100);
+
+  Serial.println("Hello, ESP32 Configured!");
+
+#else
+
+  finishSetup();
+
+#endif
+}
+
+void finishSetup()
+{
   // Show a splash screen
   lcdMenu.setCursor(0, 0);
   lcdMenu.printMenu("OpenAstroTracker");
@@ -51,21 +124,21 @@ void setup() {
 #endif
 
   // Configure the mount
-  
+
   // Set the stepper motor parameters
   // Set the stepper motor parameters
-  #if RA_Stepper_TYPE == 0 && DEC_Stepper_TYPE == 0
-    mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);
-    mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
-  #endif
-  #if RA_Stepper_TYPE == 1 && DEC_Stepper_TYPE == 0
-    mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
-    mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
-  #endif
-  #if RA_Stepper_TYPE == 1 && DEC_Stepper_TYPE == 1
-    mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
-    mount.configureDECStepper(DRIVER, DECmotorPin1, DECmotorPin2, DECspeed, DECacceleration);
-  #endif
+#if RA_Stepper_TYPE == 0 && DEC_Stepper_TYPE == 0
+  mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);
+  mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
+#endif
+#if RA_Stepper_TYPE == 1 && DEC_Stepper_TYPE == 0
+  mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
+  mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
+#endif
+#if RA_Stepper_TYPE == 1 && DEC_Stepper_TYPE == 1
+  mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
+  mount.configureDECStepper(DRIVER, DECmotorPin1, DECmotorPin2, DECspeed, DECacceleration);
+#endif
 
   // The mount uses EEPROM storage locations 0-10 that it reads during construction
 
@@ -127,5 +200,6 @@ void setup() {
 #ifdef DEBUG_MODE
   Serial.println("Setup done!");
 #endif
+
 
 }

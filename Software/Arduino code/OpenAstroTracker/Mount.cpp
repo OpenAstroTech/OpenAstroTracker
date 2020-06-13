@@ -95,7 +95,7 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
 /////////////////////////////////
 void Mount::startTimerInterrupts()
 {
-#ifndef INTERRUPT_STEPPING_DISABLED
+#ifndef ESP32
   // 2 kHz updates
   if (!InterruptCallback::setInterval(1.0f, mountLoop, this))
   {
