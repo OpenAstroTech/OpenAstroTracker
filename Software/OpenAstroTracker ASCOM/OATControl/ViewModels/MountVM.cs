@@ -170,7 +170,7 @@ namespace OATControl.ViewModels
 					var commandResult = await _oatMount.SendCommand(command);
 					if (!string.IsNullOrEmpty(commandResult.Data))
 					{
-						Log("OATCustomResult [{0}]: '{1}'", command, commandResult.Data);
+						Log("OATCustom: Result [{0}]: '{1}'", command, commandResult.Data);
 						result = commandResult.Data;
 					}
 					Interlocked.Decrement(ref _runningOATCommand);
@@ -183,9 +183,37 @@ namespace OATControl.ViewModels
 			}
 			else
 			{
-				Log("OATCustom:  Already running, skipping '{0}'", command);
+				await Task.Run(async () =>
+				{
+					Log("OATCustom2:  Await access for {0} ", command);
+					while (Interlocked.CompareExchange(ref _runningOATCommand, 1, 0)!=0)
+					{
+						Thread.Sleep(1);
+					}
+					try
+					{
+						await exclusiveAccess.WaitAsync();
+						Log("OATCustom2:  Access granted. -> Sending {0} ", command);
+						var commandResult = await _oatMount.SendCommand(command);
+						if (!string.IsNullOrEmpty(commandResult.Data))
+						{
+							Log("OATCustom2: Result [{0}]: '{1}'", command, commandResult.Data);
+							result = commandResult.Data;
+						}
+						Interlocked.Decrement(ref _runningOATCommand);
+					}
+					finally
+					{
+						Log("OATCustom2:  StopRunning [{0}]", command);
+						exclusiveAccess.Release();
+					}
+
+				});
+				
+				Log("OATCustom2:  Completed '{0}'", command);
 			}
 
+			Log("OATCustom: Returning '{0}'", result);
 			return result.TrimEnd("#".ToCharArray());
 		}
 
