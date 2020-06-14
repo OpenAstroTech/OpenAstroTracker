@@ -9,6 +9,8 @@
 // NOTE: ESP8266 support is not complete and does not work. This code is never called.
 #ifdef ESP8266
   #include "ESP8266TimerInterrupt.h"
+#elif defined ESP32
+  // We don't support ESP32 boards in interrupt mode
 #elif defined __AVR_ATmega328P__ || defined __AVR_ATmega2560__   // Arduino Uno or Mega
   #define USE_TIMER_1     true
   #define USE_TIMER_2     true
@@ -16,11 +18,8 @@
   #define USE_TIMER_4     false
   #define USE_TIMER_5     false
   #include "TimerInterrupt.h"
-#elif defined ESP32
-  // Need to add support for ESP32 boards here
-  hw_timer_t *_timer;
-  interrupt_callback_p func;
-  void* data;
+#else
+  #error Unrecognized board selected. Either implement interrupt code or define the board here.
 #endif
 
 #ifdef ESP8266
@@ -59,6 +58,7 @@ void InterruptCallback::stop()
 
 #elif defined(ESP32)
 
+/*
 volatile bool _lock = false;
 
 void IRAM_ATTR callbackProxy() {
@@ -108,7 +108,7 @@ void InterruptCallback::start(){
         timerAlarmEnable(_timer);
     }
 }
-
+*/
 
 #elif defined __AVR_ATmega328P__ || defined __AVR_ATmega2560__
 

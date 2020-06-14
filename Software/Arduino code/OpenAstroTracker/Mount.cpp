@@ -95,7 +95,7 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
 /////////////////////////////////
 void Mount::startTimerInterrupts()
 {
-#ifndef ESP32
+#ifndef ESPBOARD
   // 2 kHz updates
   if (!InterruptCallback::setInterval(1.0f, mountLoop, this))
   {
@@ -103,9 +103,9 @@ void Mount::startTimerInterrupts()
     logv("CANNOT set Timer!");
 #endif
   }
-#endif // !ESP8266
-}
+#endif // !ESPBOARD
 
+}
 
 /////////////////////////////////
 //
@@ -1125,6 +1125,7 @@ void Mount::delay(int ms) {
 //
 // interruptLoop()
 //
+// This function is run in an ISR. It needs to be fast and do little work.
 /////////////////////////////////
 void IRAM_ATTR Mount::interruptLoop()
 {
@@ -1158,17 +1159,17 @@ void IRAM_ATTR Mount::interruptLoop()
 //
 // loop
 //
-// Process any stepper change in movement. 
+// Process any stepper changes. 
 /////////////////////////////////
 void Mount::loop() {
   bool raStillRunning = false;
   bool decStillRunning = false;
 
-// Since the ESP8266 cannot process timer interrupts at the required 
-  // speed, we'll just stick to deterministic calls here.
-#ifdef INTERRUPT_STEPPING_DISABLED 
-  interruptLoop();
-#endif
+  // Since some of the boards cannot process timer interrupts at the required 
+  // speed (or at all), we'll just stick to deterministic calls here.
+  #ifdef RUN_STEPPERS_IN_MAIN_LOOP 
+    interruptLoop();
+  #endif
 
 #if defined DEBUG_MODE && defined SEND_PERIODIC_UPDATES
   unsigned long now = millis();
