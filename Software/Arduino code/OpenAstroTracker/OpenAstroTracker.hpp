@@ -14,6 +14,8 @@
 
   =======================================================================================================================================
 */
+#pragma once
+
 #include "Globals.hpp"
 
 String version = "V1.7.08";
@@ -22,14 +24,14 @@ String version = "V1.7.08";
 // Please see the Globals.h file for configuration of the firmware.
 ///////////////////////////////////////////////////////////////////////////
 
-// See NORTHERN_HEMISPHERE in Globals.h if you not in the northern hemisphere
+// See NORTHERN_HEMISPHERE in Globals.hpp if you NOT in the northern hemisphere
 
 
 ///////////////////////////////////////////////////////////////////////////
 // RA stepper                                                            //
 ///////////////////////////////////////////////////////////////////////////
 // This is how many steps your 28BYJ-48 stepper needs for a full rotation. It is almost always 4096.
-// This code drives the stepper in halfstep mode for TRK, and full step mode for RA
+// This code drives the stepper in halfstep mode for TRK and DEC, and full step mode for RA
 float RAStepsPerRevolution = 4096;
 
 // The radius of the surface that the belt runs on (in V1 of the ring) was 168.24mm.

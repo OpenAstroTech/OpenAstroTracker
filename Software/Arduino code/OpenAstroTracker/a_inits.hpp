@@ -1,5 +1,6 @@
 #pragma once
 
+//#include <SoftwareSerial.h>
 #include <EEPROM.h>
 #include <AccelStepper.h>
 #include <LiquidCrystal.h>
