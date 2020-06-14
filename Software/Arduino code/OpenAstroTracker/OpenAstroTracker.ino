@@ -14,4 +14,3 @@
 #include "c_buttons.hpp"
 #include "f_serial.hpp"
 #include "g_bluetooth.hpp"
-#include "g_bluetooth.hpp"

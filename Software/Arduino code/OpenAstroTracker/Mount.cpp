@@ -95,7 +95,7 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
 /////////////////////////////////
 void Mount::startTimerInterrupts()
 {
-#ifndef ESP32
+#ifndef ESPBOARD
   // 2 kHz updates
   if (!InterruptCallback::setInterval(1.0f, mountLoop, this))
   {
@@ -103,9 +103,9 @@ void Mount::startTimerInterrupts()
     logv("CANNOT set Timer!");
 #endif
   }
-#endif // !ESP8266
-}
+#endif // !ESPBOARD
 
+}
 
 /////////////////////////////////
 //
@@ -1158,9 +1158,9 @@ void Mount::loop() {
   bool raStillRunning = false;
   bool decStillRunning = false;
 
-  // Since the ESP8266 cannot process timer interrupts at the required 
-    // speed, we'll just stick to deterministic calls here.
-#ifdef INTERRUPT_STEPPING_DISABLED 
+  // Since some of the boards cannot process timer interrupts at the required 
+  // speed (or at all), we'll just stick to deterministic calls here.
+  #ifdef RUN_STEPPERS_IN_MAIN_LOOP 
   interruptLoop();
 #endif
 
@@ -1538,9 +1538,9 @@ void Mount::displayStepperPosition() {
     _lcdMenu->setCursor(0, 1);
     _lcdMenu->printMenu(scratchBuffer);
 #endif
-    }
-#endif
   }
+#endif
+}
 
 /////////////////////////////////
 //
