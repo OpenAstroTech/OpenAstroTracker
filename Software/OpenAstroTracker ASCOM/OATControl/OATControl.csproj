@@ -93,7 +93,6 @@
       <DependentUpon>DlgChooseOat.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\DelegateCommand.cs" />
-    <Compile Include="ViewModels\Log.cs" />
     <Compile Include="ViewModels\MountVM.cs" />
     <Compile Include="ViewModels\PointOfInterest.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />

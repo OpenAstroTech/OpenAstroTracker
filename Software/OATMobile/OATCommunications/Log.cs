@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OATControl.ViewModels
+namespace OATCommunications.Utilities
 {
 	public class Log
 	{
@@ -61,7 +62,8 @@ namespace OATControl.ViewModels
 			{
 				lock (Log.oLock)
 				{
-					File.AppendAllText(Log.sPath, string.Join("\r\n", Log.lstBuffer.ToArray()) + "\r\n");
+					var lines = string.Join("\r\n", Log.lstBuffer.ToArray()) + "\r\n";
+					File.AppendAllText(Log.sPath, lines);
 					Log.lstBuffer.Clear();
 				}
 				Log.dtLastUpdate = DateTime.UtcNow;
@@ -73,6 +75,7 @@ namespace OATControl.ViewModels
 			lock (Log.oLock)
 			{
 				Log.lstBuffer.Add(sLine);
+				Debug.WriteLine(sLine);
 				if (Log.lstBuffer.Count > Log.maxBuffered)
 				{
 					Log.maxBuffered = Log.lstBuffer.Count;
@@ -82,6 +85,15 @@ namespace OATControl.ViewModels
 
 		public static void Quit()
 		{
+			if (Log.lstBuffer.Any())
+			{
+				lock (Log.oLock)
+				{
+					Log.lstBuffer.Add(Log.FormatMessage("Shutdown logging. Maximum of {0} lines buffered.", new Object[] { (object)Log.maxBuffered }));
+					File.AppendAllText(Log.sPath, string.Join("\r\n", Log.lstBuffer.ToArray()) + "\r\n");
+					Log.lstBuffer.Clear();
+				}
+			}
 		}
 	}
 }
