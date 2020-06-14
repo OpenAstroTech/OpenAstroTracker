@@ -1,4 +1,7 @@
 // Create the LCD menu variable and initialize the LCD (16x2 characters)
+
+#pragma once
+
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(0);
 

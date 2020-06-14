@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef HEADLESS_CLIENT
 
 bool processHAKeys() {

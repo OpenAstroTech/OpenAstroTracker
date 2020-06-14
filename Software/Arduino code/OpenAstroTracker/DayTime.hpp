@@ -2,7 +2,7 @@
 #define _DAYTIME_HPP_
 
 #include <Arduino.h>
-#include "Globals.h"
+#include "Globals.hpp"
 
 // A class to handle hours, minutes, seconds in a unified manner, allowing
 // addition of hours, minutes, seconds, other times and conversion to string.

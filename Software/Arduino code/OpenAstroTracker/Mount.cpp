@@ -1,10 +1,10 @@
 #include <EEPROM.h>
 
-#include "InterruptCallback.h"
+#include "InterruptCallback.hpp"
 
 #include "LcdMenu.hpp"
 #include "Mount.hpp"
-#include "Utility.h"
+#include "Utility.hpp"
 
 //mountstatus
 #define STATUS_PARKED              0B0000000000000000

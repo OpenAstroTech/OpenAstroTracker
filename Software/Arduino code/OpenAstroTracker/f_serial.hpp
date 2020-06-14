@@ -1,5 +1,9 @@
+#pragma once
+
 #ifdef SUPPORT_SERIAL_CONTROL
-#include "MeadeCommandProcessor.h"
+#include "MeadeCommandProcessor.hpp"
+
+void processSerialData();
 
 ////////////////////////////////////////////////
 // The main loop when under serial control

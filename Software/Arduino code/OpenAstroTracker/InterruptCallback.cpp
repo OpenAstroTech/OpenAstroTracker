@@ -1,5 +1,5 @@
-#include "InterruptCallback.h"
-#include "Utility.h"
+#include "InterruptCallback.hpp"
+#include "Utility.hpp"
 
 //////////////////////////////////////
 // This is an hardware-independent abstraction layer over

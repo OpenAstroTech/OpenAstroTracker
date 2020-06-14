@@ -1,8 +1,8 @@
-#ifndef UTILITY_H_
-#define UTILITY_H_
+#ifndef UTILITY_HPP_
+#define UTILITY_HPP_
 
 #include <Arduino.h>
-#include "Globals.h"
+#include "Globals.hpp"
 
 // LCD shield buttons
 #define btnRIGHT  0

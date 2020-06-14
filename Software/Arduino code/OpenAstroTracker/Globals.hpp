@@ -1,5 +1,5 @@
-#ifndef _GLOBALS_H_
-#define _GLOBALS_H_
+#ifndef _GLOBALS_HPP_
+#define _GLOBALS_HPP_
 
 #include <Arduino.h>
 #include <WString.h>

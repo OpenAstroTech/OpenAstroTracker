@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef HEADLESS_CLIENT
 #ifdef SUPPORT_POINTS_OF_INTEREST
 struct PointOfInterest {
@@ -16,7 +18,7 @@ PointOfInterest pointOfInterest[] = {
   { ">Polaris"        ,  PolarisRAHour, PolarisRAMinute, PolarisRASecond,  89, 21,  2 },
   { ">Big Dipper"     , 12, 16, 26,   56, 55,  7 },
   { ">M31 Andromeda"  ,  0, 43, 52,   41, 22, 53 },
-  { ">M42 Orion Nbula",  5, 36, 18,   -5, 22, 44 },
+  // { ">M42 Orion Nbula",  5, 36, 18,   -5, 22, 44 }, // had to comment it out because -5 is not a valid byte (unsigned int8) value a real fix is on its way
   { ">M51 Whirlpool"  , 13, 30, 45,   47, 05, 21 },
   { ">M63 Sunflower"  , 13, 16, 45,   41, 55, 14 },
   { ">M81 Bodes Galxy",  9, 57, 13,   68, 58,  1 },

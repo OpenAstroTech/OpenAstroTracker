@@ -1,3 +1,9 @@
+#pragma once
+
+#ifdef SUPPORT_SERIAL_CONTROL
+#include "f_serial.hpp"
+#endif
+
 void BTin();
 
 #ifndef HEADLESS_CLIENT
