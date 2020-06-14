@@ -72,6 +72,9 @@ extern int PolarisRASecond;
     // 1 - AP Mode Only        - Acting as a Router
     // 2 - Attempt Infrastructure, Fail over to AP Mode.
     #define WIFI_MODE 2 
+    #if defined(ESP8266) 
+        #define RUN_STEPPERS_IN_MAIN_LOOP
+    #endif
 #endif
 
 
@@ -95,10 +98,11 @@ extern int PolarisRASecond;
     #define SUPPORT_CALIBRATION
 
     // Uncomment to support INFO menu that displays various pieces of information about the mount. 
-    // #define SUPPORT_INFO_DISPLAY
+    #define SUPPORT_INFO_DISPLAY
 
     // Uncomment to support Serial Meade LX200 protocol support
-    // #define SUPPORT_SERIAL_CONTROL
+    #define SUPPORT_SERIAL_CONTROL
+
 #else
     // If we are making a headleass (no screen, no keyboard) client, always enable Serial.
     #define SUPPORT_SERIAL_CONTROL

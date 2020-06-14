@@ -16,7 +16,7 @@
 */
 #include "Globals.h"
 
-String version = "V1.7.02";
+String version = "V1.7.05";
 
 ///////////////////////////////////////////////////////////////////////////
 // Please see the Globals.h file for configuration of the firmware.
@@ -67,7 +67,7 @@ float speed = 1.000;    // Use this value to slightly increase or decrese tracki
 
 int RAspeed = 400;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. High speeds tend to make
 int RAacceleration = 600;   // these cheap steppers unprecice
-int DECspeed = 800;
+int DECspeed = 600;
 int DECacceleration = 400;
 
 // Define some stepper limits to prevent physical damage to the tracker. This assumes that the home

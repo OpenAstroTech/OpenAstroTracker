@@ -9,17 +9,25 @@ DRAM_ATTR Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
 WifiControl wifiControl(&mount, &lcdMenu);
 #endif
 
-#if defined(ESP32) && !defined(INTERRUPT_STEPPING_DISABLED)
+/////////////////////////////////
+//   ESP32
+/////////////////////////////////
+#if defined(ESP32) && !defined(RUN_STEPPERS_IN_MAIN_LOOP)
+// Forward declare the two functions we run in the main loop
+void serialLoop();
+void finishSetup();
+
 TaskHandle_t StepperTask;
 TaskHandle_t  CommunicationsTask;
 
-void IRAM_ATTR stepperControlFunc(void* payload)
+/////////////////////////////////
+//
+// stepperControlFunc
+//
+// This task function is run on Core 1 of the ESP32
+/////////////////////////////////
+void IRAM_ATTR stepperControlTask(void* payload)
 {
-#ifdef DEBUG_MODE
-  logv("Starting Stepper control!");
-#endif
-
-
   Mount* mount = reinterpret_cast<Mount*>(payload);
   for (;;) {
     mount->interruptLoop();
@@ -27,18 +35,15 @@ void IRAM_ATTR stepperControlFunc(void* payload)
   }
 }
 
-void serialLoop();
-void  finishSetup(); 
-
-void IRAM_ATTR mainLoopFunc(void* payload)
+/////////////////////////////////
+//
+// mainLoopFunc
+//
+// This task function is run on Core 2 of the ESP32
+/////////////////////////////////
+void IRAM_ATTR mainLoopTask(void* payload)
 {
-#ifdef DEBUG_MODE
-  logv("Finishing setup...");
-#endif
   finishSetup();
-#ifdef DEBUG_MODE
-  logv("Setup complete...");
-#endif
 
   for (;;) {
     serialLoop();
@@ -47,6 +52,11 @@ void IRAM_ATTR mainLoopFunc(void* payload)
 }
 #endif
 
+/////////////////////////////////
+//
+// Main program setup 
+//
+/////////////////////////////////
 void setup() {
 
   // Microstepping ---------------
@@ -74,31 +84,32 @@ void setup() {
   Serial.println("Hello, universe!");
 #endif
 
-#if defined(ESP32) && !defined(INTERRUPT_STEPPING_DISABLED)
+/////////////////////////////////
+// ESP32
+/////////////////////////////////
+#if defined(ESP32) && !defined(RUN_STEPPERS_IN_MAIN_LOOP)
   disableCore0WDT();
   xTaskCreatePinnedToCore(
-    stepperControlFunc,
-    "StepperControl",
-    32767,
-    &mount,
-    2,
-    &StepperTask,
-    0);
+    stepperControlTask,    // Function to run on this core
+    "StepperControl",      // Name of this task
+    32767,                 // Stack space in bytes
+    &mount,                // payload
+    2,                     // Priority (2 is higher than 1)
+    &StepperTask,          // The location that receives the thread id
+    0);                    // The core to run this on
 
   delay(100);
 
   xTaskCreatePinnedToCore(
-    mainLoopFunc,
-    "CommunicationControl",
-    32767,
-    NULL,
-    1,
-    &CommunicationsTask,
-    1);
+    mainLoopTask,             // Function to run on this core
+    "CommunicationControl",   // Name of this task
+    32767,                    // Stack space in bytes
+    NULL,                     // payload
+    1,                        // Priority (2 is higher than 1)
+    &CommunicationsTask,      // The location that receives the thread id
+    1);                       // The core to run this on
 
   delay(100);
-
-  Serial.println("Hello, ESP32 Configured!");
 
 #else
 
