@@ -19,9 +19,7 @@
   #define USE_TIMER_5     false
   #include "TimerInterrupt.h"
 #else
-  // Need to add support for ESP32 boards here
-
-  #error Only Arduino Uno, Mega and ESP8266 boards currently supported.
+  #error Unrecognized board selected. Either implement interrupt code or define the board here.
 #endif
 
 #ifdef ESP8266
@@ -60,6 +58,7 @@ void InterruptCallback::stop()
 
 #elif defined(ESP32)
 
+/*
 volatile bool _lock = false;
 
 void IRAM_ATTR callbackProxy() {
@@ -109,7 +108,7 @@ void InterruptCallback::start(){
         timerAlarmEnable(_timer);
     }
 }
-
+*/
 
 #elif defined __AVR_ATmega328P__ || defined __AVR_ATmega2560__
 
