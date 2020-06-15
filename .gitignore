@@ -349,9 +349,20 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
+# VSCode auto-generated config folder
+.vscode/
+
 Software/OpenAstroTracker ASCOM/OpenAstroTracker ASCOM/bin/
 Software/OpenAstroTracker ASCOM/OAT PC Control/bin
 Software/PC control/bin
 Software/OpenAstroTracker ASCOM/OpenAstroTracker ASCOM/bin
 
 Software/OpenAstroTracker ASCOM/OpenAstroTracker ASCOM/OpenAstroTracker Setup.iss
+Software/Arduino code/OpenAstroTracker/.vscode
+Software/Arduino code/OpenAstroTracker/Debug
+Software/Arduino code/OpenAstroTracker/Release
+Software/Arduino code/OpenAstroTracker/__vm
+*.exe
+test
+
+bin/

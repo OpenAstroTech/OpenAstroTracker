@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<PointsOfInterest>
+	<Object Name="Polaris (Celestial Pole)" RA="02:58:00" DEC="89:21:02" />
+	<Object Name="Big Dipper"               RA="12:16:26" DEC="56:55:07" />
+	<Object Name="M31 - Andromeda Galaxy"   RA="00:43:52" DEC="41:22:53" />
+	<Object Name="M42 - Orion Nebula"       RA="05:36:18" DEC="-5:22:44" />
+	<Object Name="M51 - Whirlpool Galaxy"   RA="13:30:45" DEC="47:05:21" />
+	<Object Name="M63 - Sunflower Galaxy"   RA="13:16:45" DEC="41:55:14" />
+	<Object Name="M81 - Bodes Galaxy"       RA="09:57:13" DEC="68:58:01" />
+	<Object Name="M101 - Pinwheel Galaxy"   RA="14:03:56" DEC="54:15:00" />
+</PointsOfInterest>
