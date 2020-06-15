@@ -25,7 +25,7 @@
     1.0.1   K Hoang      16/11/2019 Add long timer feature, clean up, higher accuracy
     1.0.2   K Hoang      28/11/2019 Permit up to 16 super-long-time, super-accurate ISR-based timers to avoid being blocked
 ****************************************************************************************************************************/
-#if !defined(ESP8266) 
+#if !defined(ESP8266) && !defined(ESP32)
 
 #define TIMER_INTERRUPT_DEBUG      0
 #include "TimerInterrupt.h"
