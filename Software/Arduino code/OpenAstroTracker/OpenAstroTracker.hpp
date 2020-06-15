@@ -14,11 +14,9 @@
 
   =======================================================================================================================================
 */
-#pragma once
-
 #include "Globals.hpp"
 
-String version = "V1.7.02";
+String version = "V1.7.04";
 
 ///////////////////////////////////////////////////////////////////////////
 // Please see the Globals.h file for configuration of the firmware.
@@ -45,7 +43,7 @@ float RAStepsPerRevolution = 4096;
 // Your drive pulley tooth count:
 #define RAPulleyTeeth 16
 // the Circumference of the RA wheel
-// V1: 1057.1  
+// V1: 1057.1
 // V2: 1131
 #define RACircumference 1131
 
@@ -64,8 +62,6 @@ float DECStepsPerRevolution = 4096;
 #define DecPulleyTeeth 16
 
 int DECStepsPerDegree = (565.5 / (DecPulleyTeeth * 2.0) * DECStepsPerRevolution / 360.0);
-
-float speed = 1.000;    // Use this value to slightly increase or decrese tracking speed. The values from the "CAL" menu will be added to this.
 
 int RAspeed = 400;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. High speeds tend to make
 int RAacceleration = 600;   // these cheap steppers unprecice
