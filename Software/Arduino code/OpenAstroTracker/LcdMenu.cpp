@@ -1,4 +1,4 @@
-#include "Utility.h"
+#include "Utility.hpp"
 #include "LcdMenu.hpp"
 
 #ifndef HEADLESS_CLIENT

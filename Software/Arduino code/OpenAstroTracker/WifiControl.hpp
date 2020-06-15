@@ -1,10 +1,10 @@
 #pragma once
-#include "Globals.h"
+#include "Globals.hpp"
 
 #ifdef WIFI_ENABLED
 #include "Mount.hpp";
 #include "LcdMenu.hpp";
-#include "MeadeCommandProcessor.h"
+#include "MeadeCommandProcessor.hpp"
 #include "WiFiServer.h"
 #include "WiFiUDP.h"
 #include "WiFiClient.h"
@@ -36,4 +36,4 @@ private:
 
 extern WifiControl wifiControl;
 
-#endif
+#endif // WIFI_ENABLED

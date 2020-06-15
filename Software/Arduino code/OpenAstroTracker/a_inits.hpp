@@ -1,14 +1,17 @@
 // If you really want to look through this code, i apologise for my terrible coding
+
+#pragma once
+
 //#include <SoftwareSerial.h>
 #include <EEPROM.h>
 #include <AccelStepper.h>
 //#include <avr8-stub.h>
 #include <LiquidCrystal.h>
 
-#include "Utility.h"
+#include "Utility.hpp"
 #include "DayTime.hpp"
 #include "Mount.hpp"
-#include "MeadeCommandProcessor.h"
+#include "MeadeCommandProcessor.hpp"
 
 
 #define HALFSTEP 8

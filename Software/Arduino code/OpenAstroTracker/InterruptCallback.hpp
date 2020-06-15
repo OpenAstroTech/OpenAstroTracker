@@ -1,5 +1,5 @@
 #pragma once
-#include "Globals.h"
+#include "Globals.hpp"
 
 //////////////////////////////////////
 // This is an hardware-independent abstraction layer over 

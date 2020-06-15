@@ -1,20 +1,20 @@
+#pragma once
+
 #ifndef HEADLESS_CLIENT
-bool processRAKeys() {
+bool processDECKeys() {
   byte key;
   bool waitForRelease = false;
   if (lcdButtons.currentState() == btnUP) {
-    if (RAselect == 0) mount.targetRA().addHours(1);
-    if (RAselect == 1) mount.targetRA().addMinutes(1);
-    if (RAselect == 2) mount.targetRA().addSeconds(1);
-
+    if (DECselect == 0) mount.targetDEC().addDegrees(1);
+    if (DECselect == 1) mount.targetDEC().addMinutes(1);
+    if (DECselect == 2) mount.targetDEC().addSeconds(1);
     // slow down key repetitions
     mount.delay(200);
   }
   else if (lcdButtons.currentState() == btnDOWN) {
-    if (RAselect == 0) mount.targetRA().addHours(-1);
-    if (RAselect == 1) mount.targetRA().addMinutes(-1);
-    if (RAselect == 2) mount.targetRA().addSeconds(-1);
-
+    if (DECselect == 0) mount.targetDEC().addDegrees(-1);
+    if (DECselect == 1) mount.targetDEC().addMinutes(-1);
+    if (DECselect == 2) mount.targetDEC().addSeconds(-1);
     // slow down key repetitions
     mount.delay(200);
   }
@@ -23,17 +23,17 @@ bool processRAKeys() {
     switch (key)
     {
       case btnLEFT: {
-        RAselect = adjustWrap(RAselect, 1, 0, 2);
+        DECselect = adjustWrap(DECselect, 1, 0, 2);
       }
       break;
 
       case btnSELECT: {
         if (mount.isSlewingRAorDEC()) {
           mount.stopSlewing(ALL_DIRECTIONS);
-          mount.waitUntilStopped(ALL_DIRECTIONS);
         }
-
-        mount.startSlewingToTarget();
+        else {
+          mount.startSlewingToTarget();
+        }
       }
       break;
 
@@ -47,9 +47,9 @@ bool processRAKeys() {
   return waitForRelease;
 }
 
-void printRASubmenu() {
+void printDECSubmenu() {
   if (mount.isSlewingIdle()) {
-    lcdMenu.printMenu(mount.RAString(LCDMENU_STRING | TARGET_STRING, RAselect));
+    lcdMenu.printMenu(mount.DECString(LCDMENU_STRING | TARGET_STRING, DECselect));
   }
 }
 #endif

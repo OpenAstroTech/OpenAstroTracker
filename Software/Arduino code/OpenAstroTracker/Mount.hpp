@@ -3,7 +3,7 @@
 
 #include <LiquidCrystal.h>
 #include <AccelStepper.h>
-#include "Globals.h"
+#include "Globals.hpp"
 #include "DayTime.hpp"
 #include "LcdMenu.hpp"
 

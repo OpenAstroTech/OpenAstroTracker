@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef HEADLESS_CLIENT
 #ifdef SUPPORT_MANUAL_CONTROL
 bool confirmZeroPoint = false;

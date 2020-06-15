@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef HEADLESS_CLIENT
 byte subGoIndex = 0;
 

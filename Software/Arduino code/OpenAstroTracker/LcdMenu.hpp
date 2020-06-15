@@ -5,7 +5,7 @@
 #ifndef HEADLESS_CLIENT
 #include <LiquidCrystal.h>
 #endif
-#include "Globals.h"
+#include "Globals.hpp"
 
 // A single menu item (like RA, HEAT, POL, etc.)
 // The ID is just a number, it has no relevance for the order of the items

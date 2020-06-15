@@ -1,6 +1,6 @@
-#include "MeadeCommandProcessor.h"
-#include "Globals.h"
-#include "Utility.h"
+#include "MeadeCommandProcessor.hpp"
+#include "Globals.hpp"
+#include "Utility.hpp"
 #include "WifiControl.hpp"
 
 /////////////////////////////////////////////////////////////////////////////////////////

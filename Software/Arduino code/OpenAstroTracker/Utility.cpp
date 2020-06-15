@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #endif
 
-#include "Utility.h"
+#include "Utility.hpp"
 
 #ifdef DEBUG_MODE
 unsigned long RealTime::_pausedTime = 0;
