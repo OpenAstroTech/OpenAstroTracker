@@ -8,7 +8,9 @@ Welcome to OpenAstroTech's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   
+   source/example
+   source/examplemd
 
 
 
