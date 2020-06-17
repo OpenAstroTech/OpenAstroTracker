@@ -61,6 +61,7 @@
 // Arduino Uno
 ///////////////////////////////////////////////////////////////////////////
 #ifdef __AVR_ATmega328P__ // normal Arduino Mapping
+#if RA_Stepper_TYPE == 0  // 28BYJ
 // RA Motor pins
   #ifdef INVERT_RA_DIR
     #define RAmotorPin1  12    // IN1 auf ULN2003 driver 1
@@ -73,8 +74,14 @@
     #define RAmotorPin2  11    // IN3 auf ULN2003 driver 1
     #define RAmotorPin4  12    // IN4 auf ULN2003 driver 1
   #endif
+#endif
+#if RA_Stepper_TYPE == 1  // NEMA
+    #define RAmotorPin1 11
+    #define RAmotorPin2 12
+#endif
 
 // DEC Motor pins
+#if DEC_Stepper_TYPE == 0  // 28BYJ
   #ifdef INVERT_DEC_DIR
     #define DECmotorPin1  18    // IN1 auf ULN2003 driver 2
     #define DECmotorPin2  16    // IN2 auf ULN2003 driver 2
@@ -86,6 +93,12 @@
     #define DECmotorPin3  16    // IN3 auf ULN2003 driver 2
     #define DECmotorPin4  18    // IN4 auf ULN2003 driver 2
   #endif
+#endif
+#if DEC_Stepper_TYPE == 1  // NEMA
+    #define DECmotorPin1  16
+    #define DECmotorPin2  17
+#endif
+
 #endif
 
 ///////////////////////////////////////////////////////////////////////////

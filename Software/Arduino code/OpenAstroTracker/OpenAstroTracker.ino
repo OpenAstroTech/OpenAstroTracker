@@ -1,3 +1,5 @@
+// Use OpenAstroTracker.hpp and Globals.hpp for configuration!
+
 #include "OpenAstroTracker.hpp"
 #include "a_inits.hpp"
 #include "b_setup.hpp"
