@@ -5,12 +5,18 @@
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(0);
 
+#ifdef ESP32
 DRAM_ATTR Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
+#else
+Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
+#endif
 
 #ifdef WIFI_ENABLED
 #include "WifiControl.hpp"
 WifiControl wifiControl(&mount, &lcdMenu);
 #endif
+
+void finishSetup();
 
 /////////////////////////////////
 //   ESP32
