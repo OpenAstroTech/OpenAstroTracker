@@ -19,9 +19,9 @@ void EEPROMupdate(int loc, byte val);
 // Make some variables in the sketch files available to the C++ code.
 extern bool inSerialControl;
 extern String version;
-extern int PolarisRAHour;
-extern int PolarisRAMinute;
-extern int PolarisRASecond;
+extern byte PolarisRAHour;
+extern byte PolarisRAMinute;
+extern byte PolarisRASecond;
 // Comment this out to save some code space
 // #define DEBUG_MODE
 #ifdef DEBUG_MODE

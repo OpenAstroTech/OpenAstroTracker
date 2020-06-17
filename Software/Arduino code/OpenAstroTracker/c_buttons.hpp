@@ -17,10 +17,10 @@ byte lastKey = btnNONE;
 #endif
 
 void loop() {
-  byte lcd_key;
-  int adc_key_in;
 
 #ifdef LCD_BUTTON_TEST
+  byte lcd_key;
+  int adc_key_in;
 
   lcdMenu.setCursor(0, 0);
   lcdMenu.printMenu("Key Diagnostic");

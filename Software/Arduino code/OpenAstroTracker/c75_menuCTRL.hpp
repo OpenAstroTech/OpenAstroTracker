@@ -32,6 +32,8 @@ bool processKeyStateChanges(int key, int dir)
       loopsWithKeyPressed++;
     }
   }
+  
+  return ret;
 }
 
 bool processControlKeys() {

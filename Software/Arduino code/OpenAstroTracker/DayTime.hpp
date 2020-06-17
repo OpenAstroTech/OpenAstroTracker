@@ -33,7 +33,7 @@ public:
   float getTotalMinutes() const;
   float getTotalSeconds() const;
 
-  int getTime(int& h, int& m, int& s) const;
+  void getTime(int& h, int& m, int& s) const;
   void set(int h, int m, int s);
   void set(const DayTime& other);
 

@@ -1,11 +1,7 @@
-// If you really want to look through this code, i apologise for my terrible coding
-
 #pragma once
 
-//#include <SoftwareSerial.h>
 #include <EEPROM.h>
 #include <AccelStepper.h>
-//#include <avr8-stub.h>
 #include <LiquidCrystal.h>
 
 #include "Utility.hpp"
@@ -13,12 +9,9 @@
 #include "Mount.hpp"
 #include "MeadeCommandProcessor.hpp"
 
-
 #define HALFSTEP 8
 #define FULLSTEP 4
 #define DRIVER 1
-
-//SoftwareSerial BT(10,11);
 
 ///////////////////////////////////////////////////////////////////////////
 // ESP8266 Wifi Board (NodeMCU)
