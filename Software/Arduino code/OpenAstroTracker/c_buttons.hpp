@@ -16,10 +16,11 @@ byte lastKey = btnNONE;
 
 #endif
 
+byte lcd_key;
+
 void loop() {
 
 #ifdef LCD_BUTTON_TEST
-  byte lcd_key;
   int adc_key_in;
 
   lcdMenu.setCursor(0, 0);

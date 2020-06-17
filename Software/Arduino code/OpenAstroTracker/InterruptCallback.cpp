@@ -46,6 +46,8 @@ bool InterruptCallback::setInterval(float intervalMs, interrupt_callback_p callb
 
   // This timer library requires microsecond interval definitions
   interruptHandler.setInterval(1000.0f * intervalMs, esp8266callback);
+
+  return true;
 }
 
 void InterruptCallback::start()
@@ -89,6 +91,7 @@ bool InterruptCallback::setInterval(float intervalMs, interrupt_callback_p callb
     Serial.println("Setup ESP32 Timer");
 #endif // DEBUG_MODE
 
+  return true;
 }
 
 void InterruptCallback::stop(){
@@ -112,7 +115,7 @@ void InterruptCallback::start(){
 
 #elif defined __AVR_ATmega328P__ || defined __AVR_ATmega2560__
 
-  bool InterruptCallback::setInterval(float intervalMs, interrupt_callback_p callback, void* payload)
+bool InterruptCallback::setInterval(float intervalMs, interrupt_callback_p callback, void* payload)
 {
   // We have requested to use Timer2 (see above)
   ITimer2.init();

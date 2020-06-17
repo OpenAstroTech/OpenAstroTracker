@@ -24,7 +24,6 @@ void finishSetup();
 #if defined(ESP32) && !defined(RUN_STEPPERS_IN_MAIN_LOOP)
 // Forward declare the two functions we run in the main loop
 void serialLoop();
-void finishSetup();
 
 TaskHandle_t StepperTask;
 TaskHandle_t  CommunicationsTask;
@@ -134,8 +133,9 @@ void finishSetup()
   lcdMenu.printMenu("OpenAstroTracker");
   lcdMenu.setCursor(0, 1);
   lcdMenu.printMenu("     " + version);
+#ifndef HEADLESS_CLIENT
   unsigned long now = millis();
-
+#endif
   // Create the command processor singleton
   MeadeCommandProcessor::createProcessor(&mount, &lcdMenu);
 
