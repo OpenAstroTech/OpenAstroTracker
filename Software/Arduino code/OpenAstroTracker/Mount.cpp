@@ -58,7 +58,7 @@ const char* formatStringsRA[] = {
 // This is the callback function for the timer interrupt. It does very minimal work,
 // only stepping the stepper motors as needed.
 /////////////////////////////////
-void IRAM_ATTR mountLoop(void* payload) {
+void mountLoop(void* payload) {
   Mount* mount = reinterpret_cast<Mount*>(payload);
   mount->interruptLoop();
 }
@@ -1120,7 +1120,7 @@ void Mount::delay(int ms) {
 //
 // This function is run in an ISR. It needs to be fast and do little work.
 /////////////////////////////////
-void IRAM_ATTR Mount::interruptLoop()
+void Mount::interruptLoop()
 {
   if (_mountStatus & STATUS_GUIDE_PULSE) {
     if (_mountStatus & STATUS_GUIDE_PULSE_RA) {
