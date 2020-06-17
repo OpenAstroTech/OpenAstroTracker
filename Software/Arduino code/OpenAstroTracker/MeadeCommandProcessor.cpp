@@ -806,7 +806,7 @@ String MeadeCommandProcessor::handleMeadeSetSlewRate(String inCmd) {
 }
 
 String MeadeCommandProcessor::processCommand(String inCmd) {
-  if (inCmd[0] = ':') {
+  if (inCmd[0] == ':') {
     char command = inCmd[1];
     inCmd = inCmd.substring(2);
     switch (command) {
@@ -827,4 +827,5 @@ String MeadeCommandProcessor::processCommand(String inCmd) {
       break;
     }
   }
+  return "";
 }

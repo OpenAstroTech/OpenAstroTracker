@@ -77,6 +77,8 @@ bool checkProgressiveUpDown(int* val) {
   else {
     calDelay = 150;
   }
+
+  return ret;
 }
 
 // Since the mount persists this in EEPROM and no longer in global 

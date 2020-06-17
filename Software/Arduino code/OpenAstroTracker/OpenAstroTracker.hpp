@@ -16,7 +16,7 @@
 */
 #include "Globals.hpp"
 
-String version = "V1.7.04";
+String version = "V1.7.06";
 
 ///////////////////////////////////////////////////////////////////////////
 // Please see the Globals.h file for configuration of the firmware.
@@ -25,11 +25,11 @@ String version = "V1.7.04";
 // See NORTHERN_HEMISPHERE in Globals.h if you not in the northern hemisphere
 
 
-// RA stepper //////////////////////////////////////////////////////////////////////////////////
-
-
+///////////////////////////////////////////////////////////////////////////
+// RA stepper                                                            //
+///////////////////////////////////////////////////////////////////////////
 // This is how many steps your 28BYJ-48 stepper needs for a full rotation. It is almost always 4096.
-// This code drives the steppers in halfstep mode for TRK and DEC, and full step for RA
+// This code drives the stepper in halfstep mode for TRK, and full step mode for RA
 float RAStepsPerRevolution = 4096;
 
 // The radius of the surface that the belt runs on (in V1 of the ring) was 168.24mm.
@@ -48,10 +48,14 @@ float RAStepsPerRevolution = 4096;
 #define RACircumference 1131
 
 int RAStepsPerDegree = (RACircumference / (RAPulleyTeeth * 2.0) * RAStepsPerRevolution / 360.0);      // V2 Ring has belt in a groove and belt runs on bearings
+int RAspeed = 400;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+int RAacceleration = 600;   // High speeds tend to make these cheap steppers unprecice
 
-
-// DEC stepper //////////////////////////////////////////////////////////////////////////////////
-
+///////////////////////////////////////////////////////////////////////////
+// DEC stepper                                                            //
+///////////////////////////////////////////////////////////////////////////
+// This is how many steps your 28BYJ-48 stepper needs for a full rotation. It is almost always 4096.
+// This code drives the DEC stepper in halfstep mode 
 float DECStepsPerRevolution = 4096;
 
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
@@ -62,31 +66,14 @@ float DECStepsPerRevolution = 4096;
 #define DecPulleyTeeth 16
 
 int DECStepsPerDegree = (565.5 / (DecPulleyTeeth * 2.0) * DECStepsPerRevolution / 360.0);
-
-int RAspeed = 400;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. High speeds tend to make
-int RAacceleration = 600;   // these cheap steppers unprecice
-int DECspeed = 800;
-int DECacceleration = 400;
-
-// Define some stepper limits to prevent physical damage to the tracker. This assumes that the home
-// point (zero point) has been correctly set to be pointing at the celestial pole.
-// Note: these are currently not used
-float RAStepperLimit = 15500;         // Going much more than this each direction will make the ring fall off the bearings.
-
-// These are for 47N, so they will need adjustment if you're a lot away from that.
-// You can use the CTRL menu to find the limits and place them here. I moved it
-// down until my lens was horizontal. Note the DEC number. Then move it up until
-// the lens is horizontal and note that number. Put those here. Always watch your
-// tracker and hit RESET if it approaches a dangerous area.
-// Note: these are currently not used
-float DECStepperDownLimit = 10000;    // Going much more than this will make the lens collide with the ring
-float DECStepperUpLimit = -22000;     // Going much more than this is going below the horizon.
+int DECspeed = 600;           // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+int DECacceleration = 400;    // High speeds tend to make these cheap steppers unprecice
 
 // These values are needed to calculate the current position during initial alignment.
-int PolarisRAHour = 2;
-int PolarisRAMinute = 58;
-int PolarisRASecond = 4;
 // Use something like Stellarium to look up the RA of Polaris in JNow (on date) variant.
 // This changes slightly over weeks, so adjust every couple of months.
-// This value is from 18.Apr.2020, next adjustment suggested at end 2020
+// This value is from 15.Jun.2020, next adjustment suggested at end 2020
 // The same could be done for the DEC coordinates but they dont change significantly for the next 5 years
+byte PolarisRAHour = 2;
+byte PolarisRAMinute = 58;
+byte PolarisRASecond = 15;

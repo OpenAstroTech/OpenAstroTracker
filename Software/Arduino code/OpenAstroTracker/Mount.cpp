@@ -36,7 +36,7 @@
 #define SLEW_MASK_WEST    B1000
 #define SLEW_MASK_ANY     B1111
 
-char* formatStringsDEC[] = {
+const char* formatStringsDEC[] = {
   "",
   " %c%02d@ %02d' %02d\"",  // LCD Menu w/ cursor
   "%c%02d*%02d'%02d#",      // Meade
@@ -45,7 +45,7 @@ char* formatStringsDEC[] = {
   "%c%02d%02d%02d",         // Compact
 };
 
-char* formatStringsRA[] = {
+const char* formatStringsRA[] = {
   "",
   " %02dh %02dm %02ds",     // LCD Menu w/ cursor
   "%02d:%02d:%02d#",        // Meade
@@ -350,6 +350,8 @@ int Mount::getStepsPerDegree(int which)
   if (which == DEC_STEPS) {
     return _stepsPerDECDegree;
   }
+
+  return 0;
 }
 
 /////////////////////////////////
@@ -579,14 +581,10 @@ const DegreeTime Mount::currentDEC() const {
 // syncPosition
 //
 /////////////////////////////////
-// Set the current RA and DEC position to be the given coordinate. We do this by settign the stepper motor coordinate 
+// Set the current RA and DEC position to be the given coordinate. We do this by setting the stepper motor coordinate 
 // to be at the calculated positions (that they would be if we were slewing there).
 void Mount::syncPosition(int raHour, int raMinute, int raSecond, int decDegree, int decMinute, int decSecond)
 {
-  // Given the display RA coordinates...
-  DayTime newRA = DayTime(raHour, raMinute, raSecond);
-  DayTime newDEC = DayTime(decDegree, decMinute, decSecond);
-
   float targetRA, targetDEC;
   calculateRAandDECSteppers(targetRA, targetDEC);
   _stepperRA->setCurrentPosition(targetRA);
@@ -1115,8 +1113,8 @@ long Mount::getCurrentStepperPosition(int direction) {
 //
 /////////////////////////////////
 void Mount::delay(int ms) {
-  long now = millis();
-  while (millis() - now < ms)
+  unsigned long now = millis();
+  while (millis() - now < (unsigned long)ms)
   {
     loop();
     yield();
@@ -1172,12 +1170,12 @@ void Mount::loop() {
   interruptLoop();
 #endif
 
-  unsigned long now = millis();
 #if defined DEBUG_MODE && defined SEND_PERIODIC_UPDATES
+  unsigned long now = millis();
   if (now - _lastMountPrint > 2000) {
     Serial.println(getStatusString());
     _lastMountPrint = now;
-}
+  }
 #endif
   if (isGuiding()) {
     if (millis() > _guideEndTime) {
@@ -1424,7 +1422,6 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 #endif
 
     // ... turn both RA and DEC axis around
-    float oldRA = moveRA;
 #if RA_Stepper_TYPE == 0
     moveRA -= long(12.0f * stepsPerSiderealHour / 2);
 #else
@@ -1441,7 +1438,6 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
     logv("Mount::CalcSteppersIn: RA is past -limit: %f, DEC: %f", -RALimit);
 #endif
     // ... turn both RA and DEC axis around
-    float oldRA = moveRA;
 #if RA_Stepper_TYPE == 0
     moveRA += long(12.0f * stepsPerSiderealHour / 2);
 #else

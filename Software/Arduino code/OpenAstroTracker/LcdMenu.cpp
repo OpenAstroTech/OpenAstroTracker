@@ -126,7 +126,7 @@ void LcdMenu::updateDisplay() {
   }
 
   // Display the actual menu string
-  while ((pBufMenu < bufMenu + _columns) && (offsetIntoString < menuString.length())) {
+  while ((pBufMenu < bufMenu + _columns) && (offsetIntoString < (int)menuString.length())) {
     *(pBufMenu++) = menuString[offsetIntoString++];
   }
 
@@ -173,7 +173,7 @@ void LcdMenu::printMenu(String line) {
 
     _lcd.setCursor(_activeCol, _activeRow);
     int spaces = _columns - line.length();
-    for (int i = 0; i < line.length(); i++) {
+    for (unsigned int i = 0; i < line.length(); i++) {
       printChar(line[i]);
     }
 

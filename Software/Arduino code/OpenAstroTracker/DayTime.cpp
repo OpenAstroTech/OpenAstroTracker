@@ -67,7 +67,7 @@ float DayTime::getTotalSeconds() const {
   return 3600.0f * getHours() + (float)getMinutes() * 60.0f + (float)getSeconds();
 }
 
-int DayTime::getTime(int& h, int& m, int& s) const {
+void DayTime::getTime(int& h, int& m, int& s) const {
   h = hours;
   m = mins;
   s = secs;
