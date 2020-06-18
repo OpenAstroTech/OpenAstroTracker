@@ -1,11 +1,11 @@
 #include <Arduino.h>
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL>0
 #include <stdarg.h>
 #endif
 
 #include "Utility.hpp"
 
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL>0
 unsigned long RealTime::_pausedTime = 0;
 unsigned long RealTime::_startTime = micros();
 unsigned long RealTime::_suspendStart = 0;
@@ -43,6 +43,15 @@ long clamp(long current, long minVal, long maxVal)
 
 // Clamp the given number to the limits.
 // Limits are inclusive, so they represent the lowest and highest valid number.
+int clamp(int current, int minVal, int maxVal)
+{
+  if (current > maxVal) current = maxVal;
+  if (current < minVal) current = minVal;
+  return current;
+}
+
+// Clamp the given number to the limits.
+// Limits are inclusive, so they represent the lowest and highest valid number.
 float clamp(float current, float minVal, float maxVal)
 {
   if (current > maxVal) current = maxVal;
@@ -51,10 +60,10 @@ float clamp(float current, float minVal, float maxVal)
 }
 
 
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL>0
 
 String formatArg(const char* input, va_list args) {
-  char* nibble = "0123456789ABCDEF";
+  const char* nibble = "0123456789ABCDEF";
   char achBuffer[255];
   char* p = achBuffer;
 

@@ -18,7 +18,7 @@
 ///////////////////////////////////////////////////////////////////////////
 #ifdef ESP8266
 // RA Motor pins
-  #ifdef INVERT_RA_DIR
+  #if INVERT_RA_DIR == 1
     #define RAmotorPin1  D0    // IN1 auf ULN2003 driver 1
     #define RAmotorPin3  D1    // IN2 auf ULN2003 driver 1
     #define RAmotorPin2  D2    // IN3 auf ULN2003 driver 1
@@ -31,7 +31,7 @@
   #endif
 
 // DEC Motor pins
-  #ifdef INVERT_DEC_DIR
+  #if INVERT_DEC_DIR == 1
     #define DECmotorPin1  D5    // IN1 auf ULN2003 driver 2
     #define DECmotorPin3  D6    // IN3 auf ULN2003 driver 2
     #define DECmotorPin2  D7    // IN2 auf ULN2003 driver 2
@@ -56,7 +56,7 @@
 ///////////////////////////////////////////////////////////////////////////
 #ifdef ESP32
 // RA Motor pins
-  #ifdef INVERT_RA_DIR
+  #if INVERT_RA_DIR == 1
     #define RAmotorPin1  35    // IN1 auf ULN2003 driver 1
     #define RAmotorPin3  34    // IN2 auf ULN2003 driver 1
     #define RAmotorPin2  39    // IN3 auf ULN2003 driver 1
@@ -69,7 +69,7 @@
   #endif
 
 // DEC Motor pins
-  #ifdef INVERT_DEC_DIR
+  #if INVERT_DEC_DIR == 1
     #define DECmotorPin1  26    // IN1 auf ULN2003 driver 2
     #define DECmotorPin3  25    // IN3 auf ULN2003 driver 2
     #define DECmotorPin2  33    // IN2 auf ULN2003 driver 2
@@ -93,7 +93,7 @@
 ///////////////////////////////////////////////////////////////////////////
 #ifdef __AVR_ATmega328P__ // normal Arduino Mapping
 // RA Motor pins
-  #ifdef INVERT_RA_DIR
+  #if INVERT_RA_DIR == 1
     #define RAmotorPin1  12    // IN1 auf ULN2003 driver 1
     #define RAmotorPin3  11    // IN2 auf ULN2003 driver 1
     #define RAmotorPin2  3     // IN3 auf ULN2003 driver 1
@@ -106,7 +106,7 @@
   #endif
 
 // DEC Motor pins
-  #ifdef INVERT_DEC_DIR
+  #if INVERT_DEC_DIR == 1
     #define DECmotorPin1  18    // IN1 auf ULN2003 driver 2
     #define DECmotorPin2  16    // IN2 auf ULN2003 driver 2
     #define DECmotorPin3  17    // IN3 auf ULN2003 driver 2
@@ -125,7 +125,7 @@
 #ifdef __AVR_ATmega2560__  // Arduino Mega
 #if RA_Stepper_TYPE == 0  // 28BYJ
 // RA Motor pins
-  #ifdef INVERT_RA_DIR
+  #if INVERT_RA_DIR == 1
     #define RAmotorPin1  22    // IN1 auf ULN2003 driver 1
     #define RAmotorPin3  24    // IN2 auf ULN2003 driver 1
     #define RAmotorPin2  26    // IN3 auf ULN2003 driver 1
@@ -144,7 +144,7 @@
 
 // DEC Motor pins
 #if DEC_Stepper_TYPE == 0  // 28BYJ
-  #ifdef INVERT_DEC_DIR
+  #if INVERT_DEC_DIR == 1
     #define DECmotorPin1  36    // IN1 auf ULN2003 driver 2
     #define DECmotorPin3  34    // IN2 auf ULN2003 driver 2
     #define DECmotorPin2  32    // IN3 auf ULN2003 driver 2

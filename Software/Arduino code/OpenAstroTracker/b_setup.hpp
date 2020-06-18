@@ -88,7 +88,7 @@ void setup() {
   Serial.begin(57600);
   //BT.begin(9600);
 
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_INFO
   Serial.println("Hello, universe!");
 #endif
 
@@ -165,7 +165,7 @@ void finishSetup()
   // Read other persisted values and set in mount
   DayTime haTime = DayTime(EEPROM.read(1), EEPROM.read(2), 0);
 
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_INFO
   Serial.println("SpeedCal: " + String(mount.getSpeedCalibration(), 5));
   Serial.println("TRKSpeed: " + String(mount.getSpeed(TRACKING), 5));
 #endif
@@ -217,7 +217,7 @@ void finishSetup()
   lcdMenu.updateDisplay();
 #endif // HEADLESS_CLIENT
 
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_INFO
   Serial.println("Setup done!");
 #endif
 

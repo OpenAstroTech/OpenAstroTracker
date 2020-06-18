@@ -99,8 +99,8 @@ void Mount::startTimerInterrupts()
   // 2 kHz updates
   if (!InterruptCallback::setInterval(1.0f, mountLoop, this))
   {
-#ifdef DEBUG_MODE
-    logv("CANNOT set Timer!");
+#if DEBUG_LEVEL&DEBUG_MOUNT
+    logv("Mount:: CANNOT setup interrupt timer!");
 #endif
   }
 #endif // !ESPBOARD
@@ -128,14 +128,14 @@ void Mount::readPersistentData()
   int marker = EEPROM.read(4) + EEPROM.read(5) * 256;
   if ((marker & 0xFF01) == 0xBE01) {
     _stepsPerRADegree = EEPROM.read(6) + EEPROM.read(7) * 256;
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT
     logv("EEPROM: RA Marker OK! RA steps/deg is %d", _stepsPerRADegree);
 #endif
   }
 
   if ((marker & 0xFF02) == 0xBE02) {
     _stepsPerDECDegree = EEPROM.read(8) + EEPROM.read(9) * 256;
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT
     logv("EEPROM: DEC Marker OK! DEC steps/deg is %d", _stepsPerDECDegree);
 #endif
   }
@@ -144,14 +144,14 @@ void Mount::readPersistentData()
   if ((marker & 0xFF04) == 0xBE04) {
     int adjust = EEPROM.read(0) + EEPROM.read(3) * 256;
     speed = 1.0 + 1.0 * adjust / 10000.0;
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT
     logv("EEPROM: Speed Marker OK! Speed adjust is %d, speedFactor is %f", adjust, speed);
 #endif
   }
 
   if ((marker & 0xFF08) == 0xBE08) {
     _backlashCorrectionSteps = EEPROM.read(10) + EEPROM.read(11) * 256;
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT
     logv("EEPROM: Backlash Steps Marker OK! Backlash correction is %d", _backlashCorrectionSteps);
 #endif
   }
@@ -174,7 +174,7 @@ void Mount::writePersistentData(int which, int val)
   if (EEPROM.read(5) == 0xBE) {
     // ... read the current state ...
     flag = EEPROM.read(4);
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT
     logv("EEPROM Write: Marker is 0xBE, flag is %x (%d)", flag, flag);
 #endif
   }
@@ -296,6 +296,7 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
   _maxDECAcceleration = maxAcceleration;
 }
 #endif
+
 /////////////////////////////////
 //
 // getSpeedCalibration
@@ -394,9 +395,28 @@ void Mount::setBacklashCorrection(int steps) {
 // setHA
 //
 /////////////////////////////////
+void Mount::setSlewRate(int rate) 
+{
+  rate = clamp(rate, 1, 4);
+  float speedFactor[] = { 0, 0.05, 0.2, 0.5, 1.0};
+  #if DEBUG_LEVEL&DEBUG_MOUNT
+  logv("Mount::setSlewRate: rate is %d -> %f",rate, speedFactor[rate]);
+  #endif
+  _stepperDEC->setMaxSpeed(speedFactor[rate] * _maxDECSpeed);
+  _stepperRA->setMaxSpeed(speedFactor[rate] * _maxRASpeed);
+  #if DEBUG_LEVEL&DEBUG_MOUNT
+  logv("Mount::setSlewRate: new speeds are RA: %f  DEC: %f",_stepperRA->maxSpeed(), _stepperDEC->maxSpeed());
+  #endif
+}
+
+/////////////////////////////////
+//
+// setHA
+//
+/////////////////////////////////
 void Mount::setHA(const DayTime& haTime) {
-#ifdef DEBUG_MODE
-  logv("setHA:  HA: %s", haTime.ToString());
+#if DEBUG_LEVEL&DEBUG_MOUNT
+  logv("Mount: setHA:  HA is %s", haTime.ToString());
 #endif
   DayTime lst = DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond);
   lst.addTime(haTime);
@@ -410,17 +430,17 @@ void Mount::setHA(const DayTime& haTime) {
 //
 /////////////////////////////////
 const DayTime Mount::HA() const {
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("Mount: Get HA.");
   logv("Mount: Polaris adjust: %s", DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond).ToString());
 #endif 
   DayTime ha = _LST;
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("Mount: LST: %s", _LST.ToString());
 #endif
   ha.subtractTime(DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond));
-#ifdef DEBUG_MODE
-  logv("Mount: LST-Polaris is HA: %s", ha.ToString());
+#if DEBUG_LEVEL&DEBUG_MOUNT
+  logv("Mount: GetHA: LST-Polaris is HA %s", ha.ToString());
 #endif
   return ha;
 }
@@ -442,8 +462,8 @@ const DayTime& Mount::LST() const {
 void Mount::setLST(const DayTime& lst) {
   _LST = lst;
   _zeroPosRA = lst;
-#ifdef DEBUG_MODE
-  logv("Mount: LST and ZeroPosRA set to: %s", _LST.ToString());
+#if DEBUG_LEVEL&DEBUG_MOUNT
+  logv("Mount: Set LST and ZeroPosRA to: %s", _LST.ToString());
 #endif
 }
 
@@ -511,13 +531,13 @@ const DayTime Mount::currentRA() const {
   // How many steps moves the RA ring one sidereal hour along. One sidereal hour moves just shy of 15 degrees
   float stepsPerSiderealHour = _stepsPerRADegree * siderealDegreesInHour;
   float hourPos = 2.0 * -_stepperRA->currentPosition() / stepsPerSiderealHour;
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("CurrentRA: Steps/h    : %s (%d x %s)", String(stepsPerSiderealHour, 2).c_str(), _stepsPerRADegree, String(siderealDegreesInHour, 5).c_str());
   logv("CurrentRA: RA Steps   : %d", _stepperRA->currentPosition());
   logv("CurrentRA: POS        : %s", String(hourPos).c_str());
 #endif
   hourPos += _zeroPosRA.getTotalHours();
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("CurrentRA: ZeroPos    : %s", _zeroPosRA.ToString());
   logv("CurrentRA: POS (+zp)  : %s", DayTime(hourPos).ToString());
 #endif
@@ -529,12 +549,12 @@ const DayTime Mount::currentRA() const {
   {
     hourPos += 12;
     if (hourPos > 24) hourPos -= 24;
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
     logv("CurrentRA: RA (+12h): %s", DayTime(hourPos).ToString());
 #endif
   }
 
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("CurrentRA: RA Pos  -> : %s", DayTime(hourPos).ToString());
 #endif
   return hourPos;
@@ -549,7 +569,7 @@ const DayTime Mount::currentRA() const {
 const DegreeTime Mount::currentDEC() const {
 
   float degreePos = 1.0 * _stepperDEC->currentPosition() / _stepsPerDECDegree;
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("CurrentDEC: Steps/deg  : %d", _stepsPerDECDegree);
   logv("CurrentDEC: DEC Steps  : %d", _stepperDEC->currentPosition());
   logv("CurrentDEC: POS        : %s", String(degreePos).c_str());
@@ -558,12 +578,12 @@ const DegreeTime Mount::currentDEC() const {
   if (degreePos > 0)
   {
     degreePos = -degreePos;
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
     logv("CurrentDEC: Greater Zero, flipping.");
 #endif
   }
 
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("CurrentDEC: POS      : %s", DegreeTime(degreePos).ToString());
 #endif
   return degreePos;
@@ -808,7 +828,7 @@ byte Mount::mountStatus() {
   return _mountStatus;
 }
 
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&(DEBUG_MOUNT|DEBUG_MOUNT_VERBOSE)
 /////////////////////////////////
 //
 // mountStatusString
@@ -1162,15 +1182,16 @@ void Mount::loop() {
   // speed (or at all), we'll just stick to deterministic calls here.
   #ifdef RUN_STEPPERS_IN_MAIN_LOOP 
   interruptLoop();
-#endif
+  #endif
 
-#if defined DEBUG_MODE && defined SEND_PERIODIC_UPDATES
+  #if DEBUG_LEVEL&DEBUG_MOUNT 
   unsigned long now = millis();
   if (now - _lastMountPrint > 2000) {
     Serial.println(getStatusString());
     _lastMountPrint = now;
-}
-#endif
+  }
+  #endif
+  
   if (isGuiding()) {
     if (millis() > _guideEndTime) {
       stopGuiding();
@@ -1199,14 +1220,14 @@ void Mount::loop() {
       _mountStatus &= ~(STATUS_SLEWING | STATUS_SLEWING_TO_TARGET);
 
       if (_stepperWasRunning) {
-#ifdef DEBUG_MODE
-        logv("Loop: Reached target.");
+#if DEBUG_LEVEL&DEBUG_MOUNT
+        logv("Mount::Loop: Reached target.");
 #endif
         // Mount is at Target!
         // If we we're parking, we just reached home. Clear the flag, reset the motors and stop tracking.
         if (isParking()) {
-#ifdef DEBUG_MODE
-          logv("Loop:   Was Parking, stop tracking and set home.");
+#if DEBUG_LEVEL&DEBUG_MOUNT
+          logv("Mount::Loop:   Was Parking, stop tracking and set home.");
 #endif
           stopSlewing(TRACKING);
           setHome();
@@ -1215,39 +1236,39 @@ void Mount::loop() {
         _currentDECStepperPosition = _stepperDEC->currentPosition();
         _currentRAStepperPosition = _stepperRA->currentPosition();
         if (_correctForBacklash) {
-#ifdef DEBUG_MODE
-          logv("Loop:   Reached target at %d. Compensating by %d", _currentRAStepperPosition, _backlashCorrectionSteps);
+#if DEBUG_LEVEL&DEBUG_MOUNT
+          logv("Mount::Loop:   Reached target at %d. Compensating by %d", _currentRAStepperPosition, _backlashCorrectionSteps);
 #endif
           _currentRAStepperPosition += _backlashCorrectionSteps;
           _stepperRA->runToNewPosition(_currentRAStepperPosition);
           _correctForBacklash = false;
-#ifdef DEBUG_MODE
-          logv("Loop:   Backlash correction done. Pos: %d", _currentRAStepperPosition);
+#if DEBUG_LEVEL&DEBUG_MOUNT
+          logv("Mount::Loop:   Backlash correction done. Pos: %d", _currentRAStepperPosition);
 #endif
         }
         else
         {
-#ifdef DEBUG_MODE
-          logv("Loop:   Reached target at %d, no backlash compensation needed", _currentRAStepperPosition);
+#if DEBUG_LEVEL&DEBUG_MOUNT
+          logv("Mount::Loop:   Reached target at %d, no backlash compensation needed", _currentRAStepperPosition);
 #endif
         }
 
         if (_slewingToHome) {
-#ifdef DEBUG_MODE
-          logv("Loop:   Was Slewing home, so setting stepper RA and TRK to zero.");
+#if DEBUG_LEVEL&DEBUG_MOUNT
+          logv("Mount::Loop:   Was Slewing home, so setting stepper RA and TRK to zero.");
 #endif
           _stepperRA->setCurrentPosition(0);
           _stepperTRK->setCurrentPosition(0);
           _targetRA = currentRA();
           if (isParking()) {
-#ifdef DEBUG_MODE
-            logv("Loop:   Was parking, so no tracking.");
+#if DEBUG_LEVEL&DEBUG_MOUNT
+            logv("Mount::Loop:   Was parking, so no tracking.");
 #endif
             _mountStatus &= ~STATUS_PARKING;
           }
           else {
-#ifdef DEBUG_MODE
-            logv("Loop:   Restart tracking.");
+#if DEBUG_LEVEL&DEBUG_MOUNT
+            logv("Mount::Loop:   Restart tracking.");
 #endif
             startSlewing(TRACKING);
           }
@@ -1273,7 +1294,10 @@ void Mount::loop() {
 //
 /////////////////////////////////
 void Mount::setHome() {
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT
+  logv("Mount::setHome() called");
+#endif
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("Mount::setHomePre: currentRA is %s", currentRA().ToString());
   logv("Mount::setHomePre: zeroPos is %s", _zeroPosRA.ToString());
   logv("Mount::setHomePre: targetRA is %s", targetRA().ToString());
@@ -1286,7 +1310,7 @@ void Mount::setHome() {
 
   _targetRA = currentRA();
 
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("Mount::setHomePost: currentRA is %s", currentRA().ToString());
   logv("Mount::setHomePost: zeroPos is %s", _zeroPosRA.ToString());
   logv("Mount::setHomePost: targetRA is %s", targetRA().ToString());
@@ -1302,10 +1326,14 @@ void Mount::setHome() {
 void Mount::setTargetToHome() {
   float trackedSeconds = _stepperTRK->currentPosition() / _trackingSpeed; // steps/steps/s
 
+#if DEBUG_LEVEL&DEBUG_MOUNT
+  logv("Mount::setTargetToHome() called with %fs elapsed tracking", trackedSeconds);
+#endif
+
   // In order for RA coordinates to work correctly, we need to
   // offset HATime by elapsed time since last HA set and also
   // adjust RA by the elapsed time and set it to zero.
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("Mount::setTargetToHomePre:  currentRA is %s", currentRA().ToString());
   logv("Mount::setTargetToHomePre:  ZeroPosRA is %s", _zeroPosRA.ToString());
   logv("Mount::setTargetToHomePre:  TrackedSeconds is %f, TRK Stepper: %l", trackedSeconds, _stepperTRK->currentPosition());
@@ -1317,7 +1345,7 @@ void Mount::setTargetToHome() {
   _targetRA = _zeroPosRA;
   _targetRA.addSeconds(trackedSeconds);
 
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("Mount::setTargetToHomePost:  currentRA is %s", currentRA().ToString());
   logv("Mount::setTargetToHomePost: ZeroPosRA is %s", _zeroPosRA.ToString());
   logv("Mount::setTargetToHomePost: LST is %s", _LST.ToString());
@@ -1358,7 +1386,7 @@ float Mount::getSpeed(int direction) {
 // This code tells the steppers to what location to move to, given the select right ascension and declination
 /////////////////////////////////
 void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("Mount::CalcSteppersPre: Current: RA: %s, DEC: %s", currentRA().ToString(), currentDEC().ToString());
   logv("Mount::CalcSteppersPre: Target : RA: %s, DEC: %s", _targetRA.ToString(), _targetDEC.ToString());
   logv("Mount::CalcSteppersPre: ZeroRA : %s", _zeroPosRA.ToString());
@@ -1367,7 +1395,7 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
   DayTime raTarget = _targetRA;
 
   raTarget.subtractTime(_zeroPosRA);
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("Mount::CalcSteppersIn: Adjust RA by Zeropos. New Target RA: %s, DEC: %s", raTarget.ToString(), _targetDEC.ToString());
 #endif
 
@@ -1378,7 +1406,7 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
   // Map [0 to 24] range to [-12 to +12] range
   while (hourPos > 12) {
     hourPos = hourPos - 24;
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
     logv("Mount::CalcSteppersIn: RA>12 so -24. New Target RA: %s, DEC: %s", DayTime(hourPos).ToString(), _targetDEC.ToString());
 #endif
   }
@@ -1397,7 +1425,7 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
   // the variable targetDEC 0deg for the celestial pole (90deg), and goes negative only.
   float moveDEC = -_targetDEC.getTotalDegrees() * _stepsPerDECDegree;
 
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("Mount::CalcSteppersIn: RA Steps/deg: %d   Steps/srhour: %f", _stepsPerRADegree, stepsPerSiderealHour);
   logv("Mount::CalcSteppersIn: Target Step pos RA: %f, DEC: %f", moveRA, moveDEC);
 #endif
@@ -1411,7 +1439,7 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 
   // If we reach the limit in the positive direction ...
   if (moveRA > RALimit) {
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
     logv("Mount::CalcSteppersIn: RA is past +limit: %f, DEC: %f", RALimit);
 #endif
 
@@ -1422,13 +1450,13 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
     moveRA -= long(12.0f * stepsPerSiderealHour);
 #endif
     moveDEC = -moveDEC;
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
     logv("Mount::CalcSteppersIn: Adjusted Target Step pos RA: %f, DEC: %f", moveRA, moveDEC);
 #endif
   }
   // If we reach the limit in the negative direction...
   else if (moveRA < -RALimit) {
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
     logv("Mount::CalcSteppersIn: RA is past -limit: %f, DEC: %f", -RALimit);
 #endif
     // ... turn both RA and DEC axis around
@@ -1438,13 +1466,13 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
     moveRA += long(12.0f * stepsPerSiderealHour);
 #endif
     moveDEC = -moveDEC;
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
     logv("Mount::CalcSteppersPost: Adjusted Target. Moved RA, inverted DEC");
 #endif
   }
 
-#ifdef DEBUG_MODE
-  logv("Mount::CalcSteppersPost: Target Steps RA: %f, DEC: %f", moveRA, moveDEC);
+#if DEBUG_LEVEL&DEBUG_MOUNT
+  logv("Mount::CalcSteppersPost: Target Steps RA: %f, DEC: %f", -moveRA, moveDEC);
 #endif
   //    float targetRA = clamp(-moveRA, -RAStepperLimit, RAStepperLimit);
   //    float targetDEC = clamp(moveDEC, DECStepperUpLimit, DECStepperDownLimit);
@@ -1465,13 +1493,13 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 void Mount::moveSteppersTo(float targetRA, float targetDEC) {
   // Show time: tell the steppers where to go!
   _correctForBacklash = false;
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT
   logv("Mount::MoveSteppersTo: RA  From: %l  To: %f", _stepperRA->currentPosition(), targetRA);
   logv("Mount::MoveSteppersTo: DEC From: %l  To: %f", _stepperDEC->currentPosition(), targetDEC);
 #endif
 
   if ((_stepperRA->currentPosition() - targetRA) > 0) {
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
     logv("Mount::MoveSteppersTo: Needs backlash correction!");
 #endif
     targetRA -= _backlashCorrectionSteps;
@@ -1566,22 +1594,22 @@ void Mount::displayStepperPositionThrottled() {
 String Mount::DECString(byte type, byte active) {
   DegreeTime dec;
   if ((type & TARGET_STRING) == TARGET_STRING) {
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
     logv("DECString: TARGET!");
 #endif
     dec = _targetDEC;
   }
   else {
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
     logv("DECString: CURRENT!");
 #endif
     dec = DegreeTime(currentDEC());
   }
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("DECString: Precheck  : %s", dec.ToString());
 #endif
   dec.checkHours();
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("DECString: Postcheck : %s", dec.ToString());
 #endif
 

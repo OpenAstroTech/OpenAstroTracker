@@ -22,19 +22,40 @@ extern String version;
 extern byte PolarisRAHour;
 extern byte PolarisRAMinute;
 extern byte PolarisRASecond;
-// Comment this out to save some code space
-// #define DEBUG_MODE
-#ifdef DEBUG_MODE
-  // #define SEND_PERIODIC_UPDATES 
-#endif
-// Uncomment to run a key diagnostic. No tracker functions are on at all.
-// #define LCD_BUTTON_TEST
 
-// Uncomment to reverse the direction of RA motor
-// #define INVERT_RA_DIR
+// Debugging output control
+// Each bit in the debug level specifies a kind of debug to enable. 
+#define DEBUG_NONE           0x00
+#define DEBUG_INFO           0x01
+#define DEBUG_SERIAL         0x02
+#define DEBUG_WIFI           0x04
+#define DEBUG_MOUNT          0x08
+#define DEBUG_MOUNT_VERBOSE  0x10
+#define DEBUG_GENERAL        0x20
 
-// Uncomment to reverse the direction of DEC motor
-// #define INVERT_DEC_DIR
+// Bit Name                 Output
+//  0  DEBUG_INFO           General output, like startup variables and status
+//  1  DEBUG_SERIAL         Serial commands and replies
+//  2  DEBUG_WIFI           Wifi related output
+//  3  DEBUG_MOUNT          Mount processing output
+//  4  DEBUG_MOUNT_VERBOSE  Verbose mount processing (coordinates, etc)
+//  5  DEBUG_GENERAL        Other misc. output
+
+// Set this to specify the amount of debug output OAT should send to the serial port.
+// Note that if you use an app to control OAT, ANY debug output will likely confuse that app.
+// Debug output is useful if you are using Wifi to control the OAT or if you are issuing
+// manual commands via a terminal.
+// #define DEBUG_LEVEL (DEBUG_SERIAL|DEBUG_WIFI|DEBUG_INFO|DEBUG_MOUNT)
+#define DEBUG_LEVEL (DEBUG_NONE)
+
+// Set this to 1 to run a key diagnostic. No tracker functions are on at all.
+#define LCD_BUTTON_TEST 0
+
+// Set to 1 to reverse the direction of RA motor
+#define INVERT_RA_DIR 0
+
+// Set to 1 to reverse the direction of DEC motor
+#define INVERT_DEC_DIR 0
 
 ////////////////////////////////////////////////////////////////
 //
@@ -64,10 +85,10 @@ extern byte PolarisRASecond;
     #define ESPBOARD
     #define HEADLESS_CLIENT
     #define WIFI_ENABLED 
-    #define INFRA_SSID "yourSSID"
-    #define INFRA_WPAKEY "yourWPAKey"
+    #define INFRA_SSID "Clutchplate"
+    #define INFRA_WPAKEY "36FA8A7748"
     #define OAT_WPAKEY "superSecret"
-    #define HOSTNAME "OATerScope"
+    #define HOSTNAME "OATScope"
     // 0 - Infrastructure Only - Connecting to a Router
     // 1 - AP Mode Only        - Acting as a Router
     // 2 - Attempt Infrastructure, Fail over to AP Mode.
