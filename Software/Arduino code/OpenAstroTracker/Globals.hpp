@@ -85,10 +85,10 @@ extern byte PolarisRASecond;
     #define ESPBOARD
     #define HEADLESS_CLIENT
     #define WIFI_ENABLED 
-    #define INFRA_SSID "Clutchplate"
-    #define INFRA_WPAKEY "36FA8A7748"
+    #define INFRA_SSID "yourSSID"
+    #define INFRA_WPAKEY "yourWPAkey"
     #define OAT_WPAKEY "superSecret"
-    #define HOSTNAME "OATScope"
+    #define HOSTNAME "OATerScope"
     // 0 - Infrastructure Only - Connecting to a Router
     // 1 - AP Mode Only        - Acting as a Router
     // 2 - Attempt Infrastructure, Fail over to AP Mode.
