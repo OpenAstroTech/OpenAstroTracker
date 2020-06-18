@@ -12,8 +12,9 @@
 #define btnSELECT 4
 #define btnNONE   5
 
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL>0
 
+// Realtime timer class using microseconds to time stuff
 class RealTime {
   static unsigned long _pausedTime;
   static unsigned long _startTime;
@@ -47,6 +48,7 @@ public:
   }
 };
 
+// Performance measurement class 
 class PerfMeasure {
   unsigned long _start;
   unsigned long _end;
@@ -167,7 +169,6 @@ private:
     else {
       // If the keys haven't changed in 5ms, commit the change to the new keys.
       if (millis() - _lastKeyChange > 5) {
-        // Serial.println("KBD: New=" + String(_currentKey ));
         _newKey = _currentKey;
       }
     }
@@ -196,6 +197,10 @@ int adjustClamp(int current, int adjustBy, int minVal, int maxVal);
 // Clamp the given number to the limits.
 // Limits are inclusive, so they represent the lowest and highest valid number.
 long clamp(long current, long minVal, long maxVal);
+
+// Clamp the given number to the limits.
+// Limits are inclusive, so they represent the lowest and highest valid number.
+int clamp(int current, int minVal, int maxVal);
 
 // Clamp the given number to the limits.
 // Limits are inclusive, so they represent the lowest and highest valid number.

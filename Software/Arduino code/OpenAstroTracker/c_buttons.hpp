@@ -11,16 +11,15 @@ void BTin();
 int loopsOfSameKey = 0;
 int lastLoopKey = -1;
 
-#ifdef LCD_BUTTON_TEST
+#if LCD_BUTTON_TEST == 1
 byte lastKey = btnNONE;
-
 #endif
 
 byte lcd_key;
 
 void loop() {
 
-#ifdef LCD_BUTTON_TEST
+#if LCD_BUTTON_TEST == 1
   int adc_key_in;
 
   lcdMenu.setCursor(0, 0);

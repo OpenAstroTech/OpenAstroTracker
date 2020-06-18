@@ -474,7 +474,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
         deg = -90 - deg;
       }
       _mount->targetDEC().set(deg, inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MEADE
       logv("MeadeSetInfo: Received Target DEC: %s", _mount->targetDEC().ToString());
 #endif
       return "1";
@@ -492,7 +492,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     if ((inCmd[3] == ':') && (inCmd[6] == ':'))
     {
       _mount->targetRA().set(inCmd.substring(1, 3).toInt(), inCmd.substring(4, 6).toInt(), inCmd.substring(7, 9).toInt());
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MEADE
       logv("MeadeSetInfo: Received Target RA: %s", _mount->targetRA().ToString());
 #endif
       return "1";
@@ -513,7 +513,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
       }
 
       DayTime lst(hLST, minLST, secLST);
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MEADE
       logv("MeadeSetInfo: Received LST: %d:%d:%d", hLST, minLST, secLST);
 #endif
       _mount->setLST(lst);
@@ -527,7 +527,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
       // Set HA
       int hHA = inCmd.substring(1, 3).toInt();
       int minHA = inCmd.substring(4, 6).toInt();
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MEADE
       logv("MeadeSetInfo: Received HA: %d:%d:%d", hHA, minHA, 0);
 #endif
       _mount->setHA(DayTime(hHA, minHA, 0));
@@ -794,11 +794,11 @@ String MeadeCommandProcessor::handleMeadeQuit(String inCmd) {
 // Set Slew Rates
 /////////////////////////////
 String MeadeCommandProcessor::handleMeadeSetSlewRate(String inCmd) {
-  switch (inCmd[1]) {
-    case 'S': // Slew   - Fastest
-    case 'M': // Find   - 2nd Fastest
-    case 'C': // Center - 2nd Slowest
-    case 'G': // Guide  - Slowest
+  switch (inCmd[0]) {
+    case 'S': _mount->setSlewRate(4); break; // Slew   - Fastest
+    case 'M': _mount->setSlewRate(3); break; // Find   - 2nd Fastest
+    case 'C': _mount->setSlewRate(2); break; // Center - 2nd Slowest
+    case 'G': _mount->setSlewRate(1); break; // Guide  - Slowest
     default:
     break;
   }
@@ -807,6 +807,9 @@ String MeadeCommandProcessor::handleMeadeSetSlewRate(String inCmd) {
 
 String MeadeCommandProcessor::processCommand(String inCmd) {
   if (inCmd[0] == ':') {
+    #if DEBUG_LEVEL&DEBUG_MEADE
+    logv("MEADE: Received command '%s'", inCmd.c_str());
+    #endif
     char command = inCmd[1];
     inCmd = inCmd.substring(2);
     switch (command) {
@@ -820,7 +823,8 @@ String MeadeCommandProcessor::processCommand(String inCmd) {
       case 'R': return handleMeadeSetSlewRate(inCmd);
       case 'X': return handleMeadeExtraCommands(inCmd);
       default:
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MEADE
+      logv("MEADE: Received unknown command '%s'", inCmd.c_str());
       Serial.println("Unknown Command in MeadeCommandProcessor::processCommand " + inCmd);
       return "";
 #endif

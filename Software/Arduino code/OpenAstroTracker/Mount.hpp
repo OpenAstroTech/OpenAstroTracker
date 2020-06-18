@@ -71,6 +71,9 @@ public:
   // degree for each axis. This function stores the value in persistent storage
   void setStepsPerDegree(int which, int steps);
 
+  // Sets the slew rate of the mount. rate is between 1 (slowest) and 4 (fastest)
+  void setSlewRate(int rate);
+
   // Set the HA time (HA is derived from LST, the setter calculates and sets LST)
   void setHA(const DayTime& haTime);
   const DayTime HA() const;
@@ -204,7 +207,7 @@ private:
   // Returns some combination of these flags: STATUS_PARKED, STATUS_SLEWING, STATUS_SLEWING_TO_TARGET, STATUS_SLEWING_FREE, STATUS_TRACKING, STATUS_PARKING
   byte mountStatus();
 
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&(DEBUG_MOUNT|DEBUG_MOUNT_VERBOSE)
   String mountStatusString();
 #endif
 

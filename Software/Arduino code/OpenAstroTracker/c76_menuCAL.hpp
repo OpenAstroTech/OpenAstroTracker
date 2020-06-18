@@ -246,8 +246,8 @@ bool processCalibrationKeys() {
       {
         // UP and DOWN are handled above
         if (key == btnSELECT) {
-#ifdef DEBUG_MODE
-          logv("CAL: Set backlash to %d", BacklashSteps);
+#if DEBUG_LEVEL&DEBUG_GENERAL
+          logv("CAL Menu: Set backlash to %d", BacklashSteps);
 #endif
           mount.setBacklashCorrection(BacklashSteps);
           lcdMenu.printMenu("Backlash stored.");
