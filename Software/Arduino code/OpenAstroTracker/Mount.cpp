@@ -78,6 +78,7 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
   _stepperWasRunning = false;
   _totalDECMove = 0;
   _totalRAMove = 0;
+  _moveRate = 4;
 #if RA_Stepper_TYPE == 0
   _backlashCorrectionSteps = 16;
 #else
@@ -404,13 +405,13 @@ void Mount::setBacklashCorrection(int steps) {
 /////////////////////////////////
 void Mount::setSlewRate(int rate) 
 {
-  rate = clamp(rate, 1, 4);
+  _moveRate = clamp(rate, 1, 4);
   float speedFactor[] = { 0, 0.05, 0.2, 0.5, 1.0};
   #if DEBUG_LEVEL&DEBUG_MOUNT
-  logv("Mount::setSlewRate: rate is %d -> %f",rate, speedFactor[rate]);
+  logv("Mount::setSlewRate: rate is %d -> %f",_moveRate , speedFactor[_moveRate ]);
   #endif
-  _stepperDEC->setMaxSpeed(speedFactor[rate] * _maxDECSpeed);
-  _stepperRA->setMaxSpeed(speedFactor[rate] * _maxRASpeed);
+  _stepperDEC->setMaxSpeed(speedFactor[_moveRate ] * _maxDECSpeed);
+  _stepperRA->setMaxSpeed(speedFactor[_moveRate ] * _maxRASpeed);
   #if DEBUG_LEVEL&DEBUG_MOUNT
   logv("Mount::setSlewRate: new speeds are RA: %f  DEC: %f",_stepperRA->maxSpeed(), _stepperDEC->maxSpeed());
   #endif
@@ -622,6 +623,10 @@ void Mount::startSlewingToTarget() {
   if (isGuiding()) {
     stopGuiding();
   }
+
+  // Make sure we're slewing at full speed on a GoTo
+  _stepperDEC->setMaxSpeed(_maxDECSpeed);
+  _stepperRA->setMaxSpeed(_maxRASpeed);
 
   // Calculate new RA stepper target (and DEC)
   _currentDECStepperPosition = _stepperDEC->currentPosition();
@@ -1051,6 +1056,10 @@ void Mount::startSlewing(int direction) {
     }
     else {
       int sign = NORTHERN_HEMISPHERE ? 1 : -1;
+
+      // Set move rate to last commanded slew rate
+      setSlewRate(_moveRate);
+
       if (direction & NORTH) {
         _stepperDEC->moveTo(sign * 30000);
         _mountStatus |= STATUS_SLEWING;

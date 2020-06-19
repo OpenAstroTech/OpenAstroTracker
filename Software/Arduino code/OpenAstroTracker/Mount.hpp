@@ -221,6 +221,7 @@ private:
   int _maxRAAcceleration;
   int _maxDECAcceleration;
   int _backlashCorrectionSteps;
+  int _moveRate;
 
   long _lastHASet;
   DayTime _LST;
