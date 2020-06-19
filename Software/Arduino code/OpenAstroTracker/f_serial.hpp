@@ -34,15 +34,11 @@ void processSerialData() {
     while (Serial.available() > 0) {
 
         String inCmd = Serial.readStringUntil('#');
-#if DEBUG_LEVEL&DEBUG_SERIAL
-        logv("Serial: Received: %s", inCmd.c_str());
-#endif
+        LOGV2(DEBUG_SERIAL, "Serial: Received: %s", inCmd.c_str());
 
         String retVal = MeadeCommandProcessor::instance()->processCommand(inCmd);
         if (retVal != "") {
-#if DEBUG_LEVEL&DEBUG_SERIAL
-            logv("Serial: Replied:  %s", inCmd.c_str());
-#endif
+            LOGV2(DEBUG_SERIAL,"Serial: Replied:  %s", inCmd.c_str());
             Serial.print(retVal);
         }
         

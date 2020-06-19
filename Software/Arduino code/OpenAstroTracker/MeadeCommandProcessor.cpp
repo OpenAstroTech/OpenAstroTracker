@@ -474,9 +474,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
         deg = -90 - deg;
       }
       _mount->targetDEC().set(deg, inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
-#if DEBUG_LEVEL&DEBUG_MEADE
-      logv("MeadeSetInfo: Received Target DEC: %s", _mount->targetDEC().ToString());
-#endif
+      LOGV2(DEBUG_MEADE, "MEADE: SetInfo: Received Target DEC: %s", _mount->targetDEC().ToString());
       return "1";
     }
     else {
@@ -492,9 +490,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     if ((inCmd[3] == ':') && (inCmd[6] == ':'))
     {
       _mount->targetRA().set(inCmd.substring(1, 3).toInt(), inCmd.substring(4, 6).toInt(), inCmd.substring(7, 9).toInt());
-#if DEBUG_LEVEL&DEBUG_MEADE
-      logv("MeadeSetInfo: Received Target RA: %s", _mount->targetRA().ToString());
-#endif
+      LOGV2(DEBUG_MEADE, "MEADE: SetInfo: Received Target RA: %s", _mount->targetRA().ToString());
       return "1";
     }
     else {
@@ -513,9 +509,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
       }
 
       DayTime lst(hLST, minLST, secLST);
-#if DEBUG_LEVEL&DEBUG_MEADE
-      logv("MeadeSetInfo: Received LST: %d:%d:%d", hLST, minLST, secLST);
-#endif
+      LOGV4(DEBUG_MEADE, "MEADE: SetInfo: Received LST: %d:%d:%d", hLST, minLST, secLST);
       _mount->setLST(lst);
     }
     else if (inCmd[1] == 'P') {
@@ -527,9 +521,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
       // Set HA
       int hHA = inCmd.substring(1, 3).toInt();
       int minHA = inCmd.substring(4, 6).toInt();
-#if DEBUG_LEVEL&DEBUG_MEADE
-      logv("MeadeSetInfo: Received HA: %d:%d:%d", hHA, minHA, 0);
-#endif
+      LOGV4(DEBUG_MEADE, "MEADE: SetInfo: Received HA: %d:%d:%d", hHA, minHA, 0);
       _mount->setHA(DayTime(hHA, minHA, 0));
     }
 
@@ -807,9 +799,7 @@ String MeadeCommandProcessor::handleMeadeSetSlewRate(String inCmd) {
 
 String MeadeCommandProcessor::processCommand(String inCmd) {
   if (inCmd[0] == ':') {
-    #if DEBUG_LEVEL&DEBUG_MEADE
-    logv("MEADE: Received command '%s'", inCmd.c_str());
-    #endif
+    LOGV2(DEBUG_MEADE, "MEADE: Received command '%s'", inCmd.c_str());
     char command = inCmd[1];
     inCmd = inCmd.substring(2);
     switch (command) {
@@ -823,11 +813,7 @@ String MeadeCommandProcessor::processCommand(String inCmd) {
       case 'R': return handleMeadeSetSlewRate(inCmd);
       case 'X': return handleMeadeExtraCommands(inCmd);
       default:
-#if DEBUG_LEVEL&DEBUG_MEADE
-      logv("MEADE: Received unknown command '%s'", inCmd.c_str());
-      Serial.println("Unknown Command in MeadeCommandProcessor::processCommand " + inCmd);
-      return "";
-#endif
+        LOGV2(DEBUG_MEADE, "MEADE: Received unknown command '%s'", inCmd.c_str());
       break;
     }
   }

@@ -61,13 +61,9 @@ bool processControlKeys() {
       if (key == btnSELECT) {
         if (setZeroPoint) {
           // Leaving Control Menu, so set stepper motor positions to zero.
-#if DEBUG_LEVEL&DEBUG_GENERAL
-          logv("CTRL menu: Calling setHome()!");
-#endif
+          LOGV1(DEBUG_GENERAL, "CTRL menu: Calling setHome()!");
           mount.setHome();
-#if DEBUG_LEVEL&DEBUG_GENERAL
-          logv("CTRL menu: setHome() returned: RA Current %s, Target: %f", mount.RAString(CURRENT_STRING|COMPACT_STRING).c_str(), mount.RAString(TARGET_STRING | COMPACT_STRING).c_str());
-#endif
+          LOGV3(DEBUG_GENERAL, "CTRL menu: setHome() returned: RA Current %s, Target: %f", mount.RAString(CURRENT_STRING|COMPACT_STRING).c_str(), mount.RAString(TARGET_STRING | COMPACT_STRING).c_str());
           mount.startSlewing(TRACKING);
         }
 

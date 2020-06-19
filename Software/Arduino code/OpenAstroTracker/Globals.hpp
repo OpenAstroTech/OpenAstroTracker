@@ -32,6 +32,8 @@ extern byte PolarisRASecond;
 #define DEBUG_MOUNT          0x08
 #define DEBUG_MOUNT_VERBOSE  0x10
 #define DEBUG_GENERAL        0x20
+#define DEBUG_MEADE          0x40
+#define DEBUG_ANY            0x7F
 
 // Bit Name                 Output
 //  0  DEBUG_INFO           General output, like startup variables and status
@@ -40,12 +42,14 @@ extern byte PolarisRASecond;
 //  3  DEBUG_MOUNT          Mount processing output
 //  4  DEBUG_MOUNT_VERBOSE  Verbose mount processing (coordinates, etc)
 //  5  DEBUG_GENERAL        Other misc. output
+//  6  DEBUG_MEADE          Meade command handling output
 
 // Set this to specify the amount of debug output OAT should send to the serial port.
 // Note that if you use an app to control OAT, ANY debug output will likely confuse that app.
 // Debug output is useful if you are using Wifi to control the OAT or if you are issuing
 // manual commands via a terminal.
-// #define DEBUG_LEVEL (DEBUG_SERIAL|DEBUG_WIFI|DEBUG_INFO|DEBUG_MOUNT)
+// #define DEBUG_LEVEL (DEBUG_SERIAL|DEBUG_WIFI|DEBUG_INFO|DEBUG_MOUNT|DEBUG_GENERAL)
+// #define DEBUG_LEVEL (DEBUG_ANY)
 #define DEBUG_LEVEL (DEBUG_NONE)
 
 // Set this to 1 to run a key diagnostic. No tracker functions are on at all.

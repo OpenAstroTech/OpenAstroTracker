@@ -21,7 +21,7 @@ void finishSetup();
 /////////////////////////////////
 //   ESP32
 /////////////////////////////////
-#if defined(ESP32) && !defined(RUN_STEPPERS_IN_MAIN_LOOP)
+#if defined(ESP32) && (RUN_STEPPERS_IN_MAIN_LOOP == 0)
 // Forward declare the two functions we run in the main loop
 void serialLoop();
 
@@ -84,18 +84,15 @@ void setup() {
   digitalWrite(44, HIGH);  // MS1
 #endif
 
-  //debug_init();
   Serial.begin(57600);
   //BT.begin(9600);
 
-#if DEBUG_LEVEL&DEBUG_INFO
-  Serial.println("Hello, universe!");
-#endif
+  LOGV2(DEBUG_ANY, "Hello, universe, this is OAT %s!", version);
 
 /////////////////////////////////
 // ESP32
 /////////////////////////////////
-#if defined(ESP32) && !defined(RUN_STEPPERS_IN_MAIN_LOOP)
+#if defined(ESP32) && (RUN_STEPPERS_IN_MAIN_LOOP == 0)
   disableCore0WDT();
   xTaskCreatePinnedToCore(
     stepperControlTask,    // Function to run on this core
@@ -128,6 +125,7 @@ void setup() {
 
 void finishSetup()
 {
+  LOGV1(DEBUG_ANY, "Finishing setup...");
   // Show a splash screen
   lcdMenu.setCursor(0, 0);
   lcdMenu.printMenu("OpenAstroTracker");
@@ -165,10 +163,8 @@ void finishSetup()
   // Read other persisted values and set in mount
   DayTime haTime = DayTime(EEPROM.read(1), EEPROM.read(2), 0);
 
-#if DEBUG_LEVEL&DEBUG_INFO
-  Serial.println("SpeedCal: " + String(mount.getSpeedCalibration(), 5));
-  Serial.println("TRKSpeed: " + String(mount.getSpeed(TRACKING), 5));
-#endif
+  LOGV2(DEBUG_INFO, "SpeedCal: %s", String(mount.getSpeedCalibration(), 5).c_str());
+  LOGV2(DEBUG_INFO, "TRKSpeed: %s", String(mount.getSpeed(TRACKING), 5).c_str());
 
   mount.setHA(haTime);
 
@@ -217,9 +213,5 @@ void finishSetup()
   lcdMenu.updateDisplay();
 #endif // HEADLESS_CLIENT
 
-#if DEBUG_LEVEL&DEBUG_INFO
-  Serial.println("Setup done!");
-#endif
-
-
+  LOGV1(DEBUG_ANY, "Setup done!");
 }

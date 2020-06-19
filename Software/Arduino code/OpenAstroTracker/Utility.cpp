@@ -150,22 +150,24 @@ String format(const char* input, ...) {
   return ret;
 }
 
-void log(const char* input) {
-  Serial.println(input);
-  Serial.flush();
-}
+// void log(const char* input) {
+//   Serial.println(input);
+//   Serial.flush();
+// }
 
-void log(String input) {
-  Serial.println(input);
-  Serial.flush();
-}
+// void log(String input) {
+//   Serial.println(input);
+//   Serial.flush();
+// }
 
-void logv(const char* input, ...) {
-  va_list argp;
-  va_start(argp, input);
-  Serial.println(formatArg(input, argp));
-  Serial.flush();
-  va_end(argp);
+void logv(int levelFlags, const char* input, ...) {
+  if ((levelFlags & DEBUG_LEVEL) != 0) {
+    va_list argp;
+    va_start(argp, input);
+    Serial.println(formatArg(input, argp));
+    Serial.flush();
+    va_end(argp);
+  }
 }
 
 #endif

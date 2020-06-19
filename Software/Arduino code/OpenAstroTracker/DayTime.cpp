@@ -228,16 +228,12 @@ float DegreeTime::getTotalDegrees() const {
 
 void DegreeTime::checkHours() {
   if (hours > 0) {
-#if DEBUG_LEVEL&DEBUG_GENERAL
-    logv("CheckHours: Degrees is more than 0, clamping");
-#endif
+    LOGV1(DEBUG_GENERAL, "CheckHours: Degrees is more than 0, clamping");
     hours = 0;
   }
   if (hours < -180) {
-#if DEBUG_LEVEL&DEBUG_GENERAL
-    logv("CheckHours: Degrees is less than -180, clamping");
-#endif
-      hours = -180;
+    LOGV1(DEBUG_GENERAL, "CheckHours: Degrees is less than -180, clamping");
+    hours = -180;
   }
 }
 
