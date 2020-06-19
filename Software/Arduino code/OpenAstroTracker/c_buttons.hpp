@@ -1,12 +1,12 @@
 #pragma once
 
-#ifdef SUPPORT_SERIAL_CONTROL
+#if SUPPORT_SERIAL_CONTROL == 1
 #include "f_serial.hpp"
 #endif
 
 void BTin();
 
-#ifndef HEADLESS_CLIENT
+#if HEADLESS_CLIENT == 0
 
 int loopsOfSameKey = 0;
 int lastLoopKey = -1;
@@ -59,7 +59,7 @@ void loop() {
 
   lcdMenu.setCursor(0, 1);
 
-#ifdef SUPPORT_SERIAL_CONTROL
+#if SUPPORT_SERIAL_CONTROL == 1
   if (inSerialControl) {
     if (lcdButtons.keyChanged(&lcd_key)) {
       if (lcd_key == btnSELECT) {
@@ -79,7 +79,7 @@ void loop() {
     bool waitForButtonRelease = false;
 
     // Handle the keys
-#ifdef SUPPORT_GUIDED_STARTUP
+#if SUPPORT_GUIDED_STARTUP == 1
     if (inStartup) {
       waitForButtonRelease = processStartupKeys();
     }
@@ -94,7 +94,7 @@ void loop() {
         case DEC_Menu:
         waitForButtonRelease = processDECKeys();
         break;
-#ifdef SUPPORT_POINTS_OF_INTEREST
+#if SUPPORT_POINTS_OF_INTEREST == 1
         case POI_Menu:
         waitForButtonRelease = processPOIKeys();
         break;
@@ -107,25 +107,25 @@ void loop() {
         case HA_Menu:
         waitForButtonRelease = processHAKeys();
         break;
-#ifdef SUPPORT_HEATING
+#if SUPPORT_HEATING == 1
         case Heat_Menu:
         waitForButtonRelease = processHeatKeys();
         break;
 #endif
 
-#ifdef SUPPORT_CALIBRATION
+#if SUPPORT_CALIBRATION == 1
         case Calibration_Menu:
         waitForButtonRelease = processCalibrationKeys();
         break;
 #endif
 
-#ifdef SUPPORT_MANUAL_CONTROL
+#if SUPPORT_MANUAL_CONTROL == 1
         case Control_Menu:
         waitForButtonRelease = processControlKeys();
         break;
 #endif
 
-#ifdef SUPPORT_INFO_DISPLAY
+#if SUPPORT_INFO_DISPLAY == 1
         case Status_Menu:
         waitForButtonRelease = processStatusKeys();
         break;
@@ -152,7 +152,7 @@ void loop() {
     // Input handled, do output
     lcdMenu.setCursor(0, 1);
 
-#ifdef SUPPORT_GUIDED_STARTUP
+#if SUPPORT_GUIDED_STARTUP == 1
     if (inStartup) {
       printStartupMenu();
     }
@@ -169,7 +169,7 @@ void loop() {
         {
           printDECSubmenu();
         }
-#ifdef SUPPORT_POINTS_OF_INTEREST
+#if SUPPORT_POINTS_OF_INTEREST == 1
         else if (activeMenu == POI_Menu) {
           printPOISubmenu();
         }
@@ -181,23 +181,23 @@ void loop() {
         else if (activeMenu == HA_Menu) {
           printHASubmenu();
         }
-#ifdef SUPPORT_HEATING
+#if SUPPORT_HEATING == 1
         else if (activeMenu == Heat_Menu) {
           printHeatSubmenu();
         }
 #endif
-#ifdef SUPPORT_MANUAL_CONTROL
+#if SUPPORT_MANUAL_CONTROL == 1
         else if (activeMenu == Control_Menu) {
           printControlSubmenu();
         }
 #endif
-#ifdef SUPPORT_CALIBRATION
+#if SUPPORT_CALIBRATION == 1
         else if (activeMenu == Calibration_Menu) {
           printCalibrationSubmenu();
         }
 #endif
 
-#ifdef SUPPORT_INFO_DISPLAY
+#if SUPPORT_INFO_DISPLAY == 1
         else if (activeMenu == Status_Menu) {
           printStatusSubmenu();
         }

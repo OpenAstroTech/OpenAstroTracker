@@ -1,7 +1,7 @@
 #include "Utility.hpp"
 #include "LcdMenu.hpp"
 
-#ifndef HEADLESS_CLIENT
+#if HEADLESS_CLIENT == 0
 
 // Class that drives the LCD screen with a menu
 // You add a string and an id item and this class handles the display and navigation

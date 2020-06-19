@@ -179,7 +179,7 @@
 // How many menu items at most?
 #define MAXMENUITEMS 10
 
-#ifdef SUPPORT_GUIDED_STARTUP
+#if SUPPORT_GUIDED_STARTUP == 1
 bool inStartup = true;        // Start with a guided startup
 #else
 bool inStartup = false;        // Start with a guided startup
@@ -204,7 +204,7 @@ int DECselect;
 // HA variables
 int HAselect;
 
-#ifdef SUPPORT_HEATING
+#if SUPPORT_HEATING == 1
 // HEAT menu variables
 int heatselect;   // Which stepper are we changing?
 int RAheat = 0;   // Are we heating the RA stepper?

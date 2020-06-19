@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef HEADLESS_CLIENT
+#if HEADLESS_CLIENT == 0
 bool processRAKeys() {
   byte key;
   bool waitForRelease = false;

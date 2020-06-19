@@ -127,7 +127,7 @@ void Mount::readPersistentData()
 {
   // Read the magic marker byte and state
   int marker = EEPROM.read(4) + EEPROM.read(5) * 256;
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("EEPROM: Marker: %x ", marker);
 #endif
 
@@ -218,7 +218,7 @@ void Mount::writePersistentData(int which, int val)
     break;
   }
 
-#ifdef DEBUG_MODE
+#if DEBUG_LEVEL&DEBUG_MOUNT_VERBOSE
   logv("EEPROM Write: New Marker is 0xBE, flag is %x (%d)", flag, flag);
 #endif
 
@@ -1196,7 +1196,7 @@ void Mount::loop() {
 
   // Since some of the boards cannot process timer interrupts at the required 
   // speed (or at all), we'll just stick to deterministic calls here.
-  #ifdef RUN_STEPPERS_IN_MAIN_LOOP 
+  #if RUN_STEPPERS_IN_MAIN_LOOP == 1
   interruptLoop();
   #endif
 
@@ -1533,7 +1533,7 @@ void Mount::moveSteppersTo(float targetRA, float targetDEC) {
 //
 /////////////////////////////////
 void Mount::displayStepperPosition() {
-#ifndef HEADLESS_CLIENT
+#if HEADLESS_CLIENT == 0
 
   String disp;
 
@@ -1563,7 +1563,7 @@ void Mount::displayStepperPosition() {
     _lcdMenu->printMenu(String(scratchBuffer));
   }
   else {
-#ifdef SUPPORT_SERIAL_CONTROL
+#if SUPPORT_SERIAL_CONTROL == 1
     if (inSerialControl) {
       sprintf(scratchBuffer, " RA: %s", RAString(LCD_STRING | CURRENT_STRING).c_str());
       _lcdMenu->setCursor(0, 0);
@@ -1592,7 +1592,7 @@ void Mount::displayStepperPosition() {
 //
 /////////////////////////////////
 void Mount::displayStepperPositionThrottled() {
-#ifndef HEADLESS_CLIENT
+#if HEADLESS_CLIENT == 0
   long elapsed = millis() - _lastDisplayUpdate;
   if (elapsed > DISPLAY_UPDATE_TIME) {
     displayStepperPosition();

@@ -57,33 +57,17 @@ extern byte PolarisRASecond;
 // Set to 1 to reverse the direction of DEC motor
 #define INVERT_DEC_DIR 0
 
-////////////////////////////////////////////////////////////////
-//
-// FEATURE SUPPORT SECTION
-//
-// Since the Arduino Uno has very little memory (32KB code, 2KB data) all features
-// stretch the Uno a little too far. So in order to save memory we allow you to enable 
-// and disable features to help manage memory usage.
-// If you run the tracker with an Arduino Mega, you can uncomment all the features.
-//
-// If you would like to drive your OAT mount with only the LCD Shield, 
-// you should comment out SUPPORT_SERIAL_CONTROL
-//
-// If you feel comfortable with configuring the OAT at startup manually, you should comment 
-// out SUPPORT_GUIDED_STARTUP (maybe after you've used it for a while you know what to do).
-//
-// The POI menu can take a little data memory and you may not need it. If not, you can comment
-// out SUPPORT_POINTS_OF_INTEREST
-//
-////////////////////////////////////////////////////////////////
-
-// If you do not have a LCD shield on your Arduino Uno, uncomment the line below. This is
+// If you do not have a LCD shield on your Arduino Uno, set this to 1 on the line below. This is
 // useful if you are always going to run the mount from a laptop anyway.
-// #define HEADLESS_CLIENT
+#define HEADLESS_CLIENT 0
+
+// This is set to 1 for boards that do not support interrupt timers
+#define RUN_STEPPERS_IN_MAIN_LOOP 0
 
 #if defined(ESP8266) || defined(ESP32)
     #define ESPBOARD
-    #define HEADLESS_CLIENT
+    #undef HEADLESS_CLIENT
+    #define HEADLESS_CLIENT 1
     #define WIFI_ENABLED 
     #define INFRA_SSID "yourSSID"
     #define INFRA_WPAKEY "yourWPAkey"
@@ -94,39 +78,60 @@ extern byte PolarisRASecond;
     // 2 - Attempt Infrastructure, Fail over to AP Mode.
     #define WIFI_MODE 2 
     #if defined(ESP8266) 
-        #define RUN_STEPPERS_IN_MAIN_LOOP
+        #undef RUN_STEPPERS_IN_MAIN_LOOP
+        #define RUN_STEPPERS_IN_MAIN_LOOP 1
     #endif
 #endif
 
 
-// Uncomment this to enable the heating menu
+////////////////////////////////////////////////////////////////
+//
+// FEATURE SUPPORT SECTION
+//
+// Since the Arduino Uno has very little memory (32KB code, 2KB data) all features
+// stretch the Uno a little too far. So in order to save memory we allow you to enable 
+// and disable features to help manage memory usage.
+// If you run the tracker with an Arduino Mega, you can set all the features to 1.
+//
+// If you would like to drive your OAT mount with only the LCD Shield, or are on a Uno,
+// you should set SUPPORT_SERIAL_CONTROL to 0
+//
+// If you feel comfortable with configuring the OAT at startup manually, you should set
+// SUPPORT_GUIDED_STARTUP to 0 (maybe after you've used it for a while you know what to do).
+//
+// The POI menu can take a little data memory and you may not need it. If not, you can set
+// SUPPORT_POINTS_OF_INTEREST to 0
+//
+////////////////////////////////////////////////////////////////
+
+// Set this to 1 this to enable the heating menu
 // NOTE: Heating is currently not supported!
-// #define SUPPORT_HEATING
+#define SUPPORT_HEATING 0
 
-#ifndef HEADLESS_CLIENT
+#if HEADLESS_CLIENT == 0
 
-    // Uncomment to support Guided Startup 
-    #define SUPPORT_GUIDED_STARTUP
+    // Set this to 1 to support Guided Startup 
+    #define SUPPORT_GUIDED_STARTUP 1
 
-    // Uncomment to support full GO (was POI) menu. 
-    // If this is commented out you still have a GO menu that has Home and Park.
-    #define SUPPORT_POINTS_OF_INTEREST
+    // Set this to 1 to support full GO (was POI) menu. 
+    // If this is set to 0 you still have a GO menu that has Home and Park.
+    #define SUPPORT_POINTS_OF_INTEREST 1
 
-    // Uncomment to support CTRL menu, allowing you to manually slew the mount with the buttons. 
-    #define SUPPORT_MANUAL_CONTROL
+    // Set this to 1 to support CTRL menu, allowing you to manually slew the mount with the buttons. 
+    #define SUPPORT_MANUAL_CONTROL 1
 
-    // Uncomment to support CAL menu, allowing you to calibrate various things
-    #define SUPPORT_CALIBRATION
+    // Set this to 1 to support CAL menu, allowing you to calibrate various things
+    #define SUPPORT_CALIBRATION 1
 
-    // Uncomment to support INFO menu that displays various pieces of information about the mount. 
-    #define SUPPORT_INFO_DISPLAY
+    // Set this to 1 to support INFO menu that displays various pieces of information about the mount. 
+    #define SUPPORT_INFO_DISPLAY 1
 
-    // Uncomment to support Serial Meade LX200 protocol support
-    #define SUPPORT_SERIAL_CONTROL
+    // Set this to 1 to support Serial Meade LX200 protocol support
+    #define SUPPORT_SERIAL_CONTROL 1
 
 #else
     // If we are making a headleass (no screen, no keyboard) client, always enable Serial.
-    #define SUPPORT_SERIAL_CONTROL
-#endif
+    #define SUPPORT_SERIAL_CONTROL 1
+#endif  // HEADLESS_CLIENT
 
-#endif
+#endif // _GLOBALS_HPP

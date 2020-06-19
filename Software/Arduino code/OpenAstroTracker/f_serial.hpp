@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef SUPPORT_SERIAL_CONTROL
+#if SUPPORT_SERIAL_CONTROL == 1
 #include "MeadeCommandProcessor.hpp"
 
 void processSerialData();

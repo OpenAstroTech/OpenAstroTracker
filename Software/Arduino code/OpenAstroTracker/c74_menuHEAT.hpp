@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef HEADLESS_CLIENT
-#ifdef SUPPORT_HEATING
+#if HEADLESS_CLIENT == 0
+#if SUPPORT_HEATING == 1
 
 bool processHeatKeys() {
   byte key;

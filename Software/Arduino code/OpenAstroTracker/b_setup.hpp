@@ -133,7 +133,7 @@ void finishSetup()
   lcdMenu.printMenu("OpenAstroTracker");
   lcdMenu.setCursor(0, 1);
   lcdMenu.printMenu("     " + version);
-#ifndef HEADLESS_CLIENT
+#if HEADLESS_CLIENT == 0
   unsigned long now = millis();
 #endif
   // Create the command processor singleton
@@ -181,12 +181,12 @@ void finishSetup()
   // Start the tracker.
   mount.startSlewing(TRACKING);
 
-#ifndef HEADLESS_CLIENT
+#if HEADLESS_CLIENT == 0
   // Create the LCD top-level menu items
   lcdMenu.addItem("RA", RA_Menu);
   lcdMenu.addItem("DEC", DEC_Menu);
 
-#ifdef SUPPORT_POINTS_OF_INTEREST
+#if SUPPORT_POINTS_OF_INTEREST == 1
   lcdMenu.addItem("GO", POI_Menu);
 #else
   lcdMenu.addItem("GO", Home_Menu);
@@ -194,19 +194,19 @@ void finishSetup()
 
   lcdMenu.addItem("HA", HA_Menu);
 
-#ifdef SUPPORT_HEATING
+#if SUPPORT_HEATING == 1
   lcdMenu.addItem("HEA", Heat_Menu);
 #endif
 
-#ifdef SUPPORT_MANUAL_CONTROL
+#if SUPPORT_MANUAL_CONTROL == 1
   lcdMenu.addItem("CTRL", Control_Menu);
 #endif
 
-#ifdef SUPPORT_CALIBRATION
+#if SUPPORT_CALIBRATION == 1
   lcdMenu.addItem("CAL", Calibration_Menu);
 #endif
 
-#ifdef SUPPORT_INFO_DISPLAY
+#if SUPPORT_INFO_DISPLAY == 1
   lcdMenu.addItem("INFO", Status_Menu);
 #endif
 

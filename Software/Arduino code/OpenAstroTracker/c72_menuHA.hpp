@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef HEADLESS_CLIENT
+#if HEADLESS_CLIENT == 0
 
 bool processHAKeys() {
   byte key;
@@ -38,7 +38,7 @@ bool processHAKeys() {
         mount.delay(500);
         mount.setHome();
 
-#ifdef SUPPORT_GUIDED_STARTUP
+#if SUPPORT_GUIDED_STARTUP == 1
         if (startupState == StartupWaitForHACompletion) {
           startupState = StartupHAConfirmed;
           inStartup = true;
@@ -48,7 +48,7 @@ bool processHAKeys() {
       break;
 
       case btnRIGHT: {
-#ifdef SUPPORT_GUIDED_STARTUP
+#if SUPPORT_GUIDED_STARTUP == 1
         if (startupState != StartupWaitForHACompletion)
 #endif
         {

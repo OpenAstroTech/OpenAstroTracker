@@ -2,7 +2,7 @@
 #define _LCDMENU_HPP_
 
 #include <Arduino.h>
-#ifndef HEADLESS_CLIENT
+#if HEADLESS_CLIENT == 0
 #include <LiquidCrystal.h>
 #endif
 #include "Globals.hpp"
@@ -69,7 +69,7 @@ private:
   void printChar(char ch);
 
 private:
-#ifndef HEADLESS_CLIENT
+#if HEADLESS_CLIENT == 0
   LiquidCrystal _lcd;   // The LCD screen that we'll display the menu on
   MenuItem** _menuItems;  // The first menu item (linked list)
   byte _numMenuItems;

@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef HEADLESS_CLIENT
+#if HEADLESS_CLIENT == 0
 byte subGoIndex = 0;
 
 bool processHomeKeys() {

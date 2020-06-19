@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef HEADLESS_CLIENT
-#ifdef SUPPORT_MANUAL_CONTROL
+#if HEADLESS_CLIENT == 0
+#if SUPPORT_MANUAL_CONTROL == 1
 bool confirmZeroPoint = false;
 bool setZeroPoint = true;
 
@@ -74,7 +74,7 @@ bool processControlKeys() {
         // Set flag to prevent resetting zero point when moving over the menu items
         inControlMode = false;
 
-#ifdef SUPPORT_GUIDED_STARTUP
+#if SUPPORT_GUIDED_STARTUP == 1
         if (startupState == StartupWaitForPoleCompletion) {
           startupState = StartupPoleConfirmed;
           inStartup = true;

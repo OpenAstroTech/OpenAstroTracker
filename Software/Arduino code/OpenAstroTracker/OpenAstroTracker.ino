@@ -1,3 +1,4 @@
+// Configuration is now done in OpenAstroTracker.hpp and Globals.hpp 
 #include "OpenAstroTracker.hpp"
 #include "a_inits.hpp"
 #include "b_setup.hpp"

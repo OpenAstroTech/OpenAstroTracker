@@ -1,8 +1,8 @@
 #pragma once
 
-#ifndef HEADLESS_CLIENT
+#if HEADLESS_CLIENT == 0
 
-#ifdef SUPPORT_CALIBRATION
+#if SUPPORT_CALIBRATION == 1
 
 // HIGHLIGHT states allow you to pick one of the three sub functions.
 #define HIGHLIGHT_FIRST 1
