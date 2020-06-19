@@ -87,7 +87,7 @@ void setup() {
   Serial.begin(57600);
   //BT.begin(9600);
 
-  LOGV2(DEBUG_ANY, "Hello, universe, this is OAT %s!", version);
+  LOGV2(DEBUG_ANY, "Hello, universe, this is OAT %s!", version.c_str());
 
 /////////////////////////////////
 // ESP32
