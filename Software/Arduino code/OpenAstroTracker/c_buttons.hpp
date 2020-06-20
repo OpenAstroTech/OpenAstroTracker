@@ -1,5 +1,16 @@
 #pragma once
 
+#include <Arduino.h>
+#include "b_setup.hpp"
+#include "c65_startup.hpp"
+#include "c70_menuRA.hpp"
+#include "c71_menuDEC.hpp"
+#include "c722_menuPOI.hpp"
+#include "c72_menuHA.hpp"
+#include "c75_menuCTRL.hpp"
+#include "c76_menuCAL.hpp"
+#include "c78_menuINFO.hpp"
+
 #if SUPPORT_SERIAL_CONTROL == 1
 #include "f_serial.hpp"
 #endif
