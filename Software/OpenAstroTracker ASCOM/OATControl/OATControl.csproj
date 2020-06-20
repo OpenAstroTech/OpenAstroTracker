@@ -84,11 +84,13 @@
     <Compile Include="Converters\BoolToIntConverter.cs" />
     <Compile Include="Converters\BoolToStringConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
-    <Compile Include="Controls\InlineSlider.xaml.cs">
-      <DependentUpon>InlineSlider.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Converters\DoubleDividerConverter.cs" />
+    <Compile Include="Converters\IntToVisibilityConverter.cs" />
+    <Compile Include="Converters\IntToBoolConverter.cs" />
     <Compile Include="Converters\StretchModeConverter.cs" />
+    <Compile Include="DlgRunPolarAlignment.xaml.cs">
+      <DependentUpon>DlgRunPolarAlignment.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DlgChooseOat.xaml.cs">
       <DependentUpon>DlgChooseOat.xaml</DependentUpon>
     </Compile>
@@ -105,6 +107,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="DlgRunPolarAlignment.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="DlgChooseOat.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -116,10 +122,6 @@
     <Page Include="Resources\GreyControls.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\InlineSlider.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

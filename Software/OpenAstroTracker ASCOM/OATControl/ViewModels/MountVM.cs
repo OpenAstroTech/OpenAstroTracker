@@ -51,6 +51,7 @@ namespace OATControl.ViewModels
 		string _driftAlignStatus = "Drift Alignment";
 		float _driftPhase = 0;
 
+		private float _maxMotorSpeed = 600;
 		double _speed = 1.0;
 		string _scopeName = string.Empty;
 		string _mountStatus = string.Empty;
@@ -71,6 +72,7 @@ namespace OATControl.ViewModels
 		DelegateCommand _setHomeCommand;
 		DelegateCommand _parkCommand;
 		DelegateCommand _driftAlignCommand;
+		DelegateCommand _polarAlignCommand;
 
 		DispatcherTimer _timerStatus;
 		DispatcherTimer _timerFineSlew;
@@ -81,7 +83,7 @@ namespace OATControl.ViewModels
 		int _selectedPointOfInterest;
 		private float _slewYSpeed;
 		private float _slewXSpeed;
-		private float _maxMotorSpeed = 400;
+		private int _slewRate = 4;
 		private object _speedUpdateLock = new object();
 		private bool _updatedSpeeds;
 		private bool _isCoarseSlewing = true;
@@ -109,6 +111,7 @@ namespace OATControl.ViewModels
 			_setHomeCommand = new DelegateCommand(async () => await OnSetHome(), () => MountConnected);
 			_parkCommand = new DelegateCommand(async () => await OnPark(), () => MountConnected);
 			_driftAlignCommand = new DelegateCommand(async dur => await OnRunDriftAlignment(int.Parse(dur.ToString())), () => MountConnected);
+			_polarAlignCommand = new DelegateCommand(() => OnRunPolarAlignment(), () => MountConnected);
 
 			_util = new Util();
 			_transform = new ASCOM.Astrometry.Transform.Transform();
@@ -186,7 +189,7 @@ namespace OATControl.ViewModels
 				await Task.Run(async () =>
 				{
 					Log("OATCustom2:  Await access for {0} ", command);
-					while (Interlocked.CompareExchange(ref _runningOATCommand, 1, 0)!=0)
+					while (Interlocked.CompareExchange(ref _runningOATCommand, 1, 0) != 0)
 					{
 						Thread.Sleep(1);
 					}
@@ -209,7 +212,7 @@ namespace OATControl.ViewModels
 					}
 
 				});
-				
+
 				Log("OATCustom2:  Completed '{0}'", command);
 			}
 
@@ -359,7 +362,7 @@ namespace OATControl.ViewModels
 			TargetRAHour = CurrentRAHour;
 			TargetRAMinute = CurrentRAMinute;
 			TargetRASecond = CurrentRASecond;
-			TargetDECDegree= CurrentDECDegree;
+			TargetDECDegree = CurrentDECDegree;
 			TargetDECMinute = CurrentDECMinute;
 			TargetDECSecond = CurrentDECSecond;
 		}
@@ -461,6 +464,12 @@ namespace OATControl.ViewModels
 			}
 		}
 
+		private void OnRunPolarAlignment()
+		{
+			DlgRunPolarAlignment dlg = new DlgRunPolarAlignment(this.RunCustomOATCommandAsync) { Owner = Application.Current.MainWindow, WindowStartupLocation = WindowStartupLocation.CenterOwner }; ;
+			dlg.ShowDialog();
+		}
+
 		private async Task OnRunDriftAlignment(int driftDuration)
 		{
 			_timerStatus.Stop();
@@ -512,6 +521,7 @@ namespace OATControl.ViewModels
 			_setHomeCommand.Requery();
 			_parkCommand.Requery();
 			_driftAlignCommand.Requery();
+			_polarAlignCommand.Requery();
 
 			OnPropertyChanged("ConnectCommandString");
 		}
@@ -520,7 +530,7 @@ namespace OATControl.ViewModels
 		{
 			var dlg = new DlgChooseOat() { Owner = Application.Current.MainWindow, WindowStartupLocation = WindowStartupLocation.CenterOwner };
 
-			var result  = dlg.ShowDialog();
+			var result = dlg.ShowDialog();
 			if (result == true)
 			{
 				//var chooser = new Chooser();
@@ -599,6 +609,7 @@ namespace OATControl.ViewModels
 		public ICommand SetHomeCommand { get { return _setHomeCommand; } }
 		public ICommand ParkCommand { get { return _parkCommand; } }
 		public ICommand DriftAlignCommand { get { return _driftAlignCommand; } }
+		public ICommand PolarAlignCommand { get { return _polarAlignCommand; } }
 
 		/// <summary>
 		/// Gets or sets the RAHour
@@ -946,6 +957,12 @@ namespace OATControl.ViewModels
 			set { SetPropertyValue(ref _maxMotorSpeed, value, SlewSpeedChanged); }
 		}
 
+		public int SlewRate
+		{
+			get { return _slewRate; }
+			set { SetPropertyValue(ref _slewRate, value, SlewRateChanged); }
+		}
+
 		public float SlewXSpeed
 		{
 			get { return _slewXSpeed; }
@@ -958,9 +975,22 @@ namespace OATControl.ViewModels
 			set { SetPropertyValue(ref _slewYSpeed, value, SlewSpeedChanged); }
 		}
 
+		private async void SlewRateChanged(int arg1, int newRate)
+		{
+			float[] speeds = { 0, 0.05f, 0.15f, 0.5f, 1.0f };
+			string slewRateComdChar = "_GCMS";
+			MaxMotorSpeed = speeds[newRate] * 400;
+
+			if (MountConnected)
+			{
+				var slewChange = string.Format(":R{0}#", slewRateComdChar[newRate]);
+				await RunCustomOATCommandAsync(slewChange);
+			}
+		}
+
 		private void SlewSpeedChanged(float arg1, float arg2)
 		{
-			UpdateMotorSpeeds(-_slewXSpeed * MaxMotorSpeed, -_slewYSpeed * MaxMotorSpeed * 2);
+			UpdateMotorSpeeds(-_slewXSpeed * MaxMotorSpeed, -_slewYSpeed * MaxMotorSpeed * 1.5f);
 		}
 
 		private void UpdateMotorSpeeds(float v1, float v2)
@@ -976,28 +1006,30 @@ namespace OATControl.ViewModels
 		private async Task OnFineSlewTimer(object s, EventArgs e)
 		{
 			_timerFineSlew.Stop();
-			if (!_isCoarseSlewing)
+			if (MountConnected)
 			{
-				double raSpeed;
-				double decSpeed;
-				bool doUpdate = false;
-				lock (_speedUpdateLock)
+				if (!_isCoarseSlewing)
 				{
-					raSpeed = RASpeed;
-					decSpeed = DECSpeed;
-					doUpdate = _updatedSpeeds;
-					_updatedSpeeds = false;
-				}
+					double raSpeed;
+					double decSpeed;
+					bool doUpdate = false;
+					lock (_speedUpdateLock)
+					{
+						raSpeed = RASpeed;
+						decSpeed = DECSpeed;
+						doUpdate = _updatedSpeeds;
+						_updatedSpeeds = false;
+					}
 
-				if (doUpdate)
-				{
-					var ras = string.Format(":XSX{0:0.000000}#", raSpeed);
-					var decs = string.Format(":XSY{0:0.000000}#", decSpeed);
-					await RunCustomOATCommandAsync(ras);
-					await RunCustomOATCommandAsync(decs);
+					if (doUpdate)
+					{
+						var ras = string.Format(":XSX{0:0.000000}#", raSpeed);
+						var decs = string.Format(":XSY{0:0.000000}#", decSpeed);
+						await RunCustomOATCommandAsync(ras);
+						await RunCustomOATCommandAsync(decs);
+					}
 				}
 			}
-
 			_timerFineSlew.Start();
 		}
 
