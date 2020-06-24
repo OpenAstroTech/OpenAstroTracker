@@ -11,4 +11,4 @@ I you would be interested in buying the tracker as a printed kit, head over to [
 
 For instructions, please see [this](https://www.instructables.com/id/OpenAstroTracker-a-DSLR-Tracking-GoTo-Mount-for-As/) Instructable 
 
-A list of all guides can be found [here](https://openastrotech.com/guides/)
+A list of all guides can be found [here](https://www.reddit.com/r/OpenAstroTech/comments/gc4pmr/all_current_guides/)
