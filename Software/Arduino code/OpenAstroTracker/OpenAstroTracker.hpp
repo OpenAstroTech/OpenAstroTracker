@@ -18,7 +18,7 @@
 
 #include "Globals.hpp"
 
-String version = "V1.7.12";
+String version = "V1.7.13";
 
 ///////////////////////////////////////////////////////////////////////////
 // Please see the Globals.h file for configuration of the firmware.
@@ -40,10 +40,11 @@ float RAStepsPerRevolution = 4096;
 // One RA revolution needs 26.43 (1057.1mm / 40mm) stepper revolutions (V2: 28.27 (1131mm/40mm))
 // Which means 108245 steps (26.43 x 4096) moves 360 degrees (V2: 115812 steps (28.27 x 4096))
 // So there are 300.1 steps/degree (108245 / 360)  (V2: 322 (115812 / 360))
-// Theoretically correct RA tracking speed is 1.246586 (300 x 14.95903 / 3600) (V2 : 1.333800 (322 x 14.95903 / 3600) steps/sec
+// Theoretically correct RA tracking speed is 1.246586 (300 x 14.95903 / 3600) (V2 : 1.333800 (322 x 14.95903 / 3600) steps/sec (this is for 20T)
 
 // Your drive pulley tooth count:
 #define RAPulleyTeeth 16
+
 // the Circumference of the RA wheel
 // V1: 1057.1
 // V2: 1131
@@ -64,7 +65,7 @@ float DECStepsPerRevolution = 4096;
 // DEC wheel is 2 x PI x 90mm circumference which is 565.5mm
 // One DEC revolution needs 14.13 (565.5mm/40mm) stepper revolutions
 // Which means 57907 steps (14.14 x 4096) moves 360 degrees
-// So there are 160.85 steps/degree (57907/360)
+// So there are 160.85 steps/degree (57907/360) (this is for 20T)
 #define DecPulleyTeeth 16
 
 int DECStepsPerDegree = (565.5 / (DecPulleyTeeth * 2.0) * DECStepsPerRevolution / 360.0);

@@ -211,6 +211,8 @@ void Mount::writePersistentData(int which, int val)
 
   EEPROMupdate(loByteLocation, val & 0x00FF);
   EEPROMupdate(hiByteLocation, (val >> 8) & 0x00FF);
+
+  LOGV5(DEBUG_MOUNT,"EEPROM Write: wrote %x to %d and %x to %d", val & 0x00FF, loByteLocation, (val >> 8) & 0x00FF, hiByteLocation);
 }
 
 /////////////////////////////////
@@ -304,11 +306,16 @@ float Mount::getSpeedCalibration() {
 //
 /////////////////////////////////
 void Mount::setSpeedCalibration(float val, bool saveToStorage) {
+  LOGV3(DEBUG_MOUNT, "Mount: Updating speed calibration from %f to %f", _trackingSpeedCalibration , val);
   _trackingSpeedCalibration = val;
+
+  LOGV2(DEBUG_MOUNT, "Mount: Current tracking speed is %f steps/sec", _trackingSpeed);
 
   // The tracker simply needs to rotate at 15degrees/hour, adjusted for sidereal
   // time (i.e. the 15degrees is per 23h56m04s. 86164s/86400 = 0.99726852. 3590/3600 is the same ratio) So we only go 15 x 0.99726852 in an hour.
   _trackingSpeed = _trackingSpeedCalibration * _stepsPerRADegree * siderealDegreesInHour / 3600.0f;
+
+  LOGV2(DEBUG_MOUNT, "Mount: New tracking speed is %f steps/sec", _trackingSpeed);
 
   if (saveToStorage) {
     val = (val - 1.0) * 10000;
