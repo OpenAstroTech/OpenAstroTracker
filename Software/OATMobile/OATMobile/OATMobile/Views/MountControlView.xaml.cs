@@ -5,6 +5,7 @@ using OATCommunications;
 using OATCommunications.CommunicationHandlers;
 using Xamarin.Forms;
 using OATMobile.ViewModels;
+using System.Linq;
 
 namespace OATMobile.Views {
     // Learn more about making custom code visible in the Xamarin.Forms previewer
@@ -15,20 +16,23 @@ namespace OATMobile.Views {
 
         public MountControlView() {
             InitializeComponent();
-            var handler =
-                new OatmealTelescopeCommandHandlers(
-                    new TcpCommunicationHandler(new IPAddress(new byte[] {192, 168, 86, 57}), 4030));
-            BindingContext = viewModel = new MountControlViewModel(handler);
+            BindingContext = viewModel = new MountControlViewModel();
         }
 
         private void Move_Button_Pressed(object sender, EventArgs e) {
             var dir = (sender as ImageButton).CommandParameter.ToString();
-            viewModel.Commands["StartMoveDirection"].Execute(dir);
+            if (viewModel.Commands.Any())
+            {
+                viewModel.Commands["StartMoveDirection"].Execute(dir);
+            }
         }
 
         private void Move_Button_Released(object sender, EventArgs e) {
             var dir = (sender as ImageButton).CommandParameter.ToString();
-            viewModel.Commands["StopMoveDirection"].Execute(dir);
+            if (viewModel.Commands.Any())
+            {
+                viewModel.Commands["StopMoveDirection"].Execute(dir);
+            }
         }
     }
 }
