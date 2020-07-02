@@ -22,7 +22,7 @@ namespace OATControl
 	/// <summary>
 	/// Interaction logic for DlgChooseOat.xaml
 	/// </summary>
-	public partial class DlgRunPolarAlignment: MetroWindow, INotifyPropertyChanged
+	public partial class DlgRunPolarAlignment : MetroWindow, INotifyPropertyChanged
 	{
 		private DelegateCommand _okCommand;
 		private DelegateCommand _closeCommand;
@@ -43,30 +43,31 @@ namespace OATControl
 				this.State++;
 				if (_state == 2)
 				{
-					await _sendCommand($":Sr02:58:15#,n");
+					// Move RA to Polaris
+					await _sendCommand($":Sr02:58:51#,n");
 
-					// Now set DEC to move to Home position
+					// Move DEC to twice Polaris Dec
 					if (Settings.Default.SiteLatitude > 0) // Northern hemisphere
 					{
-						await _sendCommand($":Sd+90*00:00#,n");
+						await _sendCommand($":Sd+88*42:12#,n");
 					}
 					else
 					{
-						await _sendCommand($":Sd-90*00:00#,n");
+						await _sendCommand($":Sd-88*42:12#,n");
 					}
 					await _sendCommand($":MS#,n");
 				}
 				else if (_state == 3)
 				{
+					// Sync the mount to Polaris coordinates
 					if (Settings.Default.SiteLatitude > 0) // Northern hemisphere
 					{
-						await _sendCommand($":Sd+89*21:03#,n");
+						await _sendCommand($":SY+89*21:06.02:58:51#,n");
 					}
 					else
 					{
-						await _sendCommand($":Sd-89*21:03#,n");
+						await _sendCommand($":SY-89*21:06.02:58:51#,n");
 					}
-					await _sendCommand($":MS#,n");
 				}
 			});
 
@@ -86,8 +87,8 @@ namespace OATControl
 			set
 			{
 				if (value != _state)
-				{ 
-					_state= value;
+				{
+					_state = value;
 					OnPropertyChanged("State");
 				}
 			}

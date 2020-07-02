@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OATControl" xmlns:controls="clr-namespace:OATControl.Converters"
 		mc:Ignorable="d"
-        Title="Polar Alignment" Height="275" Width="480" ResizeMode="NoResize" WindowStyle="ToolWindow" FontSize="16" FontWeight="Bold" >
+        Title="Polar Alignment" Height="220" Width="480" ResizeMode="NoResize" WindowStyle="ToolWindow" FontSize="16" FontWeight="Bold" >
 	<Controls:MetroWindow.Resources>
 		<Style x:Key="StateText" TargetType="TextBlock">
 			<Setter Property="Margin" Value="10,0" />
@@ -26,11 +26,9 @@
 		<controls:IntToVisibilityConverter x:Key="State1Visible" VisibleValue="1" Operator=">="/>
 		<controls:IntToVisibilityConverter x:Key="State2Visible" VisibleValue="2" Operator=">=" />
 		<controls:IntToVisibilityConverter x:Key="State3Visible" VisibleValue="3" Operator=">=" />
-		<controls:IntToVisibilityConverter x:Key="State4Visible" VisibleValue="4" Operator=">=" />
 		<controls:IntToBoolConverter x:Key="State1Enabled" TrueValue="1" Operator="=="/>
 		<controls:IntToBoolConverter x:Key="State2Enabled" TrueValue="2" Operator="==" />
 		<controls:IntToBoolConverter x:Key="State3Enabled" TrueValue="3" Operator="==" />
-		<controls:IntToBoolConverter x:Key="State4Enabled" TrueValue="4" Operator="==" />
 	</Controls:MetroWindow.Resources>
 	<Grid>
 		<Grid.ColumnDefinitions>
@@ -59,40 +57,26 @@
 	 			IsEnabled="{Binding State, Converter={StaticResource State1Enabled}}"
 				/>
 
-		<TextBlock Grid.Row="1" Grid.Column="0" 
+		<TextBlock Grid.Row="2" Grid.Column="0" 
 				   Text="Move the mount such that Polaris is in the center of your cameras viewfinder." 
 				   Style="{StaticResource StateText}" 
-		 		   IsEnabled="{Binding State, Converter={StaticResource State2Enabled}}"
- 	 			   Visibility="{Binding State, Converter={StaticResource State2Visible}}"
-/>
-		<Button Grid.Row="1" Grid.Column="1" 
-				Content="Done" 
-				Command="{Binding OKCommand}" 
-				Style="{StaticResource StateButton}" 
-	 			IsEnabled="{Binding State, Converter={StaticResource State2Enabled}}"
-				Visibility="{Binding State, Converter={StaticResource State2Visible}}"
-				/>
-
-		<TextBlock Grid.Row="2" Grid.Column="0" 
-				   Text="Again move the mount such that Polaris is in the center of your cameras viewfinder." 
-				   Style="{StaticResource StateText}" 
-	 			   IsEnabled="{Binding State, Converter={StaticResource State3Enabled}}"
-				   Visibility="{Binding State, Converter={StaticResource State3Visible}}"
+	 			   IsEnabled="{Binding State, Converter={StaticResource State2Enabled}}"
+				   Visibility="{Binding State, Converter={StaticResource State2Visible}}"
 				   />
 
 		<Button Grid.Row="2" Grid.Column="1" 
 				Content="Done" 
 				Command="{Binding OKCommand}" 
-	 			   IsEnabled="{Binding State, Converter={StaticResource State3Enabled}}"
-				   Visibility="{Binding State, Converter={StaticResource State3Visible}}"
+	 			   IsEnabled="{Binding State, Converter={StaticResource State2Enabled}}"
+				   Visibility="{Binding State, Converter={StaticResource State2Visible}}"
 				Style="{StaticResource StateButton}" 
 		/>
 
 		<TextBlock Grid.Row="3" Grid.Column="0"  
 				   Text="Your mount is now polar aligned." 
 				   Style="{StaticResource StateText}" 
-	 			   IsEnabled="{Binding State, Converter={StaticResource State4Enabled}}"
-				   Visibility="{Binding State, Converter={StaticResource State4Visible}}"
+	 			   IsEnabled="{Binding State, Converter={StaticResource State3Enabled}}"
+				   Visibility="{Binding State, Converter={StaticResource State3Visible}}"
 		/>
 
 		<Button Grid.Row="3" Grid.Column="2" 
