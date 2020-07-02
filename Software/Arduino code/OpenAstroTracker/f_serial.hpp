@@ -1,5 +1,7 @@
 #pragma once
 
+#include "b_setup.hpp"
+
 #if SUPPORT_SERIAL_CONTROL == 1
 #include "MeadeCommandProcessor.hpp"
 

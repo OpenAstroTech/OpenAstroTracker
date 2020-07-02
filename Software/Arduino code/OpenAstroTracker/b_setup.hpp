@@ -2,6 +2,11 @@
 
 #pragma once
 
+#include "OpenAstroTracker.hpp"
+#include "a_inits.hpp"
+#include "LcdMenu.hpp"
+#include "Utility.hpp"
+
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(0);
 
