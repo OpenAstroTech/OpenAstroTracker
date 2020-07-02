@@ -164,7 +164,8 @@ void finishSetup()
   #endif
 
   // The mount uses EEPROM storage locations 0-10 that it reads during construction
-
+  // The LCD uses EEPROM storage location 11
+  
   // Read other persisted values and set in mount
   DayTime haTime = DayTime(EEPROM.read(1), EEPROM.read(2), 0);
 

@@ -50,6 +50,10 @@ public:
   // Pass thru utility function
   void setCursor(byte col, byte row);
 
+  // Set and get the brightness of the backlight
+  void setBacklightBrightness(int level, bool persist = true);
+  int getBacklightBrightness();
+
   // Pass thru utility function
   void clear();
 
@@ -79,6 +83,7 @@ private:
   byte _activeRow;        // The row that the LCD cursor is on
   byte _activeCol;        // The column that the LCD cursor is on
   String _lastDisplay[2]; // The last string that was displayed on each row
+  int _brightness;
 
   byte _degrees = 1;
   byte _minutes = 2;

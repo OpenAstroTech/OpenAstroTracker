@@ -1,3 +1,4 @@
+#include <EEPROM.h>
 #include "Utility.hpp"
 #include "LcdMenu.hpp"
 
@@ -17,7 +18,12 @@ LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(8, 9, 4, 5, 6, 7) {
   _activeCol = -1;
   _lastDisplay[0] = "";
   _lastDisplay[1] = "";
-  _menuItems = new MenuItem * [maxItems];
+  _menuItems = new MenuItem * [maxItems];  
+
+  _brightness = EEPROM.read(11);
+  LOGV2(DEBUG_INFO, "LCD: Brightness from EEPROM is %d", _brightness);
+  // pinMode(10, OUTPUT);
+  // analogWrite(10, _brightness);
 
   // Create special characters for degrees and arrows
   _lcd.createChar(_degrees, DegreesBitmap);
@@ -69,6 +75,26 @@ void LcdMenu::setCursor(byte col, byte row) {
 // Pass thru utility function
 void LcdMenu::clear() {
   _lcd.clear();
+}
+
+// Set the brightness of the backlight
+void LcdMenu::setBacklightBrightness(int level, bool persist) {
+  _brightness = level;
+
+  LOGV2(DEBUG_INFO, "LCD: Writing %d as brightness", _brightness  );
+
+  // analogWrite(10, _brightness);
+
+  LOGV2(DEBUG_INFO, "LCD: Wrote %d as brightness", _brightness  );
+  if (persist) {
+    LOGV2(DEBUG_INFO, "LCD: Saving %d as brightness", (_brightness & 0x00FF));
+    EEPROMupdate(11, (byte)(_brightness & 0x00FF));
+  }
+}
+
+// Get the current brightness
+int LcdMenu::getBacklightBrightness() {
+  return _brightness;
 }
 
 // Go to the next menu item from currently active one
@@ -282,3 +308,50 @@ void LcdMenu::printMenu(String line) {}
 void LcdMenu::printChar(char ch) {}
 
 #endif
+
+/*
+class SubMenu {
+	
+  display() { }
+  onUp() { } 
+  onDown() { } 
+
+	}
+}
+
+class Menu {
+	List<SubMenu> subMenu
+	int activeSubIndex=0
+	UseContinuousKeys(UP|DOWN|LEFT|RIGHT)
+
+	virtual OnUp() { previousSubmenu }
+	virtual OnDown() { nextSubmenu }
+	virtual OnRight() { nextmenu }	
+	virtual OnLeft() { nextItemInSubmenu }
+	virtual OnSelect() { confirm }
+	
+	displayMenu() { }
+	
+	run(){
+		if (any continuous keys)
+		{
+			if 
+		}
+	}
+}
+
+class MenuSystem {
+	List<Menu> menus;
+	
+	run() {
+		if (!activeMenu->run())
+		{
+			activeMenu++
+		}
+	}
+}
+
+Menu RA ;
+RA.fnDisplay = [] { _lcdMenu.goto(0,1); _lcdMenu.printMenu(_mount.targetRA()); }
+RA.fnUp() = [] { }
+*/

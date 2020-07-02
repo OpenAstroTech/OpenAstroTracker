@@ -1,4 +1,5 @@
 #pragma once
+#include "Globals.hpp"
 
 #if HEADLESS_CLIENT == 0
 
@@ -12,15 +13,14 @@
 #define HIGHLIGHT_RA_STEPS 4
 #define HIGHLIGHT_DEC_STEPS 5
 #define HIGHLIGHT_BACKLASH_STEPS 6
+// #define HIGHLIGHT_BACKLIGHT 7
 #define HIGHLIGHT_LAST 6
 
 // Polar calibration goes through these three states:
-//  11- moving to RA of Polaris and then waiting on confirmation that Polaris is centered
-//  12- moving to DEC beyond Polaris and waiting on confirmation that Polaris is centered
+//  11- moving to RA and DEC beyond Polaris and waiting on confirmation that Polaris is centered
 //  13- moving back to home position
-#define POLAR_CALIBRATION_WAIT 11
-#define POLAR_CALIBRATION_GO  12
-#define POLAR_CALIBRATION_WAIT_HOME  13
+#define POLAR_CALIBRATION_WAIT_CENTER_POLARIS 11
+#define POLAR_CALIBRATION_WAIT_HOME  12
 
 // Speed calibration only has one state, allowing you to adjust the speed with UP and DOWN
 #define SPEED_CALIBRATION 14
@@ -41,10 +41,13 @@
 // Backlash calibration only has one state, allowing you to adjust the number of steps with UP and DOWN
 #define BACKLASH_CALIBRATION 19
 
+// Brightness setting only has one state, allowing you to adjust the brightness with UP and DOWN
+// #define BACKLIGHT_CALIBRATION 20
+
 // Start off with Polar Alignment higlighted.
 byte calState = HIGHLIGHT_FIRST;
 
-// SPeed adjustment variable. Added to 1.0 after dividing by 10000 to get final speed
+// Speed adjustment variable. Added to 1.0 after dividing by 10000 to get final speed
 float SpeedCalibration;
 
 // The current delay in ms when changing calibration value. The longer a button is depressed, the smaller this gets.
@@ -58,6 +61,9 @@ byte driftDuration = 0;
 
 // The number of steps to use for backlash compensation (read from the mount).
 int BacklashSteps = 0;
+
+// The brightness of the backlight of the LCD shield.
+// int Brightness = 255;
 
 bool checkProgressiveUpDown(int* val) {
   bool ret = true;
@@ -99,6 +105,9 @@ void gotoNextHighlightState(int dir) {
   else if (calState == HIGHLIGHT_SPEED) {
     SpeedCalibration = (mount.getSpeedCalibration() - 1.0) * 10000.0 + 0.5;
   }
+  // else if (calState == HIGHLIGHT_BACKLIGHT) {
+  //   Brightness = lcdMenu.getBacklightBrightness();
+  // }
 }
 
 bool processCalibrationKeys() {
@@ -141,8 +150,22 @@ bool processCalibrationKeys() {
   else if (calState == BACKLASH_CALIBRATION) {
     checkForKeyChange = checkProgressiveUpDown(&BacklashSteps);
   }
+  // else if (calState == BACKLIGHT_CALIBRATION) {
+  //   checkForKeyChange = checkProgressiveUpDown(&Brightness);
+  //   if (!checkForKeyChange) {
+  //     LOGV2(DEBUG_INFO,"CAL: Brightness changed to %d", Brightness);
+  //     Brightness = clamp(Brightness, 0, 255);
+  //     LOGV2(DEBUG_INFO,"CAL: Brightness clamped to %d", Brightness);
+  //     lcdMenu.setBacklightBrightness(Brightness, false);
+  //     LOGV2(DEBUG_INFO,"CAL: Brightness set %d", (int)lcdMenu.getBacklightBrightness());
+  //   }
+  // }
+  else if (calState == RA_STEP_CALIBRATION) {
+    checkForKeyChange = checkProgressiveUpDown(&RAStepsPerDegree);
+  }
   else if (calState == POLAR_CALIBRATION_WAIT_HOME) {
     if (!mount.isSlewingRAorDEC()) {
+
       lcdMenu.updateDisplay();
       calState = HIGHLIGHT_POLAR;
     }
@@ -179,13 +202,9 @@ bool processCalibrationKeys() {
 
     switch (calState) {
 
-      case POLAR_CALIBRATION_GO: {
+      case POLAR_CALIBRATION_WAIT_HOME: {
         if (key == btnSELECT) {
-          lcdMenu.printMenu("Aligned, homing");
-          mount.delay(600);
-          mount.setTargetToHome();
-          mount.startSlewingToTarget();
-          calState = POLAR_CALIBRATION_WAIT_HOME;
+          calState = HIGHLIGHT_POLAR;
         }
         if (key == btnRIGHT) {
           lcdMenu.setNextActive();
@@ -259,18 +278,36 @@ bool processCalibrationKeys() {
       }
       break;
 
+      // case BACKLIGHT_CALIBRATION:
+      // {
+      //   // UP and DOWN are handled above
+      //   if (key == btnSELECT) {
+      //     LOGV2(DEBUG_GENERAL, "CAL Menu: Set brightness to %d", Brightness);
+      //     lcdMenu.setBacklightBrightness(Brightness);
+      //     lcdMenu.printMenu("Level stored.");
+      //     mount.delay(500);
+      //     calState = HIGHLIGHT_BACKLIGHT;
+      //   }
+      //   else if (key == btnRIGHT) {
+      //     lcdMenu.setNextActive();
+      //     calState = HIGHLIGHT_BACKLIGHT;
+      //   }
+      // }
+      // break;
+
       case HIGHLIGHT_POLAR: {
         if (key == btnDOWN) gotoNextHighlightState(1);
         else if (key == btnUP) gotoNextHighlightState(-1);
         else if (key == btnSELECT) {
-          calState = POLAR_CALIBRATION_WAIT;
+          calState = POLAR_CALIBRATION_WAIT_CENTER_POLARIS;
 
           // Move the RA to that of Polaris. Moving to this RA aligns the DEC axis such that
           // it swings along the line between Polaris and the Celestial Pole.
           mount.targetRA() = DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond);
 
-          // Now set DEC to move to Home position
-          mount.targetDEC() = DegreeTime(90 - (NORTHERN_HEMISPHERE ? 90 : -90), 0, 0);
+          // Set DEC to move the same distance past Polaris as
+          // it is from the Celestial Pole. That equates to 88deg 42' 11.2".
+          mount.targetDEC() = DegreeTime(88 - (NORTHERN_HEMISPHERE ? 90 : -90), 42, 11);
           mount.startSlewingToTarget();
         }
         else if (key == btnRIGHT) {
@@ -279,14 +316,21 @@ bool processCalibrationKeys() {
       }
                           break;
 
-      case POLAR_CALIBRATION_WAIT: {
+      case POLAR_CALIBRATION_WAIT_CENTER_POLARIS: {
         if (key == btnSELECT) {
-          calState = POLAR_CALIBRATION_GO;
+          calState = POLAR_CALIBRATION_WAIT_HOME;
+          lcdMenu.printMenu("Aligned, homing");
+          mount.delay(750);
 
-          // RA is already set. Now set DEC to move the same distance past Polaris as
-          // it is from the Celestial Pole. That equates to 88deg 42' 6".
-          mount.targetDEC() = DegreeTime(89 - (NORTHERN_HEMISPHERE ? 90 : -90), 21, 3);
+          // Sync the mount to Polaris, since that's where it's pointing
+          DayTime currentRa = mount.currentRA();
+          mount.syncPosition(currentRa.getHours(), currentRa.getMinutes(), currentRa.getSeconds(), 89 - (NORTHERN_HEMISPHERE ? 90 : -90), 21, 6);
+
+          // Go home from here
+          mount.setTargetToHome();
           mount.startSlewingToTarget();
+          lcdMenu.setNextActive();
+          calState = HIGHLIGHT_POLAR;
         }
         else if (key == btnRIGHT) {
           lcdMenu.setNextActive();
@@ -371,6 +415,16 @@ bool processCalibrationKeys() {
         }
       }
                                    break;
+      // case HIGHLIGHT_BACKLIGHT : {
+      //   if (key == btnDOWN) gotoNextHighlightState(1);
+      //   if (key == btnUP) gotoNextHighlightState(-1);
+      //   else if (key == btnSELECT) calState = BACKLIGHT_CALIBRATION;
+      //   else if (key == btnRIGHT) {
+      //     lcdMenu.setNextActive();
+      //     calState = HIGHLIGHT_FIRST;
+      //   }
+      // }
+      // break;
     }
   }
 
@@ -398,7 +452,10 @@ void printCalibrationSubmenu()
   else if (calState == HIGHLIGHT_BACKLASH_STEPS) {
     lcdMenu.printMenu(">Backlash Adjust");
   }
-  else if ((calState == POLAR_CALIBRATION_WAIT_HOME) || (calState == POLAR_CALIBRATION_WAIT) || (calState == POLAR_CALIBRATION_GO)) {
+  // else if (calState == HIGHLIGHT_BACKLIGHT) {
+  //   lcdMenu.printMenu(">LCD Brightness");
+  // }
+  else if (calState == POLAR_CALIBRATION_WAIT_CENTER_POLARIS) {
     if (!mount.isSlewingRAorDEC()) {
       lcdMenu.setCursor(0, 0);
       lcdMenu.printMenu("Centr on Polaris");
@@ -428,6 +485,10 @@ void printCalibrationSubmenu()
     sprintf(scratchBuffer, "Backlash: %d", BacklashSteps);
     lcdMenu.printMenu(scratchBuffer);
   }
+  // else if (calState == BACKLIGHT_CALIBRATION) {
+  //   sprintf(scratchBuffer, "Brightness: %d", Brightness);
+  //   lcdMenu.printMenu(scratchBuffer);
+  // }
 }
 #endif
 

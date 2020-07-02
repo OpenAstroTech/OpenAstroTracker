@@ -20,7 +20,8 @@
 #define LOGV4(level,a,b,c,d) logv((level),(a),(b),(c),(d))
 #define LOGV5(level,a,b,c,d,e) logv((level),(a),(b),(c),(d),(e))
 #define LOGV6(level,a,b,c,d,e,f) logv((level),(a),(b),(c),(d),(e),(f))
-#define LOGV7(level,a,b,c,d,e),f,g logv((level),(a),(b),(c),(d),(e),(f),(g))
+#define LOGV7(level,a,b,c,d,e,f,g) logv((level),(a),(b),(c),(d),(e),(f),(g))
+#define LOGV8(level,a,b,c,d,e,f,g,h) logv((level),(a),(b),(c),(d),(e),(f),(g),(h))
 
 // Realtime timer class using microseconds to time stuff
 class RealTime {

@@ -569,8 +569,13 @@ const DegreeTime Mount::currentDEC() const {
 // to be at the calculated positions (that they would be if we were slewing there).
 void Mount::syncPosition(int raHour, int raMinute, int raSecond, int decDegree, int decMinute, int decSecond)
 {
+  _targetRA.set(raHour,raMinute,raSecond);
+  _targetDEC.set(decDegree,decMinute,decSecond);
+
   float targetRA, targetDEC;
+  LOGV7(DEBUG_MOUNT, "Mount: Sync Position to RA: %d:%d:%d and DEC: %d*%d:%d", raHour, raMinute, raSecond, decDegree, decMinute, decSecond);
   calculateRAandDECSteppers(targetRA, targetDEC);
+  LOGV3(DEBUG_MOUNT, "Mount: Sync Stepper Position is RA: %d and DEC: %d", targetRA, targetDEC);
   _stepperRA->setCurrentPosition(targetRA);
   _stepperDEC->setCurrentPosition(targetDEC);
 }
