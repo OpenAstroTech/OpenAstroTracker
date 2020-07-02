@@ -428,7 +428,7 @@ namespace OATControl.ViewModels
 
 						Log("LST: {0}", _util.HoursToHMS(lst, "h", "m", "s"));
 						var stringResult = await RunCustomOATCommandAsync(string.Format(":SHL{0}#,n", _util.HoursToHMS(lst, "", "", "")));
-						lst -= _util.HMSToHours("02:58:04");
+						lst -= _util.HMSToHours("02:58:51");
 						Log("HA: {0}", _util.HoursToHMS(lst, "h", "m", "s"));
 						await UpdateCurrentCoordinates();
 						TargetDECDegree = CurrentDECDegree;
