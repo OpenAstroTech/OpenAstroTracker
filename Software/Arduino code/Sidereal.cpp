@@ -8,7 +8,7 @@ static DayTime Sidereal::calculateByGPS(TinyGPSPlus* gps){
 }
 
 static const double Sidereal::calculateTheta(double deltaJ, double longitude, float timeUTC){
-    float theta = C1;
+    double theta = C1;
     theta += C2 * deltaJ;
     theta += C3 * timeUTC;
     theta += longitude;
