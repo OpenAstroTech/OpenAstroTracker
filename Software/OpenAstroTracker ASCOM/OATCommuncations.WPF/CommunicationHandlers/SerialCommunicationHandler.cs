@@ -111,6 +111,7 @@ namespace OATCommunications.WPF.CommunicationHandlers
 		{
 			if (_port.IsOpen)
 			{
+				_port.Write(":Qq#");
 				_port.Close();
 				_port = null;
 			}

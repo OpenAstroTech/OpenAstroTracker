@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -56,7 +57,7 @@ namespace OATControl.ViewModels
 		string _scopeName = string.Empty;
 		string _mountStatus = string.Empty;
 		string _currentHA = string.Empty;
-
+		CultureInfo _oatCulture = new CultureInfo("en-US");
 		Util _util;
 		ASCOM.Astrometry.Transform.Transform _transform;
 
@@ -447,7 +448,7 @@ namespace OATControl.ViewModels
 						OnPropertyChanged("DECStepsPerDegree");
 
 						steps = await RunCustomOATCommandAsync(string.Format(":XGS#,#"));
-						SpeedCalibrationFactor = float.Parse(steps);
+						SpeedCalibrationFactor = float.Parse(steps, _oatCulture);
 
 						await ReadHA();
 						MountConnected = true;
@@ -757,7 +758,7 @@ namespace OATControl.ViewModels
 
 		private void OnSpeedFactorChanged(double oldVal, double newVal)
 		{
-			Task.Run(async () => await RunCustomOATCommandAsync(string.Format(":XSS{0:0.0000}#", newVal)));
+			Task.Run(async () => await RunCustomOATCommandAsync(string.Format(_oatCulture, ":XSS{0:0.0000}#", newVal)));
 		}
 
 		/// <summary>
@@ -1023,8 +1024,8 @@ namespace OATControl.ViewModels
 
 					if (doUpdate)
 					{
-						var ras = string.Format(":XSX{0:0.000000}#", raSpeed);
-						var decs = string.Format(":XSY{0:0.000000}#", decSpeed);
+						var ras = string.Format(_oatCulture, ":XSX{0:0.000000}#", raSpeed);
+						var decs = string.Format(_oatCulture, ":XSY{0:0.000000}#", decSpeed);
 						await RunCustomOATCommandAsync(ras);
 						await RunCustomOATCommandAsync(decs);
 					}
