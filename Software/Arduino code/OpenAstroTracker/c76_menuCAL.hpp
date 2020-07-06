@@ -160,9 +160,6 @@ bool processCalibrationKeys() {
   //     LOGV2(DEBUG_INFO,"CAL: Brightness set %d", (int)lcdMenu.getBacklightBrightness());
   //   }
   // }
-  else if (calState == RA_STEP_CALIBRATION) {
-    checkForKeyChange = checkProgressiveUpDown(&RAStepsPerDegree);
-  }
   else if (calState == POLAR_CALIBRATION_WAIT_HOME) {
     if (!mount.isSlewingRAorDEC()) {
 

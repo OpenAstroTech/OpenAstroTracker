@@ -4,8 +4,6 @@
 #include <Arduino.h>
 #include <WString.h>
 
-void EEPROMupdate(int loc, byte val);
-
 // Set to 1 if you are in the northern hemisphere.
 #define NORTHERN_HEMISPHERE 1
 
@@ -33,7 +31,8 @@ extern byte PolarisRASecond;
 #define DEBUG_MOUNT_VERBOSE  0x10
 #define DEBUG_GENERAL        0x20
 #define DEBUG_MEADE          0x40
-#define DEBUG_ANY            0x7F
+#define DEBUG_VERBOSE        0x80
+#define DEBUG_ANY            0xFF
 
 // Bit Name                 Output
 //  0  DEBUG_INFO           General output, like startup variables and status
@@ -48,8 +47,10 @@ extern byte PolarisRASecond;
 // Note that if you use an app to control OAT, ANY debug output will likely confuse that app.
 // Debug output is useful if you are using Wifi to control the OAT or if you are issuing
 // manual commands via a terminal.
+//
 // #define DEBUG_LEVEL (DEBUG_SERIAL|DEBUG_WIFI|DEBUG_INFO|DEBUG_MOUNT|DEBUG_GENERAL)
 // #define DEBUG_LEVEL (DEBUG_ANY)
+// #define DEBUG_LEVEL (DEBUG_INFO|DEBUG_MOUNT|DEBUG_GENERAL)
 #define DEBUG_LEVEL (DEBUG_NONE)
 
 // Set this to 1 to run a key diagnostic. No tracker functions are on at all.
@@ -73,8 +74,8 @@ extern byte PolarisRASecond;
     #undef HEADLESS_CLIENT
     #define HEADLESS_CLIENT 1
     #define WIFI_ENABLED 
-    #define INFRA_SSID "yourSSID"
-    #define INFRA_WPAKEY "yourWPAkey"
+    #define INFRA_SSID "YouSSID"
+    #define INFRA_WPAKEY "YourWPAKey"
     #define OAT_WPAKEY "superSecret"
     #define HOSTNAME "OATerScope"
     // 0 - Infrastructure Only - Connecting to a Router

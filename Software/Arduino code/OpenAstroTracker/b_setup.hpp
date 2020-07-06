@@ -6,6 +6,7 @@
 #include "a_inits.hpp"
 #include "LcdMenu.hpp"
 #include "Utility.hpp"
+#include "EPROMStore.hpp"
 
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(0);
@@ -94,6 +95,8 @@ void setup() {
 
   LOGV2(DEBUG_ANY, "Hello, universe, this is OAT %s!", version.c_str());
 
+  EPROMStore::initialize();
+
 /////////////////////////////////
 // ESP32
 /////////////////////////////////
@@ -165,9 +168,10 @@ void finishSetup()
 
   // The mount uses EEPROM storage locations 0-10 that it reads during construction
   // The LCD uses EEPROM storage location 11
+  mount.readConfiguration();
   
   // Read other persisted values and set in mount
-  DayTime haTime = DayTime(EEPROM.read(1), EEPROM.read(2), 0);
+  DayTime haTime = DayTime(EPROMStore::Storage()->read(1), EPROMStore::Storage()->read(2), 0);
 
   LOGV2(DEBUG_INFO, "SpeedCal: %s", String(mount.getSpeedCalibration(), 5).c_str());
   LOGV2(DEBUG_INFO, "TRKSpeed: %s", String(mount.getSpeed(TRACKING), 5).c_str());

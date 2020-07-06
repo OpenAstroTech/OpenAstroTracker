@@ -1,4 +1,5 @@
 #pragma once
+#include "EPROMStore.hpp"
 
 #if HEADLESS_CLIENT == 0
 
@@ -32,8 +33,8 @@ bool processHAKeys() {
       break;
 
       case btnSELECT: {
-        EEPROM.update(1, mount.HA().getHours());
-        EEPROM.update(2, mount.HA().getMinutes());
+        EPROMStore::Storage()->update(1, mount.HA().getHours());
+        EPROMStore::Storage()->update(2, mount.HA().getMinutes());
         lcdMenu.printMenu("Stored.");
         mount.delay(500);
         mount.setHome();

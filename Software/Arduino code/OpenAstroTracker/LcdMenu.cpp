@@ -1,5 +1,5 @@
-#include <EEPROM.h>
 #include "Utility.hpp"
+#include "EPROMStore.hpp"
 #include "LcdMenu.hpp"
 
 #if HEADLESS_CLIENT == 0
@@ -20,7 +20,7 @@ LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(8, 9, 4, 5, 6, 7) {
   _lastDisplay[1] = "";
   _menuItems = new MenuItem * [maxItems];  
 
-  _brightness = EEPROM.read(11);
+  _brightness = EPROMStore::Storage()->read(11);
   LOGV2(DEBUG_INFO, "LCD: Brightness from EEPROM is %d", _brightness);
   // pinMode(10, OUTPUT);
   // analogWrite(10, _brightness);
@@ -88,7 +88,7 @@ void LcdMenu::setBacklightBrightness(int level, bool persist) {
   LOGV2(DEBUG_INFO, "LCD: Wrote %d as brightness", _brightness  );
   if (persist) {
     LOGV2(DEBUG_INFO, "LCD: Saving %d as brightness", (_brightness & 0x00FF));
-    EEPROMupdate(11, (byte)(_brightness & 0x00FF));
+    EPROMStore::Storage()->update(11, (byte)(_brightness & 0x00FF));
   }
 }
 

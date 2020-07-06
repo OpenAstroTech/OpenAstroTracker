@@ -1,10 +1,9 @@
-#include <EEPROM.h>
-
 #include "InterruptCallback.hpp"
 
 #include "LcdMenu.hpp"
 #include "Mount.hpp"
 #include "Utility.hpp"
+#include "EPROMStore.hpp"
 
 //mountstatus
 #define STATUS_PARKED              0B0000000000000000
@@ -108,6 +107,18 @@ void Mount::startTimerInterrupts()
 
 /////////////////////////////////
 //
+// readConfiguration
+//
+/////////////////////////////////
+void Mount::readConfiguration()
+{
+  LOGV1(DEBUG_INFO, "Mount: Reading configuration data from EEPROM");
+  readPersistentData();
+  LOGV1(DEBUG_INFO, "Mount: Done reading configuration data from EEPROM");
+}
+  
+/////////////////////////////////
+//
 // readPersistentData
 //
 /////////////////////////////////
@@ -124,29 +135,44 @@ void Mount::startTimerInterrupts()
 void Mount::readPersistentData()
 {
   // Read the magic marker byte and state
-  int marker = EEPROM.read(4) + EEPROM.read(5) * 256;
-  LOGV2(DEBUG_MOUNT_VERBOSE, "EEPROM: Marker: %x ", marker);
+  uint8_t markerLo=EPROMStore::Storage()->read(4);
+  uint8_t markerHi=EPROMStore::Storage()->read(5);
+  
+  uint16_t marker = (uint16_t)markerLo + (uint16_t)markerHi * 256;
+  LOGV4(DEBUG_INFO, "Mount: EEPROM: Marker: %x (L:%d  H:%d)", marker, markerLo, markerHi);
 
   if ((marker & 0xFF01) == 0xBE01) {
-    _stepsPerRADegree = EEPROM.read(6) + EEPROM.read(7) * 256;
-    LOGV2(DEBUG_MOUNT,"EEPROM: RA Marker OK! RA steps/deg is %d", _stepsPerRADegree);
+    _stepsPerRADegree = EPROMStore::Storage()->read(6) + EPROMStore::Storage()->read(7) * 256;
+    LOGV2(DEBUG_INFO,"Mount: EEPROM: RA Marker OK! RA steps/deg is %d", _stepsPerRADegree);
+  }
+  else{
+    LOGV1(DEBUG_INFO,"Mount: EEPROM: No stored value for RA steps");
   }
 
   if ((marker & 0xFF02) == 0xBE02) {
-    _stepsPerDECDegree = EEPROM.read(8) + EEPROM.read(9) * 256;
-    LOGV2(DEBUG_MOUNT,"EEPROM: DEC Marker OK! DEC steps/deg is %d", _stepsPerDECDegree);
+    _stepsPerDECDegree = EPROMStore::Storage()->read(8) + EPROMStore::Storage()->read(9) * 256;
+    LOGV2(DEBUG_INFO,"Mount: EEPROM: DEC Marker OK! DEC steps/deg is %d", _stepsPerDECDegree);
+  }
+  else{
+    LOGV1(DEBUG_INFO,"Mount: EEPROM: No stored value for DEC steps");
   }
 
   float speed = 1.0;
   if ((marker & 0xFF04) == 0xBE04) {
-    int adjust = EEPROM.read(0) + EEPROM.read(3) * 256;
+    int adjust = EPROMStore::Storage()->read(0) + EPROMStore::Storage()->read(3) * 256;
     speed = 1.0 + 1.0 * adjust / 10000.0;
-    LOGV3(DEBUG_MOUNT,"EEPROM: Speed Marker OK! Speed adjust is %d, speedFactor is %f", adjust, speed);
+    LOGV3(DEBUG_INFO,"Mount: EEPROM: Speed Marker OK! Speed adjust is %d, speedFactor is %f", adjust, speed);
+  }
+  else{
+    LOGV1(DEBUG_INFO,"Mount: EEPROM: No stored value for speed factor");
   }
 
   if ((marker & 0xFF08) == 0xBE08) {
-    _backlashCorrectionSteps = EEPROM.read(10) + EEPROM.read(11) * 256;
-    LOGV2(DEBUG_MOUNT,"EEPROM: Backlash Steps Marker OK! Backlash correction is %d", _backlashCorrectionSteps);
+    _backlashCorrectionSteps = EPROMStore::Storage()->read(10) + EPROMStore::Storage()->read(11) * 256;
+    LOGV2(DEBUG_INFO,"Mount: EEPROM: Backlash Steps Marker OK! Backlash correction is %d", _backlashCorrectionSteps);
+  }
+    else{
+    LOGV1(DEBUG_INFO,"Mount: EEPROM: No stored value for backlash correction");
   }
 
   setSpeedCalibration(speed, false);
@@ -159,15 +185,17 @@ void Mount::readPersistentData()
 /////////////////////////////////
 void Mount::writePersistentData(int which, int val)
 {
-  int flag = 0x00;
+  uint8_t flag = 0x00;
   int loByteLocation = 0;
   int hiByteLocation = 0;
 
   // If we're written something before...
-  if (EEPROM.read(5) == 0xBE) {
+  uint8_t magicMarker = EPROMStore::Storage()->read(5);
+  LOGV4(DEBUG_INFO,"Mount: EEPROM Write: Marker is %x, flag is %x (%d)", magicMarker, flag, flag);
+  if (magicMarker == 0xBE) {
     // ... read the current state ...
-    flag = EEPROM.read(4);
-    LOGV3(DEBUG_MOUNT,"EEPROM Write: Marker is 0xBE, flag is %x (%d)", flag, flag);
+    flag = EPROMStore::Storage()->read(4);
+    LOGV3(DEBUG_INFO,"Mount: EEPROM Write: Marker is 0xBE, flag is %x (%d)", flag, flag);
   }
   switch (which) {
     case RA_STEPS:
@@ -176,6 +204,7 @@ void Mount::writePersistentData(int which, int val)
       flag |= 0x01;
       loByteLocation = 6;
       hiByteLocation = 7;
+      LOGV2(DEBUG_INFO,"Mount: EEPROM Write: Updating RA steps to %d", val);
     }
     break;
     case DEC_STEPS:
@@ -184,6 +213,7 @@ void Mount::writePersistentData(int which, int val)
       flag |= 0x02;
       loByteLocation = 8;
       hiByteLocation = 9;
+      LOGV2(DEBUG_INFO,"Mount: EEPROM Write: Updating DEC steps to %d", val);
     }
     break;
     case SPEED_FACTOR_DECIMALS:
@@ -192,6 +222,7 @@ void Mount::writePersistentData(int which, int val)
       flag |= 0x04;
       loByteLocation = 0;
       hiByteLocation = 3;
+      LOGV2(DEBUG_INFO,"Mount: EEPROM Write: Updating Speed factor to %d", val);
     }
     break;
     case BACKLASH_CORRECTION:
@@ -200,19 +231,20 @@ void Mount::writePersistentData(int which, int val)
       flag |= 0x08;
       loByteLocation = 10;
       hiByteLocation = 11;
+      LOGV2(DEBUG_INFO,"Mount: EEPROM Write: Updating Backlash to %d", val);
     }
     break;
   }
 
-  LOGV3(DEBUG_MOUNT_VERBOSE,"EEPROM Write: New Marker is 0xBE, flag is %x (%d)", flag, flag);
+  LOGV3(DEBUG_INFO,"Mount: EEPROM Write: New Marker is 0xBE, flag is %x (%d)", flag, flag);
 
-  EEPROMupdate(4, flag);
-  EEPROMupdate(5, 0xBE);
+  EPROMStore::Storage()->update(4, flag);
+  EPROMStore::Storage()->update(5, 0xBE);
 
-  EEPROMupdate(loByteLocation, val & 0x00FF);
-  EEPROMupdate(hiByteLocation, (val >> 8) & 0x00FF);
+  EPROMStore::Storage()->update(loByteLocation, val & 0x00FF);
+  EPROMStore::Storage()->update(hiByteLocation, (val >> 8) & 0x00FF);
 
-  LOGV5(DEBUG_MOUNT,"EEPROM Write: wrote %x to %d and %x to %d", val & 0x00FF, loByteLocation, (val >> 8) & 0x00FF, hiByteLocation);
+  LOGV5(DEBUG_INFO,"Mount: EEPROM Write: Wrote %x to %d and %x to %d", val & 0x00FF, loByteLocation, (val >> 8) & 0x00FF, hiByteLocation);
 }
 
 /////////////////////////////////

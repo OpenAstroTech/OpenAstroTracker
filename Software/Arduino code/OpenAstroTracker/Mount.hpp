@@ -188,6 +188,9 @@ public:
   // Called when startup is complete and the mount needs to start updating steppers.
   void  startTimerInterrupts();
 
+  // Read the saved configuration from persistent storage
+  void readConfiguration();
+  
 private:
 
   // Reads values from EEPROM that configure the mount (if previously stored)
