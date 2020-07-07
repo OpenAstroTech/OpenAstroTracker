@@ -16,6 +16,8 @@ namespace OATCommunications.CommunicationHandlers
 
 		public TcpCommunicationHandler(string spec)
 		{
+			Log.WriteLine($"COMMFACTORY: Creating Wifi handler at {spec} ...");
+
 			string ip = string.Empty;
 			string port = string.Empty;
 
@@ -26,13 +28,16 @@ namespace OATCommunications.CommunicationHandlers
 				{
 					ip = spec.Substring(0, colon);
 					port = spec.Substring(colon + 1);
+
+					Log.WriteLine($"COMMFACTORY: Wifi handler will monitor at {ip}:{port} ...");
+
 					_ip = IPAddress.Parse(ip);
 					_port = int.Parse(port);
 					_client = new TcpClient();
 				}
-				catch
+				catch (Exception ex)
 				{
-
+					Log.WriteLine($"COMMFACTORY: Failed to create TCP client. {ex.Message}");
 				}
 			}
 		}
@@ -63,6 +68,7 @@ namespace OATCommunications.CommunicationHandlers
 		{
 			if (_client == null)
 			{
+				Log.WriteLine($"TCP: Configuration error, IP [{_ip}] or port [{_port}] is invalid.");
 				return new CommandResponse(string.Empty, false, $"Configuration error, IP [{_ip}] or port [{_port}] is invalid.");
 			}
 
@@ -116,6 +122,7 @@ namespace OATCommunications.CommunicationHandlers
 						case ResponseType.DigitResponse:
 						case ResponseType.FullResponse:
 							{
+								Log.WriteLine("TCP: [{0}] Expecting a reply needed to command, waiting...", command);
 								var response = new byte[256];
 								var respCount = await stream.ReadAsync(response, 0, response.Length);
 								respString = Encoding.ASCII.GetString(response, 0, respCount).TrimEnd("#".ToCharArray());
@@ -153,6 +160,7 @@ namespace OATCommunications.CommunicationHandlers
 		{
 			if (_client != null && _client.Connected)
 			{
+				Log.WriteLine("TCP: Closing port.");
 				_client.Close();
 				_client = null;
 			}
