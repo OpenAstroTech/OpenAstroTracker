@@ -9,6 +9,8 @@
 // NOTE: ESP8266 support is not complete and does not work. This code is never called.
 #ifdef ESP8266
   #include "ESP8266TimerInterrupt.h"
+#elif defined ESP32
+  // We don't support ESP32 boards in interrupt mode
 #elif defined __AVR_ATmega328P__ || defined __AVR_ATmega2560__   // Arduino Uno or Mega
   #define USE_TIMER_1     true
   #define USE_TIMER_2     true
@@ -17,9 +19,7 @@
   #define USE_TIMER_5     false
   #include "TimerInterrupt.h"
 #else
-  // Need to add support for ESP32 boards here
-
-  #error Only Arduino Uno, Mega and ESP8266 boards currently supported.
+  #error Unrecognized board selected. Either implement interrupt code or define the board here.
 #endif
 
 #ifdef ESP8266
@@ -46,6 +46,8 @@ bool InterruptCallback::setInterval(float intervalMs, interrupt_callback_p callb
 
   // This timer library requires microsecond interval definitions
   interruptHandler.setInterval(1000.0f * intervalMs, esp8266callback);
+
+  return true;
 }
 
 void InterruptCallback::start()
@@ -56,8 +58,56 @@ void InterruptCallback::stop()
 {
 }
 
-#else
+#elif defined(ESP32)
 
+/*
+volatile bool _lock = false;
+
+void IRAM_ATTR callbackProxy() {
+    if (_lock) {
+        return;
+    }
+
+    timerAlarmDisable(_timer);
+    _lock = true;
+    if (func != NULL) {
+        func(data);
+    }
+    _lock = false;
+    timerAlarmEnable(_timer);
+}
+
+bool InterruptCallback::setInterval(float intervalMs, interrupt_callback_p callback, void* payload){
+    func = callback;
+    data = payload;
+
+    // 80 divisor = 1uS resolution.
+    _timer = timerBegin(0, 80, true);
+    timerAttachInterrupt(_timer, callbackProxy, true);
+    timerAlarmWrite(_timer, (uint64_t)(intervalMs * 1000.0f), true);
+    timerAlarmEnable(_timer);
+
+    LOGV1(DEBUG_INFO, "Setup ESP32 Timer");
+
+  return true;
+}
+
+void InterruptCallback::stop(){
+    LOGV1(DEBUG_INFO, "Stop ESP32 Timer");
+    if (timerAlarmEnabled(_timer)) {
+        timerAlarmDisable(_timer);
+    }
+}
+
+void InterruptCallback::start(){
+    LOGV1(DEBUG_INFO, "Start ESP32 Timer");
+    if (!timerAlarmEnabled(_timer)){
+        timerAlarmEnable(_timer);
+    }
+}
+*/
+
+#elif defined __AVR_ATmega328P__ || defined __AVR_ATmega2560__
 
 bool InterruptCallback::setInterval(float intervalMs, interrupt_callback_p callback, void* payload)
 {

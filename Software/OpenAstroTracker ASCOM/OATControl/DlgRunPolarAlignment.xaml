@@ -1,0 +1,89 @@
+﻿<Controls:MetroWindow x:Class="OATControl.DlgRunPolarAlignment"
+		xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OATControl" xmlns:controls="clr-namespace:OATControl.Converters"
+		mc:Ignorable="d"
+        Title="Polar Alignment" Height="220" Width="480" ResizeMode="NoResize" WindowStyle="ToolWindow" FontSize="16" FontWeight="Bold" >
+	<Controls:MetroWindow.Resources>
+		<Style x:Key="StateText" TargetType="TextBlock">
+			<Setter Property="Margin" Value="10,0" />
+			<Setter Property="Foreground" Value="#FF301010"  />
+			<Setter Property="TextWrapping" Value="Wrap"  />
+			<Setter Property="VerticalAlignment" Value="Center"  />
+			<Setter Property="HorizontalAlignment" Value="Left" />
+		</Style>
+		<Style x:Key="StateButton" TargetType="Button" BasedOn="{StaticResource AccentedSquareButtonStyle}" >
+			<Setter Property="Margin" Value="10,10" />
+			<Setter Property="Padding" Value="10,10" />
+			<Setter Property="Width" Value="100" />
+			<Setter Property="Foreground" Value="{StaticResource AccentSelectedColorBrush}"  />
+			<Setter Property="VerticalAlignment" Value="Center"  />
+			<Setter Property="HorizontalAlignment" Value="Left" />
+		</Style>
+		<controls:IntToVisibilityConverter x:Key="State1Visible" VisibleValue="1" Operator=">="/>
+		<controls:IntToVisibilityConverter x:Key="State2Visible" VisibleValue="2" Operator=">=" />
+		<controls:IntToVisibilityConverter x:Key="State3Visible" VisibleValue="3" Operator=">=" />
+		<controls:IntToBoolConverter x:Key="State1Enabled" TrueValue="1" Operator="=="/>
+		<controls:IntToBoolConverter x:Key="State2Enabled" TrueValue="2" Operator="==" />
+		<controls:IntToBoolConverter x:Key="State3Enabled" TrueValue="3" Operator="==" />
+	</Controls:MetroWindow.Resources>
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*" />
+			<ColumnDefinition Width="Auto" />
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+
+		<TextBlock Grid.Row="0" Grid.Column="0"  
+				   Text="Is the mount at the home position?" 
+				   Style="{StaticResource StateText}" 
+		 		   IsEnabled="{Binding State, Converter={StaticResource State1Enabled}}"
+				   />
+		<Button Grid.Row="0" Grid.Column="1" 
+				Content="Yes" 
+				Command="{Binding OKCommand}" 
+				Style="{StaticResource StateButton}" 
+	 			IsEnabled="{Binding State, Converter={StaticResource State1Enabled}}"
+				/>
+
+		<TextBlock Grid.Row="2" Grid.Column="0" 
+				   Text="Move the mount such that Polaris is in the center of your cameras viewfinder." 
+				   Style="{StaticResource StateText}" 
+	 			   IsEnabled="{Binding State, Converter={StaticResource State2Enabled}}"
+				   Visibility="{Binding State, Converter={StaticResource State2Visible}}"
+				   />
+
+		<Button Grid.Row="2" Grid.Column="1" 
+				Content="Done" 
+				Command="{Binding OKCommand}" 
+	 			   IsEnabled="{Binding State, Converter={StaticResource State2Enabled}}"
+				   Visibility="{Binding State, Converter={StaticResource State2Visible}}"
+				Style="{StaticResource StateButton}" 
+		/>
+
+		<TextBlock Grid.Row="3" Grid.Column="0"  
+				   Text="Your mount is now polar aligned." 
+				   Style="{StaticResource StateText}" 
+	 			   IsEnabled="{Binding State, Converter={StaticResource State3Enabled}}"
+				   Visibility="{Binding State, Converter={StaticResource State3Visible}}"
+		/>
+
+		<Button Grid.Row="3" Grid.Column="2" 
+				Content="Close" 
+				Command="{Binding CloseCommand}" 
+				Style="{StaticResource StateButton}"  
+				IsCancel="True" 
+				/>
+	</Grid>
+</Controls:MetroWindow>

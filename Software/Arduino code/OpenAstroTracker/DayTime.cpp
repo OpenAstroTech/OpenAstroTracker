@@ -67,7 +67,7 @@ float DayTime::getTotalSeconds() const {
   return 3600.0f * getHours() + (float)getMinutes() * 60.0f + (float)getSeconds();
 }
 
-int DayTime::getTime(int& h, int& m, int& s) const {
+void DayTime::getTime(int& h, int& m, int& s) const {
   h = hours;
   m = mins;
   s = secs;
@@ -228,16 +228,12 @@ float DegreeTime::getTotalDegrees() const {
 
 void DegreeTime::checkHours() {
   if (hours > 0) {
-#ifdef DEBUG_MODE
-    logv("CheckHours: Degrees is more than 0, clamping");
-#endif
+    LOGV1(DEBUG_GENERAL, "CheckHours: Degrees is more than 0, clamping");
     hours = 0;
   }
   if (hours < -180) {
-#ifdef DEBUG_MODE
-    logv("CheckHours: Degrees is less than -180, clamping");
-#endif
-      hours = -180;
+    LOGV1(DEBUG_GENERAL, "CheckHours: Degrees is less than -180, clamping");
+    hours = -180;
   }
 }
 

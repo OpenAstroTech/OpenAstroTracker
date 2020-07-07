@@ -1,6 +1,8 @@
 #pragma once
 
-#ifdef SUPPORT_SERIAL_CONTROL
+#include "b_setup.hpp"
+
+#if SUPPORT_SERIAL_CONTROL == 1
 #include "MeadeCommandProcessor.hpp"
 
 void processSerialData();
@@ -12,7 +14,7 @@ void serialLoop()
     mount.loop();
     mount.displayStepperPositionThrottled();
 
-#ifdef ESP8266
+#ifdef ESPBOARD
     processSerialData();
 #endif
 
@@ -23,7 +25,7 @@ void serialLoop()
 
 //////////////////////////////////////////////////
 // Event that is triggered when the serial port receives data.
-#ifndef ESP8266
+#ifndef ESPBOARD
 void serialEvent() {
     processSerialData();
 }
@@ -34,11 +36,14 @@ void processSerialData() {
     while (Serial.available() > 0) {
 
         String inCmd = Serial.readStringUntil('#');
+        LOGV2(DEBUG_SERIAL, "Serial: Received: %s", inCmd.c_str());
 
-        auto retVal = MeadeCommandProcessor::instance()->processCommand(inCmd);
+        String retVal = MeadeCommandProcessor::instance()->processCommand(inCmd);
         if (retVal != "") {
+            LOGV2(DEBUG_SERIAL,"Serial: Replied:  %s", inCmd.c_str());
             Serial.print(retVal);
         }
+        
         mount.loop();
     }
 }

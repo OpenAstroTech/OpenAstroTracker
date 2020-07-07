@@ -1,8 +1,8 @@
 #pragma once
 
-#ifndef HEADLESS_CLIENT
+#if HEADLESS_CLIENT == 0
 
-#ifdef SUPPORT_INFO_DISPLAY
+#if SUPPORT_INFO_DISPLAY == 1
 byte infoIndex = 0;
 byte maxInfoIndex = 4;
 byte subIndex = 0;

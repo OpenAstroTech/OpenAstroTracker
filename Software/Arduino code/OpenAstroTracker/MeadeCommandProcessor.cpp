@@ -364,7 +364,7 @@ MeadeCommandProcessor* MeadeCommandProcessor::instance() {
 MeadeCommandProcessor::MeadeCommandProcessor(Mount* mount, LcdMenu* lcdMenu) {
   _mount = mount;
 
-  // In HEADLESS_CLIENT, the lcdMenu is just an empty shell class to save having to null check everywhere
+  // In HEADLESS_CLIENT mode, the lcdMenu is just an empty shell class to save having to null check everywhere
   _lcdMenu = lcdMenu;
 }
 
@@ -474,9 +474,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
         deg = -90 - deg;
       }
       _mount->targetDEC().set(deg, inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
-#ifdef DEBUG_MODE
-      logv("MeadeSetInfo: Received Target DEC: %s", _mount->targetDEC().ToString());
-#endif
+      LOGV2(DEBUG_MEADE, "MEADE: SetInfo: Received Target DEC: %s", _mount->targetDEC().ToString());
       return "1";
     }
     else {
@@ -492,9 +490,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     if ((inCmd[3] == ':') && (inCmd[6] == ':'))
     {
       _mount->targetRA().set(inCmd.substring(1, 3).toInt(), inCmd.substring(4, 6).toInt(), inCmd.substring(7, 9).toInt());
-#ifdef DEBUG_MODE
-      logv("MeadeSetInfo: Received Target RA: %s", _mount->targetRA().ToString());
-#endif
+      LOGV2(DEBUG_MEADE, "MEADE: SetInfo: Received Target RA: %s", _mount->targetRA().ToString());
       return "1";
     }
     else {
@@ -513,9 +509,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
       }
 
       DayTime lst(hLST, minLST, secLST);
-#ifdef DEBUG_MODE
-      logv("MeadeSetInfo: Received LST: %d:%d:%d", hLST, minLST, secLST);
-#endif
+      LOGV4(DEBUG_MEADE, "MEADE: SetInfo: Received LST: %d:%d:%d", hLST, minLST, secLST);
       _mount->setLST(lst);
     }
     else if (inCmd[1] == 'P') {
@@ -527,9 +521,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
       // Set HA
       int hHA = inCmd.substring(1, 3).toInt();
       int minHA = inCmd.substring(4, 6).toInt();
-#ifdef DEBUG_MODE
-      logv("MeadeSetInfo: Received HA: %d:%d:%d", hHA, minHA, 0);
-#endif
+      LOGV4(DEBUG_MEADE, "MEADE: SetInfo: Received HA: %d:%d:%d", hHA, minHA, 0);
       _mount->setHA(DayTime(hHA, minHA, 0));
     }
 
@@ -794,11 +786,11 @@ String MeadeCommandProcessor::handleMeadeQuit(String inCmd) {
 // Set Slew Rates
 /////////////////////////////
 String MeadeCommandProcessor::handleMeadeSetSlewRate(String inCmd) {
-  switch (inCmd[1]) {
-    case 'S': // Slew   - Fastest
-    case 'M': // Find   - 2nd Fastest
-    case 'C': // Center - 2nd Slowest
-    case 'G': // Guide  - Slowest
+  switch (inCmd[0]) {
+    case 'S': _mount->setSlewRate(4); break; // Slew   - Fastest
+    case 'M': _mount->setSlewRate(3); break; // Find   - 2nd Fastest
+    case 'C': _mount->setSlewRate(2); break; // Center - 2nd Slowest
+    case 'G': _mount->setSlewRate(1); break; // Guide  - Slowest
     default:
     break;
   }
@@ -806,7 +798,8 @@ String MeadeCommandProcessor::handleMeadeSetSlewRate(String inCmd) {
 }
 
 String MeadeCommandProcessor::processCommand(String inCmd) {
-  if (inCmd[0] = ':') {
+  if (inCmd[0] == ':') {
+    LOGV2(DEBUG_MEADE, "MEADE: Received command '%s'", inCmd.c_str());
     char command = inCmd[1];
     inCmd = inCmd.substring(2);
     switch (command) {
@@ -820,11 +813,9 @@ String MeadeCommandProcessor::processCommand(String inCmd) {
       case 'R': return handleMeadeSetSlewRate(inCmd);
       case 'X': return handleMeadeExtraCommands(inCmd);
       default:
-#ifdef DEBUG_MODE
-      Serial.println("Unknown Command in MeadeCommandProcessor::processCommand " + inCmd);
-      return "";
-#endif
+        LOGV2(DEBUG_MEADE, "MEADE: Received unknown command '%s'", inCmd.c_str());
       break;
     }
   }
+  return "";
 }

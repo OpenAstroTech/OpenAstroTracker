@@ -2,12 +2,21 @@
 #include "Globals.hpp"
 
 #ifdef WIFI_ENABLED
-#include "Mount.hpp";
-#include "LcdMenu.hpp";
+#include "Mount.hpp"
+#include "LcdMenu.hpp"
 #include "MeadeCommandProcessor.hpp"
 #include "WiFiServer.h"
 #include "WiFiUDP.h"
 #include "WiFiClient.h"
+
+#ifdef ESP8266
+#include "ESP8266Wifi.h"
+#endif
+
+#ifdef ESP32
+#include <WiFi.h>
+#include <WiFiSTA.h>
+#endif
 
 class WifiControl {
 public: 
@@ -30,8 +39,8 @@ private:
     WiFiUDP* _udp;
     WiFiClient client;
 
-    long _infraStart = 0;
-    int _infraWait = 30000; // 30 second timeout for 
+    unsigned long _infraStart = 0;
+    unsigned long _infraWait = 30000; // 30 second timeout for 
 };
 
 extern WifiControl wifiControl;

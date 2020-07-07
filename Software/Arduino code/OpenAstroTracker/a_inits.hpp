@@ -1,11 +1,7 @@
-// If you really want to look through this code, i apologise for my terrible coding
-
 #pragma once
 
 //#include <SoftwareSerial.h>
-#include <EEPROM.h>
 #include <AccelStepper.h>
-//#include <avr8-stub.h>
 #include <LiquidCrystal.h>
 
 #include "Utility.hpp"
@@ -13,19 +9,16 @@
 #include "Mount.hpp"
 #include "MeadeCommandProcessor.hpp"
 
-
 #define HALFSTEP 8
 #define FULLSTEP 4
 #define DRIVER 1
-
-//SoftwareSerial BT(10,11);
 
 ///////////////////////////////////////////////////////////////////////////
 // ESP8266 Wifi Board (NodeMCU)
 ///////////////////////////////////////////////////////////////////////////
 #ifdef ESP8266
 // RA Motor pins
-  #ifdef INVERT_RA_DIR
+  #if INVERT_RA_DIR == 1
     #define RAmotorPin1  D0    // IN1 auf ULN2003 driver 1
     #define RAmotorPin3  D1    // IN2 auf ULN2003 driver 1
     #define RAmotorPin2  D2    // IN3 auf ULN2003 driver 1
@@ -38,7 +31,7 @@
   #endif
 
 // DEC Motor pins
-  #ifdef INVERT_DEC_DIR
+  #if INVERT_DEC_DIR == 1
     #define DECmotorPin1  D5    // IN1 auf ULN2003 driver 2
     #define DECmotorPin3  D6    // IN3 auf ULN2003 driver 2
     #define DECmotorPin2  D7    // IN2 auf ULN2003 driver 2
@@ -57,13 +50,51 @@
     #define st4East       SD3
 #endif
 
+
+///////////////////////////////////////////////////////////////////////////
+// ESP32 Wifi Board
+///////////////////////////////////////////////////////////////////////////
+#ifdef ESP32
+// RA Motor pins
+  #if INVERT_RA_DIR == 1
+    #define RAmotorPin1  35    // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  34    // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  39    // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  36    // IN4 auf ULN2003 driver 1
+  #else
+    #define RAmotorPin1  23    // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  22    // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  21    // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  19    // IN4 auf ULN2003 driver 1
+  #endif
+
+// DEC Motor pins
+  #if INVERT_DEC_DIR == 1
+    #define DECmotorPin1  26    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin3  25    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin2  33    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin4  32    // IN4 auf ULN2003 driver 2
+  #else
+    #define DECmotorPin1  18    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin3  5     // IN3 auf ULN2003 driver 2
+    #define DECmotorPin2  17    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin4  16    // IN4 auf ULN2003 driver 2
+  #endif
+
+// ST4 Input Pins - TODO.
+    /*#define st4North      SD0 
+    #define st4South      SD1
+    #define st4West       SD2
+    #define st4East       SD3*/
+#endif
+
 ///////////////////////////////////////////////////////////////////////////
 // Arduino Uno
 ///////////////////////////////////////////////////////////////////////////
 #ifdef __AVR_ATmega328P__ // normal Arduino Mapping
 #if RA_Stepper_TYPE == 0  // 28BYJ
 // RA Motor pins
-  #ifdef INVERT_RA_DIR
+  #if INVERT_RA_DIR == 1
     #define RAmotorPin1  12    // IN1 auf ULN2003 driver 1
     #define RAmotorPin3  11    // IN2 auf ULN2003 driver 1
     #define RAmotorPin2  3     // IN3 auf ULN2003 driver 1
@@ -82,7 +113,7 @@
 
 // DEC Motor pins
 #if DEC_Stepper_TYPE == 0  // 28BYJ
-  #ifdef INVERT_DEC_DIR
+  #if INVERT_DEC_DIR == 1
     #define DECmotorPin1  18    // IN1 auf ULN2003 driver 2
     #define DECmotorPin2  16    // IN2 auf ULN2003 driver 2
     #define DECmotorPin3  17    // IN3 auf ULN2003 driver 2
@@ -107,7 +138,7 @@
 #ifdef __AVR_ATmega2560__  // Arduino Mega
 #if RA_Stepper_TYPE == 0  // 28BYJ
 // RA Motor pins
-  #ifdef INVERT_RA_DIR
+  #if INVERT_RA_DIR == 1
     #define RAmotorPin1  22    // IN1 auf ULN2003 driver 1
     #define RAmotorPin3  24    // IN2 auf ULN2003 driver 1
     #define RAmotorPin2  26    // IN3 auf ULN2003 driver 1
@@ -126,7 +157,7 @@
 
 // DEC Motor pins
 #if DEC_Stepper_TYPE == 0  // 28BYJ
-  #ifdef INVERT_DEC_DIR
+  #if INVERT_DEC_DIR == 1
     #define DECmotorPin1  36    // IN1 auf ULN2003 driver 2
     #define DECmotorPin3  34    // IN2 auf ULN2003 driver 2
     #define DECmotorPin2  32    // IN3 auf ULN2003 driver 2
@@ -160,7 +191,7 @@
 // How many menu items at most?
 #define MAXMENUITEMS 10
 
-#ifdef SUPPORT_GUIDED_STARTUP
+#if SUPPORT_GUIDED_STARTUP == 1
 bool inStartup = true;        // Start with a guided startup
 #else
 bool inStartup = false;        // Start with a guided startup
@@ -185,7 +216,7 @@ int DECselect;
 // HA variables
 int HAselect;
 
-#ifdef SUPPORT_HEATING
+#if SUPPORT_HEATING == 1
 // HEAT menu variables
 int heatselect;   // Which stepper are we changing?
 int RAheat = 0;   // Are we heating the RA stepper?

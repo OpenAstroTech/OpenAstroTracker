@@ -2,6 +2,8 @@
 using OATMobile.Services;
 using OATMobile.Views;
 
+using OATCommunications.CommunicationHandlers;
+
 namespace OATMobile
 {
     public partial class App : Application
@@ -17,6 +19,7 @@ namespace OATMobile
 
         protected override void OnStart()
         {
+            CommunicationHandlerFactory.DiscoverDevices();
         }
 
         protected override void OnSleep()

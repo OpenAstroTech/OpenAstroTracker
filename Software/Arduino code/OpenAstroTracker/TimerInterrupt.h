@@ -33,9 +33,7 @@
 #define TIMER_INTERRUPT_DEBUG      0
 #endif
 
-#if defined(ESP8266) || defined(ESP32)
-#error This code is designed to run on Arduino AVR (Nano, UNO, Mega, etc.) platform, not ESP8266 nor ESP32! Please check your Tools->Board setting.
-#endif
+#if !defined(ESP8266) && !defined(ESP32)
 
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
@@ -626,3 +624,5 @@ ISR(TIMER5_COMPA_vect)
 #endif      //#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__)
 
 #endif      //#ifndef TimerInterrupt_h
+
+#endif

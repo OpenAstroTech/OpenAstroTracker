@@ -3,56 +3,109 @@ using OATCommunications.Model;
 using OATCommunications.TelescopeCommandHandlers;
 using Xamarin.Forms;
 using Xamarin.Essentials;
+using System.Linq;
+using OATCommunications;
+using OATCommunications.CommunicationHandlers;
+using System.Net;
+using System.Timers;
 
-namespace OATMobile.ViewModels {
-    public class MountControlViewModel : ViewModelBase {
+namespace OATMobile.ViewModels
+{
+	public class MountControlViewModel : ViewModelBase
+	{
+		private ITelescopeCommandHandler _cmdHandler;
 
-        private ITelescopeCommandHandler _cmdHandler;
+		public string OppositeParkStateText { get; private set; } = "Unpark";
+		private Timer discoveryTimer = new Timer(500);
 
-        public string OppositeParkStateText { get; private set; } = "Unpark";
+		public MountControlViewModel()
+		{
+			Title = "Control";
 
-        public MountControlViewModel(ITelescopeCommandHandler handler) {
-            _cmdHandler = handler;
-            Title = "Control";
+			if (CommunicationHandlerFactory.AvailableDevices.Any())
+			{
+				ConnectToDevice();
+			}
+			else
+			{
+				discoveryTimer.Elapsed += (s, e) =>
+				{
+					if (CommunicationHandlerFactory.AvailableDevices.Any())
+					{
+						discoveryTimer.Stop();
 
-            _cmdHandler.MountState.PropertyChanged += MountStateOnPropertyChanged;
+						// This is probably needed for Windows. Seems to work OK on Android. 
+						// RunOnUiThread() is platform specific :-(
 
-            Commands.Add("GoHome", new Command(async () => {
-                await _cmdHandler.GoHome();
-                await _cmdHandler.RefreshMountState();
-            }));
+						//Activity.RunOnUiThread(() =>
+						//{
+							ConnectToDevice();
+							discoveryTimer.Dispose();
+							discoveryTimer = null;
+						//});
+					}
+				};
 
-            Commands.Add("StartMoveDirection", new Command<string>(x => { _cmdHandler.StartMoving(x); }));
+				discoveryTimer.Start();
+			}
+		}
 
-            Commands.Add("StopMoveDirection", new Command<string>(x => { _cmdHandler.StopMoving(x); }));
+		public void ConnectToDevice()
+		{
+			var device = CommunicationHandlerFactory.ConnectToDevice(CommunicationHandlerFactory.AvailableDevices.First());
+			_cmdHandler = new OatmealTelescopeCommandHandlers(device);
 
-            Commands.Add("SetTracking", new Command<bool>(x => { _cmdHandler.SetTracking(x); }));
+			_cmdHandler.MountState.PropertyChanged += MountStateOnPropertyChanged;
 
-            Commands.Add("SetLocation", new Command(async () => {
-                var location = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Default));
-                await _cmdHandler.SetLocation(location.Latitude, location.Longitude, 0, 0);
-            }));
+			Commands.Add("GoHome", new Command(async () =>
+			{
+				await _cmdHandler?.GoHome();
+				await _cmdHandler?.RefreshMountState();
+			}));
 
-            Commands.Add("ToggleParkedState", new Command(async () => {
-                if (_cmdHandler.MountState.IsTracking) {
-                    await _cmdHandler.SetTracking(false);
-                }
-                else {
-                    await _cmdHandler.SetTracking(true);
-                }
-            }));
+			Commands.Add("StartMoveDirection", new Command<string>(x => { _cmdHandler?.StartMoving(x); }));
 
-            _cmdHandler.RefreshMountState();
-        }
+			Commands.Add("StopMoveDirection", new Command<string>(x => { _cmdHandler?.StopMoving(x); }));
 
-        private void MountStateOnPropertyChanged(object sender, PropertyChangedEventArgs e) {
-            switch (e.PropertyName) {
-                case nameof(MountState.IsTracking):
-                    OppositeParkStateText = _cmdHandler.MountState.IsTracking ? "Park" : "Unpark";
-                    break;
-            }
-        }
+			Commands.Add("SetTracking", new Command<bool>(x => { _cmdHandler?.SetTracking(x); }));
 
-        public bool IsConnected { get; private set; }
-    }
+			Commands.Add("SetLocation", new Command(async () =>
+			{
+				var location = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Default));
+				await _cmdHandler?.SetLocation(location.Latitude, location.Longitude, 0, 0);
+			}));
+
+			Commands.Add("ToggleParkedState", new Command(async () =>
+			{
+				if (_cmdHandler != null)
+				{
+					if (_cmdHandler.MountState.IsTracking)
+					{
+						await _cmdHandler?.SetTracking(false);
+					}
+					else
+					{
+						await _cmdHandler?.SetTracking(true);
+					}
+				}
+			}));
+
+			_cmdHandler?.RefreshMountState();
+		}
+
+		private void MountStateOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (_cmdHandler != null)
+			{
+				switch (e.PropertyName)
+				{
+					case nameof(MountState.IsTracking):
+						OppositeParkStateText = _cmdHandler.MountState.IsTracking ? "Park" : "Unpark";
+						break;
+				}
+			}
+		}
+
+		public bool IsConnected { get; private set; }
+	}
 }

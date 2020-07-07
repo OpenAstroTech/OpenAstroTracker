@@ -1,6 +1,8 @@
 #pragma once
 
-#ifndef HEADLESS_CLIENT
+#include "b_setup.hpp"
+
+#if HEADLESS_CLIENT == 0
 byte subGoIndex = 0;
 
 bool processHomeKeys() {

@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef HEADLESS_CLIENT
-#ifdef SUPPORT_MANUAL_CONTROL
+#if HEADLESS_CLIENT == 0
+#if SUPPORT_MANUAL_CONTROL == 1
 bool confirmZeroPoint = false;
 bool setZeroPoint = true;
 
@@ -32,6 +32,8 @@ bool processKeyStateChanges(int key, int dir)
       loopsWithKeyPressed++;
     }
   }
+  
+  return ret;
 }
 
 bool processControlKeys() {
@@ -59,20 +61,16 @@ bool processControlKeys() {
       if (key == btnSELECT) {
         if (setZeroPoint) {
           // Leaving Control Menu, so set stepper motor positions to zero.
-#ifdef DEBUG_MODE
-          logv("Mount::CALC: Calling setHome()!");
-#endif
+          LOGV1(DEBUG_GENERAL, "CTRL menu: Calling setHome()!");
           mount.setHome();
-#ifdef DEBUG_MODE
-          logv("Mount::CALC: setHome() returned: RA Current %s, Target: %f", mount.RAString(CURRENT_STRING|COMPACT_STRING).c_str(), mount.RAString(TARGET_STRING | COMPACT_STRING).c_str());
-#endif
+          LOGV3(DEBUG_GENERAL, "CTRL menu: setHome() returned: RA Current %s, Target: %f", mount.RAString(CURRENT_STRING|COMPACT_STRING).c_str(), mount.RAString(TARGET_STRING | COMPACT_STRING).c_str());
           mount.startSlewing(TRACKING);
         }
 
         // Set flag to prevent resetting zero point when moving over the menu items
         inControlMode = false;
 
-#ifdef SUPPORT_GUIDED_STARTUP
+#if SUPPORT_GUIDED_STARTUP == 1
         if (startupState == StartupWaitForPoleCompletion) {
           startupState = StartupPoleConfirmed;
           inStartup = true;

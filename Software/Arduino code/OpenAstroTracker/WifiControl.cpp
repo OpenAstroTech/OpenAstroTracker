@@ -1,6 +1,7 @@
 #include "WifiControl.hpp"
+#include "Utility.hpp"
+
 #ifdef WIFI_ENABLED
-#include "ESP8266Wifi.h"
 
 #define PORT 4030
 
@@ -12,9 +13,7 @@ WifiControl::WifiControl(Mount* mount, LcdMenu* lcdMenu)
 
 void WifiControl::setup() {
 
-#ifdef DEBUG_MODE
-    Serial.printf("Starting up Wifi As Mode %d\n", WIFI_MODE);
-#endif
+    LOGV2(DEBUG_WIFI,"Wifi: Starting up Wifi As Mode %d\n", WIFI_MODE);
 
   _cmdProcessor = MeadeCommandProcessor::instance();
 
@@ -34,27 +33,34 @@ void WifiControl::setup() {
 
 void WifiControl::startInfrastructureMode()
 {
-#ifdef DEBUG_MODE
-    Serial.println("Starting Infrastructure Mode Wifi");
-    Serial.println("   with host name: "+String(HOSTNAME));
-    Serial.println("         for SSID: "+String(INFRA_SSID));
-    Serial.println("      and WPA key: "+String(INFRA_WPAKEY));
-#endif
+    LOGV1(DEBUG_WIFI,"Wifi: Starting Infrastructure Mode Wifi");
+    LOGV2(DEBUG_WIFI,"Wifi:    with host name: %s", String(HOSTNAME).c_str());
+    LOGV2(DEBUG_WIFI,"Wifi:          for SSID: %s", String(INFRA_SSID).c_str());
+    LOGV2(DEBUG_WIFI,"Wifi:       and WPA key: %s", String(INFRA_WPAKEY).c_str());
+
+#if defined(ESP8266)
     WiFi.hostname(HOSTNAME);
+#elif defined(ESP32)
+    WiFi.setHostname(HOSTNAME);
+#endif
     WiFi.begin(INFRA_SSID, INFRA_WPAKEY);
 }
 
 void WifiControl::startAccessPointMode()
 {
-#ifdef DEBUG_MODE
-    Serial.println("Starting AP Mode Wifi");
-#endif
+    LOGV1(DEBUG_WIFI,"Wifi: Starting AP Mode Wifi");
     IPAddress local_ip(192, 168, 1, 1);
     IPAddress gateway(192, 168, 1, 1);
     IPAddress subnet(255, 255, 255, 0);
     
+#if defined(ESP8266)
     WiFi.hostname(HOSTNAME);
+#elif defined(ESP32)
+    WiFi.setHostname(HOSTNAME);
+#endif
+
     WiFi.softAP(HOSTNAME, OAT_WPAKEY);
+
     WiFi.softAPConfig(local_ip, gateway, subnet);
 }
 
@@ -71,37 +77,36 @@ String wifiStatus(int status){
 
 String WifiControl::getStatus()
 {
-  return "1," + wifiStatus(WiFi.status()) + "," + WiFi.hostname() + "," += WiFi.localIP().toString() + ":" + PORT;
+  String result = "1," + wifiStatus(WiFi.status()) + ",";
+#ifdef ESP8266
+  result += WiFi.hostname();
+#elif defined(ESP32)
+  result += WiFi.getHostname();
+#endif
+
+  result += "," + WiFi.localIP().toString() + ":" + PORT; 
+  return result;
 }
 
 void WifiControl::loop()
 {
-
     if (_status != WiFi.status()) {
         _status = WiFi.status();
-#ifdef DEBUG_MODE
-        Serial.println("Connected status changed to " + wifiStatus(_status));
-#endif
+        LOGV2(DEBUG_WIFI,"Wifi: Connected status changed to %s", wifiStatus(_status).c_str());
         if (_status == WL_CONNECTED) {
             _tcpServer = new WiFiServer(PORT);
             _tcpServer->begin();
             _tcpServer->setNoDelay(true);
-#ifdef DEBUG_MODE           
-            Serial.println("Server status is "+ wifiStatus( _tcpServer->status()));
+#if defined(ESP8266)
+            LOGV2(DEBUG_WIFI,"Wifi: Server status is %s", wifiStatus( _tcpServer->status()).c_str());
 #endif
             _udp = new WiFiUDP();
             _udp->begin(4031);
 
-#ifdef DEBUG_MODE
-            Serial.print("Connecting to SSID ");
-            Serial.print(INFRA_SSID);
-            Serial.print("  IP: ");
-            Serial.print(WiFi.localIP());
-            Serial.print(":");
-            Serial.println(String(PORT));
-#endif
+            LOGV4(DEBUG_WIFI,"Wifi: Connecting to SSID %s at %s:%d", INFRA_SSID, WiFi.localIP().toString().c_str(), PORT);
         }
     }
+
     _mount->loop();
 
     if (_status != WL_CONNECTED) {
@@ -122,9 +127,7 @@ void WifiControl::infraToAPFailover() {
         startAccessPointMode();
         _infraStart = 0;
 
-#ifdef DEBUG_MODE
-        Serial.println("Could not connect to Infra, Starting AP.");
-#endif
+        LOGV1(DEBUG_WIFI,"Wifi: Could not connect to Infra, Starting AP.");
     }
 }
 
@@ -132,16 +135,12 @@ void WifiControl::tcpLoop() {
     if (client && client.connected()) {
         while (client.available()) {
             String cmd = client.readStringUntil('#');
-#ifdef DEBUG_MODE
-            Serial.println("<--  "+ cmd + "#");
-#endif
-            auto retVal = _cmdProcessor->processCommand(cmd);
+            LOGV2(DEBUG_WIFI,"WifiTCP: Query <-- %s#", cmd.c_str());
+            String retVal = _cmdProcessor->processCommand(cmd);
 
             if (retVal != "") {
                 client.write(retVal.c_str());
-#ifdef DEBUG_MODE
-                Serial.println("-->  " + retVal);
-#endif
+                LOGV2(DEBUG_WIFI,"WifiTCP: Reply --> %s", retVal.c_str());
             }
 
             _mount->loop();
@@ -150,7 +149,6 @@ void WifiControl::tcpLoop() {
     else {
         client = _tcpServer->available();
     }
-
 }
 
 void WifiControl::udpLoop()
@@ -164,15 +162,11 @@ void WifiControl::udpLoop()
         reply += HOSTNAME;
         reply += "@";
         reply += WiFi.localIP().toString();
-#ifdef DEBUG_MODE
-        Serial.printf("Received %d bytes from %s, port %d\n", packetSize, _udp->remoteIP().toString().c_str(), _udp->remotePort());
-#endif
+        LOGV4(DEBUG_WIFI,"WifiUDP: Received %d bytes from %s, port %d", packetSize, _udp->remoteIP().toString().c_str(), _udp->remotePort());
         char incomingPacket[255];
         int len = _udp->read(incomingPacket, 255);
         incomingPacket[len] = 0;
-#ifdef DEBUG_MODE
-        Serial.printf("Received: %s\n", incomingPacket);
-#endif
+        LOGV2(DEBUG_WIFI,"WifiUDP: Received: %s", incomingPacket);
 
         incomingPacket[lookingFor.length()] = 0;
         if (lookingFor.equalsIgnoreCase(incomingPacket)) {
@@ -181,11 +175,14 @@ void WifiControl::udpLoop()
             reply.getBytes(bytes, 255);
             _udp->write(bytes, reply.length());*/
 
+#if defined(ESP8266)
             _udp->write(reply.c_str());
-            _udp->endPacket();
-#ifdef DEBUG_MODE
-            Serial.printf("Replied: %s\n", reply.c_str());
+#elif defined(ESP32)
+            _udp->print(reply.c_str());
 #endif
+            
+            _udp->endPacket();
+            LOGV2(DEBUG_WIFI,"WifiUDP: Replied: %s", reply.c_str());
         }
     }
 }

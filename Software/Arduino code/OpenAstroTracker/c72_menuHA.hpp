@@ -1,6 +1,7 @@
 #pragma once
+#include "EPROMStore.hpp"
 
-#ifndef HEADLESS_CLIENT
+#if HEADLESS_CLIENT == 0
 
 bool processHAKeys() {
   byte key;
@@ -32,13 +33,13 @@ bool processHAKeys() {
       break;
 
       case btnSELECT: {
-        EEPROM.update(1, mount.HA().getHours());
-        EEPROM.update(2, mount.HA().getMinutes());
+        EPROMStore::Storage()->update(1, mount.HA().getHours());
+        EPROMStore::Storage()->update(2, mount.HA().getMinutes());
         lcdMenu.printMenu("Stored.");
         mount.delay(500);
         mount.setHome();
 
-#ifdef SUPPORT_GUIDED_STARTUP
+#if SUPPORT_GUIDED_STARTUP == 1
         if (startupState == StartupWaitForHACompletion) {
           startupState = StartupHAConfirmed;
           inStartup = true;
@@ -48,7 +49,7 @@ bool processHAKeys() {
       break;
 
       case btnRIGHT: {
-#ifdef SUPPORT_GUIDED_STARTUP
+#if SUPPORT_GUIDED_STARTUP == 1
         if (startupState != StartupWaitForHACompletion)
 #endif
         {

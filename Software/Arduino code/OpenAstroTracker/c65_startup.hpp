@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef HEADLESS_CLIENT
-#ifdef SUPPORT_GUIDED_STARTUP
+#if HEADLESS_CLIENT == 0
+#if SUPPORT_GUIDED_STARTUP == 1
 //////////////////////////////////////////////////////////////
 // This file contains the Starup 'wizard' that guides you through initial setup
 
