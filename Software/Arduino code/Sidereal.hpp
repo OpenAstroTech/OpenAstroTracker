@@ -5,14 +5,6 @@
 
 #include "DayTime.hpp"
 
-// Constants for sidereal calculation       
-// Source: http://www.stargazing.net/kepler/altaz.html
-#define C1              100.46
-#define C2              0.985647
-#define C3              15.0
-#define C4              -0.5125
-#define J2000           2000
-
 
 class Sidereal
 {
