@@ -11,6 +11,7 @@ static const double Sidereal::calculateTheta(double deltaJ, double longitude, fl
     double theta = C1;
     theta += C2 * deltaJ;
     theta += C3 * timeUTC;
+    theta += C4;
     theta += longitude;
     return fmod(theta, 360.0);
 }
@@ -19,16 +20,17 @@ static const int Sidereal::calculateDeltaJd(int year, int month, int day){
     const int daysInMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
     // Calculating days without leapdays
-    long int deltaJd = (year - REFERENCE_JEAR) * 365 + day; 
+    long int deltaJd = (year - J2000) * 365 + day; 
     for (int i=0; i < month - 1; i++){
         deltaJd += daysInMonth[i];
     }
 
     // Add leapdays
     if (month <= 2){
+        // Not counting current year if we have not passed february yet
         year--;
     }
-    deltaJd += (year / 4 - year / 100 + year / 400);
-    deltaJd -= (REFERENCE_JEAR / 4 - REFERENCE_JEAR / 100 + REFERENCE_JEAR / 400);
+    deltaJd += year / 4 - year / 100 + year / 400;
+    deltaJd -= J2000 / 4 - J2000 / 100 + J2000 / 400;
     return deltaJd; 
 }
