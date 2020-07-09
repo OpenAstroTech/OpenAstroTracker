@@ -16,6 +16,7 @@ using MahApps.Metro.Controls.Dialogs;
 using OATCommunications;
 using OATCommunications.Model;
 using OATCommunications.WPF.CommunicationHandlers;
+using OATCommunications.Utilities;
 
 namespace OATControl.ViewModels
 {
@@ -90,13 +91,17 @@ namespace OATControl.ViewModels
 		private bool _isCoarseSlewing = true;
 		DateTime _startTime;
 		private string _parkString = "Park";
+		private TimeSpan _remainingRATime;
+		// private float _trackingSpeed;
 
 		public float RASpeed { get; private set; }
 		public float DECSpeed { get; private set; }
 
 		public MountVM()
 		{
+			Log.WriteLine("Mount: Initialization starting...");
 			CommunicationHandlerFactory.DiscoverDevices();
+			Log.WriteLine("Mount: Device discovery started...");
 
 			_startTime = DateTime.UtcNow;
 			_timerStatus = new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Normal, async (s, e) => await OnTimer(s, e), Application.Current.Dispatcher);
@@ -120,33 +125,30 @@ namespace OATControl.ViewModels
 			_tryConnect = true;
 
 			var poiFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "PointsOfInterest.xml");
+			Log.WriteLine("Mount: Attempting to read Point of Interest from {0}...", poiFile);
 			if (File.Exists(poiFile))
 			{
 				XDocument doc = XDocument.Load(poiFile);
 				_pointsOfInterest = doc.Element("PointsOfInterest").Elements("Object").Select(e => new PointOfInterest(e)).ToList();
 				_pointsOfInterest.Insert(0, new PointOfInterest("--- Select Target Object ---"));
 				_selectedPointOfInterest = 0;
+				Log.WriteLine("Mount: Successfully read {0} Points of Interest.", _pointsOfInterest.Count - 1);
 			}
 
 			this.Version = Assembly.GetExecutingAssembly().GetName().Version;
-		}
-
-		private void Log(string format, params object[] p)
-		{
-			var now = DateTime.UtcNow;
-			var elapsed = now - _startTime;
-			var timestamp = string.Format("[{0:00}:{1:00}:{2:00}.{3:00}] <{4}>:", elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds / 10, Thread.CurrentThread.ManagedThreadId);
-			Console.WriteLine(String.Format(timestamp + format, p));
+			Log.WriteLine("Mount: Initialization of OATControl {0} complete...", this.Version);
 		}
 
 		private async Task OnSetHome()
 		{
+			Log.WriteLine("Mount: Setting Home...");
 			await RunCustomOATCommandAsync(":SHP#,n");
 			await ReadHA();
 		}
 
 		private async Task ReadHA()
 		{
+			Log.WriteLine("Mount: Raeding HA");
 			for (int i = 0; i < 20; i++)
 			{
 				var ha = await RunCustomOATCommandAsync(":XGH#,#");
@@ -159,29 +161,27 @@ namespace OATControl.ViewModels
 			}
 		}
 
-
-
 		async private Task<string> RunCustomOATCommandAsync(string command)
 		{
 			string result = string.Empty;
-			Log("OATCustom:  StartRunning [{0}], checking access", command);
+			Log.WriteLine("OATCustom:  StartRunning [{0}], checking access", command);
 			if (Interlocked.CompareExchange(ref _runningOATCommand, 1, 0) == 0)
 			{
 				try
 				{
 					await exclusiveAccess.WaitAsync();
-					Log("OATCustom:  Access granted. -> Sending {0} ", command);
+					Log.WriteLine("OATCustom:  Access granted. -> Sending {0} ", command);
 					var commandResult = await _oatMount.SendCommand(command);
 					if (!string.IsNullOrEmpty(commandResult.Data))
 					{
-						Log("OATCustom: Result [{0}]: '{1}'", command, commandResult.Data);
+						Log.WriteLine("OATCustom: Result [{0}]: '{1}'", command, commandResult.Data);
 						result = commandResult.Data;
 					}
 					Interlocked.Decrement(ref _runningOATCommand);
 				}
 				finally
 				{
-					Log("OATCustom:  StopRunning [{0}]", command);
+					Log.WriteLine("OATCustom:  StopRunning [{0}]", command);
 					exclusiveAccess.Release();
 				}
 			}
@@ -189,7 +189,7 @@ namespace OATControl.ViewModels
 			{
 				await Task.Run(async () =>
 				{
-					Log("OATCustom2:  Await access for {0} ", command);
+					Log.WriteLine("OATCustom2:  Await access for {0} ", command);
 					while (Interlocked.CompareExchange(ref _runningOATCommand, 1, 0) != 0)
 					{
 						Thread.Sleep(1);
@@ -197,27 +197,27 @@ namespace OATControl.ViewModels
 					try
 					{
 						await exclusiveAccess.WaitAsync();
-						Log("OATCustom2:  Access granted. -> Sending {0} ", command);
+						Log.WriteLine("OATCustom2:  Access granted. -> Sending {0} ", command);
 						var commandResult = await _oatMount.SendCommand(command);
 						if (!string.IsNullOrEmpty(commandResult.Data))
 						{
-							Log("OATCustom2: Result [{0}]: '{1}'", command, commandResult.Data);
+							Log.WriteLine("OATCustom2: Result [{0}]: '{1}'", command, commandResult.Data);
 							result = commandResult.Data;
 						}
 						Interlocked.Decrement(ref _runningOATCommand);
 					}
 					finally
 					{
-						Log("OATCustom2:  StopRunning [{0}]", command);
+						Log.WriteLine("OATCustom2:  StopRunning [{0}]", command);
 						exclusiveAccess.Release();
 					}
 
 				});
 
-				Log("OATCustom2:  Completed '{0}'", command);
+				Log.WriteLine("OATCustom2:  Completed '{0}'", command);
 			}
 
-			Log("OATCustom: Returning '{0}'", result);
+			Log.WriteLine("OATCustom: Returning '{0}'", result);
 			return result.TrimEnd("#".ToCharArray());
 		}
 
@@ -281,7 +281,7 @@ namespace OATControl.ViewModels
 					}
 					catch (Exception ex)
 					{
-						Log("UpdateStatus: Failed to process GX reply [{0}]", status);
+						Log.WriteLine("UpdateStatus: Failed to process GX reply [{0}]", status);
 					}
 				}
 			}
@@ -289,6 +289,7 @@ namespace OATControl.ViewModels
 
 		private async Task OnHome()
 		{
+			Log.WriteLine("Mount: Home requested");
 			await RunCustomOATCommandAsync(":hF#");
 
 			// The next call actually blocks because Homeing is synchronous
@@ -301,11 +302,13 @@ namespace OATControl.ViewModels
 		{
 			if (ParkCommandString == "Park")
 			{
+				Log.WriteLine("Mount: Parking requested");
 				await RunCustomOATCommandAsync(":hP#");
 				ParkCommandString = "Unpark";
 			}
 			else
 			{
+				Log.WriteLine("Mount: Unparking requested");
 				await RunCustomOATCommandAsync(":hU#,n");
 				ParkCommandString = "Park";
 			}
@@ -406,31 +409,42 @@ namespace OATControl.ViewModels
 			{
 				RequeryCommands();
 
+				Log.WriteLine("Mount: Connect to OAT requested");
+
 				if (await this.ChooseTelescope())
 				{
 					try
 					{
 						//await +.WaitAsync();
 
+						Log.WriteLine("Mount: Request OAT Firmware version");
 						var result = await _oatMount.SendCommand("GVP#,#");
 						if (!result.Success)
 						{
+							Log.WriteLine("Mount: Unable to communicate with OAT. {0}", result.StatusMessage);
 							throw new AccessViolationException("Cannot connect. " + result.StatusMessage);
 						}
+
+						Log.WriteLine("Mount: Connected to OAT. Requesting firmware version..");
 						var resultNr = await _oatMount.SendCommand("GVN#,#");
 						ScopeName = $"{result.Data} {resultNr.Data}";
 
+						Log.WriteLine("Mount: Connected to {0}", ScopeName);
+
 						_transform.SiteElevation = 0; //  _oatMount.SiteElevation;
+						Log.WriteLine("Mount: Getting OAT Latitude");
 						_transform.SiteLatitude = await _oatMount.GetSiteLatitude();
+						Log.WriteLine("Mount: Received Latitude {0}. Getting OAT Longitude...", _util.HoursToHMS(_transform.SiteLatitude, ":", ":", ":"));
 						_transform.SiteLongitude = await _oatMount.GetSiteLongitude();
+						Log.WriteLine("Mount: Received Longitude {0}.", _util.HoursToHMS(_transform.SiteLongitude, ":", ":", ":"));
 						_transform.SetAzimuthElevation(0, 90);
 						var lst = _transform.RATopocentric;
 						var lstS = _util.HoursToHMS(lst, "", "", "");
 
-						Log("LST: {0}", _util.HoursToHMS(lst, "h", "m", "s"));
+						Log.WriteLine("Mount: Current LST is {0}. Sending to OAT.", _util.HoursToHMS(lst, "h", "m", "s"));
 						var stringResult = await RunCustomOATCommandAsync(string.Format(":SHL{0}#,n", _util.HoursToHMS(lst, "", "", "")));
-						lst -= _util.HMSToHours("02:58:51");
-						Log("HA: {0}", _util.HoursToHMS(lst, "h", "m", "s"));
+
+						Log.WriteLine("Mount: Getting current OAT position");
 						await UpdateCurrentCoordinates();
 						TargetDECDegree = CurrentDECDegree;
 						TargetDECMinute = CurrentDECMinute;
@@ -439,22 +453,34 @@ namespace OATControl.ViewModels
 						TargetRAHour = CurrentRAHour;
 						TargetRAMinute = CurrentRAMinute;
 						TargetRASecond = CurrentRASecond;
+						Log.WriteLine("Mount: Current OAT position is RA: {0:00}:{1:00}:{2:00} and DEC: {3:000}*{4:00}'{5:00}", CurrentRAHour, CurrentRAMinute, CurrentRASecond, CurrentDECDegree, CurrentDECMinute, CurrentDECSecond);
 
+						Log.WriteLine("Mount: Getting current OAT RA steps/degree...");
 						string steps = await RunCustomOATCommandAsync(string.Format(":XGR#,#"));
+						Log.WriteLine("Mount: Current RA steps/degree is {0}. Getting current DEC steps/degree...", steps);
 						_raStepsPerDegree = int.Parse(steps);
 						steps = await RunCustomOATCommandAsync(string.Format(":XGD#,#"));
+						Log.WriteLine("Mount: Current DEC steps/degree is {0}. Getting current Speed factor...", steps);
 						_decStepsPerDegree = int.Parse(steps);
 						OnPropertyChanged("RAStepsPerDegree");
 						OnPropertyChanged("DECStepsPerDegree");
 
 						steps = await RunCustomOATCommandAsync(string.Format(":XGS#,#"));
+						Log.WriteLine("Mount: Current Speed factor is {0}...", steps);
 						SpeedCalibrationFactor = float.Parse(steps, _oatCulture);
 
+						//Log.WriteLine("Mount: Get OAT Tracking speed...");
+						//TrackingSpeed = await GetTrackingSpeed();
+						//Log.WriteLine("Mount: Tracking speed is {0:0.0000}.", TrackingSpeed);
+
+						Log.WriteLine("Mount: Reading Current OAT HA...");
 						await ReadHA();
 						MountConnected = true;
+						Log.WriteLine("Mount: Successfully connected and configured!");
 					}
 					catch (Exception ex)
 					{
+						Log.WriteLine("Mount: Failed to connect and configure OAT! {0}", ex.Message);
 						MessageBox.Show("Error trying to connect to OpenAstroTracker. " + ex.Message, "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
 					}
 					finally
@@ -467,13 +493,17 @@ namespace OATControl.ViewModels
 
 		private void OnRunPolarAlignment()
 		{
+			Log.WriteLine("Mount: Running Polar Alignment Wizard");
 			DlgRunPolarAlignment dlg = new DlgRunPolarAlignment(this.RunCustomOATCommandAsync) { Owner = Application.Current.MainWindow, WindowStartupLocation = WindowStartupLocation.CenterOwner }; ;
 			dlg.ShowDialog();
+			Log.WriteLine("Mount: Polar Alignment Wizard completed");
 		}
 
 		private async Task OnRunDriftAlignment(int driftDuration)
 		{
 			_timerStatus.Stop();
+
+			Log.WriteLine("Mount: Running Drift Alignment");
 
 			DriftAlignStatus = "Drift Alignment running...";
 			var tracking = await RunCustomOATCommandAsync(":GIT#,#");
@@ -508,6 +538,7 @@ namespace OATControl.ViewModels
 			IsTracking = wasTracking;
 			RequeryCommands();
 			_timerStatus.Start();
+			Log.WriteLine("Mount: Completed Drift Alignment");
 		}
 
 		private void RequeryCommands()
@@ -531,6 +562,8 @@ namespace OATControl.ViewModels
 		{
 			var dlg = new DlgChooseOat() { Owner = Application.Current.MainWindow, WindowStartupLocation = WindowStartupLocation.CenterOwner };
 
+			Log.WriteLine("Mount: Showing Chooser");
+
 			var result = dlg.ShowDialog();
 			if (result == true)
 			{
@@ -540,11 +573,15 @@ namespace OATControl.ViewModels
 				//if (!string.IsNullOrEmpty(name))
 				//{
 				//	ScopeName = name;
+				Log.WriteLine("User selected device: {0}", dlg.SelectedDevice);
 				_commHandler = CommunicationHandlerFactory.ConnectToDevice(dlg.SelectedDevice);
 				//_commHandler = new TcpCommunicationHandler(new IPAddress(new byte[] { 192, 168, 86, 61 }), 4030);
 				_oatMount = new OatmealTelescopeCommandHandlers(_commHandler);
+				Log.WriteLine("Mount: Setting Latitude : {0:0.00}", dlg.Latitude);
 				await _oatMount.SetSiteLatitude((float)dlg.Latitude);
+				Log.WriteLine("Mount: Setting Longitude: {0:0.00}", dlg.Longitude);
 				await _oatMount.SetSiteLongitude((float)dlg.Longitude);
+				Log.WriteLine("Mount: Communication to OAT established");
 				return true;
 			}
 
@@ -554,6 +591,7 @@ namespace OATControl.ViewModels
 			//}
 
 			RequeryCommands();
+			Log.WriteLine("Mount: Chooser cancelled");
 			return false;
 		}
 
@@ -726,7 +764,7 @@ namespace OATControl.ViewModels
 		public int TrkStepper
 		{
 			get { return _trkStepper; }
-			set { SetPropertyValue(ref _trkStepper, value); }
+			set { SetPropertyValue(ref _trkStepper, value, OnRAPosChanged); }
 		}
 
 		/// <summary>
@@ -735,7 +773,15 @@ namespace OATControl.ViewModels
 		public int RAStepper
 		{
 			get { return _raStepper; }
-			set { SetPropertyValue(ref _raStepper, value); }
+			set { SetPropertyValue(ref _raStepper, value, OnRAPosChanged); }
+		}
+
+		private void OnRAPosChanged(int a, int b)
+		{
+			int raPos = RAStepper + TrkStepper;
+			int raStepsLeft = 2 * (21000 - raPos); // Half stepped, so twice as many steps left
+			double secondsLeft = (3600.0 / 15.0) * raStepsLeft / (RAStepsPerDegree * SpeedCalibrationFactor);
+			RemainingRATime = TimeSpan.FromSeconds(secondsLeft);
 		}
 
 		/// <summary>
@@ -758,8 +804,19 @@ namespace OATControl.ViewModels
 
 		private void OnSpeedFactorChanged(double oldVal, double newVal)
 		{
-			Task.Run(async () => await RunCustomOATCommandAsync(string.Format(_oatCulture, ":XSS{0:0.0000}#", newVal)));
+			Task.Run(async () =>
+			{
+				await RunCustomOATCommandAsync(string.Format(_oatCulture, ":XSS{0:0.0000}#", newVal));
+				// TrackingSpeed = await GetTrackingSpeed();
+			});
+
 		}
+
+		//private async Task<float> GetTrackingSpeed()
+		//{
+		//	string trackingSpeed = await RunCustomOATCommandAsync(string.Format(_oatCulture, ":XGT#,#"));
+		//	return float.Parse(trackingSpeed);
+		//}
 
 		/// <summary>
 		/// Gets or sets the RA steps per degree
@@ -938,6 +995,12 @@ namespace OATControl.ViewModels
 			set { SetPropertyValue(ref _isSlewingWest, value); }
 		}
 
+		public TimeSpan RemainingRATime
+		{
+			get { return _remainingRATime; }
+			set { SetPropertyValue(ref _remainingRATime, value); }
+		}
+
 		/// <summary>
 		/// </summary>
 		public bool IsDriftAligning
@@ -950,6 +1013,17 @@ namespace OATControl.ViewModels
 		{
 			get { return _driftPhase; }
 			set { SetPropertyValue(ref _driftPhase, value); }
+		}
+
+		//public float TrackingSpeed
+		//{
+		//	get { return _trackingSpeed; }
+		//	set { SetPropertyValue(ref _trackingSpeed, value, OnRAPosChangedFloat); }
+		//}
+
+		private void OnRAPosChangedFloat(float arg1, float arg2)
+		{
+			OnRAPosChanged(0, 0);
 		}
 
 		public float MaxMotorSpeed

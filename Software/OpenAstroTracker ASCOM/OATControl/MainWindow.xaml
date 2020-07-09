@@ -437,6 +437,9 @@
 					<TextBlock Text="{Binding MountStatus}" Style="{StaticResource TextBlockLabelSmall}" Margin="10,2,0,0"/>
 				</StackPanel>
 
+				<TextBlock Grid.Row="0" Grid.Column="1" Text="Safe Time Rem." Style="{StaticResource TextBlockLabelSmall}"  />
+				<TextBlock Grid.Row="0" Grid.Column="2" MinWidth="64" Text="{Binding RemainingRATime, StringFormat=\{0:hh\\hmm\\m\}}"  Style="{StaticResource TextBlockLabelValue}"/>
+
 				<Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Grid.RowSpan="3" >
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
