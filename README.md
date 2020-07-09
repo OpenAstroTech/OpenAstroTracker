@@ -1,6 +1,8 @@
 # The OpenAstroTracker:
 
-<iframe width="768" height="432" src="https://www.youtube.com/embed/9MNLAIyqGoA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+![Click me](https://img.youtube.com/vi/9MNLAIyqGoA/0.jpg)](https://www.youtube.com/watch?v=9MNLAIyqGoA)
+
+https://youtu.be/9MNLAIyqGoA
 
 A cheap 3D printed tracking, GoTo and autoguiding mount for DSLR astrophotography.
 
