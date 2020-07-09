@@ -284,6 +284,11 @@
 //      Get the adjustment factor used to speed up (>1.0) or slow down (<1.0) the tracking speed of the mount.
 //      Returns: float
 //
+// :XGT#
+//      Get Tracking speed
+//      Get the absolute tracking speed of the mount.
+//      Returns: float
+//
 // :XGH#
 //      Get HA
 //      Get the current HA of the mount.
@@ -464,7 +469,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     //   0123456789
     // :Sd+84*03:02
     int sgn = inCmd[1] == '+' ? 1 : -1;
-    if ((inCmd[4] == '*') && (inCmd[7] == ':'))
+    if (((inCmd[4] == '*') || (inCmd[4] == ':')) && (inCmd[7] == ':'))
     {
       int deg = sgn * inCmd.substring(2, 4).toInt();
       if (NORTHERN_HEMISPHERE) {
@@ -532,7 +537,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     //   0123456789012345678
     // :SY+84*03:02.18:34:12
     int sgn = inCmd[1] == '+' ? 1 : -1;
-    if ((inCmd[4] == '*') && (inCmd[7] == ':') && (inCmd[10] == '.') && (inCmd[13] == ':') && (inCmd[16] == ':')) {
+    if (((inCmd[4] == '*') || (inCmd[4] == ':')) && (inCmd[7] == ':') && (inCmd[10] == '.') && (inCmd[13] == ':') && (inCmd[16] == ':')) {
       int deg = inCmd.substring(2, 4).toInt();
       _mount->syncPosition(inCmd.substring(11, 13).toInt(), inCmd.substring(14, 16).toInt(), inCmd.substring(17, 19).toInt(), sgn * deg + (NORTHERN_HEMISPHERE ? -90 : 90), inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
       return "1";
@@ -542,7 +547,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
   else if ((inCmd[0] == 't')) // latitude: :St+30*29#
   {
     float sgn = inCmd[1] == '+' ? 1.0f : -1.0f;
-    if (inCmd[4] == '*') {
+    if ((inCmd[4] == '*') || (inCmd[4] == ':')) {
       int deg = inCmd.substring(2, 4).toInt();
       int minute = inCmd.substring(5, 7).toInt();
       _mount->setLatitude(sgn * (1.0f * deg + (minute / 60.0f)));
@@ -552,7 +557,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
   }
   else if (inCmd[0] == 'g') // longitude :Sg097*34#
   {
-    if (inCmd[4] == '*') {
+    if ((inCmd[4] == '*') || (inCmd[4] == ':')) {
       int deg = inCmd.substring(1, 4).toInt();
       int minute = inCmd.substring(5, 7).toInt();
       float lon = 1.0f * deg + (1.0f * minute / 60.0f);
@@ -695,6 +700,9 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
     }
     else if (inCmd[1] == 'S') {
       return String(_mount->getSpeedCalibration(), 5) + "#";
+    }
+    else if (inCmd[1] == 'T') {
+      return String(_mount->getSpeed(TRACKING), 7) + "#";
     }
     else if (inCmd[1] == 'B') {
       return String(_mount->getBacklashCorrection()) + "#";
