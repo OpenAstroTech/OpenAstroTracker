@@ -32,6 +32,13 @@
 //      Returns: NONE#
 //
 //------------------------------------------------------------------
+// DISTANCE FAMILY
+//
+// :D#
+//      Returns slewing status
+//      Returns: '|#' if slewing, ' #' if not
+//
+//------------------------------------------------------------------
 // GET FAMILY
 //
 // :GVP#
@@ -660,6 +667,13 @@ String MeadeCommandProcessor::handleMeadeHome(String inCmd) {
   return "";
 }
 
+String MeadeCommandProcessor::handleMeadeDistance(String inCmd) {
+  if (_mount->isSlewingRAorDEC()){
+    return "|#";
+  }
+  return " #";
+}
+
 /////////////////////////////
 // EXTRA COMMANDS
 /////////////////////////////
@@ -828,6 +842,7 @@ String MeadeCommandProcessor::processCommand(String inCmd) {
       case 'I': return handleMeadeInit(inCmd);
       case 'Q': return handleMeadeQuit(inCmd);
       case 'R': return handleMeadeSetSlewRate(inCmd);
+      case 'D': return handleMeadeDistance(inCmd);
       case 'X': return handleMeadeExtraCommands(inCmd);
       default:
         LOGV2(DEBUG_MEADE, "MEADE: Received unknown command '%s'", inCmd.c_str());
