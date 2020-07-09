@@ -7,7 +7,7 @@
 //
 // Serial support
 //
-// The Serial protocol implemented her is the Meade protocol with some extensions.
+// The Serial protocol implemented here is the Meade LX200 Classic protocol with some extensions.
 // The Meade protocol commands start with a colon and end with a hash.
 // The first letter determines the family of functions (G for Get, S for Set, M for Movement, etc.)
 //
@@ -181,7 +181,6 @@
 // :Rs#
 //      Set Slew rate
 //      Where s is one of 'S', 'M', 'C', or 'G' in order of decreasing speed
-//      CURRENTLY IGNORED
 //      Returns: nothing
 //------------------------------------------------------------------
 // MOVEMENT FAMILY
@@ -308,19 +307,20 @@
 //
 // :XSRn#
 //      Set RA steps 
-//      Set the number of steps the RA stepper motor needs to take to rotate by one degree 
+//      Set the number of steps the RA stepper motor needs to take to rotate by one degree.
 //      Where n is the number of steps
 //      Returns: nothing
 //
 // :XSDn#
 //      Set DEC steps 
-//      Set the number of steps the DEC stepper motor needs to take to rotate by one degree 
+//      Set the number of steps the DEC stepper motor needs to take to rotate by one degree.
 //      Where n is the number of steps
 //      Returns: nothing
 //
-// :XSSn.n#
+// :XSSn.nnn#
 //      Set Tracking speed adjustment
 //      Set the adjustment factor used to speed up (>1.0) or slow down (<1.0) the tracking speed of the mount.
+//      Where n.nnn is the factor to multiply the theoretical speed by.
 //      Returns: nothing
 //
 // :XSMn#
@@ -331,12 +331,12 @@
 //
 // :XSXn.nnn#
 //      Set RA manual slewing speed
-//      Set the speed of the RA motor, immediately. Must be in manual slewing mode
+//      Set the speed of the RA motor, immediately. Must be in manual slewing mode.
 //      Returns: nothing
 //
 // :XSYn.nnn#
 //      Set DEC manual slewing speed
-//      Set the speed of the DEC motor, immediately.
+//      Set the speed of the DEC motor, immediately. Must be in manual slewing mode.
 //      Returns: nothing
 //
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -799,7 +799,16 @@ String MeadeCommandProcessor::handleMeadeSetSlewRate(String inCmd) {
 
 String MeadeCommandProcessor::processCommand(String inCmd) {
   if (inCmd[0] == ':') {
+
     LOGV2(DEBUG_MEADE, "MEADE: Received command '%s'", inCmd.c_str());
+
+    // Apparently some LX200 implementations put spaces in their commands..... remove them with impunity.
+    int spacePos;
+    while ((spacePos = inCmd.indexOf(' ')) != -1) {
+      inCmd.remove(spacePos, 1);
+    }
+
+    LOGV2(DEBUG_MEADE, "MEADE: Processing command '%s'", inCmd.c_str());
     char command = inCmd[1];
     inCmd = inCmd.substring(2);
     switch (command) {
