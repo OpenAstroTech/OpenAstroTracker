@@ -1,6 +1,6 @@
 # The OpenAstroTracker:
 
-![Click me](https://img.youtube.com/vi/9MNLAIyqGoA/0.jpg)](https://www.youtube.com/watch?v=9MNLAIyqGoA)
+![](https://i.imgur.com/5ENuuHv.jpg)
 
 https://youtu.be/9MNLAIyqGoA
 
