@@ -6,6 +6,9 @@
 #include "Globals.hpp"
 #include "DayTime.hpp"
 #include "LcdMenu.hpp"
+#if RA_Driver_TYPE == 3
+ #include <TMCStepper.h>
+#endif
 
 #define NORTH                      B00000001
 #define EAST                       B00000010
@@ -56,6 +59,15 @@ public:
 #endif
 #if DEC_Stepper_TYPE == 1
     void configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration);
+#endif
+
+  // Configure the RA Driver (TMC2209 UART only)
+#if RA_Driver_TYPE == 3
+  void configureRAdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
+#endif
+  // Configure the DEC Driver (TMC2209 UART only)
+#if DEC_Driver_TYPE == 3
+  void configureDECdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
 #endif
 
   // Get the current RA tracking speed factor
@@ -115,6 +127,7 @@ public:
   bool isParked() const;
   bool isParking() const;
   bool isGuiding() const;
+  bool isFindingHome() const;
 
   // Starts manual slewing in one of eight directions or tracking
   void startSlewing(int direction);
@@ -145,6 +158,14 @@ public:
 
   // Set the current stepper positions to be home.
   void setHome();
+
+  // Auto Home with TMC2209 UART
+#if RA_Driver_TYPE == 3  
+  void StartFindingHomeRA();
+  void StartFindingHomeDEC();
+  void finishFindingHomeRA();
+  void finishFindingHomeDEC();
+#endif
 
   // Asynchronously parks the mount. Moves to the home position and stops all motors. 
   void park();
@@ -245,6 +266,10 @@ private:
   AccelStepper* _stepperRA;
   AccelStepper* _stepperDEC;
   AccelStepper* _stepperTRK;
+  #if RA_Driver_TYPE == 3
+  TMC2209Stepper* _driverRA;
+  TMC2209Stepper* _driverDEC;
+  #endif
 
   unsigned long _guideEndTime;
   unsigned long _lastMountPrint = 0;

@@ -18,6 +18,7 @@
 #define STATUS_GUIDE_PULSE_RA      0B0000000001000000
 #define STATUS_GUIDE_PULSE_DEC     0B0000000000100000
 #define STATUS_GUIDE_PULSE_MASK    0B0000000011100000
+#define STATUS_FINDING_HOME        0B0010000000000000
 
 // slewingStatus()
 #define SLEWING_DEC                B00000010
@@ -320,6 +321,48 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
   _stepperDEC->setAcceleration(maxAcceleration);
   _maxDECSpeed = maxSpeed;
   _maxDECAcceleration = maxAcceleration;
+}
+#endif
+
+/////////////////////////////////
+//
+// configureRAdriver
+// TMC2209 UART only
+/////////////////////////////////
+#if RA_Driver_TYPE == 3
+void Mount::configureRAdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue)
+{
+  _driverRA = new TMC2209Stepper(serial, rsense, driveraddress);
+  _driverRA->begin();
+  _driverRA->blank_time(24);
+  _driverRA->rms_current(rmscurrent);
+  _driverRA->microsteps(16);
+  _driverRA->TCOOLTHRS(0xFFFFF);
+  _driverRA->semin(5);
+  _driverRA->semax(2);
+  _driverRA->sedn(0b01);
+  _driverRA->SGTHRS(10);
+}
+#endif
+
+/////////////////////////////////
+//
+// configureDECdriver
+// TMC2209 UART only
+/////////////////////////////////
+#if DEC_Driver_TYPE == 3
+void Mount::configureDECdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue)
+{
+  _driverDEC = new TMC2209Stepper(serial, rsense, 0b01);
+  _driverDEC->begin();
+  _driverDEC->blank_time(24);
+  _driverDEC->rms_current(rmscurrent);
+  _driverDEC->microsteps(16);
+  _driverDEC->TCOOLTHRS(0xFFFFF);
+  _driverDEC->semin(5);
+  _driverDEC->semax(2);
+  _driverDEC->sedn(0b01);
+  _driverDEC->SGTHRS(stallvalue);
 }
 #endif
 
@@ -1600,3 +1643,74 @@ String Mount::RAString(byte type, byte active) {
   }
   return String(scratchBuffer);
 }
+
+/////////////////////////////////
+//
+// StartFindingHome
+//
+/////////////////////////////////
+// Automatically home the mount. Only with TMC2209 in UART mode
+#if RA_Driver_TYPE == 3 && DEC_Driver_TYPE == 3
+
+void Mount::StartFindingHomeDEC()  {
+  _driverDEC->SGTHRS(10);
+  _driverDEC->microsteps(FULLSTEP);
+  _driverDEC->rms_current(700);
+  _mountStatus |= STATUS_FINDING_HOME;
+
+  setManualSlewMode(true);
+  _stepperDEC->setMaxSpeed(3000);
+  _stepperDEC->setSpeed(-3000);
+}
+
+void Mount::finishFindingHomeDEC() 
+{  
+  _stepperDEC->stop();   
+   setManualSlewMode(false);
+   _stepperDEC->setMaxSpeed(1000);
+  _stepperDEC->setSpeed(1000);
+  _stepperDEC->move(2350);
+  while (_stepperDEC->run()) ;
+  
+  setManualSlewMode(false);
+  //setHome();
+  
+  //_mountStatus |= STATUS_TRACKING;
+  delay(100);
+  
+  StartFindingHomeRA(); 
+  
+}
+
+void Mount::StartFindingHomeRA()  {
+  _driverRA->SGTHRS(100);
+  _driverRA->rms_current(800);
+  _driverRA->microsteps(FULLSTEP);
+  _driverRA->semin(0);  // turn off coolstep
+  _driverRA->semin(5);
+  _driverRA->TCOOLTHRS(0xFF);  // turn autocurrent threshold down to prevent false reading
+  
+  setManualSlewMode(true);
+  _mountStatus |= STATUS_FINDING_HOME;
+  
+  _stepperRA->setMaxSpeed(3000);
+  _stepperRA->setAcceleration(500);
+  _stepperRA->setSpeed(-3000);
+}
+
+void Mount::finishFindingHomeRA() 
+{
+  
+  _stepperRA->stop(); 
+  
+   setManualSlewMode(false);
+  _stepperRA->setSpeed(1000);
+  _stepperRA->move(15850.0);
+  while (_stepperRA->run()) ;
+
+   
+  _mountStatus |= STATUS_TRACKING;
+   setHome();
+  
+}
+#endif

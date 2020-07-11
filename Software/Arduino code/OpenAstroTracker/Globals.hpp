@@ -11,8 +11,12 @@
 #define DISPLAY_UPDATE_TIME 200
 
 // Stepper selection ///////////
-#define RA_Stepper_TYPE  0     // 28BYJ-48 = 0   |   NEMA = 1
-#define DEC_Stepper_TYPE  0    // 28BYJ-48 = 0   |   NEMA = 1
+#define RA_Stepper_TYPE  1     // 28BYJ-48 = 0   |   NEMA = 1
+#define DEC_Stepper_TYPE  1    // 28BYJ-48 = 0   |   NEMA = 1
+
+// Driver selection ///////////
+#define RA_Driver_TYPE 3      // ULN2003 = 0  |  A4988 = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
+#define DEC_Driver_TYPE 3     // ULN2003 = 0  |  A4988 = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
 
 // Make some variables in the sketch files available to the C++ code.
 extern bool inSerialControl;
