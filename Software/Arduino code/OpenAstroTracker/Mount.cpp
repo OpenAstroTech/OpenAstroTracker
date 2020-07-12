@@ -1079,6 +1079,15 @@ bool Mount::isParking() const {
 
 /////////////////////////////////
 //
+// isFindingHome
+//
+/////////////////////////////////
+bool Mount::isFindingHome() const {
+  return _mountStatus & STATUS_FINDING_HOME;
+}
+
+/////////////////////////////////
+//
 // startSlewing
 //
 // Starts manual slewing in one of eight directions or

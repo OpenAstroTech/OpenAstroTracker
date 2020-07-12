@@ -18,6 +18,8 @@
 #define RA_Driver_TYPE 3      // ULN2003 = 0  |  A4988 = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
 #define DEC_Driver_TYPE 3     // ULN2003 = 0  |  A4988 = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
 
+#define USE_AUTOHOME 0        // Autohome with TMC2209 stall detection:  ON = 1  |  OFF = 0   
+
 // Make some variables in the sketch files available to the C++ code.
 extern bool inSerialControl;
 extern String version;

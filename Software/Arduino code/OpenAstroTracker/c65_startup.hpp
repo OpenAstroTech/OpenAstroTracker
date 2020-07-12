@@ -45,6 +45,26 @@ bool processStartupKeys() {
             startupState = StartupSetHATime;
           }
           else if (isInHomePosition == NO) {
+            #if RA_Driver_TYPE == 3 && USE_AUTOHOME == 1
+            mount.StartFindingHomeDEC();
+            while (mount.isFindingHome()) {
+              startupState = StartupWaitForPoleCompletion;            
+              lcdMenu.clear();
+              lcdMenu.setCursor(0, 0);
+              lcdMenu.printMenu("Finding Home....");
+              lcdMenu.setCursor(0, 1);
+              lcdMenu.printMenu("Please Wait");              
+              break;
+            }
+            
+            inStartup = false;
+            
+              
+             
+                       
+            //lcdMenu.setActive(Control_Menu);
+
+            #else
             startupState = StartupWaitForPoleCompletion;
             inStartup = false;
             lcdMenu.setCursor(0, 0);
@@ -53,6 +73,7 @@ bool processStartupKeys() {
 
             // Skip the 'Manual control' prompt
             inControlMode = true;
+            #endif
           }
           else if (isInHomePosition == CANCEL) {
             startupIsCompleted();
