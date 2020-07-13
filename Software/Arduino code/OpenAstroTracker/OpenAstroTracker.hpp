@@ -30,9 +30,8 @@ String version = "V1.7.19";
 ///////////////////////////////////////////////////////////////////////////
 // RA stepper                                                            //
 ///////////////////////////////////////////////////////////////////////////
-// This is how many steps your 28BYJ-48 stepper needs for a full rotation. It is almost always 4096.
-// This code drives the stepper in halfstep mode for TRK and DEC, and full step mode for RA
-float RAStepsPerRevolution = 400;
+// This is how many steps your stepper needs for a full rotation.
+float RAStepsPerRevolution = 400;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
 
 // The radius of the surface that the belt runs on (in V1 of the ring) was 168.24mm.
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
@@ -48,18 +47,19 @@ float RAStepsPerRevolution = 400;
 // the Circumference of the RA wheel
 // V1: 1057.1
 // V2: 1131
-#define RACircumference 1131
+#define RACircumference 1134
 
 int RAStepsPerDegree = (RACircumference / (RAPulleyTeeth * 2.0) * RAStepsPerRevolution / 360.0);      // V2 Ring has belt in a groove and belt runs on bearings
-int RAspeed = 1000;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
-int RAacceleration = 6000;   // High speeds tend to make these cheap steppers unprecice
+int RAspeed = 900;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+int RAacceleration = 3000;   // High speeds tend to make these cheap steppers unprecice
+
+
 
 ///////////////////////////////////////////////////////////////////////////
-// DEC stepper                                                            //
+// DEC stepper                                                           //
 ///////////////////////////////////////////////////////////////////////////
-// This is how many steps your 28BYJ-48 stepper needs for a full rotation. It is almost always 4096.
-// This code drives the DEC stepper in halfstep mode 
-float DECStepsPerRevolution = 4096;
+// This is how many steps your stepper needs for a full rotation.
+float DECStepsPerRevolution = 400;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
 
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
 // DEC wheel is 2 x PI x 90mm circumference which is 565.5mm
@@ -68,9 +68,9 @@ float DECStepsPerRevolution = 4096;
 // So there are 160.85 steps/degree (57907/360) (this is for 20T)
 #define DecPulleyTeeth 16
 
-int DECStepsPerDegree = (565.5 / (DecPulleyTeeth * 2.0) * DECStepsPerRevolution / 360.0);
-int DECspeed = 600;           // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
-int DECacceleration = 400;    // High speeds tend to make these cheap steppers unprecice
+int DECStepsPerDegree = (568.5 / (DecPulleyTeeth * 2.0) * DECStepsPerRevolution / 360.0);
+int DECspeed = 3000;           // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+int DECacceleration = 10000;    // High speeds tend to make these cheap steppers unprecice
 
 // These values are needed to calculate the current position during initial alignment.
 // Use something like Stellarium to look up the RA of Polaris in JNow (on date) variant.

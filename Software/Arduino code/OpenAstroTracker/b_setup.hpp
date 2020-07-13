@@ -73,7 +73,9 @@ void IRAM_ATTR stepperControlTask(void* payload)
   pinMode(RA_DIAG_PIN, INPUT);
   digitalWrite(RA_EN_PIN, LOW);  // Logic LOW to enable driver
   RA_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
-  #endif
+
+  RAspeed = RA_SPEED_MULTIPLIER * SET_MICROSTEPPING;
+#endif
 
 #endif
 #if DEC_DRIVER_TYPE == 1  // DEC driver startup (for A4988)
@@ -97,6 +99,8 @@ void IRAM_ATTR stepperControlTask(void* payload)
   digitalWrite(DEC_EN_PIN, LOW);  // Logic LOW to enable driver
   digitalWrite(DEC_MS1_PIN, HIGH); // Logic HIGH to MS1 to get 0b01 address
   DEC_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
+
+  
 #endif
 // end microstepping -------------------
 

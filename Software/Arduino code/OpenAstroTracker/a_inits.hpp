@@ -250,5 +250,7 @@ int RAheat = 0;   // Are we heating the RA stepper?
 int DECheat = 0;  // Are we heating the DEC stepper?
 #endif
 
+
+
 //debugging
 String inBT;

@@ -11,7 +11,7 @@
 ////////////////////////////
 //
 // STEPPER TYPE
-#define RA_Stepper_TYPE  1         // 28BYJ-48 = 0   |   NEMA = 1
+#define RA_Stepper_TYPE   1        // 28BYJ-48 = 0   |   NEMA = 1
 #define DEC_Stepper_TYPE  1        // 28BYJ-48 = 0   |   NEMA = 1
 //
 //
@@ -20,15 +20,16 @@
 // MICROSTEPPING
 // Only affects NEMA steppers!
 // Only affects calculations, Microstepping is set by MS pins, 
-// EXCEPT TMC2209 where this value actually sets the SLEW microstepping
+// EXCEPT for TMC2209 UART where this value actually sets the SLEW microstepping
 #define SET_MICROSTEPPING 4        // 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256
-//                                                        ^---TMC2209 only---^
-//
+//                                                        ^-----------------^
+//                                                         only if your driver can handle it.
+//                                                         TMC2209 can
 ////////////////////////////
 //
 // Driver selection 
 // GENERIC drivers include A4988 and any Bipolar STEP/DIR based drivers
-#define RA_Driver_TYPE 3           // ULN2003 = 0  |  GENERIC = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
+#define RA_Driver_TYPE  3          // ULN2003 = 0  |  GENERIC = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
 #define DEC_Driver_TYPE 3          // ULN2003 = 0  |  GENERIC = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
 //
 //
@@ -37,12 +38,16 @@
 // TMC2209 UART settings
 // These settings work only with TMC2209 in UART connection (single wire TX/RX wiring)
 #define TRACKING_MICROSTEPPING 16  // Set the MS mode for tracking only. Slew MS is set by SET_MICROSTEPPING above
+
 #define RA_RMSCURRENT 900       // RMS current in mA. Warning: Peak current will be higher! Do not set to max current
 #define RA_STALL_VALUE 100
+//#define RA_SPEED_MULTIPLIER 20 // This value is multiplied with the SLEW microstepping value to get the necessary speed
+
+#define DEC_MICROSTEPPING 8
 #define DEC_STALL_VALUE 100
-#define DEC_RMSCURRENT 500
+#define DEC_RMSCURRENT 600
 #define USE_AUTOHOME 0        // Autohome with TMC2209 stall detection:  ON = 1  |  OFF = 0   
-//                  ^^^ leave at 0 for now, doesnt work yet
+//                  ^^^ leave at 0 for now, doesnt work properly yet
 //
 // driver pins selection -- move to a_inits for release --
 #define RA_STEP_PIN 22
@@ -56,7 +61,7 @@
 #define DEC_EN_PIN 41
 #define DEC_MS1_PIN 44
 #define DEC_SERIAL_PORT Serial2  // HardwareSerial port, wire to TX2 for write-only
-#define DEC_DRIVER_ADDRESS 0b01  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
+#define DEC_DRIVER_ADDRESS 0b00  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
 #define R_SENSE 0.11f           // 0.11 for StepStick
 //#define R_SENSE 0.11f           // 0.11 for StepStick
 //
@@ -86,7 +91,7 @@
 // 
 // UPDATE TIME
 // Time in ms between LCD screen updates during slewing operations
-#define DISPLAY_UPDATE_TIME 1000
+#define DISPLAY_UPDATE_TIME 200
 //
 //
 ////////////////////////////
