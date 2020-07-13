@@ -70,7 +70,11 @@ const float siderealDegreesInHour = 14.95902778;
 //
 /////////////////////////////////
 Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
+  #if RA_Driver_TYPE == 3
+  _stepsPerRADegree = stepsPerRADegree * SET_MICROSTEPPING; // hier
+  #else
   _stepsPerRADegree = stepsPerRADegree;
+  #endif
   _stepsPerDECDegree = stepsPerDECDegree;
   _lcdMenu = lcdMenu;
   _mountStatus = 0;
@@ -334,6 +338,7 @@ void Mount::configureRAdriver(HardwareSerial *serial, float rsense, byte drivera
 {
   _driverRA = new TMC2209Stepper(serial, rsense, driveraddress);
   _driverRA->begin();
+  //_driverRA->en_spreadCycle(1);
   _driverRA->blank_time(24);
   _driverRA->rms_current(rmscurrent);
   _driverRA->microsteps(16);
@@ -388,8 +393,11 @@ void Mount::setSpeedCalibration(float val, bool saveToStorage) {
 
   // The tracker simply needs to rotate at 15degrees/hour, adjusted for sidereal
   // time (i.e. the 15degrees is per 23h56m04s. 86164s/86400 = 0.99726852. 3590/3600 is the same ratio) So we only go 15 x 0.99726852 in an hour.
+  #if RA_Driver_TYPE == 3
+  _trackingSpeed = _trackingSpeedCalibration * ((_stepsPerRADegree / SET_MICROSTEPPING) * TRACKING_MICROSTEPPING) * siderealDegreesInHour / 3600.0f;
+  #else
   _trackingSpeed = _trackingSpeedCalibration * _stepsPerRADegree * siderealDegreesInHour / 3600.0f;
-
+  #endif
   LOGV2(DEBUG_MOUNT, "Mount: New tracking speed is %f steps/sec", _trackingSpeed);
 
   if (saveToStorage) {
@@ -666,6 +674,13 @@ void Mount::startSlewingToTarget() {
   if (isGuiding()) {
     stopGuiding();
   }
+
+  // set Slew microsteps for TMC2209 UART // hier
+  #if RA_Driver_TYPE == 3
+  _driverRA->microsteps(SET_MICROSTEPPING);
+  //_driverRA->en_spreadCycle(1);  //only used as audiofeedback for quick debug
+  //hier
+  #endif
 
   // Make sure we're slewing at full speed on a GoTo
   _stepperDEC->setMaxSpeed(_maxDECSpeed);
@@ -1103,6 +1118,7 @@ void Mount::startSlewing(int direction) {
     if (direction & TRACKING) {
       _stepperTRK->setSpeed(_trackingSpeed);
 
+      
       // Turn on tracking
       _mountStatus |= STATUS_TRACKING;
     }
@@ -1111,7 +1127,11 @@ void Mount::startSlewing(int direction) {
 
       // Set move rate to last commanded slew rate
       setSlewRate(_moveRate);
-
+      #if RA_Driver_TYPE == 3
+      _driverRA->microsteps(SET_MICROSTEPPING);
+      //_driverRA->en_spreadCycle(1);  //only used as audiofeedback for quick debug
+      //hier
+      #endif
       if (direction & NORTH) {
         _stepperDEC->moveTo(sign * 30000);
         _mountStatus |= STATUS_SLEWING;
@@ -1150,7 +1170,7 @@ void Mount::stopSlewing(int direction) {
     _stepperDEC->stop();
   }
   if ((direction & (WEST | EAST)) != 0) {
-    _stepperRA->stop();
+    _stepperRA->stop();    
   }
 }
 
@@ -1283,7 +1303,8 @@ void Mount::loop() {
       if (_stepperWasRunning) {
         _mountStatus &= ~(STATUS_SLEWING);
       }
-    }
+    }    
+    
     else {
       _mountStatus &= ~(STATUS_SLEWING | STATUS_SLEWING_TO_TARGET);
 
@@ -1299,6 +1320,10 @@ void Mount::loop() {
 
         _currentDECStepperPosition = _stepperDEC->currentPosition();
         _currentRAStepperPosition = _stepperRA->currentPosition();
+        #if RA_Driver_TYPE == 3
+        _driverRA->microsteps(TRACKING_MICROSTEPPING);
+        //_driverRA->en_spreadCycle(0); // only for audio feedback for quick debug
+        #endif
         if (_correctForBacklash) {
           LOGV3(DEBUG_MOUNT,"Mount::Loop:   Reached target at %d. Compensating by %d", _currentRAStepperPosition, _backlashCorrectionSteps);
           _currentRAStepperPosition += _backlashCorrectionSteps;
@@ -1454,6 +1479,7 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 #else
   float moveRA = hourPos * stepsPerSiderealHour;
 #endif
+
 
   // Where do we want to move DEC to?
   // the variable targetDEC 0deg for the celestial pole (90deg), and goes negative only.
@@ -1659,7 +1685,7 @@ String Mount::RAString(byte type, byte active) {
 //
 /////////////////////////////////
 // Automatically home the mount. Only with TMC2209 in UART mode
-#if RA_Driver_TYPE == 3 && DEC_Driver_TYPE == 3
+#if RA_Driver_TYPE == 3 && DEC_Driver_TYPE == 3 && USE_AUTOHOME == 0
 
 void Mount::StartFindingHomeDEC()  {
   _driverDEC->SGTHRS(10);

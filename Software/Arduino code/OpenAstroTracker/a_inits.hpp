@@ -154,8 +154,8 @@
   #endif
 #endif
 #if RA_Stepper_TYPE == 1  // NEMA
-    #define RAmotorPin1  22
-    #define RAmotorPin2  24
+    #define RAmotorPin1  RA_STEP_PIN
+    #define RAmotorPin2  RA_DIR_PIN
 #endif
 
 // DEC Motor pins
@@ -173,8 +173,8 @@
   #endif
 #endif
 #if DEC_Stepper_TYPE == 1  // NEMA
-    #define DECmotorPin1  32
-    #define DECmotorPin2  30
+    #define DECmotorPin1  DEC_STEP_PIN
+    #define DECmotorPin2  DEC_DIR_PIN
 #endif
   
 #endif
@@ -184,22 +184,22 @@
   #define RA_EN_PIN 40  // Enable Pin
 #endif
 #if RA_Driver_TYPE == 3
-  #define RA_EN_PIN 40
-  #define RA_DIAG_PIN 52
-  #define RA_SERIAL_PORT Serial3  // HardwareSerial port
-  #define RA_DRIVER_ADDRESS 0b00  // Set by MS1/MS2
-  #define R_SENSE 0.11f           // 0.11 for StepStick
-  #define RA_STALL_VALUE 100
-  #define RA_RMSCURRENT 500
+  //#define RA_EN_PIN 40
+  //#define RA_DIAG_PIN 52
+  //#define RA_SERIAL_PORT Serial3  // HardwareSerial port
+  //#define RA_DRIVER_ADDRESS 0b00  // Set by MS1/MS2
+  //#define R_SENSE 0.11f           // 0.11 for StepStick
+  //#define RA_STALL_VALUE 100
+  //#define RA_RMSCURRENT 500
 #endif
 #if DEC_Driver_TYPE == 3
-  #define DEC_EN_PIN 41
+  /*#define DEC_EN_PIN 41
   #define DEC_MS1_PIN 44
   #define DEC_SERIAL_PORT Serial2  // HardwareSerial port
   #define DEC_DRIVER_ADDRESS 0b01  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
   #define R_SENSE 0.11f           // 0.11 for StepStick
   #define DEC_STALL_VALUE 100
-  #define DEC_RMSCURRENT 500
+  #define DEC_RMSCURRENT 500*/
 #endif
 // End Driver Definitions //////////////
 

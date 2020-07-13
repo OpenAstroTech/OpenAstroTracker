@@ -32,7 +32,7 @@ String version = "V1.7.19";
 ///////////////////////////////////////////////////////////////////////////
 // This is how many steps your 28BYJ-48 stepper needs for a full rotation. It is almost always 4096.
 // This code drives the stepper in halfstep mode for TRK and DEC, and full step mode for RA
-float RAStepsPerRevolution = 4096;
+float RAStepsPerRevolution = 400;
 
 // The radius of the surface that the belt runs on (in V1 of the ring) was 168.24mm.
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
@@ -51,8 +51,8 @@ float RAStepsPerRevolution = 4096;
 #define RACircumference 1131
 
 int RAStepsPerDegree = (RACircumference / (RAPulleyTeeth * 2.0) * RAStepsPerRevolution / 360.0);      // V2 Ring has belt in a groove and belt runs on bearings
-int RAspeed = 400;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
-int RAacceleration = 600;   // High speeds tend to make these cheap steppers unprecice
+int RAspeed = 1000;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+int RAacceleration = 6000;   // High speeds tend to make these cheap steppers unprecice
 
 ///////////////////////////////////////////////////////////////////////////
 // DEC stepper                                                            //

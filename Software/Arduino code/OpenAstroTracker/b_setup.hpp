@@ -126,12 +126,24 @@ void setup() {
 
 // Microstepping ---------------
 #if RA_Stepper_TYPE == 1   // RA driver startup (for TMC2209)
+#if RA_Driver_TYPE == 1
+  // include A4988 microstep pins
+  #endif
+#if RA_Driver_TYPE == 2
+  // include TMC2209 Standalone pins
   pinMode(41, OUTPUT);
-  //digitalWrite(43, HIGH);  // SPREAD
   digitalWrite(41, LOW);  // ENABLE
-
   digitalWrite(42, LOW);  // MS2
   digitalWrite(40, HIGH);  // MS1
+  #endif
+#if RA_Driver_TYPE == 3
+  // include TMC2209 UART pins  
+  pinMode(RA_EN_PIN, OUTPUT);
+  pinMode(RA_DIAG_PIN, INPUT);
+  digitalWrite(RA_EN_PIN, LOW);  // Logic LOW to enable driver
+  RA_SERIAL_PORT.begin(115200);  // Start HardwareSerial comms with driver
+  #endif
+
 #endif
 #if DEC_Stepper_TYPE == 1  // DEC driver startup (for TMC2209)
   pinMode(45, OUTPUT);
@@ -140,6 +152,15 @@ void setup() {
   digitalWrite(46, LOW);  // MS2
   digitalWrite(44, HIGH);  // MS1
 #endif
+#if DEC_Driver_TYPE == 3
+  // include TMC2209 UART pins  
+  pinMode(DEC_EN_PIN, OUTPUT);
+  pinMode(DEC_MS1_PIN, OUTPUT);
+  digitalWrite(DEC_EN_PIN, LOW);  // Logic LOW to enable driver
+  digitalWrite(DEC_MS1_PIN, HIGH); // Logic HIGH to MS1 to get 0b01 address
+  DEC_SERIAL_PORT.begin(115200);  // Start HardwareSerial comms with driver
+#endif
+// end microstepping -------------------
 
   Serial.begin(57600);
   //BT.begin(9600);
@@ -215,6 +236,13 @@ void finishSetup()
   #if RA_Stepper_TYPE == 1 && DEC_Stepper_TYPE == 1
     mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
     mount.configureDECStepper(DRIVER, DECmotorPin1, DECmotorPin2, DECspeed, DECacceleration);
+  #endif
+
+  #if RA_Driver_TYPE == 3
+    mount.configureRAdriver(&RA_SERIAL_PORT, R_SENSE, RA_DRIVER_ADDRESS, RA_RMSCURRENT, RA_STALL_VALUE);
+  #endif
+  #if DEC_Driver_TYPE == 3
+    mount.configureDECdriver(&DEC_SERIAL_PORT, R_SENSE, DEC_DRIVER_ADDRESS, DEC_RMSCURRENT, DEC_STALL_VALUE);
   #endif
 
   // The mount uses EEPROM storage locations 0-10 that it reads during construction
