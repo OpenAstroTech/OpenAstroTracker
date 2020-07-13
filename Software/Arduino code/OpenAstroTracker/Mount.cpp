@@ -408,6 +408,50 @@ int Mount::getBacklashCorrection()
 {
   return _backlashCorrectionSteps;
 }
+
+/////////////////////////////////
+//
+// getMountHardwareInfo
+//
+/////////////////////////////////
+String Mount::getMountHardwareInfo()
+{
+  String ret = "Unknown";
+  #if defined(ESP8266) 
+    ret = "ESP8266,";
+  #elif defined(ESP32)
+    ret = "ESP32,";
+  #elif defined(__AVR_ATmega2560__)
+    ret = "Mega,";
+  #elif defined (__AVR_ATmega328P__)
+    ret = "Uno,";
+  #endif
+
+  #if RA_Stepper_TYPE == 0  // 28BYJ
+    ret += "28BYJ|";
+  #elif RA_Stepper_TYPE == 1  // NEMA
+    ret += "NEMA|";
+  #else
+    ret += "?|";
+  #endif
+  ret += String(RAPulleyTeeth)+"|";
+  ret += String(RAStepsPerRevolution)+",";
+
+  #if DEC_Stepper_TYPE == 0  // 28BYJ
+    ret += "28BYJ|";
+  #elif DEC_Stepper_TYPE == 1  // NEMA
+    ret += "NEMA|";
+  #else
+    ret += "?|";
+  #endif
+
+  ret += String(DecPulleyTeeth)+"|";
+  ret += String(DECStepsPerRevolution)+",";
+
+  return ret;
+}
+
+
 /////////////////////////////////
 //
 // setBacklashCorrection

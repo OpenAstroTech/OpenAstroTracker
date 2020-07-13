@@ -20,6 +20,12 @@ extern String version;
 extern byte PolarisRAHour;
 extern byte PolarisRAMinute;
 extern byte PolarisRASecond;
+extern float RAStepsPerRevolution;
+extern int RAPulleyTeeth;
+extern float RACircumference;
+extern float DECStepsPerRevolution;
+extern int DecPulleyTeeth;
+
 
 // Debugging output control
 // Each bit in the debug level specifies a kind of debug to enable. 

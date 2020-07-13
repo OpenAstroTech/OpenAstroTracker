@@ -85,6 +85,7 @@ String WifiControl::getStatus()
 #endif
 
   result += "," + WiFi.localIP().toString() + ":" + PORT; 
+  result += "," + String(INFRA_SSID) + "," + String(HOSTNAME);
   return result;
 }
 

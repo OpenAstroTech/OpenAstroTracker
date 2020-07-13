@@ -301,11 +301,18 @@
 //      Get the current HA of the mount.
 //      Returns: HHMMSS
 //
+// :XGM#
+//      Get Mount configuration settings 
+//      Returns: <board>>,<RA Stepper Info>,<DEC Stepper Info>,#
+//      Where <board> is one of the supported boards (currently Uno, Mega, ESP8266, ESP32)
+//            <Stepper Info> is a pipe-delimited string of Motor type (NEMA or 28BYJ), Pulley Teeth, Steps per revolution)
+//      Example: ESP32,28BYJ|16|4096.00,28BYJ|16|4096.00,#
+//
 // :XGN#
 //      Get network settings
 //      Gets the current status of the Wifi connection. Reply only available when running on ESP8266 boards.
-//      Returns: 1,<stats>,<hostname>,<ip>:<port>#     - if Wifi is enabled
-//      Returns: 0,#                                   - if Wifi is not enabled
+//      Returns: 1,<stats>,<hostname>,<ip>:<port>,<SSID>,<OATHostname>#     - if Wifi is enabled
+//      Returns: 0,#     - if Wifi is not enabled
 //
 // :XGL#
 //      Get LST
@@ -720,6 +727,9 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
     }
     else if (inCmd[1] == 'B') {
       return String(_mount->getBacklashCorrection()) + "#";
+    }
+    else if (inCmd[1] == 'M') {
+      return String(_mount->getMountHardwareInfo()) + "#";
     }
     else if (inCmd[1] == 'H') {
       char scratchBuffer[10];

@@ -191,6 +191,9 @@ public:
   // Read the saved configuration from persistent storage
   void readConfiguration();
   
+  // Get Mount configuration data
+  String getMountHardwareInfo();
+
 private:
 
   // Reads values from EEPROM that configure the mount (if previously stored)
