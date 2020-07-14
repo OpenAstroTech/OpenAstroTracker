@@ -113,7 +113,6 @@
 
 
 
-
 #if HEADLESS_CLIENT == 0 // <-- Ignore this line
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                         ///
@@ -288,6 +287,11 @@ extern String version;
 extern byte PolarisRAHour;
 extern byte PolarisRAMinute;
 extern byte PolarisRASecond;
+extern float RAStepsPerRevolution;
+extern int RAPulleyTeeth;
+extern float RACircumference;
+extern float DECStepsPerRevolution;
+extern int DecPulleyTeeth;
 
 
 

@@ -18,7 +18,7 @@
 
 #include "Globals.hpp"
 
-String version = "V1.7.19";
+String version = "V1.7.21";
 
 ///////////////////////////////////////////////////////////////////////////
 // Please see the Globals.h file for configuration of the firmware.
@@ -42,12 +42,12 @@ float RAStepsPerRevolution = 4096;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  | 
 // Theoretically correct RA tracking speed is 1.246586 (300 x 14.95903 / 3600) (V2 : 1.333800 (322 x 14.95903 / 3600) steps/sec (this is for 20T)
 
 // Your drive pulley tooth count:
-#define RAPulleyTeeth 16
+int RAPulleyTeeth = 16;
 
 // the Circumference of the RA wheel
 // V1: 1057.1
 // V2: 1131
-#define RACircumference 1131
+float RACircumference = 1131.0;
 
 int RAStepsPerDegree = (RACircumference / (RAPulleyTeeth * 2.0) * RAStepsPerRevolution / 360.0);      // V2 Ring has belt in a groove and belt runs on bearings
 int RAspeed = 500;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
@@ -66,7 +66,7 @@ float DECStepsPerRevolution = 4096;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |
 // One DEC revolution needs 14.13 (565.5mm/40mm) stepper revolutions
 // Which means 57907 steps (14.14 x 4096) moves 360 degrees
 // So there are 160.85 steps/degree (57907/360) (this is for 20T)
-#define DecPulleyTeeth 16
+int DecPulleyTeeth = 16;
 
 int DECStepsPerDegree = (568.5 / (DecPulleyTeeth * 2.0) * DECStepsPerRevolution / 360.0);
 int DECspeed = 500;           // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
