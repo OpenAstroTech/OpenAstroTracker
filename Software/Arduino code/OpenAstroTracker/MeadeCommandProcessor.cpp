@@ -1,5 +1,5 @@
 #include "MeadeCommandProcessor.hpp"
-#include "Globals.hpp"
+#include "Configuration_adv.hpp"
 #include "Utility.hpp"
 #include "WifiControl.hpp"
 

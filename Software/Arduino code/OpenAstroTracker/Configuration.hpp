@@ -1,3 +1,5 @@
+#pragma once
+#include "Configuration_adv.hpp"   // <-- ignore these
 /*
   =======================================================================================================================================
 
@@ -14,18 +16,14 @@
 
   =======================================================================================================================================
 */
-#pragma once
-
-#include "Globals.hpp"
 
 String version = "V1.7.21";
 
 ///////////////////////////////////////////////////////////////////////////
-// Please see the Globals.h file for configuration of the firmware.
+// Also use Configuration_adv for further adjustments!
 ///////////////////////////////////////////////////////////////////////////
 
-// See NORTHERN_HEMISPHERE in Globals.hpp if you NOT in the northern hemisphere
-
+// See NORTHERN_HEMISPHERE in Configuration_adv.hpp if you NOT in the northern hemisphere
 
 ///////////////////////////////////////////////////////////////////////////
 // RA stepper                                                            //
@@ -33,6 +31,46 @@ String version = "V1.7.21";
 // This is how many steps your stepper needs for a full rotation.
 float RAStepsPerRevolution = 4096;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
 
+// Your RA pulley tooth count:
+int RAPulleyTeeth = 16;
+
+// the Circumference of the RA wheel.  V1 = 1057.1  |  V2 = 1131 
+float RACircumference = 1131.0;
+
+int RAspeed = 500;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+int RAacceleration = 600;   // High speeds tend to make these cheap steppers unprecice
+
+///////////////////////////////////////////////////////////////////////////
+// DEC stepper                                                           //
+///////////////////////////////////////////////////////////////////////////
+// This is how many steps your stepper needs for a full rotation.
+float DECStepsPerRevolution = 4096;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+
+// Your DEC pulley tooth count:
+int DecPulleyTeeth = 16;
+float DEC_Circumference = 568.5;
+
+int DECspeed = 500;           // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+int DECacceleration = 600;    // High speeds tend to make these cheap steppers unprecice
+
+
+
+
+
+
+
+// These values are needed to calculate the current position during initial alignment.
+// Use something like Stellarium to look up the RA of Polaris in JNow (on date) variant.
+// This changes slightly over weeks, so adjust every couple of months.
+// This value is from 15.Jul.2020, next adjustment suggested at end 2020
+// The same could be done for the DEC coordinates but they dont change significantly for the next 5 years
+byte PolarisRAHour = 2;
+byte PolarisRAMinute = 57;
+byte PolarisRASecond = 22;
+
+// Some explanations:
+
+// RA movement:
 // The radius of the surface that the belt runs on (in V1 of the ring) was 168.24mm.
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
 // RA wheel is 2 x PI x 168.24mm (V2:180mm) circumference = 1057.1mm (V2:1131mm)
@@ -41,42 +79,13 @@ float RAStepsPerRevolution = 4096;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  | 
 // So there are 300.1 steps/degree (108245 / 360)  (V2: 322 (115812 / 360))
 // Theoretically correct RA tracking speed is 1.246586 (300 x 14.95903 / 3600) (V2 : 1.333800 (322 x 14.95903 / 3600) steps/sec (this is for 20T)
 
-// Your drive pulley tooth count:
-int RAPulleyTeeth = 16;
-
-// the Circumference of the RA wheel
-// V1: 1057.1
-// V2: 1131
-float RACircumference = 1131.0;
-
-int RAStepsPerDegree = (RACircumference / (RAPulleyTeeth * 2.0) * RAStepsPerRevolution / 360.0);      // V2 Ring has belt in a groove and belt runs on bearings
-int RAspeed = 500;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
-int RAacceleration = 600;   // High speeds tend to make these cheap steppers unprecice
-
-
-
-///////////////////////////////////////////////////////////////////////////
-// DEC stepper                                                           //
-///////////////////////////////////////////////////////////////////////////
-// This is how many steps your stepper needs for a full rotation.
-float DECStepsPerRevolution = 4096;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
-
+// DEC movement
 // Belt moves 40mm for one stepper revolution (2mm pitch, 20 teeth).
 // DEC wheel is 2 x PI x 90mm circumference which is 565.5mm
 // One DEC revolution needs 14.13 (565.5mm/40mm) stepper revolutions
 // Which means 57907 steps (14.14 x 4096) moves 360 degrees
 // So there are 160.85 steps/degree (57907/360) (this is for 20T)
-int DecPulleyTeeth = 16;
 
-int DECStepsPerDegree = (568.5 / (DecPulleyTeeth * 2.0) * DECStepsPerRevolution / 360.0);
-int DECspeed = 500;           // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
-int DECacceleration = 600;    // High speeds tend to make these cheap steppers unprecice
-
-// These values are needed to calculate the current position during initial alignment.
-// Use something like Stellarium to look up the RA of Polaris in JNow (on date) variant.
-// This changes slightly over weeks, so adjust every couple of months.
-// This value is from 15.Jun.2020, next adjustment suggested at end 2020
-// The same could be done for the DEC coordinates but they dont change significantly for the next 5 years
-byte PolarisRAHour = 2;
-byte PolarisRAMinute = 58;
-byte PolarisRASecond = 15;
+// Some calculations, ignore 
+int RAStepsPerDegree = (RACircumference / (RAPulleyTeeth * 2.0) * RAStepsPerRevolution / 360.0);
+int DECStepsPerDegree = (DEC_Circumference / (DecPulleyTeeth * 2.0) * DECStepsPerRevolution / 360.0);

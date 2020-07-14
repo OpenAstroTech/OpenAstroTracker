@@ -3,7 +3,7 @@
 
 #include <LiquidCrystal.h>
 #include <AccelStepper.h>
-#include "Globals.hpp"
+#include "Configuration_adv.hpp"
 #include "DayTime.hpp"
 #include "LcdMenu.hpp"
 #if RA_Driver_TYPE == 3

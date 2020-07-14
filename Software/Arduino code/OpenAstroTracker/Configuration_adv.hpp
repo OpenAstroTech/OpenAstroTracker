@@ -36,7 +36,7 @@
 ////////////////////////////
 //
 // TMC2209 UART settings
-// These settings work only with TMC2209 in UART connection (single wire TX/RX wiring)
+// These settings work only with TMC2209 in UART connection (single wire to TX)
 #define TRACKING_MICROSTEPPING 16  // Set the MS mode for tracking only. Slew MS is set by SET_MICROSTEPPING above
 
 #define RA_RMSCURRENT 800       // RMS current in mA. Warning: Peak current will be higher! Do not set to max current
@@ -50,7 +50,7 @@
 #define USE_AUTOHOME 0        // Autohome with TMC2209 stall detection:  ON = 1  |  OFF = 0   
 //                  ^^^ leave at 0 for now, doesnt work properly yet
 //
-// driver pins selection -- move to a_inits for release --
+// driver configurations -- move to a_inits for release --
 #define RA_STEP_PIN 22
 #define RA_DIR_PIN 24
 #define RA_EN_PIN 40
@@ -265,7 +265,7 @@
 #error "Holdcurrent has to be within 1 and 31!"
 #endif
 #if RA_RMSCURRENT > 2000 || DEC_RMSCURRENT > 2000
-//#error "Do you really want to set the motorcurrent above 2 Ampere?"
+#error "Do you really want to set the motorcurrent above 2 Ampere? Delete this error if you know what youre doing" 
 #endif
 
 

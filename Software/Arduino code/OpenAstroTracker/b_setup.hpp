@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "OpenAstroTracker.hpp"
+#include "Configuration.hpp"
 #include "a_inits.hpp"
 #include "LcdMenu.hpp"
 #include "Utility.hpp"

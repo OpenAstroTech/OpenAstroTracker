@@ -1,5 +1,5 @@
-// Configuration is now done in OpenAstroTracker.hpp and Globals.hpp 
-#include "OpenAstroTracker.hpp"
+// Configuration is now done in Configuration.hpp and Configuration_adv.hpp 
+#include "Configuration.hpp"
 #include "a_inits.hpp"
 #include "b_setup.hpp"
 #include "c65_startup.hpp"
