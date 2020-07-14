@@ -11,8 +11,8 @@
 ////////////////////////////
 //
 // STEPPER TYPE
-#define RA_Stepper_TYPE   1        // 28BYJ-48 = 0   |   NEMA = 1
-#define DEC_Stepper_TYPE  1        // 28BYJ-48 = 0   |   NEMA = 1
+#define RA_Stepper_TYPE   0        // 28BYJ-48 = 0   |   NEMA = 1
+#define DEC_Stepper_TYPE  0        // 28BYJ-48 = 0   |   NEMA = 1
 //
 //
 ////////////////////////////
@@ -29,8 +29,8 @@
 //
 // Driver selection 
 // GENERIC drivers include A4988 and any Bipolar STEP/DIR based drivers
-#define RA_Driver_TYPE  3          // ULN2003 = 0  |  GENERIC = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
-#define DEC_Driver_TYPE 3          // ULN2003 = 0  |  GENERIC = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
+#define RA_Driver_TYPE  0          // ULN2003 = 0  |  GENERIC = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
+#define DEC_Driver_TYPE 0          // ULN2003 = 0  |  GENERIC = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
 //
 //
 ////////////////////////////
@@ -39,13 +39,14 @@
 // These settings work only with TMC2209 in UART connection (single wire TX/RX wiring)
 #define TRACKING_MICROSTEPPING 16  // Set the MS mode for tracking only. Slew MS is set by SET_MICROSTEPPING above
 
-#define RA_RMSCURRENT 900       // RMS current in mA. Warning: Peak current will be higher! Do not set to max current
+#define RA_RMSCURRENT 800       // RMS current in mA. Warning: Peak current will be higher! Do not set to max current
 #define RA_STALL_VALUE 100
 //#define RA_SPEED_MULTIPLIER 20 // This value is multiplied with the SLEW microstepping value to get the necessary speed
 
-#define DEC_MICROSTEPPING 8
-#define DEC_STALL_VALUE 100
-#define DEC_RMSCURRENT 600
+#define DEC_MICROSTEPPING 16
+#define DEC_STALL_VALUE 10
+#define DEC_RMSCURRENT 900
+#define DEC_HOLDCURRENT 20    // [0, ... , 31] x/32 of the run current when standing still. 0=1/32... 31=32/32
 #define USE_AUTOHOME 0        // Autohome with TMC2209 stall detection:  ON = 1  |  OFF = 0   
 //                  ^^^ leave at 0 for now, doesnt work properly yet
 //
@@ -59,7 +60,8 @@
 #define DEC_STEP_PIN 26
 #define DEC_DIR_PIN 28
 #define DEC_EN_PIN 41
-#define DEC_MS1_PIN 44
+#define DEC_DIAG_PIN 53
+//#define DEC_MS1_PIN 44 //not needed for now
 #define DEC_SERIAL_PORT Serial2  // HardwareSerial port, wire to TX2 for write-only
 #define DEC_DRIVER_ADDRESS 0b00  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
 #define R_SENSE 0.11f           // 0.11 for StepStick
@@ -135,7 +137,7 @@
 //
 // Set this to 1 to support full GO menu. 
 // If this is set to 0 you still have a GO menu that has Home and Park.
-  #define SUPPORT_POINTS_OF_INTEREST   1
+  #define SUPPORT_POINTS_OF_INTEREST   0
 
 // Set this to 1 to support Guided Startup 
   #define SUPPORT_GUIDED_STARTUP       1
@@ -147,7 +149,7 @@
   #define SUPPORT_CALIBRATION          1
 
 // Set this to 1 to support INFO menu that displays various pieces of information about the mount. 
-  #define SUPPORT_INFO_DISPLAY         1
+  #define SUPPORT_INFO_DISPLAY         0
 
 // Set this to 1 to support Serial Meade LX200 protocol support
   #define SUPPORT_SERIAL_CONTROL       1
@@ -254,6 +256,21 @@
 
 
 
+
+
+
+////////////////////////////
+// ERRORS
+
+#if DEC_HOLDCURRENT < 1 || DEC_HOLDCURRENT > 31
+#error "Holdcurrent has to be within 1 and 31!"
+#endif
+#if RA_RMSCURRENT > 2000 || DEC_RMSCURRENT > 2000
+//#error "Do you really want to set the motorcurrent above 2 Ampere?"
+#endif
+
+
+
 ////////////////////////////
 // Misc stuff, ignore
 
@@ -271,5 +288,8 @@ extern String version;
 extern byte PolarisRAHour;
 extern byte PolarisRAMinute;
 extern byte PolarisRASecond;
+
+
+
 
 #endif // _GLOBALS_HPP

@@ -47,17 +47,21 @@ bool processStartupKeys() {
           else if (isInHomePosition == NO) {
             #if RA_Driver_TYPE == 3 && USE_AUTOHOME == 1
             mount.StartFindingHomeDEC();
-            while (mount.isFindingHome()) {
+            if (mount.isFindingHome()) {
               startupState = StartupWaitForPoleCompletion;            
               lcdMenu.clear();
               lcdMenu.setCursor(0, 0);
               lcdMenu.printMenu("Finding Home....");
               lcdMenu.setCursor(0, 1);
               lcdMenu.printMenu("Please Wait");              
-              break;
+              //break;
+              
+            }
+            else {
+              startupState = StartupSetHATime;
             }
             
-            inStartup = false;
+            //inStartup = false;
             
               
              

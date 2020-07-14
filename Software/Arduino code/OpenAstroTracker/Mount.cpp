@@ -373,6 +373,7 @@ void Mount::configureDECdriver(HardwareSerial *serial, float rsense, byte driver
   _driverDEC->semax(2);
   _driverDEC->sedn(0b01);
   _driverDEC->SGTHRS(stallvalue);
+  _driverDEC->ihold(DEC_HOLDCURRENT);
 }
 #endif
 
@@ -603,7 +604,11 @@ DegreeTime& Mount::targetDEC() {
 const DayTime Mount::currentRA() const {
   // How many steps moves the RA ring one sidereal hour along. One sidereal hour moves just shy of 15 degrees
   float stepsPerSiderealHour = _stepsPerRADegree * siderealDegreesInHour;
+  #if RA_Driver_TYPE == 0
   float hourPos = 2.0 * -_stepperRA->currentPosition() / stepsPerSiderealHour;
+  #else
+  float hourPos =  -_stepperRA->currentPosition() / stepsPerSiderealHour;
+  #endif
   LOGV4(DEBUG_MOUNT_VERBOSE,"CurrentRA: Steps/h    : %s (%d x %s)", String(stepsPerSiderealHour, 2).c_str(), _stepsPerRADegree, String(siderealDegreesInHour, 5).c_str());
   LOGV2(DEBUG_MOUNT_VERBOSE,"CurrentRA: RA Steps   : %d", _stepperRA->currentPosition());
   LOGV2(DEBUG_MOUNT_VERBOSE,"CurrentRA: POS        : %s", String(hourPos).c_str());
@@ -1284,6 +1289,20 @@ void Mount::loop() {
   }
   #endif
   
+  #if RA_Driver_TYPE == 3 && DEC_Driver_TYPE == 3 && USE_AUTOHOME == 1
+  if (isFindingHome()) {
+    if (digitalRead(DEC_DIAG_PIN) == HIGH) {
+      finishFindingHomeDEC();
+      return;
+    }
+    if (digitalRead(RA_DIAG_PIN) == 52) {
+      finishFindingHomeRA();
+      return;
+    }    
+    //return;
+  }
+  #endif
+  
   if (isGuiding()) {
     if (millis() > _guideEndTime) {
       stopGuiding();
@@ -1478,11 +1497,12 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
   float stepsPerSiderealHour = _stepsPerRADegree * siderealDegreesInHour;
 
   // Where do we want to move RA to?
-#if RA_Stepper_TYPE == 0  
+  #if RA_Driver_TYPE == 0
   float moveRA = hourPos * stepsPerSiderealHour / 2;
-#else
+  #else
   float moveRA = hourPos * stepsPerSiderealHour;
-#endif
+  #endif
+
 
 
   // Where do we want to move DEC to?
@@ -1693,11 +1713,12 @@ String Mount::RAString(byte type, byte active) {
 
 void Mount::StartFindingHomeDEC()  {
   _driverDEC->SGTHRS(10);
-  _driverDEC->microsteps(FULLSTEP);
+  _driverDEC->microsteps(16);
   _driverDEC->rms_current(700);
-  _mountStatus |= STATUS_FINDING_HOME;
+  
 
   setManualSlewMode(true);
+  _mountStatus |= STATUS_FINDING_HOME;
   _stepperDEC->setMaxSpeed(3000);
   _stepperDEC->setSpeed(-3000);
 }
@@ -1708,8 +1729,9 @@ void Mount::finishFindingHomeDEC()
    setManualSlewMode(false);
    _stepperDEC->setMaxSpeed(1000);
   _stepperDEC->setSpeed(1000);
-  _stepperDEC->move(2350);
-  while (_stepperDEC->run()) ;
+  //_stepperDEC->move(2350);
+  _stepperDEC->move(100);
+  while (_stepperDEC->run());
   
   setManualSlewMode(false);
   //setHome();
@@ -1722,34 +1744,39 @@ void Mount::finishFindingHomeDEC()
 }
 
 void Mount::StartFindingHomeRA()  {
-  _driverRA->SGTHRS(100);
-  _driverRA->rms_current(800);
+  _driverRA->SGTHRS(50);
+  _driverRA->rms_current(1000);
   _driverRA->microsteps(FULLSTEP);
   _driverRA->semin(0);  // turn off coolstep
   _driverRA->semin(5);
-  _driverRA->TCOOLTHRS(0xFF);  // turn autocurrent threshold down to prevent false reading
+  //_driverRA->TCOOLTHRS(0xFF);  // turn autocurrent threshold down to prevent false reading
   
   setManualSlewMode(true);
-  _mountStatus |= STATUS_FINDING_HOME;
+  //_mountStatus |= STATUS_FINDING_HOME;
   
-  _stepperRA->setMaxSpeed(3000);
+  _stepperRA->setMaxSpeed(500);
   _stepperRA->setAcceleration(500);
-  _stepperRA->setSpeed(-3000);
+  _stepperRA->setSpeed(-500);
 }
 
 void Mount::finishFindingHomeRA() 
 {
   
-  _stepperRA->stop(); 
+  _stepperRA->stop();   
   
-   setManualSlewMode(false);
   _stepperRA->setSpeed(1000);
-  _stepperRA->move(15850.0);
-  while (_stepperRA->run()) ;
-
-   
-  _mountStatus |= STATUS_TRACKING;
-   setHome();
+  //_stepperRA->move(15850.0);
+  setManualSlewMode(false);
+  _stepperRA->move(1000);  
   
+  while (_stepperRA->run());
+  
+
+   //setManualSlewMode(false);
+   
+   
+   startSlewing(TRACKING);
+   setHome();
+
 }
 #endif

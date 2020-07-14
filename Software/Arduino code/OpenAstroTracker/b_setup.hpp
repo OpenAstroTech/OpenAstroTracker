@@ -49,60 +49,7 @@ void IRAM_ATTR stepperControlTask(void* payload)
   }
 }
 
-/////////////////////////////////
-//   Microstepping/driver pins
-/////////////////////////////////
-#if RA_Stepper_TYPE == 1   // RA driver startup (for A4988)
-#if RA_Driver_TYPE == 1
-  // include A4988 microstep pins
-  //#error "Define Microstep pins and delete this error."
-  digitalWrite(40, HIGH);  // MS0
-  digitalWrite(41, HIGH);  // MS1
-  digitalWrite(42, HIGH);  // MS2
-  #endif
-#if RA_Driver_TYPE == 2
-  // include TMC2209 Standalone pins
-  pinMode(40, OUTPUT);
-  digitalWrite(40, LOW);  // ENABLE, LOW to enable
-  digitalWrite(41, HIGH);  // MS2
-  digitalWrite(42, HIGH);  // MS1
-  #endif
-#if RA_Driver_TYPE == 3
-  // include TMC2209 UART pins  
-  pinMode(RA_EN_PIN, OUTPUT);
-  pinMode(RA_DIAG_PIN, INPUT);
-  digitalWrite(RA_EN_PIN, LOW);  // Logic LOW to enable driver
-  RA_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
 
-  RAspeed = RA_SPEED_MULTIPLIER * SET_MICROSTEPPING;
-#endif
-
-#endif
-#if DEC_DRIVER_TYPE == 1  // DEC driver startup (for A4988)
-  pinMode(45, OUTPUT);
-  digitalWrite(45, LOW);  // ENABLE
-
-  digitalWrite(46, LOW);  // MS2
-  digitalWrite(44, HIGH);  // MS1
-#endif
-#if DEC_Driver_TYPE == 2
-  // include TMC2209 Standalone pins  TODO-----------------------
-  //pinMode(40, OUTPUT);
-  //digitalWrite(40, LOW);  // ENABLE, LOW to enable
-  //digitalWrite(41, HIGH);  // MS2
-  //digitalWrite(42, HIGH);  // MS1
-#endif
-#if DEC_Driver_TYPE == 3
-  // include TMC2209 UART pins  
-  pinMode(DEC_EN_PIN, OUTPUT);
-  pinMode(DEC_MS1_PIN, OUTPUT);
-  digitalWrite(DEC_EN_PIN, LOW);  // Logic LOW to enable driver
-  digitalWrite(DEC_MS1_PIN, HIGH); // Logic HIGH to MS1 to get 0b01 address
-  DEC_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
-
-  
-#endif
-// end microstepping -------------------
 
 /////////////////////////////////
 //
@@ -128,41 +75,53 @@ void IRAM_ATTR mainLoopTask(void* payload)
 /////////////////////////////////
 void setup() {
 
-// Microstepping ---------------
-#if RA_Stepper_TYPE == 1   // RA driver startup (for TMC2209)
+/////////////////////////////////
+//   Microstepping/driver pins
+/////////////////////////////////
+#if RA_Stepper_TYPE == 1   // RA driver startup (for A4988)
 #if RA_Driver_TYPE == 1
   // include A4988 microstep pins
+  //#error "Define Microstep pins and delete this error."
+  digitalWrite(40, HIGH);  // MS0
+  digitalWrite(41, HIGH);  // MS1
+  digitalWrite(42, HIGH);  // MS2
   #endif
 #if RA_Driver_TYPE == 2
   // include TMC2209 Standalone pins
-  pinMode(41, OUTPUT);
-  digitalWrite(41, LOW);  // ENABLE
-  digitalWrite(42, LOW);  // MS2
-  digitalWrite(40, HIGH);  // MS1
+  pinMode(40, OUTPUT);
+  digitalWrite(40, LOW);  // ENABLE, LOW to enable
+  digitalWrite(41, HIGH);  // MS2
+  digitalWrite(42, HIGH);  // MS1
   #endif
 #if RA_Driver_TYPE == 3
   // include TMC2209 UART pins  
   pinMode(RA_EN_PIN, OUTPUT);
   pinMode(RA_DIAG_PIN, INPUT);
   digitalWrite(RA_EN_PIN, LOW);  // Logic LOW to enable driver
-  RA_SERIAL_PORT.begin(115200);  // Start HardwareSerial comms with driver
-  #endif
-
+  RA_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
 #endif
-#if DEC_Stepper_TYPE == 1  // DEC driver startup (for TMC2209)
+#endif
+#if DEC_DRIVER_TYPE == 1  // DEC driver startup (for A4988)
   pinMode(45, OUTPUT);
   digitalWrite(45, LOW);  // ENABLE
-
   digitalWrite(46, LOW);  // MS2
   digitalWrite(44, HIGH);  // MS1
+#endif
+#if DEC_Driver_TYPE == 2
+  // include TMC2209 Standalone pins  TODO-----------------------
+  //pinMode(40, OUTPUT);
+  //digitalWrite(40, LOW);  // ENABLE, LOW to enable
+  //digitalWrite(41, HIGH);  // MS2
+  //digitalWrite(42, HIGH);  // MS1
 #endif
 #if DEC_Driver_TYPE == 3
   // include TMC2209 UART pins  
   pinMode(DEC_EN_PIN, OUTPUT);
-  pinMode(DEC_MS1_PIN, OUTPUT);
+  pinMode(DEC_DIAG_PIN, INPUT);
+  //pinMode(DEC_MS1_PIN, OUTPUT);
   digitalWrite(DEC_EN_PIN, LOW);  // Logic LOW to enable driver
-  digitalWrite(DEC_MS1_PIN, HIGH); // Logic HIGH to MS1 to get 0b01 address
-  DEC_SERIAL_PORT.begin(115200);  // Start HardwareSerial comms with driver
+  //digitalWrite(DEC_MS1_PIN, HIGH); // Logic HIGH to MS1 to get 0b01 address
+  DEC_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
 #endif
 // end microstepping -------------------
 
