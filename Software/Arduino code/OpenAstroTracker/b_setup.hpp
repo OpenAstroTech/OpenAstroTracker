@@ -7,6 +7,7 @@
 #include "LcdMenu.hpp"
 #include "Utility.hpp"
 #include "EPROMStore.hpp"
+//#include "Sidereal.hpp"
 
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(0);
@@ -74,6 +75,12 @@ void IRAM_ATTR mainLoopTask(void* payload)
 //
 /////////////////////////////////
 void setup() {
+
+
+#if USE_GPS == 1
+Serial1.begin(9600);
+#endif
+
 
 /////////////////////////////////
 //   Microstepping/driver pins

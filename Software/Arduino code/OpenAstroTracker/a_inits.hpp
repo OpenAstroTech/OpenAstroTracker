@@ -11,6 +11,10 @@
 #if RA_Driver_TYPE == 3 // if using TMC UART
   #include <TMCStepper.h>
 #endif
+#if USE_GPS == 1
+#include <TinyGPS++.h>
+TinyGPSPlus gps;
+#endif
 
 #define HALFSTEP 8
 #define FULLSTEP 4

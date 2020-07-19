@@ -17,7 +17,7 @@
   =======================================================================================================================================
 */
 
-String version = "V1.7.21";
+String version = "V1.7.21b";
 
 ///////////////////////////////////////////////////////////////////////////
 // Also use Configuration_adv for further adjustments!
@@ -29,7 +29,7 @@ String version = "V1.7.21";
 // RA stepper                                                            //
 ///////////////////////////////////////////////////////////////////////////
 // This is how many steps your stepper needs for a full rotation.
-float RAStepsPerRevolution = 4096;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+float RAStepsPerRevolution = 400;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
 
 // Your RA pulley tooth count:
 int RAPulleyTeeth = 16;
@@ -38,20 +38,20 @@ int RAPulleyTeeth = 16;
 float RACircumference = 1131.0;
 
 int RAspeed = 500;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
-int RAacceleration = 600;   // High speeds tend to make these cheap steppers unprecice
+int RAacceleration = 6000;   // High speeds tend to make these cheap steppers unprecice
 
 ///////////////////////////////////////////////////////////////////////////
 // DEC stepper                                                           //
 ///////////////////////////////////////////////////////////////////////////
 // This is how many steps your stepper needs for a full rotation.
-float DECStepsPerRevolution = 4096;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+float DECStepsPerRevolution = 400;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
 
 // Your DEC pulley tooth count:
 int DecPulleyTeeth = 16;
 float DEC_Circumference = 568.5;
 
-int DECspeed = 500;           // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
-int DECacceleration = 600;    // High speeds tend to make these cheap steppers unprecice
+int DECspeed = 1500;           // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+int DECacceleration = 6000;    // High speeds tend to make these cheap steppers unprecice
 
 
 

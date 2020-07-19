@@ -3,7 +3,9 @@
 
 #if HEADLESS_CLIENT == 0
 
+
 bool processHAKeys() {
+#if USE_GPS == 0
   byte key;
   bool waitForRelease = false;
   if (lcdButtons.currentState() == btnUP) {
@@ -61,12 +63,74 @@ bool processHAKeys() {
   }
 
   return waitForRelease;
+  
+#else // USE_GPS = 1
+byte key;
+bool waitForRelease = false;
+if (startupState == StartupWaitForHACompletion) {
+while (Serial1.available()) {
+if (gps.encode(Serial1.read())) {
+  if (gps.location.lng() != 0) {
+
+    lcdMenu.printMenu("Acquired Pos.");
+    
+    int hHAfromLST = Sidereal::calculateByGPS(&gps).getHours() - PolarisRAHour;
+    int mHAfromLST = Sidereal::calculateByGPS(&gps).getMinutes() - PolarisRAMinute;
+    mount.setHA(DayTime(hHAfromLST, mHAfromLST, 0));
+    
+    EPROMStore::Storage()->update(1, mount.HA().getHours());
+    EPROMStore::Storage()->update(2, mount.HA().getMinutes());
+    mount.delay(500);
+    mount.setHome();
+
+    
+    startupState = StartupHAConfirmed;
+    inStartup = true;
+  }
+}
+}
+}
+if (lcdButtons.keyChanged(&key)) {
+  switch (key) {
+  case btnRIGHT: {
+    lcdMenu.setNextActive();
+  }
+}
+}
+
+
+
+/*while (Serial2.available()) {
+        if (gps.location.lng() != 0) {
+           ha.set(1);
+           //Sidereal::calculateByGPS(&gps).getHours())
+           //EPROMStore::Storage()->update(1, mount.HA().set();
+          //EPROMStore::Storage()->update(1, mount.HA().getHours());
+        }
+      }*/
+#endif
 }
 
 void printHASubmenu() {
+  #if USE_GPS == 0
   char scratchBuffer[20];
   sprintf(scratchBuffer, " %02dh %02dm", mount.HA().getHours(), mount.HA().getMinutes());
   scratchBuffer[HAselect * 4] = '>';
   lcdMenu.printMenu(scratchBuffer);
+  #else
+  if (startupState == StartupWaitForHACompletion) {
+    char satbuffer[20];
+    sprintf(satbuffer, "Found %02d Sats", gps.satellites.value());
+    lcdMenu.printMenu(satbuffer);
+    //lcd.print("Found ");
+    //lcd.print(gps.satellites.value());
+    //lcd.print(" Sats");
+  }
+  else {
+    char scratchBuffer[20];
+    sprintf(scratchBuffer, " %02dh %02dm", mount.HA().getHours(), mount.HA().getMinutes());
+    lcdMenu.printMenu(scratchBuffer);
+  }
+  #endif
 }
 #endif

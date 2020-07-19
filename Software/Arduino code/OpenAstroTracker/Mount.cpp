@@ -4,6 +4,7 @@
 #include "Mount.hpp"
 #include "Utility.hpp"
 #include "EPROMStore.hpp"
+#include "Sidereal.cpp"
 
 //mountstatus
 #define STATUS_PARKED              0B0000000000000000
@@ -298,6 +299,16 @@ void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed
   _stepperTRK = new AccelStepper(DRIVER, pin1, pin2);
   _stepperTRK->setMaxSpeed(10);
   _stepperTRK->setAcceleration(2500);
+
+  #if NORTHERN_HEMISPHERE != 1
+  _stepperRA->setPinsInverted(true, false, false);
+  _stepperTRK->setPinsInverted(true, false, false);
+  #endif
+  
+  #if INVERT_RA_DIR == 1
+  _stepperRA->setPinsInverted(true, false, false);
+  _stepperTRK->setPinsInverted(true, false, false);
+  #endif
 }
 #endif
 
@@ -329,6 +340,10 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
   _stepperDEC->setAcceleration(maxAcceleration);
   _maxDECSpeed = maxSpeed;
   _maxDECAcceleration = maxAcceleration;
+  
+  #if INVERT_DEC_DIR == 1
+  _stepperDEC->setPinsInverted(true, false, false);
+  #endif
 }
 #endif
 
@@ -345,7 +360,7 @@ void Mount::configureRAdriver(HardwareSerial *serial, float rsense, byte drivera
   //_driverRA->en_spreadCycle(1);
   _driverRA->blank_time(24);
   _driverRA->rms_current(rmscurrent);
-  _driverRA->microsteps(16);
+  _driverRA->microsteps(TRACKING_MICROSTEPPING);
   _driverRA->TCOOLTHRS(0xFFFFF);
   _driverRA->semin(5);
   _driverRA->semax(2);
@@ -780,7 +795,7 @@ void Mount::guidePulse(byte direction, int duration) {
   // RA stepper moves at either 2x sidereal rate or stops.
   // TODO: Do we need to adjust with _trackingSpeedCalibration?
   float decTrackingSpeed = _stepsPerDECDegree * siderealDegreesInHour / 3600.0f;
-  float raTrackingSpeed = _stepsPerRADegree * siderealDegreesInHour / 3600.0f;
+  float raTrackingSpeed = _stepsPerRADegree * ((_stepsPerRADegree / SET_MICROSTEPPING) * TRACKING_MICROSTEPPING) / 3600.0f;
 
   // TODO: Do we need to track how many steps the steppers took and add them to the GoHome calculation?
   // If so, we need to remember where we were when we started the guide pulse. Then at the end,
@@ -804,13 +819,13 @@ void Mount::guidePulse(byte direction, int duration) {
     break;
 
     case WEST:
-    _stepperTRK->setMaxSpeed(raTrackingSpeed * 2.2);
-    _stepperTRK->setSpeed(raTrackingSpeed * 2);
+    _stepperTRK->setMaxSpeed(raTrackingSpeed * (RA_PULSE_MULTIPLIER + 0.2));
+    _stepperTRK->setSpeed(raTrackingSpeed * RA_PULSE_MULTIPLIER);
     _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_RA;
     break;
 
     case EAST:
-    _stepperTRK->setMaxSpeed(raTrackingSpeed * 2.2);
+    _stepperTRK->setMaxSpeed(raTrackingSpeed * (RA_PULSE_MULTIPLIER + 0.2));
     _stepperTRK->setSpeed(0);
     _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_RA;
     break;
@@ -1285,7 +1300,7 @@ void Mount::interruptLoop()
 {
   if (_mountStatus & STATUS_GUIDE_PULSE) {
     if (_mountStatus & STATUS_GUIDE_PULSE_RA) {
-      _stepperTRK->runSpeed();
+      _stepperTRK->runSpeed();      
     }
     if (_mountStatus & STATUS_GUIDE_PULSE_DEC) {
       _stepperDEC->runSpeed();
@@ -1319,6 +1334,13 @@ void Mount::loop() {
   bool raStillRunning = false;
   bool decStillRunning = false;
 
+  /*static uint32_t last_time = 0;
+  uint32_t ms = millis();
+  if ((ms - last_time) > 100) { //run every 0.1s
+    last_time = ms;
+  Serial.println(_driverRA->mres());
+  }*/
+  
   // Since some of the boards cannot process timer interrupts at the required 
   // speed (or at all), we'll just stick to deterministic calls here.
   #if RUN_STEPPERS_IN_MAIN_LOOP == 1
@@ -1552,6 +1574,7 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
   // Where do we want to move DEC to?
   // the variable targetDEC 0deg for the celestial pole (90deg), and goes negative only.
   float moveDEC = -_targetDEC.getTotalDegrees() * _stepsPerDECDegree;
+
 
   LOGV3(DEBUG_MOUNT_VERBOSE,"Mount::CalcSteppersIn: RA Steps/deg: %d   Steps/srhour: %f", _stepsPerRADegree, stepsPerSiderealHour);
   LOGV3(DEBUG_MOUNT_VERBOSE,"Mount::CalcSteppersIn: Target Step pos RA: %f, DEC: %f", moveRA, moveDEC);

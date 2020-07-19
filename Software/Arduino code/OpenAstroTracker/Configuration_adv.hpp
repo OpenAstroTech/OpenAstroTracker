@@ -11,8 +11,8 @@
 ////////////////////////////
 //
 // STEPPER TYPE
-#define RA_Stepper_TYPE   0        // 28BYJ-48 = 0   |   NEMA = 1
-#define DEC_Stepper_TYPE  0        // 28BYJ-48 = 0   |   NEMA = 1
+#define RA_Stepper_TYPE   1        // 28BYJ-48 = 0   |   NEMA = 1
+#define DEC_Stepper_TYPE  1        // 28BYJ-48 = 0   |   NEMA = 1
 //
 //
 ////////////////////////////
@@ -29,8 +29,8 @@
 //
 // Driver selection 
 // GENERIC drivers include A4988 and any Bipolar STEP/DIR based drivers
-#define RA_Driver_TYPE  0          // ULN2003 = 0  |  GENERIC = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
-#define DEC_Driver_TYPE 0          // ULN2003 = 0  |  GENERIC = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
+#define RA_Driver_TYPE  3          // ULN2003 = 0  |  GENERIC = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
+#define DEC_Driver_TYPE 3          // ULN2003 = 0  |  GENERIC = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
 //
 //
 ////////////////////////////
@@ -39,13 +39,13 @@
 // These settings work only with TMC2209 in UART connection (single wire to TX)
 #define TRACKING_MICROSTEPPING 16  // Set the MS mode for tracking only. Slew MS is set by SET_MICROSTEPPING above
 
-#define RA_RMSCURRENT 800       // RMS current in mA. Warning: Peak current will be higher! Do not set to max current
+#define RA_RMSCURRENT 1600       // RMS current in mA. Warning: Peak current will be higher! Do not set to max current
 #define RA_STALL_VALUE 100
 //#define RA_SPEED_MULTIPLIER 20 // This value is multiplied with the SLEW microstepping value to get the necessary speed
 
 #define DEC_MICROSTEPPING 16
 #define DEC_STALL_VALUE 10
-#define DEC_RMSCURRENT 900
+#define DEC_RMSCURRENT 1200
 #define DEC_HOLDCURRENT 20    // [0, ... , 31] x/32 of the run current when standing still. 0=1/32... 31=32/32
 #define USE_AUTOHOME 0        // Autohome with TMC2209 stall detection:  ON = 1  |  OFF = 0   
 //                  ^^^ leave at 0 for now, doesnt work properly yet
@@ -53,14 +53,14 @@
 // driver configurations -- move to a_inits for release --
 #define RA_STEP_PIN 22
 #define RA_DIR_PIN 24
-#define RA_EN_PIN 40
-#define RA_DIAG_PIN 52
+#define RA_EN_PIN 25
+#define RA_DIAG_PIN 40
 #define RA_SERIAL_PORT Serial3  // HardwareSerial port, wire to TX3 for write-only
 #define RA_DRIVER_ADDRESS 0b00  // Set by MS1/MS2
 #define DEC_STEP_PIN 26
 #define DEC_DIR_PIN 28
-#define DEC_EN_PIN 41
-#define DEC_DIAG_PIN 53
+#define DEC_EN_PIN 29
+#define DEC_DIAG_PIN 41
 //#define DEC_MS1_PIN 44 //not needed for now
 #define DEC_SERIAL_PORT Serial2  // HardwareSerial port, wire to TX2 for write-only
 #define DEC_DRIVER_ADDRESS 0b00  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
@@ -81,7 +81,14 @@
 // Set to 1 if you are in the northern hemisphere.
 #define NORTHERN_HEMISPHERE 1
 //
-
+//
+////////////////////////////
+//
+// GUIDE SETTINGS
+// This is the multiplier of the normal trackingspeed that a pulse will have 
+// standard value: RA 2.2;  DEC 1.2
+#define RA_PULSE_MULTIPLIER 2.2
+//#define DEC_PULSE_MULTIPLIER 1.2
 
 
 
@@ -136,7 +143,7 @@
 //
 // Set this to 1 to support full GO menu. 
 // If this is set to 0 you still have a GO menu that has Home and Park.
-  #define SUPPORT_POINTS_OF_INTEREST   0
+  #define SUPPORT_POINTS_OF_INTEREST   1
 
 // Set this to 1 to support Guided Startup 
   #define SUPPORT_GUIDED_STARTUP       1
@@ -148,12 +155,12 @@
   #define SUPPORT_CALIBRATION          1
 
 // Set this to 1 to support INFO menu that displays various pieces of information about the mount. 
-  #define SUPPORT_INFO_DISPLAY         0
+  #define SUPPORT_INFO_DISPLAY         1
 
 // Set this to 1 to support Serial Meade LX200 protocol support
   #define SUPPORT_SERIAL_CONTROL       1
 
-// Set this to 1 if you are using a NEO6m GPS module !!Not yet supported!!
+// Set this to 1 if you are using a NEO6m GPS module !!Does not work yet!!
   #define USE_GPS                      0
 
 #endif  // HEADLESS_CLIENT <-- Ignore this    
