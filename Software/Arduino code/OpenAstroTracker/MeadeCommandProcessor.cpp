@@ -470,8 +470,7 @@ String MeadeCommandProcessor::handleMeadeSyncControl(String inCmd) {
     return "NONE#";
   }
 
-  return "0";
-
+  return "FAIL#";
 }
 
 /////////////////////////////
