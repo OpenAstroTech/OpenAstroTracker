@@ -37,7 +37,7 @@ int RAPulleyTeeth = 16;
 // the Circumference of the RA wheel.  V1 = 1057.1  |  V2 = 1131 
 float RACircumference = 1131.0;
 
-int RAspeed = 500;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+int RAspeed = 800;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
 int RAacceleration = 6000;   // High speeds tend to make these cheap steppers unprecice
 
 ///////////////////////////////////////////////////////////////////////////
