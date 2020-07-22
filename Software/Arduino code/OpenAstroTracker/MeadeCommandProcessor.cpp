@@ -767,6 +767,9 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
     else if (inCmd[1] == 'Y') {
       _mount->setSpeed(DEC_STEPS, inCmd.substring(2).toFloat());
     }
+    else if (inCmd[1] == 'Z') {
+      _mount->setSpeed(AZIMUTH_STEPS, inCmd.substring(2).toFloat());
+    }
     else if (inCmd[1] == 'B') {
       _mount->setBacklashCorrection(inCmd.substring(2).toInt());
     }

@@ -14,6 +14,9 @@
 #define RA_Stepper_TYPE  0     // 28BYJ-48 = 0   |   NEMA = 1
 #define DEC_Stepper_TYPE  0    // 28BYJ-48 = 0   |   NEMA = 1
 
+// Are we supporting the Azimuth PA motor?
+#define AZIMUTH_MOTOR 1
+
 // Make some variables in the sketch files available to the C++ code.
 extern bool inSerialControl;
 extern String version;
@@ -25,7 +28,6 @@ extern int RAPulleyTeeth;
 extern float RACircumference;
 extern float DECStepsPerRevolution;
 extern int DecPulleyTeeth;
-
 
 // Debugging output control
 // Each bit in the debug level specifies a kind of debug to enable. 
@@ -57,6 +59,7 @@ extern int DecPulleyTeeth;
 // #define DEBUG_LEVEL (DEBUG_SERIAL|DEBUG_WIFI|DEBUG_INFO|DEBUG_MOUNT|DEBUG_GENERAL)
 // #define DEBUG_LEVEL (DEBUG_ANY)
 // #define DEBUG_LEVEL (DEBUG_INFO|DEBUG_MOUNT|DEBUG_GENERAL)
+// #define DEBUG_LEVEL (DEBUG_WIFI|DEBUG_MEADE|DEBUG_INFO|DEBUG_GENERAL)
 #define DEBUG_LEVEL (DEBUG_NONE)
 
 // Set this to 1 to run a key diagnostic. No tracker functions are on at all.
@@ -80,7 +83,7 @@ extern int DecPulleyTeeth;
     #undef HEADLESS_CLIENT
     #define HEADLESS_CLIENT 1
     #define WIFI_ENABLED 
-    #define INFRA_SSID "YouSSID"
+    #define INFRA_SSID "YourSSID"
     #define INFRA_WPAKEY "YourWPAKey"
     #define OAT_WPAKEY "superSecret"
     #define HOSTNAME "OATerScope"

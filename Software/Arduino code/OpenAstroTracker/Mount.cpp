@@ -309,6 +309,13 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, 
   _stepperDEC->setAcceleration(maxAcceleration);
   _maxDECSpeed = maxSpeed;
   _maxDECAcceleration = maxAcceleration;
+
+  #if AZIMUTH_MOTOR
+  _stepperAZ = new AccelStepper(FULLSTEP, PINA1, PINA3, PINA2, PINA4);
+  _stepperAZ ->setSpeed(0);
+  _stepperAZ ->setMaxSpeed(400);
+  _stepperAZ->setAcceleration(400);
+  #endif
 }
 #endif
 
@@ -842,7 +849,11 @@ void Mount::setSpeed(int which, float speed) {
   else if (which == DEC_STEPS) {
     _stepperDEC->setSpeed(speed);
   }
-
+  #if AZIMUTH_MOTOR
+  else if (which == AZIMUTH_STEPS) {
+    _stepperAZ->setSpeed(speed);
+  }
+  #endif
 }
 
 /////////////////////////////////
@@ -1226,6 +1237,11 @@ void Mount::interruptLoop()
       _stepperRA->run();
     }
   }
+
+  #if AZIMUTH_MOTOR
+  _stepperAZ->runSpeed();
+  #endif
+
 }
 
 /////////////////////////////////
