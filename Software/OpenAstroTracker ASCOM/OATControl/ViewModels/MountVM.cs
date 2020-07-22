@@ -56,6 +56,7 @@ namespace OATControl.ViewModels
 		private float _maxMotorSpeed = 600;
 		double _speed = 1.0;
 		string _scopeName = string.Empty;
+		string _scopeHardware = string.Empty;
 		string _mountStatus = string.Empty;
 		string _currentHA = string.Empty;
 		CultureInfo _oatCulture = new CultureInfo("en-US");
@@ -401,6 +402,8 @@ namespace OATControl.ViewModels
 			{
 				MountConnected = false;
 				_commHandler.Disconnect();
+				ScopeName = string.Empty;
+				ScopeHardware = string.Empty;
 				_oatMount = null;
 				_commHandler = null;
 				RequeryCommands();
@@ -429,7 +432,12 @@ namespace OATControl.ViewModels
 						var resultNr = await _oatMount.SendCommand("GVN#,#");
 						ScopeName = $"{result.Data} {resultNr.Data}";
 
-						Log.WriteLine("Mount: Connected to {0}", ScopeName);
+						var hardware = await _oatMount.SendCommand("XGM#,#");
+						Log.WriteLine("Mount: Hardware is {0}", hardware);
+						var hwParts = hardware.Data.Split(',');
+						var raParts = hwParts[1].Split('|');
+						var decParts = hwParts[2].Split('|');
+						ScopeHardware = $"{hwParts[0]} board    RA {raParts[0]}, {raParts[1]}T    DEC {decParts[0]}, {decParts[1]}T";
 
 						_transform.SiteElevation = 0; //  _oatMount.SiteElevation;
 						Log.WriteLine("Mount: Getting OAT Latitude");
@@ -615,7 +623,7 @@ namespace OATControl.ViewModels
 			return current;
 		}
 
-		private void OnAdjustTarget(string command)
+		public void OnAdjustTarget(string command)
 		{
 			int inc = command[2] == '-' ? -1 : 1;
 			char comp = command[1];
@@ -865,6 +873,15 @@ namespace OATControl.ViewModels
 		{
 			get { return _scopeName; }
 			set { SetPropertyValue(ref _scopeName, value); }
+		}
+
+		/// <summary>
+		/// Gets or sets the name of the scope
+		/// </summary>
+		public string ScopeHardware
+		{
+			get { return _scopeHardware; }
+			set { SetPropertyValue(ref _scopeHardware, value); }
 		}
 
 		/// <summary>
