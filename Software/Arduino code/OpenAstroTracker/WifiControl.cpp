@@ -134,23 +134,28 @@ void WifiControl::infraToAPFailover() {
 
 void WifiControl::tcpLoop() {
     if (client && client.connected()) {
-        unsigned char buffer[2];
         while (client.available()) {
+            LOGV2(DEBUG_WIFI,"WifiTCP: Available bytes %d. Peeking.", client.available());
+
             // Peek first byte and check for ACK (0x06) handshake
-            client.read(buffer, 1);
-            if (buffer[0] == 0x06) {
+            LOGV2(DEBUG_WIFI,"WifiTCP: First byte is %x", client.peek());
+            if (client.peek() == 0x06) {
+                client.read();
                 LOGV1(DEBUG_WIFI,"WifiTCP: Query <-- Handshake request");
                 client.write("1");
                 LOGV1(DEBUG_WIFI,"WifiTCP: Reply --> 1");
             }
             else {
-                String cmd = String(buffer[0]) + client.readStringUntil('#');
+                String cmd = client.readStringUntil('#');
                 LOGV2(DEBUG_WIFI,"WifiTCP: Query <-- %s#", cmd.c_str());
                 String retVal = _cmdProcessor->processCommand(cmd);
 
                 if (retVal != "") {
                     client.write(retVal.c_str());
                     LOGV2(DEBUG_WIFI,"WifiTCP: Reply --> %s", retVal.c_str());
+                }
+                else{
+                    LOGV1(DEBUG_WIFI,"WifiTCP: No Reply");
                 }
             }
 
