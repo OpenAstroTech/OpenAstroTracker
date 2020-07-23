@@ -311,9 +311,9 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, 
   _maxDECAcceleration = maxAcceleration;
 
   #if AZIMUTH_MOTOR
-  _stepperAZ = new AccelStepper(FULLSTEP, PINA1, PINA3, PINA2, PINA4);
+  _stepperAZ = new AccelStepper(FULLSTEP, 38, 42, 40, 44);
   _stepperAZ ->setSpeed(0);
-  _stepperAZ ->setMaxSpeed(400);
+  _stepperAZ ->setMaxSpeed(300);
   _stepperAZ->setAcceleration(400);
   #endif
 }

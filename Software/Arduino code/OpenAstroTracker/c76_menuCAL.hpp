@@ -149,36 +149,43 @@ bool processCalibrationKeys() {
     }
   }
   else if (calState == AZIMUTH_CONTROL) {
-    if (lcdButtons.currentState() == btnUP) {
+    if (lcdButtons.currentState() == btnLEFT) {
+      // Speed up to the left
       if (AzimuthSpeed < 100) {
         AzimuthSpeed += 1; //0.0001;
       }
 
-      calDelay = max(2, 0.96 * calDelay);
+      // Accelerate speed increase over time
+      calDelay = max(2, 0.98 * calDelay);
       checkForKeyChange = false;
     }
-    else if (lcdButtons.currentState() == btnDOWN) {
+    else if (lcdButtons.currentState() == btnRIGHT) {
+      // Speed up to the right
       if (AzimuthSpeed > -100) {
         AzimuthSpeed -= 1; //0.0001;
       }
 
-      calDelay = max(2, 0.96 * calDelay);
+      // Accelerate speed increase over time
+      calDelay = max(2, 0.98 * calDelay);
       checkForKeyChange = false;
     }
     else {
+      // No more buttons pressed, decelerate at 3% per cycle
       if (AzimuthSpeed > 0) {
-        AzimuthSpeed = adjustClamp(AzimuthSpeed, -5, 0, 100);
+        AzimuthSpeed = adjustClamp(AzimuthSpeed, -3, 0, 100);
       }
       else if (AzimuthSpeed < 0) {
-        AzimuthSpeed = adjustClamp(AzimuthSpeed, 5, -100, 0);
+        AzimuthSpeed = adjustClamp(AzimuthSpeed, 3, -100, 0);
       }
       else {
+        // Once we're stopped, set the initial key delay back to 100ms
         calDelay = 100;
       }
     }
 
+    // If we changed speeds, tell the mount motor
     if (AzimuthSpeed != lastAzimuthSpeed) {
-      mount.setSpeed(AZIMUTH_STEPS, 500.0 * AzimuthSpeed / 100.0);
+      mount.setSpeed(AZIMUTH_STEPS, 300.0 * AzimuthSpeed / 100.0);
       lastAzimuthSpeed = AzimuthSpeed;
     }
 
