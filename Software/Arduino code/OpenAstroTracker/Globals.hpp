@@ -87,6 +87,7 @@ extern int DecPulleyTeeth;
     // 0 - Infrastructure Only - Connecting to a Router
     // 1 - AP Mode Only        - Acting as a Router
     // 2 - Attempt Infrastructure, Fail over to AP Mode.
+    // 3 - Disables the radios.
     #define WIFI_MODE 2 
     #if defined(ESP8266) 
         #undef RUN_STEPPERS_IN_MAIN_LOOP

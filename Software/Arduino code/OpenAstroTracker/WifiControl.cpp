@@ -28,6 +28,10 @@ void WifiControl::setup() {
       startInfrastructureMode();
       _infraStart = millis();
       break;
+  case 3: // Disabled
+      WiFi.mode(WIFI_OFF);
+      btStop();
+      break;
   }
 }
 
@@ -91,6 +95,9 @@ String WifiControl::getStatus()
 
 void WifiControl::loop()
 {
+    if( WIFI_MODE == 3 ){
+        return;
+    }
     if (_status != WiFi.status()) {
         _status = WiFi.status();
         LOGV2(DEBUG_WIFI,"Wifi: Connected status changed to %s", wifiStatus(_status).c_str());
