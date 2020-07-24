@@ -81,6 +81,10 @@ String wifiStatus(int status){
 
 String WifiControl::getStatus()
 {
+  if( WIFI_MODE == 3 ){
+    return "0,";
+  }
+
   String result = "1," + wifiStatus(WiFi.status()) + ",";
 #ifdef ESP8266
   result += WiFi.hostname();
