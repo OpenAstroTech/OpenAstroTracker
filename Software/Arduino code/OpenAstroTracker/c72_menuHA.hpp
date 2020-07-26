@@ -38,6 +38,7 @@ bool processHAKeys() {
         lcdMenu.printMenu("Stored.");
         mount.delay(500);
         mount.setHome();
+        mount.startSlewing(TRACKING);
 
 #if SUPPORT_GUIDED_STARTUP == 1
         if (startupState == StartupWaitForHACompletion) {
