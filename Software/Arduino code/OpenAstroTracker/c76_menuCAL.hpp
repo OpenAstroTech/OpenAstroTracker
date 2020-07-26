@@ -13,14 +13,14 @@
 #define HIGHLIGHT_RA_STEPS 4
 #define HIGHLIGHT_DEC_STEPS 5
 #define HIGHLIGHT_BACKLASH_STEPS 6
-// #define HIGHLIGHT_BACKLIGHT 7
-#define HIGHLIGHT_LAST 6
+#define HIGHLIGHT_AZIMUTH_ALTITUDE_CONTROL 7
+#define HIGHLIGHT_LAST 7
 
 // Polar calibration goes through these three states:
 //  11- moving to RA and DEC beyond Polaris and waiting on confirmation that Polaris is centered
 //  13- moving back to home position
 #define POLAR_CALIBRATION_WAIT_CENTER_POLARIS 11
-#define POLAR_CALIBRATION_WAIT_HOME  12
+#define POLAR_CALIBRATION_WAIT_HOME 12
 
 // Speed calibration only has one state, allowing you to adjust the speed with UP and DOWN
 #define SPEED_CALIBRATION 14
@@ -44,6 +44,9 @@
 // Brightness setting only has one state, allowing you to adjust the brightness with UP and DOWN
 // #define BACKLIGHT_CALIBRATION 20
 
+// Azimuth control only has one state, allowing you to move the motor UP and DOWN
+#define AZIMUTH_ALTITUDE_CONTROL 20
+
 // Start off with Polar Alignment higlighted.
 byte calState = HIGHLIGHT_FIRST;
 
@@ -62,10 +65,16 @@ byte driftDuration = 0;
 // The number of steps to use for backlash compensation (read from the mount).
 int BacklashSteps = 0;
 
+// The speed of the Azimuth Motor (scaled from 0-100)
+int AzimuthSpeed = 0;
+int lastAzimuthSpeed = 0;
+int AltitudeSpeed = 0;
+int lastAltitudeSpeed = 0;
+
 // The brightness of the backlight of the LCD shield.
 // int Brightness = 255;
 
-bool checkProgressiveUpDown(int* val) {
+bool checkProgressiveUpDown(int *val) {
   bool ret = true;
 
   if (lcdButtons.currentState() == btnUP) {
@@ -87,7 +96,7 @@ bool checkProgressiveUpDown(int* val) {
   return ret;
 }
 
-// Since the mount persists this in EEPROM and no longer in global 
+// Since the mount persists this in EEPROM and no longer in global
 // variables, we need to update it from the mount to globals when
 // we are about to edit it.
 void gotoNextHighlightState(int dir) {
@@ -117,8 +126,8 @@ bool processCalibrationKeys() {
 
   if (calState == SPEED_CALIBRATION) {
     if (lcdButtons.currentState() == btnUP) {
-      if (SpeedCalibration < 32760) { // Don't overflow 16 bit signed
-        SpeedCalibration += 1;  //0.0001;
+      if (SpeedCalibration < 32760) {  // Don't overflow 16 bit signed
+        SpeedCalibration += 1; //0.0001;
         mount.setSpeedCalibration(1.0 + SpeedCalibration / 10000.0, false);
         mount.setSpeedCalibration(1.0 + SpeedCalibration / 10000.0, false);
       }
@@ -128,7 +137,7 @@ bool processCalibrationKeys() {
       checkForKeyChange = false;
     }
     else if (lcdButtons.currentState() == btnDOWN) {
-      if (SpeedCalibration > -32760) { // Don't overflow 16 bit signed
+      if (SpeedCalibration > -32760) {  // Don't overflow 16 bit signed
         SpeedCalibration -= 1; //0.0001;
         mount.setSpeedCalibration(1.0 + SpeedCalibration / 10000.0, false);
       }
@@ -140,6 +149,87 @@ bool processCalibrationKeys() {
     else {
       calDelay = 150;
     }
+  }
+  else if (calState == AZIMUTH_ALTITUDE_CONTROL) {
+    if (lcdButtons.currentState() == btnLEFT) {
+      // Speed up to the left
+      if (AzimuthSpeed < 100) {
+        AzimuthSpeed += 1; //0.0001;
+      }
+
+      // Accelerate speed increase over time
+      calDelay = max(2, 0.98 * calDelay);
+      checkForKeyChange = false;
+    }
+    if (lcdButtons.currentState() == btnRIGHT) {
+      // Speed up to the right
+      if (AzimuthSpeed > -100) {
+        AzimuthSpeed -= 1; //0.0001;
+      }
+
+      // Accelerate speed increase over time
+      calDelay = max(2, 0.98 * calDelay);
+      checkForKeyChange = false;
+    }
+    // If neither Left nor Right is pressed...
+    if ((lcdButtons.currentState() != btnRIGHT) && (lcdButtons.currentState() != btnLEFT)) {
+      // ... decelerate at 3% per cycle
+      if (AzimuthSpeed > 0) {
+        AzimuthSpeed = adjustClamp(AzimuthSpeed, -3, 0, 100);
+      }
+      else if (AzimuthSpeed < 0) {
+        AzimuthSpeed = adjustClamp(AzimuthSpeed, 3, -100, 0);
+      }
+    }
+    
+    if (lcdButtons.currentState() == btnUP) {
+      // Speed up to the left
+      if (AltitudeSpeed < 100) {
+        AltitudeSpeed += 1; //0.0001;
+      }
+
+      // Accelerate speed increase over time
+      calDelay = max(2, 0.98 * calDelay);
+      checkForKeyChange = false;
+    }
+    if (lcdButtons.currentState() == btnDOWN) {
+      // Speed up to the right
+      if (AltitudeSpeed > -100) {
+        AltitudeSpeed -= 1; //0.0001;
+      }
+
+      // Accelerate speed increase over time
+      calDelay = max(2, 0.98 * calDelay);
+      checkForKeyChange = false;
+    }
+        // If neither Up nor Down is pressed...
+    if ((lcdButtons.currentState() != btnUP) && (lcdButtons.currentState() != btnDOWN)) {
+      // ... decelerate at 3% per cycle
+      if (AltitudeSpeed > 0) {
+        AltitudeSpeed = adjustClamp(AltitudeSpeed, -3, 0, 100);
+      }
+      else if (AltitudeSpeed < 0) {
+        AltitudeSpeed = adjustClamp(AltitudeSpeed, 3, -100, 0);
+      }
+    }
+
+    if ((AzimuthSpeed == 0) && (AltitudeSpeed == 0)) {
+        // Once we're stopped, set the initial key delay back to 100ms
+        calDelay = 100;
+    }
+
+    // If we changed speeds, tell the mount motor
+    if (AzimuthSpeed != lastAzimuthSpeed) {
+      mount.setSpeed(AZIMUTH_STEPS, 300.0 * AzimuthSpeed / 100.0);
+      lastAzimuthSpeed = AzimuthSpeed;
+    }
+
+    if (AltitudeSpeed != lastAltitudeSpeed) {
+      mount.setSpeed(ALTITUDE_STEPS, 300.0 * AltitudeSpeed / 100.0);
+      lastAltitudeSpeed = AltitudeSpeed;
+    }
+
+    mount.delay(calDelay);
   }
   else if (calState == RA_STEP_CALIBRATION) {
     checkForKeyChange = checkProgressiveUpDown(&RAStepsPerDegree);
@@ -162,7 +252,6 @@ bool processCalibrationKeys() {
   // }
   else if (calState == POLAR_CALIBRATION_WAIT_HOME) {
     if (!mount.isSlewingRAorDEC()) {
-
       lcdMenu.updateDisplay();
       calState = HIGHLIGHT_POLAR;
     }
@@ -199,7 +288,8 @@ bool processCalibrationKeys() {
 
     switch (calState) {
 
-      case POLAR_CALIBRATION_WAIT_HOME: {
+      case POLAR_CALIBRATION_WAIT_HOME: 
+      {
         if (key == btnSELECT) {
           calState = HIGHLIGHT_POLAR;
         }
@@ -208,7 +298,7 @@ bool processCalibrationKeys() {
           calState = HIGHLIGHT_POLAR;
         }
       }
-                               break;
+      break;
 
       case SPEED_CALIBRATION: {
         // UP and DOWN are handled above
@@ -224,7 +314,7 @@ bool processCalibrationKeys() {
           calState = HIGHLIGHT_SPEED;
         }
       }
-                            break;
+      break;
 
       case RA_STEP_CALIBRATION:
       {
@@ -275,26 +365,41 @@ bool processCalibrationKeys() {
       }
       break;
 
-      // case BACKLIGHT_CALIBRATION:
-      // {
-      //   // UP and DOWN are handled above
-      //   if (key == btnSELECT) {
-      //     LOGV2(DEBUG_GENERAL, "CAL Menu: Set brightness to %d", Brightness);
-      //     lcdMenu.setBacklightBrightness(Brightness);
-      //     lcdMenu.printMenu("Level stored.");
-      //     mount.delay(500);
-      //     calState = HIGHLIGHT_BACKLIGHT;
-      //   }
-      //   else if (key == btnRIGHT) {
-      //     lcdMenu.setNextActive();
-      //     calState = HIGHLIGHT_BACKLIGHT;
-      //   }
-      // }
-      // break;
+      case AZIMUTH_ALTITUDE_CONTROL: 
+      {
+        // UP, DOWN, LEFT, and RIGHT are handled above
+        if (key == btnSELECT) {
+          // Make sure motors are stoppped!
+          mount.setSpeed(AZIMUTH_STEPS, 0);
+          mount.setSpeed(ALTITUDE_STEPS, 0);
+          calState = HIGHLIGHT_AZIMUTH_ALTITUDE_CONTROL;
+        }
+      }
+      break;
 
-      case HIGHLIGHT_POLAR: {
-        if (key == btnDOWN) gotoNextHighlightState(1);
-        else if (key == btnUP) gotoNextHighlightState(-1);
+        // case BACKLIGHT_CALIBRATION:
+        // {
+        //   // UP and DOWN are handled above
+        //   if (key == btnSELECT) {
+        //     LOGV2(DEBUG_GENERAL, "CAL Menu: Set brightness to %d", Brightness);
+        //     lcdMenu.setBacklightBrightness(Brightness);
+        //     lcdMenu.printMenu("Level stored.");
+        //     mount.delay(500);
+        //     calState = HIGHLIGHT_BACKLIGHT;
+        //   }
+        //   else if (key == btnRIGHT) {
+        //     lcdMenu.setNextActive();
+        //     calState = HIGHLIGHT_BACKLIGHT;
+        //   }
+        // }
+        // break;
+
+      case HIGHLIGHT_POLAR: 
+      {
+        if (key == btnDOWN)
+          gotoNextHighlightState(1);
+        else if (key == btnUP)
+          gotoNextHighlightState(-1);
         else if (key == btnSELECT) {
           calState = POLAR_CALIBRATION_WAIT_CENTER_POLARIS;
 
@@ -311,9 +416,10 @@ bool processCalibrationKeys() {
           lcdMenu.setNextActive();
         }
       }
-                          break;
+      break;
 
-      case POLAR_CALIBRATION_WAIT_CENTER_POLARIS: {
+      case POLAR_CALIBRATION_WAIT_CENTER_POLARIS: 
+      {
         if (key == btnSELECT) {
           calState = POLAR_CALIBRATION_WAIT_HOME;
           lcdMenu.printMenu("Aligned, homing");
@@ -334,31 +440,40 @@ bool processCalibrationKeys() {
           calState = HIGHLIGHT_POLAR;
         }
       }
-                                 break;
+      break;
 
-      case HIGHLIGHT_SPEED: {
-        if (key == btnDOWN) gotoNextHighlightState(1);
-        if (key == btnUP) gotoNextHighlightState(-1);
-        else if (key == btnSELECT) calState = SPEED_CALIBRATION;
+      case HIGHLIGHT_SPEED: 
+      {
+        if (key == btnDOWN)
+          gotoNextHighlightState(1);
+        if (key == btnUP)
+          gotoNextHighlightState(-1);
+        else if (key == btnSELECT)
+          calState = SPEED_CALIBRATION;
         else if (key == btnRIGHT) {
           lcdMenu.setNextActive();
           calState = HIGHLIGHT_POLAR;
         }
       }
-                          break;
+      break;
 
-      case HIGHLIGHT_DRIFT: {
-        if (key == btnDOWN) gotoNextHighlightState(1);
-        if (key == btnUP) gotoNextHighlightState(-1);
-        else if (key == btnSELECT) calState = DRIFT_CALIBRATION_WAIT;
+      case HIGHLIGHT_DRIFT: 
+      {
+        if (key == btnDOWN)
+          gotoNextHighlightState(1);
+        if (key == btnUP)
+          gotoNextHighlightState(-1);
+        else if (key == btnSELECT)
+          calState = DRIFT_CALIBRATION_WAIT;
         else if (key == btnRIGHT) {
           lcdMenu.setNextActive();
           calState = HIGHLIGHT_POLAR;
         }
       }
-                          break;
+      break;
 
-      case DRIFT_CALIBRATION_WAIT: {
+      case DRIFT_CALIBRATION_WAIT: 
+      {
         if (key == btnDOWN || key == btnLEFT) {
           driftSubIndex = adjustWrap(driftSubIndex, 1, 0, 3);
         }
@@ -368,7 +483,7 @@ bool processCalibrationKeys() {
         if (key == btnSELECT) {
           // Take off 6s padding time. 1.5s start pause, 1.5s pause in the middle and 1.5s end pause and general time slop.
           // These are the times for one way. So total time is 2 x duration + 4.5s
-          int duration[] = { 27, 57, 87, 147 };
+          int duration[] = {27, 57, 87, 147};
           driftDuration = duration[driftSubIndex];
           calState = DRIFT_CALIBRATION_RUNNING;
         }
@@ -378,51 +493,79 @@ bool processCalibrationKeys() {
           driftSubIndex = 1;
         }
       }
-                                 break;
+      break;
 
-      case HIGHLIGHT_RA_STEPS: {
-        if (key == btnDOWN) gotoNextHighlightState(1);
-        if (key == btnUP) gotoNextHighlightState(-1);
-        else if (key == btnSELECT) calState = RA_STEP_CALIBRATION;
+      case HIGHLIGHT_RA_STEPS: 
+      {
+        if (key == btnDOWN)
+          gotoNextHighlightState(1);
+        if (key == btnUP)
+          gotoNextHighlightState(-1);
+        else if (key == btnSELECT)
+          calState = RA_STEP_CALIBRATION;
         else if (key == btnRIGHT) {
           lcdMenu.setNextActive();
           calState = HIGHLIGHT_FIRST;
         }
       }
-                             break;
+      break;
 
-      case HIGHLIGHT_DEC_STEPS: {
-        if (key == btnDOWN) gotoNextHighlightState(1);
-        if (key == btnUP) gotoNextHighlightState(-1);
-        else if (key == btnSELECT) calState = DEC_STEP_CALIBRATION;
+      case HIGHLIGHT_DEC_STEPS: 
+      {
+        if (key == btnDOWN)
+          gotoNextHighlightState(1);
+        if (key == btnUP)
+          gotoNextHighlightState(-1);
+        else if (key == btnSELECT)
+          calState = DEC_STEP_CALIBRATION;
         else if (key == btnRIGHT) {
           lcdMenu.setNextActive();
           calState = HIGHLIGHT_FIRST;
         }
       }
-                              break;
+      break;
 
-      case HIGHLIGHT_BACKLASH_STEPS: {
-        if (key == btnDOWN) gotoNextHighlightState(1);
-        if (key == btnUP) gotoNextHighlightState(-1);
-        else if (key == btnSELECT) calState = BACKLASH_CALIBRATION;
+      case HIGHLIGHT_BACKLASH_STEPS:
+      {
+        if (key == btnDOWN)
+          gotoNextHighlightState(1);
+        if (key == btnUP)
+          gotoNextHighlightState(-1);
+        else if (key == btnSELECT)
+          calState = BACKLASH_CALIBRATION;
         else if (key == btnRIGHT) {
           lcdMenu.setNextActive();
           calState = HIGHLIGHT_FIRST;
         }
       }
-                                   break;
-      // case HIGHLIGHT_BACKLIGHT : {
-      //   if (key == btnDOWN) gotoNextHighlightState(1);
-      //   if (key == btnUP) gotoNextHighlightState(-1);
-      //   else if (key == btnSELECT) calState = BACKLIGHT_CALIBRATION;
-      //   else if (key == btnRIGHT) {
-      //     lcdMenu.setNextActive();
-      //     calState = HIGHLIGHT_FIRST;
-      //   }
-      // }
-      // break;
-    }
+      break;
+
+      case HIGHLIGHT_AZIMUTH_ALTITUDE_CONTROL:
+      {
+        if (key == btnDOWN)
+          gotoNextHighlightState(1);
+        if (key == btnUP)
+          gotoNextHighlightState(-1);
+        else if (key == btnSELECT)
+          calState = AZIMUTH_ALTITUDE_CONTROL;
+        else if (key == btnRIGHT) {
+          lcdMenu.setNextActive();
+          calState = HIGHLIGHT_FIRST;
+        }
+      }
+      break;
+
+        // case HIGHLIGHT_BACKLIGHT : {
+        //   if (key == btnDOWN) gotoNextHighlightState(1);
+        //   if (key == btnUP) gotoNextHighlightState(-1);
+        //   else if (key == btnSELECT) calState = BACKLIGHT_CALIBRATION;
+        //   else if (key == btnRIGHT) {
+        //     lcdMenu.setNextActive();
+        //     calState = HIGHLIGHT_FIRST;
+        //   }
+        // }
+        // break;
+      }
   }
 
   return waitForRelease;
@@ -448,6 +591,9 @@ void printCalibrationSubmenu()
   }
   else if (calState == HIGHLIGHT_BACKLASH_STEPS) {
     lcdMenu.printMenu(">Backlash Adjust");
+  }
+  else if (calState == HIGHLIGHT_AZIMUTH_ALTITUDE_CONTROL) {
+    lcdMenu.printMenu(">Az/Alt Control");
   }
   // else if (calState == HIGHLIGHT_BACKLIGHT) {
   //   lcdMenu.printMenu(">LCD Brightness");
@@ -480,6 +626,10 @@ void printCalibrationSubmenu()
   }
   else if (calState == BACKLASH_CALIBRATION) {
     sprintf(scratchBuffer, "Backlash: %d", BacklashSteps);
+    lcdMenu.printMenu(scratchBuffer);
+  }
+  else if (calState == AZIMUTH_ALTITUDE_CONTROL) {
+    sprintf(scratchBuffer, "Az/Alt: %d%% %d%%", AzimuthSpeed, AltitudeSpeed);
     lcdMenu.printMenu(scratchBuffer);
   }
   // else if (calState == BACKLIGHT_CALIBRATION) {

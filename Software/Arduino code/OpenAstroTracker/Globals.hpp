@@ -14,6 +14,9 @@
 #define RA_Stepper_TYPE  0     // 28BYJ-48 = 0   |   NEMA = 1
 #define DEC_Stepper_TYPE  0    // 28BYJ-48 = 0   |   NEMA = 1
 
+// Are we supporting the Azimuth PA motor?
+#define AZIMUTH_MOTOR 0
+
 // Make some variables in the sketch files available to the C++ code.
 extern bool inSerialControl;
 extern String version;
@@ -26,8 +29,15 @@ extern float RACircumference;
 extern float DECStepsPerRevolution;
 extern int DecPulleyTeeth;
 
-
 // Debugging output control
+// Debug log output is tricky, since if we simply send it out via Serial and a client is connected via Serial (USB), 
+// the debug spew will interfere the protocol and confuse the client. To still be able to get access to debug logs in 
+// this scenario, you can collect the debug logs in a memory ring buffer instead of sending them to Serial by
+// enabling the setting below
+// Use the Meade extension command :XGO# to retrieve the logs
+#define BUFFER_LOGS 0
+
+// The level of debugging spew is controlled by setting DEBUG_LEVEL to a combination of the bit flags below.
 // Each bit in the debug level specifies a kind of debug to enable. 
 #define DEBUG_NONE           0x00
 #define DEBUG_INFO           0x01
@@ -48,15 +58,15 @@ extern int DecPulleyTeeth;
 //  4  DEBUG_MOUNT_VERBOSE  Verbose mount processing (coordinates, etc)
 //  5  DEBUG_GENERAL        Other misc. output
 //  6  DEBUG_MEADE          Meade command handling output
+//  7  DEBUG_VERBOSE        other verbose debug output
+//  7  DEBUG_ANY            all debug output
 
-// Set this to specify the amount of debug output OAT should send to the serial port.
-// Note that if you use an app to control OAT, ANY debug output will likely confuse that app.
-// Debug output is useful if you are using Wifi to control the OAT or if you are issuing
-// manual commands via a terminal.
-//
+// Set this to specify the amount of debug output OAT should generate.
 // #define DEBUG_LEVEL (DEBUG_SERIAL|DEBUG_WIFI|DEBUG_INFO|DEBUG_MOUNT|DEBUG_GENERAL)
 // #define DEBUG_LEVEL (DEBUG_ANY)
 // #define DEBUG_LEVEL (DEBUG_INFO|DEBUG_MOUNT|DEBUG_GENERAL)
+// #define DEBUG_LEVEL (DEBUG_WIFI|DEBUG_MEADE|DEBUG_INFO|DEBUG_GENERAL)
+// #define DEBUG_LEVEL (DEBUG_MEADE|DEBUG_INFO|DEBUG_GENERAL)
 #define DEBUG_LEVEL (DEBUG_NONE)
 
 // Set this to 1 to run a key diagnostic. No tracker functions are on at all.
@@ -80,7 +90,7 @@ extern int DecPulleyTeeth;
     #undef HEADLESS_CLIENT
     #define HEADLESS_CLIENT 1
     #define WIFI_ENABLED 
-    #define INFRA_SSID "YouSSID"
+    #define INFRA_SSID "YourSSID"
     #define INFRA_WPAKEY "YourWPAKey"
     #define OAT_WPAKEY "superSecret"
     #define HOSTNAME "OATerScope"

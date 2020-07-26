@@ -32,6 +32,8 @@
 #define DEC_STEPS 2
 #define SPEED_FACTOR_DECIMALS 3
 #define BACKLASH_CORRECTION 4
+#define AZIMUTH_STEPS 5
+#define ALTITUDE_STEPS 6
 
 //////////////////////////////////////////////////////////////////
 //
@@ -176,7 +178,7 @@ public:
   // Toggle the state where we run the motors at a constant speed
   void setManualSlewMode(bool state);
 
-  // Set the speed of the given motoer
+  // Set the speed of the given motor
   void setSpeed(int which, float speed);
 
   // Set the number of steps to use for backlash correction
@@ -248,6 +250,11 @@ private:
   AccelStepper* _stepperRA;
   AccelStepper* _stepperDEC;
   AccelStepper* _stepperTRK;
+  
+  #if AZIMUTH_MOTOR
+  AccelStepper* _stepperAZ;
+  AccelStepper* _stepperALT;
+  #endif
 
   unsigned long _guideEndTime;
   unsigned long _lastMountPrint = 0;

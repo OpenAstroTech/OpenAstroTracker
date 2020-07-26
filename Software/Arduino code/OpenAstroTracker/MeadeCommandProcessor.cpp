@@ -319,6 +319,14 @@
 //      Get the current LST of the mount.
 //      Returns: HHMMSS
 //
+// :XGZ#
+//      Get speed of Azimuth motor
+//      Returns: n.nn
+//
+// :XGI#
+//      Get speed of Altitude motor
+//      Returns: n.nn
+//
 // :XSBn#
 //      Set Backlash correction steps 
 //      Sets the number of steps the RA stepper motor needs to overshoot and backtrack when slewing east.
@@ -356,6 +364,14 @@
 // :XSYn.nnn#
 //      Set DEC manual slewing speed
 //      Set the speed of the DEC motor, immediately. Must be in manual slewing mode.
+//      Returns: nothing
+//
+// :XSZn.nn#
+//      Set speed of Azimuth motor
+//      Returns: nothing
+//
+// :XSIn.nn#
+//      Set speed of ALtitude motor
 //      Returns: nothing
 //
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -724,11 +740,20 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
     else if (inCmd[1] == 'T') {
       return String(_mount->getSpeed(TRACKING), 7) + "#";
     }
+    else if (inCmd[1] == 'Z') {
+      return String(_mount->getSpeed(AZIMUTH_STEPS), 2) + "#";
+    }
+    else if (inCmd[1] == 'I') {
+      return String(_mount->getSpeed(ALTITUDE_STEPS), 2) + "#";
+    }
     else if (inCmd[1] == 'B') {
       return String(_mount->getBacklashCorrection()) + "#";
     }
     else if (inCmd[1] == 'M') {
       return String(_mount->getMountHardwareInfo()) + "#";
+    }
+    else if (inCmd[1] == 'O') {
+      return getLogBuffer();
     }
     else if (inCmd[1] == 'H') {
       char scratchBuffer[10];
@@ -766,6 +791,12 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
     }
     else if (inCmd[1] == 'Y') {
       _mount->setSpeed(DEC_STEPS, inCmd.substring(2).toFloat());
+    }
+    else if (inCmd[1] == 'Z') {
+      _mount->setSpeed(AZIMUTH_STEPS, inCmd.substring(2).toFloat());
+    }
+    else if (inCmd[1] == 'I') {
+      _mount->setSpeed(ALTITUDE_STEPS, inCmd.substring(2).toFloat());
     }
     else if (inCmd[1] == 'B') {
       _mount->setBacklashCorrection(inCmd.substring(2).toInt());
