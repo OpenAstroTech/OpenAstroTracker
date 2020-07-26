@@ -16,7 +16,6 @@ String getLogBuffer();
 
 #if DEBUG_LEVEL>0
 
-
 #define LOGV1(level,a) logv((level),(a))
 #define LOGV2(level,a,b) logv((level),(a),(b))
 #define LOGV3(level,a,b,c) logv((level),(a),(b),(c))

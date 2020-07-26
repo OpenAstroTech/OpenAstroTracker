@@ -32,8 +32,6 @@
 #define DEC_STEPS 2
 #define SPEED_FACTOR_DECIMALS 3
 #define BACKLASH_CORRECTION 4
-#define AZIMUTH_STEPS 5
-#define ALTITUDE_STEPS 6
 
 //////////////////////////////////////////////////////////////////
 //
@@ -250,11 +248,6 @@ private:
   AccelStepper* _stepperRA;
   AccelStepper* _stepperDEC;
   AccelStepper* _stepperTRK;
-  
-  #if AZIMUTH_MOTOR
-  AccelStepper* _stepperAZ;
-  AccelStepper* _stepperALT;
-  #endif
 
   unsigned long _guideEndTime;
   unsigned long _lastMountPrint = 0;
