@@ -12,7 +12,10 @@
 #define btnSELECT 4
 #define btnNONE   5
 
+String getLogBuffer();
+
 #if DEBUG_LEVEL>0
+
 
 #define LOGV1(level,a) logv((level),(a))
 #define LOGV2(level,a,b) logv((level),(a),(b))

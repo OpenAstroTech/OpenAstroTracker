@@ -752,6 +752,9 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
     else if (inCmd[1] == 'M') {
       return String(_mount->getMountHardwareInfo()) + "#";
     }
+    else if (inCmd[1] == 'O') {
+      return getLogBuffer();
+    }
     else if (inCmd[1] == 'H') {
       char scratchBuffer[10];
       sprintf(scratchBuffer, "%02d%02d%02d#", _mount->HA().getHours(), _mount->HA().getMinutes(), _mount->HA().getSeconds());

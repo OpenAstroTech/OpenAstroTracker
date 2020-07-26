@@ -12,6 +12,86 @@ unsigned long RealTime::_suspendStart = 0;
 int RealTime::_suspended = 0;
 #endif
 
+#if BUFFER_LOGS
+#define LOG_BUFFER_SIZE 512
+char logBuffer[LOG_BUFFER_SIZE];
+int bufferWritePos = 0;
+int bufferStartPos = 0;
+
+int scanForNextNewLine(int bufPos) {
+	for (int i = bufPos; i < LOG_BUFFER_SIZE; i++) {
+		if (logBuffer[i] == '\n') {
+			return i;
+		}
+  }
+
+	for (int i = 0; i < LOG_BUFFER_SIZE; i++) {
+		if (logBuffer[i] == '\n') {
+			return i;
+		}
+	}
+	// WTF?
+	return 0;
+}
+
+void addToLogBuffer(String s) {
+	s += '\n';
+	int charsToWrite = s.length();
+	if (bufferWritePos + charsToWrite > LOG_BUFFER_SIZE) {
+		int charsToWriteAtEndOfBuffer = LOG_BUFFER_SIZE - bufferWritePos;
+		memcpy(logBuffer + bufferWritePos,  s.c_str(),  charsToWriteAtEndOfBuffer);
+		charsToWrite -= charsToWriteAtEndOfBuffer;
+		memcpy(logBuffer, s.c_str() + charsToWriteAtEndOfBuffer, charsToWrite);
+		bufferWritePos = charsToWrite;
+		logBuffer[bufferWritePos] = '\0';
+		bufferStartPos = scanForNextNewLine(bufferWritePos);
+	}
+	else {
+		memcpy(logBuffer + bufferWritePos, s.c_str(), charsToWrite);
+		if (bufferStartPos > bufferWritePos) {
+			bufferWritePos += charsToWrite;
+			bufferStartPos = scanForNextNewLine(bufferWritePos);
+		}
+		else {
+			bufferWritePos += charsToWrite;
+		}
+	}
+}
+
+class MyString : public String {
+public: 
+  void setLen(unsigned int newLen) { len = newLen ; }
+};
+
+String getLogBuffer() {
+  MyString result;
+  unsigned int len = (bufferStartPos > bufferWritePos) ? LOG_BUFFER_SIZE - bufferStartPos : 0;
+	len += bufferWritePos;
+  result.reserve(len + 2);
+  char* buffer = result.begin();
+
+  if (bufferStartPos > bufferWritePos) {
+		for (int i = bufferStartPos;i < LOG_BUFFER_SIZE; i++)
+		{
+			*buffer++ = (logBuffer[i] == '#') ? '%' : logBuffer[i];
+		}
+	}
+
+	for (int i = 0; i < bufferWritePos; i++)
+	{
+			*buffer++ = (logBuffer[i] == '#') ? '%' : logBuffer[i];
+	}
+
+  *buffer++ = '#';
+  *buffer = '\0';
+  result.setLen(buffer - result.begin());
+  return result;
+}
+#else
+String getLogBuffer() {
+  return "Debugging disabled.#";
+}
+#endif
 
 // Adjust the given number by the given adjustment, wrap around the limits.
 // Limits are inclusive, so they represent the lowest and highest valid number.
@@ -174,24 +254,18 @@ String format(const char *input, ...)
   return ret;
 }
 
-// void log(const char* input) {
-//   Serial.println(input);
-//   Serial.flush();
-// }
-
-// void log(String input) {
-//   Serial.println(input);
-//   Serial.flush();
-// }
-
 void logv(int levelFlags, const char *input, ...)
 {
   if ((levelFlags & DEBUG_LEVEL) != 0)
   {
     va_list argp;
     va_start(argp, input);
-    Serial.println(formatArg(input, argp));
-    Serial.flush();
+    #if BUFFER_LOGS
+      addToLogBuffer(formatArg(input, argp));
+    #else
+      Serial.println(formatArg(input, argp));
+      Serial.flush();
+    #endif
     va_end(argp);
   }
 }
