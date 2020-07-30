@@ -13,6 +13,7 @@
 #define btnNONE   5
 
 String getLogBuffer();
+int freeMemory();
 
 #if DEBUG_LEVEL>0
 
