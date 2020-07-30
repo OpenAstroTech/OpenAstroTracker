@@ -197,7 +197,7 @@ namespace OATCommunications
 			FloatToHMS(Math.Abs(position.RightAscension), out hour, out min, out sec);
 			result = await SendCommand(string.Format(":Sr{0:00}:{1:00}:{2:00}#,n", hour, min, sec));
 			if (!result.Success || result.Data != "1") return false;
-			result = await SendCommand($":MS#");
+			result = await SendCommand($":MS#,n");
 			return result.Success;
 		}
 

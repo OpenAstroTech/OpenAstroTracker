@@ -40,13 +40,13 @@ namespace OATControl.ViewModels
 		int _raStepsPerDegree = 0;
 		int _decStepsPerDegree = 0;
 		bool _connected = false;
+		bool _slewInProgress = false;
 		bool _isTracking = false;
 		bool _isGuiding = false;
 		bool _isSlewingNorth = false;
 		bool _isSlewingSouth = false;
 		bool _isSlewingWest = false;
 		bool _isSlewingEast = false;
-		bool _tryConnect = false;
 		bool _driftAlignRunning = false;
 		int _runningOATCommand = 0;
 		SemaphoreSlim exclusiveAccess = new SemaphoreSlim(1, 1);
@@ -93,6 +93,11 @@ namespace OATControl.ViewModels
 		DateTime _startTime;
 		private string _parkString = "Park";
 		private TimeSpan _remainingRATime;
+		private int _slewStartRA;
+		private int _slewStartDEC;
+		private int _slewTargetRA;
+		private int _slewTargetDEC;
+
 		// private float _trackingSpeed;
 
 		public float RASpeed { get; private set; }
@@ -123,8 +128,6 @@ namespace OATControl.ViewModels
 			_util = new Util();
 			_transform = new ASCOM.Astrometry.Transform.Transform();
 
-			_tryConnect = true;
-
 			var poiFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "PointsOfInterest.xml");
 			Log.WriteLine("Mount: Attempting to read Point of Interest from {0}...", poiFile);
 			if (File.Exists(poiFile))
@@ -149,7 +152,7 @@ namespace OATControl.ViewModels
 
 		private async Task ReadHA()
 		{
-			Log.WriteLine("Mount: Raeding HA");
+			Log.WriteLine("Mount: Reading HA");
 			for (int i = 0; i < 20; i++)
 			{
 				var ha = await RunCustomOATCommandAsync(":XGH#,#");
@@ -165,24 +168,24 @@ namespace OATControl.ViewModels
 		async private Task<string> RunCustomOATCommandAsync(string command)
 		{
 			string result = string.Empty;
-			Log.WriteLine("OATCustom:  StartRunning [{0}], checking access", command);
+			//Log.WriteLine("OATCustom:  StartRunning [{0}], checking access", command);
 			if (Interlocked.CompareExchange(ref _runningOATCommand, 1, 0) == 0)
 			{
 				try
 				{
 					await exclusiveAccess.WaitAsync();
-					Log.WriteLine("OATCustom:  Access granted. -> Sending {0} ", command);
+					//Log.WriteLine("OATCustom:  Access granted. -> Sending {0} ", command);
 					var commandResult = await _oatMount.SendCommand(command);
 					if (!string.IsNullOrEmpty(commandResult.Data))
 					{
-						Log.WriteLine("OATCustom: Result [{0}]: '{1}'", command, commandResult.Data);
+						//Log.WriteLine("OATCustom: Result [{0}]: '{1}'", command, commandResult.Data);
 						result = commandResult.Data;
 					}
 					Interlocked.Decrement(ref _runningOATCommand);
 				}
 				finally
 				{
-					Log.WriteLine("OATCustom:  StopRunning [{0}]", command);
+					//Log.WriteLine("OATCustom:  StopRunning [{0}]", command);
 					exclusiveAccess.Release();
 				}
 			}
@@ -190,7 +193,7 @@ namespace OATControl.ViewModels
 			{
 				await Task.Run(async () =>
 				{
-					Log.WriteLine("OATCustom2:  Await access for {0} ", command);
+					//Log.WriteLine("OATCustom2:  Await access for {0} ", command);
 					while (Interlocked.CompareExchange(ref _runningOATCommand, 1, 0) != 0)
 					{
 						Thread.Sleep(1);
@@ -198,27 +201,27 @@ namespace OATControl.ViewModels
 					try
 					{
 						await exclusiveAccess.WaitAsync();
-						Log.WriteLine("OATCustom2:  Access granted. -> Sending {0} ", command);
+						//Log.WriteLine("OATCustom2:  Access granted. -> Sending {0} ", command);
 						var commandResult = await _oatMount.SendCommand(command);
 						if (!string.IsNullOrEmpty(commandResult.Data))
 						{
-							Log.WriteLine("OATCustom2: Result [{0}]: '{1}'", command, commandResult.Data);
+							//Log.WriteLine("OATCustom2: Result [{0}]: '{1}'", command, commandResult.Data);
 							result = commandResult.Data;
 						}
 						Interlocked.Decrement(ref _runningOATCommand);
 					}
 					finally
 					{
-						Log.WriteLine("OATCustom2:  StopRunning [{0}]", command);
+						//Log.WriteLine("OATCustom2:  StopRunning [{0}]", command);
 						exclusiveAccess.Release();
 					}
 
 				});
 
-				Log.WriteLine("OATCustom2:  Completed '{0}'", command);
+				//Log.WriteLine("OATCustom2:  Completed '{0}'", command);
 			}
 
-			Log.WriteLine("OATCustom: Returning '{0}'", result);
+			//Log.WriteLine("OATCustom: Returning '{0}'", result);
 			return result.TrimEnd("#".ToCharArray());
 		}
 
@@ -248,7 +251,41 @@ namespace OATControl.ViewModels
 					try
 					{
 						var parts = status.Split(",".ToCharArray());
+						string prevStatus = MountStatus;
 						MountStatus = parts[0];
+						if ((MountStatus == "SlewToTarget") && (prevStatus != "SlewToTarget"))
+						{
+							var targetRa = await RunCustomOATCommandAsync(":Gr#,#");
+							var targetDec = await RunCustomOATCommandAsync(":Gd#,#");
+							_slewStartRA = (CurrentRAHour * 60 + CurrentRAMinute) * 60 + CurrentRASecond;
+							_slewStartDEC = (CurrentDECDegree * 60 + CurrentDECMinute) * 60 + CurrentDECSecond;
+
+							TargetRAHour = int.Parse(targetRa.Substring(0, 2));
+							TargetRAMinute = int.Parse(targetRa.Substring(3, 2));
+							TargetRASecond = int.Parse(targetRa.Substring(6, 2));
+
+							TargetDECDegree = int.Parse(targetDec.Substring(0, 3));
+							TargetDECMinute = int.Parse(targetDec.Substring(4, 2));
+							TargetDECSecond = int.Parse(targetDec.Substring(7, 2));
+
+							_slewTargetRA = (TargetRAHour * 60 + TargetRAMinute) * 60 + TargetRASecond;
+							_slewTargetDEC = (TargetDECDegree * 60 + TargetDECMinute) * 60 + TargetDECSecond;
+
+							OnPropertyChanged("RASlewProgress");
+							OnPropertyChanged("DECSlewProgress");
+
+							DisplaySlewProgress = true;
+						}
+						else if ((MountStatus != "SlewToTarget") && (prevStatus == "SlewToTarget"))
+						{
+							DisplaySlewProgress = false;
+						}
+						else if (MountStatus == "SlewToTarget")
+						{
+							OnPropertyChanged("RASlewProgress");
+							OnPropertyChanged("DECSlewProgress");
+						}
+
 
 						switch (parts[1][0])
 						{
@@ -853,6 +890,33 @@ namespace OATControl.ViewModels
 		{
 			Task.Run(async () => await RunCustomOATCommandAsync(string.Format(":XSD{0:0}#", newVal)));
 		}
+
+		public bool DisplaySlewProgress
+		{
+			get { return _slewInProgress; }
+			set { SetPropertyValue(ref _slewInProgress, value); }
+		}
+
+		public float RASlewProgress
+		{
+			get
+			{
+				if (_slewTargetRA == _slewStartRA) return 1.0f;
+				var currentRA = (CurrentRAHour * 60 + CurrentRAMinute) * 60 + CurrentRASecond;
+				return 1.0f * (currentRA - _slewStartRA) / (_slewTargetRA - _slewStartRA);
+			}
+		}
+
+		public float DECSlewProgress
+		{
+			get
+			{
+				if (_slewTargetDEC == _slewStartDEC) return 1.0f;
+				var currentDEC = (CurrentDECDegree * 60 + CurrentDECMinute) * 60 + CurrentDECSecond;
+				return 1.0f * (currentDEC - _slewStartDEC) / (_slewTargetDEC - _slewStartDEC);
+			}
+		}
+
 
 		public bool MountConnected
 		{

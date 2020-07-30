@@ -14,6 +14,8 @@
 	<Object Name="M63 - Sunflower Galaxy"    RA="13:16:45" DEC="41:55:14" />
 	<Object Name="M31 - Andromeda Galaxy"    RA="00:43:52" DEC="41:22:53" />
 	<Object Name="Vega"                      RA="18:37:37" DEC="38:48:07" />
+	<Object Name="Veil Nebula"               RA="20:51:19" DEC="31:03:34" />
+	<Object Name="Triangulum Nebula"         RA="01:34:59" DEC="30:45:40" />
 	<Object Name="Arcturus"                  RA="14:16:37" DEC="19:05:21" />
 	<Object Name="Altair"                    RA="19:51:45" DEC="8:55:15" />
 	<Object Name="M42 - Orion Nebula"        RA="05:36:18" DEC="-5:22:44" />

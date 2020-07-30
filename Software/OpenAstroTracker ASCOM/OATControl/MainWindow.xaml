@@ -249,7 +249,26 @@
 			<TextBlock Grid.Row="2" Grid.Column="12"  Text="m" Margin="0,0,16,0" Style="{StaticResource TextBlockLabel}"  />
 			<TextBlock Grid.Row="2" Grid.Column="13" Text="{Binding CurrentRASecond, StringFormat={}{0:00}}" Style="{StaticResource TextBlockValue}" />
 			<TextBlock Grid.Row="2" Grid.Column="14"  Text="s" Margin="0,0,16,0" Style="{StaticResource TextBlockLabel}"  />
-
+			<Border Grid.Row="3" Grid.Column="8" Grid.ColumnSpan="7" Margin="8,2,15,0">
+				<Border.Resources>
+					<Style TargetType="Border">
+						<Setter Property="BorderThickness" Value="0,0,0,0"/>
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding DisplaySlewProgress}" Value="True">
+								<Setter Property="BorderThickness" Value="0,6,0,0"/>
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</Border.Resources>
+				<Border.BorderBrush>
+					<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+						<GradientStop Offset="0" Color="Red" />
+						<GradientStop Offset="{Binding RASlewProgress}" Color="Red" />
+						<GradientStop Offset="{Binding RASlewProgress}" Color="DarkRed" />
+						<GradientStop Offset="1.0" Color="DarkRed" />
+					</LinearGradientBrush>
+				</Border.BorderBrush>
+			</Border>
 
 			<TextBlock Grid.Row="5" Grid.Column="8"  Text="DEC" Style="{StaticResource TextBlockHeading}"  />
 			<TextBlock Grid.Row="5" Grid.Column="9" Text="{Binding CurrentDECDegree, StringFormat={}{0:00}}" Style="{StaticResource TextBlockValue}"/>
@@ -258,6 +277,27 @@
 			<TextBlock Grid.Row="5" Grid.Column="12"  Text="m" Margin="0,0,16,0" Style="{StaticResource TextBlockLabel}"  />
 			<TextBlock Grid.Row="5" Grid.Column="13" Text="{Binding CurrentDECSecond, StringFormat={}{0:00}}" Style="{StaticResource TextBlockValue}" />
 			<TextBlock Grid.Row="5" Grid.Column="14"  Text="s" Margin="0,0,16,0"  Style="{StaticResource TextBlockLabel}" />
+
+			<Border Grid.Row="6" Grid.Column="8" Grid.ColumnSpan="7" Margin="8,2,15,0">
+				<Border.Resources>
+					<Style TargetType="Border">
+						<Setter Property="BorderThickness" Value="0,0,0,0"/>
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding DisplaySlewProgress}" Value="True">
+								<Setter Property="BorderThickness" Value="0,6,0,0"/>
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</Border.Resources>
+				<Border.BorderBrush>
+					<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+						<GradientStop Offset="0" Color="Red" />
+						<GradientStop Offset="{Binding DECSlewProgress}" Color="Red" />
+						<GradientStop Offset="{Binding DECSlewProgress}" Color="DarkRed" />
+						<GradientStop Offset="1.0" Color="DarkRed" />
+					</LinearGradientBrush>
+				</Border.BorderBrush>
+			</Border>
 
 		</Grid>
 
