@@ -15,7 +15,7 @@
 #define DEC_Stepper_TYPE  0    // 28BYJ-48 = 0   |   NEMA = 1
 
 // Are we supporting the Azimuth PA motor?
-#define AZIMUTH_MOTOR 0
+#define AZIMUTH_MOTOR 1
 
 // Make some variables in the sketch files available to the C++ code.
 extern bool inSerialControl;

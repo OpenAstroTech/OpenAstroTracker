@@ -312,11 +312,11 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, 
 
   #if AZIMUTH_MOTOR
   _stepperAZ = new AccelStepper(FULLSTEP, 38, 42, 40, 44);
-  _stepperAZ ->setSpeed(0);
+  _stepperAZ ->setSpeed(150);
   _stepperAZ ->setMaxSpeed(300);
   _stepperAZ->setAcceleration(400);
   _stepperALT = new AccelStepper(FULLSTEP, 46, 50, 48, 52);
-  _stepperALT ->setSpeed(0);
+  _stepperALT ->setSpeed(150);
   _stepperALT ->setMaxSpeed(300);
   _stepperALT->setAcceleration(400);
   #endif
@@ -853,14 +853,6 @@ void Mount::setSpeed(int which, float speed) {
   else if (which == DEC_STEPS) {
     _stepperDEC->setSpeed(speed);
   }
-  #if AZIMUTH_MOTOR
-  else if (which == AZIMUTH_STEPS) {
-    _stepperAZ->setSpeed(speed);
-  }
-  else if (which == ALTITUDE_STEPS) {
-    _stepperALT->setSpeed(speed);
-  }
-  #endif
 }
 
 /////////////////////////////////
@@ -891,6 +883,29 @@ void Mount::goHome()
   setTargetToHome();
   startSlewingToTarget();
   _slewingToHome = true;
+}
+
+/////////////////////////////////
+//
+// moveBy
+//
+/////////////////////////////////
+void Mount::moveBy(int direction, float arcMinutes)
+{
+  #if AZIMUTH_MOTORS == 1
+    if (direction == AZIMUTH_STEPS){
+      const float azimuthArcSecondsPerStep = 3.939f;
+      const float azimuthStepsPerArcMinute = 60.0f / azimuthArcSecondsPerStep;
+      int stepsToMove = arcMinutes*azimuthStepsPerArcMinute ;
+      _stepperAZ->move(stepsToMove);
+    }
+    else if (direction == ALTITUDE_STEPS){
+      const float altitudeArcSecondsPerStep = 3.939f;
+      const float altitudeStepsPerArcMinute = 60.0f / altitudeArcSecondsPerStep;
+      int stepsToMove = arcMinutes * altitudeStepsPerArcMinute ;
+      _stepperALT->move(stepsToMove);
+    }
+  #endif
 }
 
 /////////////////////////////////
@@ -1246,8 +1261,8 @@ void Mount::interruptLoop()
   }
 
   #if AZIMUTH_MOTOR
-  _stepperAZ->runSpeed();
-  _stepperALT->runSpeed();
+  _stepperAZ->run();
+  _stepperALT->run();
   #endif
 
 }
