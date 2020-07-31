@@ -8,6 +8,7 @@
 #include "LcdMenu.hpp"
 #if RA_Driver_TYPE == 3
  #include <TMCStepper.h>
+ // If you get an error here, download the TMCstepper library from "Tools > Manage Libraries"
 #endif
 
 #define NORTH                      B00000001

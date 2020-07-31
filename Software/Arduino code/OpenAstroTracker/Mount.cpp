@@ -297,8 +297,8 @@ void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed
 
   // Use another AccelStepper to run the RA motor as well. This instance tracks earths rotation.
   _stepperTRK = new AccelStepper(DRIVER, pin1, pin2);
-  _stepperTRK->setMaxSpeed(10);
-  _stepperTRK->setAcceleration(2500);
+  _stepperTRK->setMaxSpeed(500);
+  _stepperTRK->setAcceleration(10000);
 
   #if NORTHERN_HEMISPHERE != 1
   _stepperRA->setPinsInverted(true, false, false);
@@ -358,14 +358,19 @@ void Mount::configureRAdriver(HardwareSerial *serial, float rsense, byte drivera
   _driverRA = new TMC2209Stepper(serial, rsense, driveraddress);
   _driverRA->begin();
   //_driverRA->en_spreadCycle(1);
+  _driverRA->toff(4);
   _driverRA->blank_time(24);
   _driverRA->rms_current(rmscurrent);
   _driverRA->microsteps(TRACKING_MICROSTEPPING);
-  _driverRA->TCOOLTHRS(0xFFFFF);
-  _driverRA->semin(5);
-  _driverRA->semax(2);
-  _driverRA->sedn(0b01);
-  _driverRA->SGTHRS(10);
+  _driverRA->fclktrim(20);
+  _driverRA->TCOOLTHRS(0xFFFFF);  //xFFFFF);
+  _driverRA->ihold(1); // its save to assume that the only time RA stands still is during parking and the current can be limited to a minimum
+  //_driverRA->semin(2);
+  //_driverRA->semax(5);
+  //_driverRA->sedn(0b01);
+  //_driverRA->SGTHRS(10);
+  _driverRA->irun(31);
+  
 }
 #endif
 
@@ -779,7 +784,11 @@ void Mount::stopGuiding() {
 
   _stepperDEC->setMaxSpeed(_maxDECSpeed);
   _stepperDEC->setAcceleration(_maxDECAcceleration);
+  #if RA_Stepper_TYPE == 0
   _stepperTRK->setMaxSpeed(10);
+  #else
+  _stepperTRK->setMaxSpeed(500);
+  #endif
   _stepperTRK->setAcceleration(2500);
   _stepperTRK->setSpeed(_trackingSpeed);
   _mountStatus &= ~STATUS_GUIDE_PULSE_MASK;
@@ -795,7 +804,12 @@ void Mount::guidePulse(byte direction, int duration) {
   // RA stepper moves at either 2x sidereal rate or stops.
   // TODO: Do we need to adjust with _trackingSpeedCalibration?
   float decTrackingSpeed = _stepsPerDECDegree * siderealDegreesInHour / 3600.0f;
-  float raTrackingSpeed = _stepsPerRADegree * ((_stepsPerRADegree / SET_MICROSTEPPING) * TRACKING_MICROSTEPPING) / 3600.0f;
+  #if RA_Stepper_TYPE == 0
+  raTrackingSpeed = _stepsPerRADegree * siderealDegreesInHour / 3600.0f;
+  #else
+  float raTrackingSpeed = ((_stepsPerRADegree / SET_MICROSTEPPING) * TRACKING_MICROSTEPPING) * siderealDegreesInHour / 3600.0f;
+  #endif
+
 
   // TODO: Do we need to track how many steps the steppers took and add them to the GoHome calculation?
   // If so, we need to remember where we were when we started the guide pulse. Then at the end,
@@ -819,14 +833,15 @@ void Mount::guidePulse(byte direction, int duration) {
     break;
 
     case WEST:
-    _stepperTRK->setMaxSpeed(raTrackingSpeed * (RA_PULSE_MULTIPLIER + 0.2));
+    _stepperTRK->setMaxSpeed(raTrackingSpeed * (RA_PULSE_MULTIPLIER + 0.2 ));
     _stepperTRK->setSpeed(raTrackingSpeed * RA_PULSE_MULTIPLIER);
     _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_RA;
     break;
 
     case EAST:
     _stepperTRK->setMaxSpeed(raTrackingSpeed * (RA_PULSE_MULTIPLIER + 0.2));
-    _stepperTRK->setSpeed(0);
+    //_stepperTRK->setSpeed(raTrackingSpeed + (-RA_PULSE_MULTIPLIER * (raTrackingSpeed / 2.0)));
+    _stepperTRK->setSpeed(0.6 * raTrackingSpeed);
     _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_RA;
     break;
   }
@@ -1189,6 +1204,7 @@ void Mount::startSlewing(int direction) {
       
       // Turn on tracking
       _mountStatus |= STATUS_TRACKING;
+
     }
     else {
       int sign = NORTHERN_HEMISPHERE ? 1 : -1;
@@ -1201,19 +1217,19 @@ void Mount::startSlewing(int direction) {
       //hier
       #endif
       if (direction & NORTH) {
-        _stepperDEC->moveTo(sign * 30000);
+        _stepperDEC->moveTo(sign * 300000);
         _mountStatus |= STATUS_SLEWING;
       }
       if (direction & SOUTH) {
-        _stepperDEC->moveTo(-sign * 30000);
+        _stepperDEC->moveTo(-sign * 300000);
         _mountStatus |= STATUS_SLEWING;
       }
       if (direction & EAST) {
-        _stepperRA->moveTo(-sign * 30000);
+        _stepperRA->moveTo(-sign * 300000);
         _mountStatus |= STATUS_SLEWING;
       }
       if (direction & WEST) {
-        _stepperRA->moveTo(sign * 30000);
+        _stepperRA->moveTo(sign * 300000);
         _mountStatus |= STATUS_SLEWING;
       }
     }
@@ -1300,7 +1316,7 @@ void Mount::interruptLoop()
 {
   if (_mountStatus & STATUS_GUIDE_PULSE) {
     if (_mountStatus & STATUS_GUIDE_PULSE_RA) {
-      _stepperTRK->runSpeed();      
+      _stepperTRK->runSpeed();    
     }
     if (_mountStatus & STATUS_GUIDE_PULSE_DEC) {
       _stepperDEC->runSpeed();
@@ -1308,8 +1324,10 @@ void Mount::interruptLoop()
     return;
   }
 
-  if (_mountStatus & STATUS_TRACKING) {
-    _stepperTRK->runSpeed();
+  if (_mountStatus & STATUS_TRACKING ) {
+    //if ~(_mountStatus & STATUS_SLEWING) {
+      _stepperTRK->runSpeed();
+    //}
   }
 
   if (_mountStatus & STATUS_SLEWING) {
@@ -1337,9 +1355,9 @@ void Mount::loop() {
   /*static uint32_t last_time = 0;
   uint32_t ms = millis();
   if ((ms - last_time) > 100) { //run every 0.1s
-    last_time = ms;
-  Serial.println(_driverRA->mres());
-  }*/
+    last_time = ms;*/
+  //Serial.println(_driverRA->mres());
+  //}
   
   // Since some of the boards cannot process timer interrupts at the required 
   // speed (or at all), we'll just stick to deterministic calls here.
@@ -1484,8 +1502,12 @@ void Mount::setHome() {
 // Set RA and DEC to the home position
 /////////////////////////////////
 void Mount::setTargetToHome() {
+  #if RA_Driver_TYPE != 0
+  float trackedSeconds = (_stepperTRK->currentPosition() / _trackingSpeed) * (SET_MICROSTEPPING / TRACKING_MICROSTEPPING); // steps/steps/s
+  #else
   float trackedSeconds = _stepperTRK->currentPosition() / _trackingSpeed; // steps/steps/s
-
+  #endif
+  
   LOGV2(DEBUG_MOUNT,"Mount::setTargetToHome() called with %fs elapsed tracking", trackedSeconds);
 
   // In order for RA coordinates to work correctly, we need to

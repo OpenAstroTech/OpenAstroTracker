@@ -68,8 +68,8 @@ bool processHAKeys() {
 byte key;
 bool waitForRelease = false;
 if (startupState == StartupWaitForHACompletion) {
-while (Serial1.available()) {
-if (gps.encode(Serial1.read())) {
+while (GPS_SERIAL_PORT.available()) {  
+if (gps.encode(GPS_SERIAL_PORT.read())) {
   if (gps.location.lng() != 0) {
 
     lcdMenu.printMenu("Acquired Pos.");
@@ -82,7 +82,6 @@ if (gps.encode(Serial1.read())) {
     EPROMStore::Storage()->update(2, mount.HA().getMinutes());
     mount.delay(500);
     mount.setHome();
-
     
     startupState = StartupHAConfirmed;
     inStartup = true;
@@ -98,16 +97,6 @@ if (lcdButtons.keyChanged(&key)) {
 }
 }
 
-
-
-/*while (Serial2.available()) {
-        if (gps.location.lng() != 0) {
-           ha.set(1);
-           //Sidereal::calculateByGPS(&gps).getHours())
-           //EPROMStore::Storage()->update(1, mount.HA().set();
-          //EPROMStore::Storage()->update(1, mount.HA().getHours());
-        }
-      }*/
 #endif
 }
 

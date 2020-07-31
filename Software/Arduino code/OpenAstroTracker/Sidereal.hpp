@@ -1,3 +1,5 @@
+#if USE_GPS == 1
+
 #pragma once
 
 #include <math.h>
@@ -15,3 +17,5 @@ class Sidereal
     static const double calculateTheta(double deltaJ, double longitude, float timeUTC);
     static const int calculateDeltaJd(int year, int month, int day);
 };
+
+#endif

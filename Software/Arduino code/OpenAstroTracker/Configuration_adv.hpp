@@ -21,7 +21,7 @@
 // Only affects NEMA steppers!
 // Only affects calculations, Microstepping is set by MS pins, 
 // EXCEPT for TMC2209 UART where this value actually sets the SLEW microstepping
-#define SET_MICROSTEPPING 4        // 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256
+#define SET_MICROSTEPPING 8        // 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256
 //                                                        ^-----------------^
 //                                                         only if your driver can handle it.
 //                                                         TMC2209 can
@@ -37,42 +37,26 @@
 //
 // TMC2209 UART settings
 // These settings work only with TMC2209 in UART connection (single wire to TX)
-#define TRACKING_MICROSTEPPING 16  // Set the MS mode for tracking only. Slew MS is set by SET_MICROSTEPPING above
+#define TRACKING_MICROSTEPPING 64  // Set the MS mode for tracking only. Slew MS is set by SET_MICROSTEPPING above
 
-#define RA_RMSCURRENT 1600       // RMS current in mA. Warning: Peak current will be higher! Do not set to max current
+#define RA_RMSCURRENT 1200       // RMS current in mA. Warning: Peak current will be 1.414 times higher!! Do not exceed your steppers max current!
 #define RA_STALL_VALUE 100
 //#define RA_SPEED_MULTIPLIER 20 // This value is multiplied with the SLEW microstepping value to get the necessary speed
 
-#define DEC_MICROSTEPPING 16
+#define DEC_MICROSTEPPING 32
 #define DEC_STALL_VALUE 10
-#define DEC_RMSCURRENT 1200
+#define DEC_RMSCURRENT 1000   // RMS current in mA. Warning: Peak current will be 1.414 times higher!! Do not exceed your steppers max current!
 #define DEC_HOLDCURRENT 20    // [0, ... , 31] x/32 of the run current when standing still. 0=1/32... 31=32/32
 #define USE_AUTOHOME 0        // Autohome with TMC2209 stall detection:  ON = 1  |  OFF = 0   
 //                  ^^^ leave at 0 for now, doesnt work properly yet
 //
-// driver configurations -- move to a_inits for release --
-#define RA_STEP_PIN 22
-#define RA_DIR_PIN 24
-#define RA_EN_PIN 25
-#define RA_DIAG_PIN 40
-#define RA_SERIAL_PORT Serial3  // HardwareSerial port, wire to TX3 for write-only
-#define RA_DRIVER_ADDRESS 0b00  // Set by MS1/MS2
-#define DEC_STEP_PIN 26
-#define DEC_DIR_PIN 28
-#define DEC_EN_PIN 29
-#define DEC_DIAG_PIN 41
-//#define DEC_MS1_PIN 44 //not needed for now
-#define DEC_SERIAL_PORT Serial2  // HardwareSerial port, wire to TX2 for write-only
-#define DEC_DRIVER_ADDRESS 0b00  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
-#define R_SENSE 0.11f           // 0.11 for StepStick
-//#define R_SENSE 0.11f           // 0.11 for StepStick
 //
 ////////////////////////////
 //
 // INVERT AXIS
 // Set to 1 or 0 to invert motor directions
 #define INVERT_RA_DIR 0 
-#define INVERT_DEC_DIR 0
+#define INVERT_DEC_DIR 1
 //
 //
 ////////////////////////////
@@ -87,7 +71,7 @@
 // GUIDE SETTINGS
 // This is the multiplier of the normal trackingspeed that a pulse will have 
 // standard value: RA 2.2;  DEC 1.2
-#define RA_PULSE_MULTIPLIER 2.2
+#define RA_PULSE_MULTIPLIER 1.5
 //#define DEC_PULSE_MULTIPLIER 1.2
 
 
@@ -100,7 +84,7 @@
 // 
 // UPDATE TIME
 // Time in ms between LCD screen updates during slewing operations
-#define DISPLAY_UPDATE_TIME 200
+#define DISPLAY_UPDATE_TIME 800
 //
 //
 ////////////////////////////
@@ -108,7 +92,7 @@
 // HEADLESS CLIENT
 // If you do not have a LCD shield on your Arduino Uno/Mega, set this to 1 on the line below. This is
 // useful if you are always going to run the mount from a laptop anyway.
-#define HEADLESS_CLIENT 0
+#define HEADLESS_CLIENT 1
 //
 //
 ////////////////////////////
@@ -155,12 +139,13 @@
   #define SUPPORT_CALIBRATION          1
 
 // Set this to 1 to support INFO menu that displays various pieces of information about the mount. 
-  #define SUPPORT_INFO_DISPLAY         1
+  #define SUPPORT_INFO_DISPLAY         0
 
 // Set this to 1 to support Serial Meade LX200 protocol support
   #define SUPPORT_SERIAL_CONTROL       1
 
-// Set this to 1 if you are using a NEO6m GPS module !!Does not work yet!!
+// Set this to 1 if you are using a NEO6m GPS module
+// Download this library https://github.com/mikalhart/TinyGPSPlus/releases and extract it to C:\Users\*you*\Documents\Arduino\libraries
   #define USE_GPS                      0
 
 #endif  // HEADLESS_CLIENT <-- Ignore this    
@@ -272,7 +257,10 @@
 #error "Holdcurrent has to be within 1 and 31!"
 #endif
 #if RA_RMSCURRENT > 2000 || DEC_RMSCURRENT > 2000
-#error "Do you really want to set the motorcurrent above 2 Ampere? Delete this error if you know what youre doing" 
+#error "Do you really want to set the RMS motorcurrent above 2 Ampere? Thats almost 3A peak! Delete this error if you know what youre doing" 
+#endif
+#if RA_Stepper_TYPE != 0 && __AVR_ATmega328P__
+#error "Sorry, Arduino Uno does not support NEMA steppers. Use a Mega instead"
 #endif
 
 

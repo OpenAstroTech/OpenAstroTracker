@@ -1,8 +1,13 @@
 #pragma once
 
-//#include <SoftwareSerial.h>
+
 #include <AccelStepper.h>
 #include <LiquidCrystal.h>
+
+#if USE_GPS == 1
+//#include <SoftwareSerial.h>
+//SoftwareSerial SoftSerial(50, 52); // RX, TX
+#endif
 
 #include "Utility.hpp"
 #include "DayTime.hpp"
@@ -102,15 +107,15 @@ TinyGPSPlus gps;
 #if RA_Stepper_TYPE == 0  // 28BYJ
 // RA Motor pins
   #if INVERT_RA_DIR == 1
-    #define RAmotorPin1  12    // IN1 auf ULN2003 driver 1
-    #define RAmotorPin3  11    // IN2 auf ULN2003 driver 1
-    #define RAmotorPin2  3     // IN3 auf ULN2003 driver 1
-    #define RAmotorPin4  2     // IN4 auf ULN2003 driver 1
+    #define RAmotorPin1  RA_IN1_PIN    // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  RA_IN2_PIN    // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  RA_IN3_PIN     // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  RA_IN4_PIN     // IN4 auf ULN2003 driver 1
   #else
-    #define RAmotorPin1  2     // IN1 auf ULN2003 driver 1
-    #define RAmotorPin3  3     // IN2 auf ULN2003 driver 1
-    #define RAmotorPin2  11    // IN3 auf ULN2003 driver 1
-    #define RAmotorPin4  12    // IN4 auf ULN2003 driver 1
+    #define RAmotorPin1  RA_IN4_PIN     // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  RA_IN3_PIN     // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  RA_IN2_PIN    // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  RA_IN1_PIN    // IN4 auf ULN2003 driver 1
   #endif
 #endif
 #if RA_Stepper_TYPE == 1  // NEMA
@@ -121,15 +126,15 @@ TinyGPSPlus gps;
 // DEC Motor pins
 #if DEC_Stepper_TYPE == 0  // 28BYJ
   #if INVERT_DEC_DIR == 1
-    #define DECmotorPin1  18    // IN1 auf ULN2003 driver 2
-    #define DECmotorPin2  16    // IN2 auf ULN2003 driver 2
-    #define DECmotorPin3  17    // IN3 auf ULN2003 driver 2
-    #define DECmotorPin4  15    // IN4 auf ULN2003 driver 2
+    #define DECmotorPin1  DEC_IN1_PIN    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin3  DEC_IN2_PIN    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin2  DEC_IN3_PIN    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin4  DEC_IN4_PIN    // IN4 auf ULN2003 driver 2
   #else
-    #define DECmotorPin1  15    // IN1 auf ULN2003 driver 2
-    #define DECmotorPin2  17    // IN2 auf ULN2003 driver 2
-    #define DECmotorPin3  16    // IN3 auf ULN2003 driver 2
-    #define DECmotorPin4  18    // IN4 auf ULN2003 driver 2
+    #define DECmotorPin1  DEC_IN4_PIN    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin3  DEC_IN3_PIN    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin2  DEC_IN2_PIN    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin4  DEC_IN1_PIN    // IN4 auf ULN2003 driver 2
   #endif
 #endif
 #if DEC_Stepper_TYPE == 1  // NEMA
@@ -146,15 +151,15 @@ TinyGPSPlus gps;
 #if RA_Stepper_TYPE == 0  // 28BYJ
 // RA Motor pins
   #if INVERT_RA_DIR == 1
-    #define RAmotorPin1  22    // IN1 auf ULN2003 driver 1
-    #define RAmotorPin3  24    // IN2 auf ULN2003 driver 1
-    #define RAmotorPin2  26    // IN3 auf ULN2003 driver 1
-    #define RAmotorPin4  28    // IN4 auf ULN2003 driver 1
+    #define RAmotorPin1  RA_IN1_PIN    // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  RA_IN2_PIN    // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  RA_IN3_PIN    // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  RA_IN4_PIN    // IN4 auf ULN2003 driver 1
   #else
-    #define RAmotorPin1  28    // IN1 auf ULN2003 driver 1
-    #define RAmotorPin3  26    // IN2 auf ULN2003 driver 1
-    #define RAmotorPin2  24    // IN3 auf ULN2003 driver 1
-    #define RAmotorPin4  22    // IN4 auf ULN2003 driver 1
+    #define RAmotorPin1  RA_IN4_PIN    // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  RA_IN3_PIN    // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  RA_IN2_PIN    // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  RA_IN1_PIN    // IN4 auf ULN2003 driver 1
   #endif
 #endif
 #if RA_Stepper_TYPE == 1  // NEMA
@@ -165,15 +170,15 @@ TinyGPSPlus gps;
 // DEC Motor pins
 #if DEC_Stepper_TYPE == 0  // 28BYJ
   #if INVERT_DEC_DIR == 1
-    #define DECmotorPin1  36    // IN1 auf ULN2003 driver 2
-    #define DECmotorPin3  34    // IN2 auf ULN2003 driver 2
-    #define DECmotorPin2  32    // IN3 auf ULN2003 driver 2
-    #define DECmotorPin4  30    // IN4 auf ULN2003 driver 2
+    #define DECmotorPin1  DEC_IN4_PIN    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin3  DEC_IN3_PIN    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin2  DEC_IN2_PIN    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin4  DEC_IN1_PIN    // IN4 auf ULN2003 driver 2
   #else
-    #define DECmotorPin1  30    // IN1 auf ULN2003 driver 2
-    #define DECmotorPin3  32    // IN2 auf ULN2003 driver 2
-    #define DECmotorPin2  34    // IN3 auf ULN2003 driver 2
-    #define DECmotorPin4  36    // IN4 auf ULN2003 driver 2
+    #define DECmotorPin1  DEC_IN1_PIN    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin3  DEC_IN2_PIN    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin2  DEC_IN3_PIN    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin4  DEC_IN4_PIN    // IN4 auf ULN2003 driver 2
   #endif
 #endif
 #if DEC_Stepper_TYPE == 1  // NEMA
@@ -185,25 +190,10 @@ TinyGPSPlus gps;
 
 // Driver definitions /////////////
 #if RA_Driver_TYPE == 2
-  #define RA_EN_PIN 40  // Enable Pin
+  //#define RA_EN_PIN 40  // Enable Pin
 #endif
-#if RA_Driver_TYPE == 3
-  //#define RA_EN_PIN 40
-  //#define RA_DIAG_PIN 52
-  //#define RA_SERIAL_PORT Serial3  // HardwareSerial port
-  //#define RA_DRIVER_ADDRESS 0b00  // Set by MS1/MS2
-  //#define R_SENSE 0.11f           // 0.11 for StepStick
-  //#define RA_STALL_VALUE 100
-  //#define RA_RMSCURRENT 500
-#endif
-#if DEC_Driver_TYPE == 3
-  /*#define DEC_EN_PIN 41
-  #define DEC_MS1_PIN 44
-  #define DEC_SERIAL_PORT Serial2  // HardwareSerial port
-  #define DEC_DRIVER_ADDRESS 0b01  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
+#if RA_Driver_TYPE == 3 
   #define R_SENSE 0.11f           // 0.11 for StepStick
-  #define DEC_STALL_VALUE 100
-  #define DEC_RMSCURRENT 500*/
 #endif
 // End Driver Definitions //////////////
 

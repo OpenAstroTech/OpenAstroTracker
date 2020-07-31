@@ -76,9 +76,10 @@ void IRAM_ATTR mainLoopTask(void* payload)
 /////////////////////////////////
 void setup() {
 
+analogWrite(10, 1);
 
 #if USE_GPS == 1
-Serial1.begin(9600);
+GPS_SERIAL_PORT.begin(GPS_BAUD_RATE);
 #endif
 
 
@@ -89,9 +90,9 @@ Serial1.begin(9600);
 #if RA_Driver_TYPE == 1
   // include A4988 microstep pins
   //#error "Define Microstep pins and delete this error."
-  digitalWrite(40, HIGH);  // MS0
-  digitalWrite(41, HIGH);  // MS1
-  digitalWrite(42, HIGH);  // MS2
+  digitalWrite(RA_MS0_PIN);  // MS0
+  digitalWrite(RA_MS1_PIN);  // MS1
+  digitalWrite(RA_MS2_PIN);  // MS2
   #endif
 #if RA_Driver_TYPE == 2
   // include TMC2209 Standalone pins
