@@ -201,6 +201,9 @@ public:
   // Set the speed of the given motor
   void setSpeed(int which, float speed);
 
+  // Support for moving the mount in azimuth and altitude (requires extra hardware)
+  void moveBy(int direction, float arcMinutes);
+
   // Set the number of steps to use for backlash correction
   void setBacklashCorrection(int steps);
 
