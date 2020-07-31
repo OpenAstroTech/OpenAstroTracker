@@ -76,7 +76,7 @@ void IRAM_ATTR mainLoopTask(void* payload)
 /////////////////////////////////
 void setup() {
 
-analogWrite(10, 1);
+
 
 #if USE_GPS == 1
 GPS_SERIAL_PORT.begin(GPS_BAUD_RATE);

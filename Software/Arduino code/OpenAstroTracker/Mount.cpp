@@ -805,7 +805,7 @@ void Mount::guidePulse(byte direction, int duration) {
   // TODO: Do we need to adjust with _trackingSpeedCalibration?
   float decTrackingSpeed = _stepsPerDECDegree * siderealDegreesInHour / 3600.0f;
   #if RA_Stepper_TYPE == 0
-  raTrackingSpeed = _stepsPerRADegree * siderealDegreesInHour / 3600.0f;
+  float raTrackingSpeed = _stepsPerRADegree * siderealDegreesInHour / 3600.0f;
   #else
   float raTrackingSpeed = ((_stepsPerRADegree / SET_MICROSTEPPING) * TRACKING_MICROSTEPPING) * siderealDegreesInHour / 3600.0f;
   #endif

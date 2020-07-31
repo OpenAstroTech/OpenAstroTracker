@@ -30,7 +30,7 @@ String version = "V1.7.23b";
 // RA stepper                                                            //
 ///////////////////////////////////////////////////////////////////////////
 // This is how many steps your stepper needs for a full rotation.
-float RAStepsPerRevolution = 400;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+float RAStepsPerRevolution = 4096;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
 
 // Your RA pulley tooth count:
 int RAPulleyTeeth = 16;
@@ -38,21 +38,21 @@ int RAPulleyTeeth = 16;
 // the Circumference of the RA wheel.  V1 = 1057.1  |  V2 = 1131 
 float RACircumference = 1131.0;
 
-int RAspeed = 1200;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
-int RAacceleration = 6000;   // High speeds tend to make these cheap steppers unprecice
+int RAspeed = 600;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+int RAacceleration = 800;   // High speeds tend to make these cheap steppers unprecice
 
 ///////////////////////////////////////////////////////////////////////////
 // DEC stepper                                                           //
 ///////////////////////////////////////////////////////////////////////////
 // This is how many steps your stepper needs for a full rotation.
-float DECStepsPerRevolution = 400;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+float DECStepsPerRevolution = 4096;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
 
 // Your DEC pulley tooth count:
 int DecPulleyTeeth = 16;
 float DEC_Circumference = 565.5;
 
-int DECspeed = 1500;           // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
-int DECacceleration = 6000;    // High speeds tend to make these cheap steppers unprecice
+int DECspeed = 500;           // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+int DECacceleration = 800;    // High speeds tend to make these cheap steppers unprecice
 
 
 

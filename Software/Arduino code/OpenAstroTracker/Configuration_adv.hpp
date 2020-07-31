@@ -11,8 +11,8 @@
 ////////////////////////////
 //
 // STEPPER TYPE
-#define RA_Stepper_TYPE   1        // 28BYJ-48 = 0   |   NEMA = 1
-#define DEC_Stepper_TYPE  1        // 28BYJ-48 = 0   |   NEMA = 1
+#define RA_Stepper_TYPE   0        // 28BYJ-48 = 0   |   NEMA = 1
+#define DEC_Stepper_TYPE  0        // 28BYJ-48 = 0   |   NEMA = 1
 //
 //
 ////////////////////////////
@@ -29,8 +29,8 @@
 //
 // Driver selection 
 // GENERIC drivers include A4988 and any Bipolar STEP/DIR based drivers
-#define RA_Driver_TYPE  3          // ULN2003 = 0  |  GENERIC = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
-#define DEC_Driver_TYPE 3          // ULN2003 = 0  |  GENERIC = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
+#define RA_Driver_TYPE  0          // ULN2003 = 0  |  GENERIC = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
+#define DEC_Driver_TYPE 0          // ULN2003 = 0  |  GENERIC = 1  |  TMC2009 STANDALONE = 2  | TMC2009 UART = 3
 //
 //
 ////////////////////////////
@@ -56,7 +56,7 @@
 // INVERT AXIS
 // Set to 1 or 0 to invert motor directions
 #define INVERT_RA_DIR 0 
-#define INVERT_DEC_DIR 1
+#define INVERT_DEC_DIR 0
 //
 //
 ////////////////////////////
@@ -71,7 +71,7 @@
 // GUIDE SETTINGS
 // This is the multiplier of the normal trackingspeed that a pulse will have 
 // standard value: RA 2.2;  DEC 1.2
-#define RA_PULSE_MULTIPLIER 1.5
+#define RA_PULSE_MULTIPLIER 2.0
 //#define DEC_PULSE_MULTIPLIER 1.2
 
 
@@ -92,7 +92,7 @@
 // HEADLESS CLIENT
 // If you do not have a LCD shield on your Arduino Uno/Mega, set this to 1 on the line below. This is
 // useful if you are always going to run the mount from a laptop anyway.
-#define HEADLESS_CLIENT 1
+#define HEADLESS_CLIENT 0
 //
 //
 ////////////////////////////
@@ -139,7 +139,7 @@
   #define SUPPORT_CALIBRATION          1
 
 // Set this to 1 to support INFO menu that displays various pieces of information about the mount. 
-  #define SUPPORT_INFO_DISPLAY         0
+  #define SUPPORT_INFO_DISPLAY         1
 
 // Set this to 1 to support Serial Meade LX200 protocol support
   #define SUPPORT_SERIAL_CONTROL       1

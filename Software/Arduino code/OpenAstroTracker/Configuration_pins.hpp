@@ -42,7 +42,30 @@
 
 // ESP32
 #ifdef ESP32
-// todo
+// todo 28BY stepper pins
+
+// If using NEMA steppers
+#define RA_STEP_PIN ?  // STEP
+#define RA_DIR_PIN  ?  // DIR
+#define RA_EN_PIN   ?  // Enable
+#define RA_MS0_PIN  ?, HIGH    // 
+#define RA_MS1_PIN  ?, HIGH
+#define RA_MS2_PIN  ?, HIGH
+//RA TMC2209 UART specific pins
+#define RA_SERIAL_PORT ?  // e.g. Serial1  // HardwareSerial port, wire to TX3 for write-only
+#define RA_DRIVER_ADDRESS 0b00  // Set by MS1/MS2. LOW/LOW in this case
+//#define RA_DIAG_PIN           // only needed for autohome function
+
+#define DEC_STEP_PIN ?  // STEP
+#define DEC_DIR_PIN  ?  // DIR
+#define DEC_EN_PIN   ?  // Enable
+#define DEC_MS0_PIN  ?  // 
+#define DEC_MS1_PIN  ?
+#define DEC_MS2_PIN  ?
+//DEC TMC2209 UART specific pins
+#define DEC_SERIAL_PORT ?  // same as above!  // HardwareSerial port, wire to TX2 for write-only
+#define DEC_DRIVER_ADDRESS 0b01  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
+//#define DEC_DIAG_PIN           // only needed for autohome function
 #endif
 
 // Arduino UNO
