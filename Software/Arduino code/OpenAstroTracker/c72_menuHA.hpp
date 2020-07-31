@@ -37,8 +37,6 @@ bool processHAKeys() {
         EPROMStore::Storage()->update(2, mount.HA().getMinutes());
         lcdMenu.printMenu("Stored.");
         mount.delay(500);
-        mount.setHome();
-        mount.startSlewing(TRACKING);
 
 #if SUPPORT_GUIDED_STARTUP == 1
         if (startupState == StartupWaitForHACompletion) {
@@ -46,6 +44,7 @@ bool processHAKeys() {
           inStartup = true;
         }
 #endif
+        mount.startSlewing(TRACKING);
       }
       break;
 

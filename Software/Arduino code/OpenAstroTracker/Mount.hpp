@@ -144,7 +144,7 @@ public:
   void goHome();
 
   // Set the current stepper positions to be home.
-  void setHome();
+  void setHome(bool clearZeroPos);
 
   // Asynchronously parks the mount. Moves to the home position and stops all motors. 
   void park();

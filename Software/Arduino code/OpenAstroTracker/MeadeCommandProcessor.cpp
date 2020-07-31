@@ -532,7 +532,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     }
     else if (inCmd[1] == 'P') {
       // Set home point
-      _mount->setHome();
+      _mount->setHome(false);
       _mount->startSlewing(TRACKING);
     }
     else {

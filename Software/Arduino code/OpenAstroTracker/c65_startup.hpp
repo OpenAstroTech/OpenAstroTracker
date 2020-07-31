@@ -74,6 +74,10 @@ bool processStartupKeys() {
     break;
 
     case StartupHAConfirmed: {
+      mount.setHome(true);
+      DayTime ha(mount.HA());
+      mount.setHA(ha);
+      mount.targetRA() = mount.currentRA();
       startupIsCompleted();
     }
     break;

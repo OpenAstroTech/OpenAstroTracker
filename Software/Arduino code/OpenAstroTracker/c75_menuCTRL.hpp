@@ -61,9 +61,9 @@ bool processControlKeys() {
       if (key == btnSELECT) {
         if (setZeroPoint) {
           // Leaving Control Menu, so set stepper motor positions to zero.
-          LOGV1(DEBUG_GENERAL, "CTRL menu: Calling setHome()!");
-          mount.setHome();
-          LOGV3(DEBUG_GENERAL, "CTRL menu: setHome() returned: RA Current %s, Target: %f", mount.RAString(CURRENT_STRING|COMPACT_STRING).c_str(), mount.RAString(TARGET_STRING | COMPACT_STRING).c_str());
+          LOGV1(DEBUG_GENERAL, "CTRL menu: Calling setHome(true)!");
+          mount.setHome(true);
+          LOGV3(DEBUG_GENERAL, "CTRL menu: setHome(true) returned: RA Current %s, Target: %f", mount.RAString(CURRENT_STRING|COMPACT_STRING).c_str(), mount.RAString(TARGET_STRING | COMPACT_STRING).c_str());
           mount.startSlewing(TRACKING);
         }
 
@@ -74,6 +74,7 @@ bool processControlKeys() {
         if (startupState == StartupWaitForPoleCompletion) {
           startupState = StartupPoleConfirmed;
           inStartup = true;
+          inControlMode = false;
         }
         else
 #endif
@@ -116,10 +117,22 @@ bool processControlKeys() {
     case btnSELECT: {
       if (processKeyStateChanges(btnSELECT, 0))
       {
-        lcdMenu.setCursor(0, 0);
-        lcdMenu.printMenu("Set home point?");
-        confirmZeroPoint = true;
-        waitForRelease = true;
+#if SUPPORT_GUIDED_STARTUP == 1
+        if (startupState == StartupWaitForPoleCompletion) {
+          startupState = StartupPoleConfirmed;
+          inControlMode = false;
+          confirmZeroPoint = false;
+          waitForRelease = true;
+          inStartup = true;
+        }
+        else
+#endif
+        {
+          lcdMenu.setCursor(0, 0);
+          lcdMenu.printMenu("Set home positn?");
+          confirmZeroPoint = true;
+          waitForRelease = true;
+        }
       }
     }
     break;
