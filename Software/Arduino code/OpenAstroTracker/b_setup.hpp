@@ -76,60 +76,59 @@ void IRAM_ATTR mainLoopTask(void* payload)
 /////////////////////////////////
 void setup() {
 
-  analogWrite(10, 1);
-
   #if USE_GPS == 1
   GPS_SERIAL_PORT.begin(GPS_BAUD_RATE);
   #endif
-
 
   /////////////////////////////////
   //   Microstepping/driver pins
   /////////////////////////////////
   #if RA_STEPPER_TYPE == STEP_NEMA17  // RA driver startup (for A4988)
-  #if RA_DRIVER_TYPE == GENERIC_DRIVER
-    // include A4988 microstep pins
-    //#error "Define Microstep pins and delete this error."
-    digitalWrite(RA_MS0_PIN);  // MS0
-    digitalWrite(RA_MS1_PIN);  // MS1
-    digitalWrite(RA_MS2_PIN);  // MS2
+    #if RA_DRIVER_TYPE == GENERIC_DRIVER
+      // include A4988 microstep pins
+      //#error "Define Microstep pins and delete this error."
+      digitalWrite(RA_MS0_PIN);  // MS0
+      digitalWrite(RA_MS1_PIN);  // MS1
+      digitalWrite(RA_MS2_PIN);  // MS2
+      #endif
+    #if RA_DRIVER_TYPE == TMC2009_STANDALONE
+      // include TMC2209 Standalone pins
+      pinMode(40, OUTPUT);
+      digitalWrite(40, LOW);  // ENABLE, LOW to enable
+      digitalWrite(41, HIGH);  // MS2
+      digitalWrite(42, HIGH);  // MS1
+      #endif
+    #if RA_DRIVER_TYPE == TMC2009_UART
+      // include TMC2209 UART pins  
+      pinMode(RA_EN_PIN, OUTPUT);
+      pinMode(RA_DIAG_PIN, INPUT);
+      digitalWrite(RA_EN_PIN, LOW);  // Logic LOW to enable driver
+      RA_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
     #endif
-  #if RA_DRIVER_TYPE == TMC2009_STANDALONE
-    // include TMC2209 Standalone pins
-    pinMode(40, OUTPUT);
-    digitalWrite(40, LOW);  // ENABLE, LOW to enable
-    digitalWrite(41, HIGH);  // MS2
-    digitalWrite(42, HIGH);  // MS1
+  #endif
+  #if DEC_STEPPER_TYPE == STEP_NEMA17  // DEC driver startup (for A4988)
+    #if DEC_DRIVER_TYPE == GENERIC_DRIVER  // DEC driver startup (for A4988)
+      pinMode(45, OUTPUT);
+      digitalWrite(45, LOW);  // ENABLE
+      digitalWrite(46, LOW);  // MS2
+      digitalWrite(44, HIGH);  // MS1
     #endif
-  #if RA_DRIVER_TYPE == TMC2009_UART
-    // include TMC2209 UART pins  
-    pinMode(RA_EN_PIN, OUTPUT);
-    pinMode(RA_DIAG_PIN, INPUT);
-    digitalWrite(RA_EN_PIN, LOW);  // Logic LOW to enable driver
-    RA_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
-  #endif
-  #endif
-  #if DEC_DRIVER_TYPE == GENERIC_DRIVER  // DEC driver startup (for A4988)
-    pinMode(45, OUTPUT);
-    digitalWrite(45, LOW);  // ENABLE
-    digitalWrite(46, LOW);  // MS2
-    digitalWrite(44, HIGH);  // MS1
-  #endif
-  #if DEC_DRIVER_TYPE == TMC2009_STANDALONE
-    // include TMC2209 Standalone pins  TODO-----------------------
-    //pinMode(40, OUTPUT);
-    //digitalWrite(40, LOW);  // ENABLE, LOW to enable
-    //digitalWrite(41, HIGH);  // MS2
-    //digitalWrite(42, HIGH);  // MS1
-  #endif
-  #if DEC_DRIVER_TYPE == TMC2009_UART
-    // include TMC2209 UART pins  
-    pinMode(DEC_EN_PIN, OUTPUT);
-    pinMode(DEC_DIAG_PIN, INPUT);
-    //pinMode(DEC_MS1_PIN, OUTPUT);
-    digitalWrite(DEC_EN_PIN, LOW);  // Logic LOW to enable driver
-    //digitalWrite(DEC_MS1_PIN, HIGH); // Logic HIGH to MS1 to get 0b01 address
-    DEC_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
+    #if DEC_DRIVER_TYPE == TMC2009_STANDALONE
+      // include TMC2209 Standalone pins  TODO-----------------------
+      //pinMode(40, OUTPUT);
+      //digitalWrite(40, LOW);  // ENABLE, LOW to enable
+      //digitalWrite(41, HIGH);  // MS2
+      //digitalWrite(42, HIGH);  // MS1
+    #endif
+    #if DEC_DRIVER_TYPE == TMC2009_UART
+      // include TMC2209 UART pins  
+      pinMode(DEC_EN_PIN, OUTPUT);
+      pinMode(DEC_DIAG_PIN, INPUT);
+      //pinMode(DEC_MS1_PIN, OUTPUT);
+      digitalWrite(DEC_EN_PIN, LOW);  // Logic LOW to enable driver
+      //digitalWrite(DEC_MS1_PIN, HIGH); // Logic HIGH to MS1 to get 0b01 address
+      DEC_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
+    #endif
   #endif
   // end microstepping -------------------
 

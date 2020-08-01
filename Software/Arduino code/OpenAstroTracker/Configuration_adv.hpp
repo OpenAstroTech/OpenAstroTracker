@@ -34,9 +34,10 @@
 #define GENERIC_DRIVER     1
 #define TMC2009_STANDALONE 2
 #define TMC2009_UART       3
+#define NO_DRIVER          4
 // GENERIC drivers include A4988 and any Bipolar STEP/DIR based drivers
-#define RA_DRIVER_TYPE  TMC2009_UART 
-#define DEC_DRIVER_TYPE TMC2009_UART 
+#define RA_DRIVER_TYPE  NO_DRIVER
+#define DEC_DRIVER_TYPE NO_DRIVER
 //
 //
 ////////////////////////////
