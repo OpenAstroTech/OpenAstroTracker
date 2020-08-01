@@ -1,13 +1,25 @@
 #pragma once
 
-//#include <SoftwareSerial.h>
+
 #include <AccelStepper.h>
 #include <LiquidCrystal.h>
+
+#if USE_GPS == 1
+//#include <SoftwareSerial.h>
+//SoftwareSerial SoftSerial(50, 52); // RX, TX
+#endif
 
 #include "Utility.hpp"
 #include "DayTime.hpp"
 #include "Mount.hpp"
 #include "MeadeCommandProcessor.hpp"
+#if RA_DRIVER_TYPE == TMC2009_UART
+  #include <TMCStepper.h>
+#endif
+#if USE_GPS == 1
+#include <TinyGPS++.h>
+TinyGPSPlus gps;
+#endif
 
 #define HALFSTEP 8
 #define FULLSTEP 4
@@ -92,40 +104,40 @@
 // Arduino Uno
 ///////////////////////////////////////////////////////////////////////////
 #ifdef __AVR_ATmega328P__ // normal Arduino Mapping
-#if RA_Stepper_TYPE == 0  // 28BYJ
+#if RA_STEPPER_TYPE == STEP_28BYJ48
 // RA Motor pins
   #if INVERT_RA_DIR == 1
-    #define RAmotorPin1  12    // IN1 auf ULN2003 driver 1
-    #define RAmotorPin3  11    // IN2 auf ULN2003 driver 1
-    #define RAmotorPin2  3     // IN3 auf ULN2003 driver 1
-    #define RAmotorPin4  2     // IN4 auf ULN2003 driver 1
+    #define RAmotorPin1  RA_IN1_PIN    // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  RA_IN2_PIN    // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  RA_IN3_PIN     // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  RA_IN4_PIN     // IN4 auf ULN2003 driver 1
   #else
-    #define RAmotorPin1  2     // IN1 auf ULN2003 driver 1
-    #define RAmotorPin3  3     // IN2 auf ULN2003 driver 1
-    #define RAmotorPin2  11    // IN3 auf ULN2003 driver 1
-    #define RAmotorPin4  12    // IN4 auf ULN2003 driver 1
+    #define RAmotorPin1  RA_IN4_PIN     // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  RA_IN3_PIN     // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  RA_IN2_PIN    // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  RA_IN1_PIN    // IN4 auf ULN2003 driver 1
   #endif
 #endif
-#if RA_Stepper_TYPE == 1  // NEMA
+#if RA_STEPPER_TYPE == STEP_NEMA17
     #define RAmotorPin1 11
     #define RAmotorPin2 12
 #endif
 
 // DEC Motor pins
-#if DEC_Stepper_TYPE == 0  // 28BYJ
+#if DEC_STEPPER_TYPE == STEP_28BYJ48
   #if INVERT_DEC_DIR == 1
-    #define DECmotorPin1  18    // IN1 auf ULN2003 driver 2
-    #define DECmotorPin2  16    // IN2 auf ULN2003 driver 2
-    #define DECmotorPin3  17    // IN3 auf ULN2003 driver 2
-    #define DECmotorPin4  15    // IN4 auf ULN2003 driver 2
+    #define DECmotorPin1  DEC_IN1_PIN    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin3  DEC_IN2_PIN    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin2  DEC_IN3_PIN    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin4  DEC_IN4_PIN    // IN4 auf ULN2003 driver 2
   #else
-    #define DECmotorPin1  15    // IN1 auf ULN2003 driver 2
-    #define DECmotorPin2  17    // IN2 auf ULN2003 driver 2
-    #define DECmotorPin3  16    // IN3 auf ULN2003 driver 2
-    #define DECmotorPin4  18    // IN4 auf ULN2003 driver 2
+    #define DECmotorPin1  DEC_IN4_PIN    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin3  DEC_IN3_PIN    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin2  DEC_IN2_PIN    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin4  DEC_IN1_PIN    // IN4 auf ULN2003 driver 2
   #endif
 #endif
-#if DEC_Stepper_TYPE == 1  // NEMA
+#if DEC_STEPPER_TYPE == STEP_NEMA17
     #define DECmotorPin1  16
     #define DECmotorPin2  17
 #endif
@@ -136,45 +148,54 @@
 // Arduino Mega
 ///////////////////////////////////////////////////////////////////////////
 #ifdef __AVR_ATmega2560__  // Arduino Mega
-#if RA_Stepper_TYPE == 0  // 28BYJ
+#if RA_STEPPER_TYPE == STEP_28BYJ48
 // RA Motor pins
   #if INVERT_RA_DIR == 1
-    #define RAmotorPin1  22    // IN1 auf ULN2003 driver 1
-    #define RAmotorPin3  24    // IN2 auf ULN2003 driver 1
-    #define RAmotorPin2  26    // IN3 auf ULN2003 driver 1
-    #define RAmotorPin4  28    // IN4 auf ULN2003 driver 1
+    #define RAmotorPin1  RA_IN1_PIN    // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  RA_IN2_PIN    // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  RA_IN3_PIN    // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  RA_IN4_PIN    // IN4 auf ULN2003 driver 1
   #else
-    #define RAmotorPin1  28    // IN1 auf ULN2003 driver 1
-    #define RAmotorPin3  26    // IN2 auf ULN2003 driver 1
-    #define RAmotorPin2  24    // IN3 auf ULN2003 driver 1
-    #define RAmotorPin4  22    // IN4 auf ULN2003 driver 1
+    #define RAmotorPin1  RA_IN4_PIN    // IN1 auf ULN2003 driver 1
+    #define RAmotorPin3  RA_IN3_PIN    // IN2 auf ULN2003 driver 1
+    #define RAmotorPin2  RA_IN2_PIN    // IN3 auf ULN2003 driver 1
+    #define RAmotorPin4  RA_IN1_PIN    // IN4 auf ULN2003 driver 1
   #endif
 #endif
-#if RA_Stepper_TYPE == 1  // NEMA
-    #define RAmotorPin1  22
-    #define RAmotorPin2  24
+#if RA_STEPPER_TYPE == STEP_NEMA17
+    #define RAmotorPin1  RA_STEP_PIN
+    #define RAmotorPin2  RA_DIR_PIN
 #endif
 
 // DEC Motor pins
-#if DEC_Stepper_TYPE == 0  // 28BYJ
+#if DEC_STEPPER_TYPE == STEP_28BYJ48
   #if INVERT_DEC_DIR == 1
-    #define DECmotorPin1  36    // IN1 auf ULN2003 driver 2
-    #define DECmotorPin3  34    // IN2 auf ULN2003 driver 2
-    #define DECmotorPin2  32    // IN3 auf ULN2003 driver 2
-    #define DECmotorPin4  30    // IN4 auf ULN2003 driver 2
+    #define DECmotorPin1  DEC_IN4_PIN    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin3  DEC_IN3_PIN    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin2  DEC_IN2_PIN    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin4  DEC_IN1_PIN    // IN4 auf ULN2003 driver 2
   #else
-    #define DECmotorPin1  30    // IN1 auf ULN2003 driver 2
-    #define DECmotorPin3  32    // IN2 auf ULN2003 driver 2
-    #define DECmotorPin2  34    // IN3 auf ULN2003 driver 2
-    #define DECmotorPin4  36    // IN4 auf ULN2003 driver 2
+    #define DECmotorPin1  DEC_IN1_PIN    // IN1 auf ULN2003 driver 2
+    #define DECmotorPin3  DEC_IN2_PIN    // IN2 auf ULN2003 driver 2
+    #define DECmotorPin2  DEC_IN3_PIN    // IN3 auf ULN2003 driver 2
+    #define DECmotorPin4  DEC_IN4_PIN    // IN4 auf ULN2003 driver 2
   #endif
 #endif
-#if DEC_Stepper_TYPE == 1  // NEMA
-    #define DECmotorPin1  32
-    #define DECmotorPin2  30
+#if DEC_STEPPER_TYPE == STEP_NEMA17
+    #define DECmotorPin1  DEC_STEP_PIN
+    #define DECmotorPin2  DEC_DIR_PIN
 #endif
   
 #endif
+
+// Driver definitions /////////////
+#if RA_DRIVER_TYPE == TMC2009_STANDALONE
+  //#define RA_EN_PIN 40  // Enable Pin
+#endif
+#if RA_DRIVER_TYPE == TMC2009_UART 
+  #define R_SENSE 0.11f           // 0.11 for StepStick
+#endif
+// End Driver Definitions //////////////
 
 
 // Menu IDs
@@ -222,6 +243,8 @@ int heatselect;   // Which stepper are we changing?
 int RAheat = 0;   // Are we heating the RA stepper?
 int DECheat = 0;  // Are we heating the DEC stepper?
 #endif
+
+
 
 //debugging
 String inBT;

@@ -3,9 +3,13 @@
 
 #include <LiquidCrystal.h>
 #include <AccelStepper.h>
-#include "Globals.hpp"
+#include "Configuration_adv.hpp"
 #include "DayTime.hpp"
 #include "LcdMenu.hpp"
+#if RA_DRIVER_TYPE == TMC2009_UART
+ #include <TMCStepper.h>
+ // If you get an error here, download the TMCstepper library from "Tools > Manage Libraries"
+#endif
 
 #define NORTH                      B00000001
 #define EAST                       B00000010
@@ -43,19 +47,28 @@ public:
   Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu);
 
   // Configure the RA stepper motor. This also sets up the TRK stepper on the same pins.
-#if RA_Stepper_TYPE == 0
+#if RA_STEPPER_TYPE == STEP_28BYJ48
     void configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
 #endif
-#if RA_Stepper_TYPE == 1
+#if RA_STEPPER_TYPE == STEP_NEMA17
     void configureRAStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration);
 #endif
 
   // Configure the DEC stepper motor.
-#if DEC_Stepper_TYPE == 0
+#if DEC_STEPPER_TYPE == STEP_28BYJ48
     void configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
 #endif
-#if DEC_Stepper_TYPE == 1
+#if DEC_STEPPER_TYPE == STEP_NEMA17
     void configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration);
+#endif
+
+  // Configure the RA Driver (TMC2209 UART only)
+#if RA_DRIVER_TYPE == TMC2009_UART
+  void configureRAdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
+#endif
+  // Configure the DEC Driver (TMC2209 UART only)
+#if DEC_DRIVER_TYPE == TMC2009_UART
+  void configureDECdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
 #endif
 
   // Get the current RA tracking speed factor
@@ -115,6 +128,7 @@ public:
   bool isParked() const;
   bool isParking() const;
   bool isGuiding() const;
+  bool isFindingHome() const;
 
   // Starts manual slewing in one of eight directions or tracking
   void startSlewing(int direction);
@@ -145,6 +159,14 @@ public:
 
   // Set the current stepper positions to be home.
   void setHome(bool clearZeroPos);
+
+  // Auto Home with TMC2209 UART
+#if RA_DRIVER_TYPE == TMC2009_UART  
+  void StartFindingHomeRA();
+  void StartFindingHomeDEC();
+  void finishFindingHomeRA();
+  void finishFindingHomeDEC();
+#endif
 
   // Asynchronously parks the mount. Moves to the home position and stops all motors. 
   void park();
@@ -248,6 +270,10 @@ private:
   AccelStepper* _stepperRA;
   AccelStepper* _stepperDEC;
   AccelStepper* _stepperTRK;
+  #if RA_DRIVER_TYPE == TMC2009_UART
+  TMC2209Stepper* _driverRA;
+  TMC2209Stepper* _driverDEC;
+  #endif
 
   unsigned long _guideEndTime;
   unsigned long _lastMountPrint = 0;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Globals.hpp"
+#include "Configuration_adv.hpp"
 
 //////////////////////////////////////
 // This is an hardware-independent abstraction layer over 
@@ -24,4 +24,3 @@ public:
   // Stops the timer interrupts (currently not called/used)
   void static stop();
 };
-
