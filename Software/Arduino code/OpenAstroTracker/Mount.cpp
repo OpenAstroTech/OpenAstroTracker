@@ -310,7 +310,7 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, 
   _maxDECSpeed = maxSpeed;
   _maxDECAcceleration = maxAcceleration;
 
-  #if AZIMUTH_MOTOR
+  #if AZIMUTH_MOTOR == 1
   _stepperAZ = new AccelStepper(FULLSTEP, 38, 42, 40, 44);
   _stepperAZ ->setSpeed(150);
   _stepperAZ ->setMaxSpeed(300);
@@ -892,7 +892,7 @@ void Mount::goHome()
 /////////////////////////////////
 void Mount::moveBy(int direction, float arcMinutes)
 {
-  #if AZIMUTH_MOTORS == 1
+  #if AZIMUTH_MOTOR == 1
     if (direction == AZIMUTH_STEPS){
       const float azimuthArcSecondsPerStep = 3.939f;
       const float azimuthStepsPerArcMinute = 60.0f / azimuthArcSecondsPerStep;
@@ -1260,7 +1260,7 @@ void Mount::interruptLoop()
     }
   }
 
-  #if AZIMUTH_MOTOR
+  #if AZIMUTH_MOTOR == 1
   _stepperAZ->run();
   _stepperALT->run();
   #endif

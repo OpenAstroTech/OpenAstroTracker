@@ -254,7 +254,7 @@ private:
   AccelStepper* _stepperDEC;
   AccelStepper* _stepperTRK;
   
-  #if AZIMUTH_MOTOR
+  #if AZIMUTH_MOTOR == 1
   AccelStepper* _stepperAZ;
   AccelStepper* _stepperALT;
   #endif
