@@ -273,9 +273,16 @@ private:
   AccelStepper* _stepperRA;
   AccelStepper* _stepperDEC;
   AccelStepper* _stepperTRK;
+<<<<<<< HEAD
   #if RA_DRIVER_TYPE == TMC2009_UART
     TMC2209Stepper* _driverRA;
     TMC2209Stepper* _driverDEC;
+=======
+  
+  #if AZIMUTH_MOTOR == 1
+  AccelStepper* _stepperAZ;
+  AccelStepper* _stepperALT;
+>>>>>>> cfb64d3... V1.7.25.A3 - Updates
   #endif
 
   unsigned long _guideEndTime;
