@@ -49,7 +49,7 @@ bool processStartupKeys() {
           }
           else if (isInHomePosition == NO) {
             #if RA_DRIVER_TYPE == TMC2009_UART && USE_AUTOHOME == 1
-            mount.StartFindingHomeDEC();
+            mount.startFindingHomeDEC();
             if (mount.isFindingHome()) {
               startupState = StartupWaitForPoleCompletion;            
               lcdMenu.clear();
@@ -63,13 +63,6 @@ bool processStartupKeys() {
             else {
               startupState = StartupSetHATime;
             }
-            
-            //inStartup = false;
-            
-              
-             
-                       
-            //lcdMenu.setActive(Control_Menu);
 
             #else
             startupState = StartupWaitForPoleCompletion;
@@ -92,26 +85,26 @@ bool processStartupKeys() {
 
     case StartupSetHATime: {
       inStartup = false;
-    #if USE_GPS == 0
-      // Jump to the HA menu
-      lcdMenu.setCursor(0, 0);
-      lcdMenu.printMenu("Set current HA");
-      lcdMenu.setActive(HA_Menu);
-      startupState = StartupWaitForHACompletion;
-    #else
-      lcdMenu.setCursor(0, 0);
-      lcdMenu.printMenu("Finding GPS...");
-      lcdMenu.setActive(HA_Menu);
-      startupState = StartupWaitForHACompletion;
-      /*while (Serial2.available()) {
-        if (gps.location.lng() != 0) {
-           ha.set(1);
-           //Sidereal::calculateByGPS(&gps).getHours())
-           //EPROMStore::Storage()->update(1, mount.HA().set();
-          //EPROMStore::Storage()->update(1, mount.HA().getHours());
-        }
-      }*/
-    #endif
+      #if USE_GPS == 0
+        // Jump to the HA menu
+        lcdMenu.setCursor(0, 0);
+        lcdMenu.printMenu("Set current HA");
+        lcdMenu.setActive(HA_Menu);
+        startupState = StartupWaitForHACompletion;
+      #else
+        lcdMenu.setCursor(0, 0);
+        lcdMenu.printMenu("Finding GPS...");
+        lcdMenu.setActive(HA_Menu);
+        startupState = StartupWaitForHACompletion;
+        /*while (Serial2.available()) {
+          if (gps.location.lng() != 0) {
+            ha.set(1);
+            //Sidereal::calculateByGPS(&gps).getHours())
+            //EPROMStore::Storage()->update(1, mount.HA().set();
+            //EPROMStore::Storage()->update(1, mount.HA().getHours());
+          }
+        }*/
+      #endif
     }
     break;
 
@@ -138,7 +131,6 @@ bool processStartupKeys() {
 
 
 void printStartupMenu() {
-
   switch (startupState) {
     case StartupIsInHomePosition: {
       //              0123456789012345

@@ -17,8 +17,8 @@
   #include <TMCStepper.h>
 #endif
 #if USE_GPS == 1
-#include <TinyGPS++.h>
-TinyGPSPlus gps;
+  #include <TinyGPS++.h>
+  TinyGPSPlus gps;
 #endif
 
 #define HALFSTEP 8

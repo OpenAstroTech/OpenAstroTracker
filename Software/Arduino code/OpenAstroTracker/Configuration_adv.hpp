@@ -106,7 +106,6 @@
 // LCD BUTTON TEST
 // Set this to 1 to run a key diagnostic. No tracker functions are on at all.
 #define LCD_BUTTON_TEST 0
-//
 
 
 
@@ -145,7 +144,7 @@
   #define SUPPORT_CALIBRATION          1
 
 // Set this to 1 to support INFO menu that displays various pieces of information about the mount. 
-  #define SUPPORT_INFO_DISPLAY         0
+  #define SUPPORT_INFO_DISPLAY         1
 
 // Set this to 1 to support Serial Meade LX200 protocol support
   #define SUPPORT_SERIAL_CONTROL       1
@@ -155,7 +154,6 @@
   #define USE_GPS                      0
 
 #endif  // HEADLESS_CLIENT <-- Ignore this    
-//
 
 
 
@@ -293,8 +291,6 @@ extern int RAPulleyTeeth;
 extern float RACircumference;
 extern float DECStepsPerRevolution;
 extern int DecPulleyTeeth;
-
-
 
 
 #endif // _GLOBALS_HPP

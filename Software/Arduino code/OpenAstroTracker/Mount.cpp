@@ -1807,7 +1807,7 @@ String Mount::RAString(byte type, byte active) {
 // Automatically home the mount. Only with TMC2209 in UART mode
 #if RA_DRIVER_TYPE == TMC2009_UART && DEC_DRIVER_TYPE == TMC2009_UART && USE_AUTOHOME == 1
 
-void Mount::StartFindingHomeDEC()  {
+void Mount::startFindingHomeDEC()  {
   _driverDEC->SGTHRS(10);
   _driverDEC->microsteps(16);
   _driverDEC->rms_current(700);
@@ -1830,16 +1830,13 @@ void Mount::finishFindingHomeDEC()
   while (_stepperDEC->run());
   
   setManualSlewMode(false);
-  //setHome();
-  
-  //_mountStatus |= STATUS_TRACKING;
+
   delay(100);
   
-  StartFindingHomeRA(); 
-  
+  startFindingHomeRA(); 
 }
 
-void Mount::StartFindingHomeRA()  {
+void Mount::startFindingHomeRA()  {
   _driverRA->SGTHRS(50);
   _driverRA->rms_current(1000);
   _driverRA->microsteps(FULLSTEP);

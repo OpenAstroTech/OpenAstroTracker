@@ -161,12 +161,12 @@ public:
   void setHome(bool clearZeroPos);
 
   // Auto Home with TMC2209 UART
-#if RA_DRIVER_TYPE == TMC2009_UART  
-  void StartFindingHomeRA();
-  void StartFindingHomeDEC();
-  void finishFindingHomeRA();
-  void finishFindingHomeDEC();
-#endif
+  #if RA_DRIVER_TYPE == TMC2009_UART  
+    void startFindingHomeRA();
+    void startFindingHomeDEC();
+    void finishFindingHomeRA();
+    void finishFindingHomeDEC();
+  #endif
 
   // Asynchronously parks the mount. Moves to the home position and stops all motors. 
   void park();
@@ -235,9 +235,9 @@ private:
   // Returns some combination of these flags: STATUS_PARKED, STATUS_SLEWING, STATUS_SLEWING_TO_TARGET, STATUS_SLEWING_FREE, STATUS_TRACKING, STATUS_PARKING
   byte mountStatus();
 
-#if DEBUG_LEVEL&(DEBUG_MOUNT|DEBUG_MOUNT_VERBOSE)
-  String mountStatusString();
-#endif
+  #if DEBUG_LEVEL&(DEBUG_MOUNT|DEBUG_MOUNT_VERBOSE)
+    String mountStatusString();
+  #endif
 
 
 private:
@@ -271,8 +271,8 @@ private:
   AccelStepper* _stepperDEC;
   AccelStepper* _stepperTRK;
   #if RA_DRIVER_TYPE == TMC2009_UART
-  TMC2209Stepper* _driverRA;
-  TMC2209Stepper* _driverDEC;
+    TMC2209Stepper* _driverRA;
+    TMC2209Stepper* _driverDEC;
   #endif
 
   unsigned long _guideEndTime;

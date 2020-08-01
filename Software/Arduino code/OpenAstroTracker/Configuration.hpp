@@ -4,9 +4,9 @@
 /*
   =======================================================================================================================================
 
-    Version 1.7
+    Version 1.8
 
-    1. Connect your Arduino, under tools choose the board youre using (e.g. Arduino Mega), set the right Port and set "Arduino ISP" as the Programmer.
+    1. Connect your Arduino, under tools choose the board you're using (e.g. Arduino Mega), set the right Port and set "Arduino ISP" as the Programmer.
     2. Hit upload (Ctrl-U)
 
     You might need to download the "AccelStepper" library by Mike McCauley
@@ -18,7 +18,7 @@
   =======================================================================================================================================
 */
 
-String version = "V1.7.23b";
+String version = "V1.8.00";
 
 ///////////////////////////////////////////////////////////////////////////
 // Also use Configuration_adv for further adjustments!
@@ -30,7 +30,17 @@ String version = "V1.7.23b";
 // RA stepper                                                            //
 ///////////////////////////////////////////////////////////////////////////
 // This is how many steps your stepper needs for a full rotation.
-float RAStepsPerRevolution = 400;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+#if RA_STEPPER_TYPE == STEP_28BYJ48
+  float RAStepsPerRevolution = 4096;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+  int RAspeed = 400;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+  int RAacceleration = 600;   // High speeds tend to make these cheap steppers unprecice
+#elif RA_STEPPER_TYPE == STEP_NEMA17
+  float RAStepsPerRevolution = 400;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+  int RAspeed = 1200;          // You can change the speed and acceleration of the steppers here. Max. 
+  int RAacceleration = 6000;
+#else
+  #error New RA Stepper type? Define steps per stepper pulley revolution here...
+#endif
 
 // Your RA pulley tooth count:
 int RAPulleyTeeth = 16;
@@ -38,25 +48,26 @@ int RAPulleyTeeth = 16;
 // the Circumference of the RA wheel.  V1 = 1057.1  |  V2 = 1131 
 float RACircumference = 1131.0;
 
-int RAspeed = 1200;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
-int RAacceleration = 6000;   // High speeds tend to make these cheap steppers unprecice
 
 ///////////////////////////////////////////////////////////////////////////
 // DEC stepper                                                           //
 ///////////////////////////////////////////////////////////////////////////
 // This is how many steps your stepper needs for a full rotation.
-float DECStepsPerRevolution = 400;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+#if DEC_STEPPER_TYPE == STEP_28BYJ48
+  float DECStepsPerRevolution = 4096;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+  int DECspeed = 600;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+  int DECacceleration = 400;    // High speeds tend to make these cheap steppers unprecice
+#elif DEC_STEPPER_TYPE == STEP_NEMA17
+  float DECStepsPerRevolution = 400;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+  int DECspeed = 1500;           // You can change the speed and acceleration of the steppers here.
+  int DECacceleration = 6000;   
+#else
+  #error New DEC Stepper type? Define steps per stepper pulley revolution here...
+#endif
 
 // Your DEC pulley tooth count:
 int DecPulleyTeeth = 16;
 float DEC_Circumference = 565.5;
-
-int DECspeed = 1500;           // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
-int DECacceleration = 6000;    // High speeds tend to make these cheap steppers unprecice
-
-
-
-
 
 
 
