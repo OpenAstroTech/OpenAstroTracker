@@ -1,0 +1,1377 @@
+
+Software/Arduino code/OpenAstroTracker/.pio/build/project.checksum
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/LiquidCrystal/examples/Autoscroll/Autoscroll.ino
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/LiquidCrystal/examples/Blink/Blink.ino
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/LiquidCrystal/examples/Cursor/Cursor.ino
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/LiquidCrystal/examples/CustomCharacter/CustomCharacter.ino
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/LiquidCrystal/examples/Display/Display.ino
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/LiquidCrystal/examples/HelloWorld/HelloWorld.ino
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/LiquidCrystal/examples/Scroll/Scroll.ino
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/LiquidCrystal/examples/SerialDisplay/SerialDisplay.ino
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/LiquidCrystal/examples/setCursor/setCursor.ino
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/LiquidCrystal/examples/TextDirection/TextDirection.ino
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/LiquidCrystal/keywords.txt
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/LiquidCrystal/library.properties
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/LiquidCrystal/README.adoc
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/LiquidCrystal/src/LiquidCrystal.cpp
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/LiquidCrystal/src/LiquidCrystal.h
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/serial/.hg_archival.txt
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/serial/library.json
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/serial/serial.cpp
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/serial/serial.h
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/serial@0.0.0-alpha+sha.e1e9648cfed1/.hg_archival.txt
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/serial@0.0.0-alpha+sha.e1e9648cfed1/library.json
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/serial@0.0.0-alpha+sha.e1e9648cfed1/serial.cpp
+Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/serial@0.0.0-alpha+sha.e1e9648cfed1/serial.h
+Software/Arduino code/OpenAstroTracker/.vscode/c_cpp_properties.json
+Software/Arduino code/OpenAstroTracker/.vscode/extensions.json
+Software/Arduino code/OpenAstroTracker/.vscode/launch.json
+Software/OATMobile/.vs/OATMobile/DesignTimeBuild/.dtbcache
+Software/OATMobile/.vs/OATMobile/v16/.suo
+Software/OATMobile/.vs/OATMobile/v16/Server/sqlite3/db.lock
+Software/OATMobile/.vs/OATMobile/v16/Server/sqlite3/storage.ide
+Software/OATMobile/OATCommunications/bin/Debug/netstandard2.0/OATCommunications.deps.json
+Software/OATMobile/OATCommunications/bin/Debug/netstandard2.0/OATCommunications.dll
+Software/OATMobile/OATCommunications/bin/Debug/netstandard2.0/OATCommunications.pdb
+Software/OATMobile/OATCommunications/bin/Release/netstandard2.0/OATCommunications.deps.json
+Software/OATMobile/OATCommunications/bin/Release/netstandard2.0/OATCommunications.dll
+Software/OATMobile/OATCommunications/bin/Release/netstandard2.0/OATCommunications.pdb
+Software/OATMobile/OATCommunications/obj/Debug/netstandard2.0/OATCommunications.AssemblyInfo.cs
+Software/OATMobile/OATCommunications/obj/Debug/netstandard2.0/OATCommunications.AssemblyInfoInputs.cache
+Software/OATMobile/OATCommunications/obj/Debug/netstandard2.0/OATCommunications.assets.cache
+Software/OATMobile/OATCommunications/obj/Debug/netstandard2.0/OATCommunications.csproj.FileListAbsolute.txt
+Software/OATMobile/OATCommunications/obj/Debug/netstandard2.0/OATCommunications.csproj.Fody.CopyLocal.cache
+Software/OATMobile/OATCommunications/obj/Debug/netstandard2.0/OATCommunications.csprojAssemblyReference.cache
+Software/OATMobile/OATCommunications/obj/Debug/netstandard2.0/OATCommunications.dll
+Software/OATMobile/OATCommunications/obj/Debug/netstandard2.0/OATCommunications.pdb
+Software/OATMobile/OATCommunications/obj/OATCommunications.csproj.nuget.cache
+Software/OATMobile/OATCommunications/obj/OATCommunications.csproj.nuget.dgspec.json
+Software/OATMobile/OATCommunications/obj/OATCommunications.csproj.nuget.g.props
+Software/OATMobile/OATCommunications/obj/OATCommunications.csproj.nuget.g.targets
+Software/OATMobile/OATCommunications/obj/project.assets.json
+Software/OATMobile/OATCommunications/obj/Release/netstandard2.0/OATCommunications.AssemblyInfo.cs
+Software/OATMobile/OATCommunications/obj/Release/netstandard2.0/OATCommunications.AssemblyInfoInputs.cache
+Software/OATMobile/OATCommunications/obj/Release/netstandard2.0/OATCommunications.assets.cache
+Software/OATMobile/OATCommunications/obj/Release/netstandard2.0/OATCommunications.csproj.FileListAbsolute.txt
+Software/OATMobile/OATCommunications/obj/Release/netstandard2.0/OATCommunications.csproj.Fody.CopyLocal.cache
+Software/OATMobile/OATCommunications/obj/Release/netstandard2.0/OATCommunications.csprojAssemblyReference.cache
+Software/OATMobile/OATCommunications/obj/Release/netstandard2.0/OATCommunications.dll
+Software/OATMobile/OATCommunications/obj/Release/netstandard2.0/OATCommunications.pdb
+Software/OATMobile/OATMobile/OATMobile.Android/OATMobile.Android.csproj.user
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Debug/90/_TelemetryProps
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Debug/90/_VerifyXamarinAndroidSupportVersions.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Debug/90/aapt2.version
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Debug/90/adb.props
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Debug/90/build.props
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Debug/90/OATMobile.Android.csproj.FileListAbsolute.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Debug/90/OATMobile.Android.csprojAssemblyReference.cache
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Debug/90/packagenamingpolicy.props
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Debug/90/stamp/_CleanIntermediateIfNuGetsChange.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/OATMobile.Android.csproj.nuget.cache
+Software/OATMobile/OATMobile/OATMobile.Android/obj/OATMobile.Android.csproj.nuget.dgspec.json
+Software/OATMobile/OATMobile/OATMobile.Android/obj/OATMobile.Android.csproj.nuget.g.props
+Software/OATMobile/OATMobile/OATMobile.Android/obj/OATMobile.Android.csproj.nuget.g.targets
+Software/OATMobile/OATMobile/OATMobile.Android/obj/project.assets.json
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/_TelemetryProps
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/aapt2.version
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/adb.props
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/build.props
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/designtime/build.props
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/designtime/libraryprojectimports.cache
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/designtime/Resource.designer.cs
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/designtime/resourcepaths.cache
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/0.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/0/jl/formsviewgroup.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/1.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/1/jl/android.arch.core.common.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/10.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/10/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/10/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/10/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/10/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/10/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/11.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/11/jl/com.android.support.collections.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/aidl/android/support/v4/os/ResultReceiver.aidl
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/bin/annotations.zip
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/bin/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/bin/public.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/public.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable-hdpi-v4/notification_bg_low_normal.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable-hdpi-v4/notification_bg_low_pressed.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable-hdpi-v4/notification_bg_normal.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable-hdpi-v4/notification_bg_normal_pressed.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable-hdpi-v4/notify_panel_notification_icon_bg.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable-mdpi-v4/notification_bg_low_normal.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable-mdpi-v4/notification_bg_low_pressed.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable-mdpi-v4/notification_bg_normal.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable-mdpi-v4/notification_bg_normal_pressed.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable-mdpi-v4/notify_panel_notification_icon_bg.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable-v21/notification_action_background.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable-xhdpi-v4/notification_bg_low_normal.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable-xhdpi-v4/notification_bg_low_pressed.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable-xhdpi-v4/notification_bg_normal.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable-xhdpi-v4/notification_bg_normal_pressed.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable-xhdpi-v4/notify_panel_notification_icon_bg.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable/notification_bg.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable/notification_bg_low.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable/notification_icon_background.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/drawable/notification_tile_bg.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/layout-v16/notification_template_custom_big.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/layout-v21/notification_action.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/layout-v21/notification_action_tombstone.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/layout-v21/notification_template_custom_big.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/layout-v21/notification_template_icon_group.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/layout/notification_action.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/layout/notification_action_tombstone.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/layout/notification_template_custom_big.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/layout/notification_template_icon_group.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/layout/notification_template_part_chronometer.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/layout/notification_template_part_time.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-af/values-af.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-am/values-am.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-ar/values-ar.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-as/values-as.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-az/values-az.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-b+sr+Latn/values-b+sr+Latn.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-be/values-be.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-bg/values-bg.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-bn/values-bn.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-bs/values-bs.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-ca/values-ca.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-cs/values-cs.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-da/values-da.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-de/values-de.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-el/values-el.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-en-rAU/values-en-rAU.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-en-rCA/values-en-rCA.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-en-rGB/values-en-rGB.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-en-rIN/values-en-rIN.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-en-rXC/values-en-rXC.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-es-rUS/values-es-rUS.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-es/values-es.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-et/values-et.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-eu/values-eu.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-fa/values-fa.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-fi/values-fi.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-fr-rCA/values-fr-rCA.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-fr/values-fr.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-gl/values-gl.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-gu/values-gu.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-hi/values-hi.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-hr/values-hr.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-hu/values-hu.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-hy/values-hy.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-in/values-in.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-is/values-is.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-it/values-it.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-iw/values-iw.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-ja/values-ja.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-ka/values-ka.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-kk/values-kk.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-km/values-km.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-kn/values-kn.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-ko/values-ko.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-ky/values-ky.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-lo/values-lo.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-lt/values-lt.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-lv/values-lv.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-mk/values-mk.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-ml/values-ml.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-mn/values-mn.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-mr/values-mr.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-ms/values-ms.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-my/values-my.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-nb/values-nb.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-ne/values-ne.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-nl/values-nl.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-or/values-or.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-pa/values-pa.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-pl/values-pl.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-pt-rBR/values-pt-rBR.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-pt-rPT/values-pt-rPT.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-pt/values-pt.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-ro/values-ro.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-ru/values-ru.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-si/values-si.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-sk/values-sk.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-sl/values-sl.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-sq/values-sq.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-sr/values-sr.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-sv/values-sv.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-sw/values-sw.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-ta/values-ta.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-te/values-te.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-th/values-th.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-tl/values-tl.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-tr/values-tr.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-uk/values-uk.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-ur/values-ur.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-uz/values-uz.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-v16/values-v16.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-v21/values-v21.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-vi/values-vi.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-zh-rCN/values-zh-rCN.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-zh-rHK/values-zh-rHK.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-zh-rTW/values-zh-rTW.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values-zu/values-zu.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/12/jl/res/values/values.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/13.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/13/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/13/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/13/jl/bin/annotations.zip
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/13/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/13/jl/bin/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/13/jl/bin/public.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/13/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/13/jl/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/13/jl/public.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/13/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/13/jl/res/values/values.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/14.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/14/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/14/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/14/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/14/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/14/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/15.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/15/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/15/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/15/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/15/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/15/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/16.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/16/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/16/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/16/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/16/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/16/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/17.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/17/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/17/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/17/jl/bin/annotations.zip
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/17/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/17/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/17/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/17/jl/res/layout/browser_actions_context_menu_page.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/17/jl/res/layout/browser_actions_context_menu_row.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/17/jl/res/values/values.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/18.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/18/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/18/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/18/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/18/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/18/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/bin/annotations.zip
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/bin/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/bin/public.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/public.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/anim-v21/design_bottom_sheet_slide_in.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/anim-v21/design_bottom_sheet_slide_out.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/anim/design_bottom_sheet_slide_in.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/anim/design_bottom_sheet_slide_out.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/anim/design_snackbar_in.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/anim/design_snackbar_out.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/animator-v21/design_appbar_state_list_animator.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/animator/design_fab_hide_motion_spec.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/animator/design_fab_show_motion_spec.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/animator/mtrl_btn_state_list_anim.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/animator/mtrl_btn_unelevated_state_list_anim.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/animator/mtrl_chip_state_list_anim.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/animator/mtrl_fab_hide_motion_spec.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/animator/mtrl_fab_show_motion_spec.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/animator/mtrl_fab_transformation_sheet_collapse_spec.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/animator/mtrl_fab_transformation_sheet_expand_spec.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color-v23/design_tint_password_toggle.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/design_error.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/design_tint_password_toggle.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_bottom_nav_colored_item_tint.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_bottom_nav_item_tint.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_btn_bg_color_selector.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_btn_ripple_color.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_btn_stroke_color_selector.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_btn_text_btn_ripple_color.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_btn_text_color_selector.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_chip_background_color.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_chip_close_icon_tint.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_chip_ripple_color.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_chip_text_color.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_fab_ripple_color.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_tabs_colored_ripple_color.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_tabs_icon_color_selector.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_tabs_icon_color_selector_colored.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_tabs_legacy_text_color_selector.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_tabs_ripple_color.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/color/mtrl_text_btn_text_color_selector.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable-anydpi-v21/design_ic_visibility.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable-anydpi-v21/design_ic_visibility_off.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable-hdpi-v4/design_ic_visibility.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable-hdpi-v4/design_ic_visibility_off.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable-mdpi-v4/design_ic_visibility.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable-mdpi-v4/design_ic_visibility_off.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable-v21/avd_hide_password.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable-v21/avd_show_password.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable-v21/design_bottom_navigation_item_background.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable-v21/design_password_eye.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable-xhdpi-v4/design_ic_visibility.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable-xhdpi-v4/design_ic_visibility_off.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable-xxhdpi-v4/design_ic_visibility.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable-xxhdpi-v4/design_ic_visibility_off.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable-xxxhdpi-v4/design_ic_visibility.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable-xxxhdpi-v4/design_ic_visibility_off.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable/design_bottom_navigation_item_background.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable/design_fab_background.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable/design_password_eye.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable/design_snackbar_background.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable/ic_mtrl_chip_checked_black.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable/ic_mtrl_chip_checked_circle.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable/ic_mtrl_chip_close_circle.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable/mtrl_snackbar_background.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable/mtrl_tabs_default_indicator.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/drawable/navigation_empty_icon.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/interpolator-v21/mtrl_fast_out_linear_in.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/interpolator-v21/mtrl_fast_out_slow_in.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/interpolator-v21/mtrl_linear_out_slow_in.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/interpolator/mtrl_fast_out_linear_in.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/interpolator/mtrl_fast_out_slow_in.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/interpolator/mtrl_linear.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/interpolator/mtrl_linear_out_slow_in.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout-sw600dp-v13/design_layout_snackbar.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout-sw600dp-v13/mtrl_layout_snackbar.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout/design_bottom_navigation_item.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout/design_bottom_sheet_dialog.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout/design_layout_snackbar.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout/design_layout_snackbar_include.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout/design_layout_tab_icon.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout/design_layout_tab_text.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout/design_menu_item_action_area.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout/design_navigation_item.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout/design_navigation_item_header.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout/design_navigation_item_separator.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout/design_navigation_item_subheader.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout/design_navigation_menu.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout/design_navigation_menu_item.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout/design_text_input_password_icon.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout/mtrl_layout_snackbar.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/layout/mtrl_layout_snackbar_include.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/values-land/values-land.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/values-large-v4/values-large-v4.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/values-sw600dp-v13/values-sw600dp-v13.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/values-v21/values-v21.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/19/jl/res/values/values.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/2.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/2/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/2/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/2/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/2/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/2/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/20.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/20/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/20/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/20/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/20/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/20/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/21.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/21/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/21/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/21/jl/bin/annotations.zip
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/21/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/21/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/21/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/22.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/22/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/22/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/22/jl/bin/annotations.zip
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/22/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/22/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/22/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/23.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/23/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/23/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/23/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/23/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/23/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/24.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/24/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/24/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/24/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/24/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/24/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/25.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/25/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/25/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/25/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/25/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/25/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/aidl/android/support/v4/media/MediaDescriptionCompat.aidl
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/aidl/android/support/v4/media/MediaMetadataCompat.aidl
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/aidl/android/support/v4/media/RatingCompat.aidl
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/aidl/android/support/v4/media/session/MediaSessionCompat.aidl
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/aidl/android/support/v4/media/session/ParcelableVolumeInfo.aidl
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/aidl/android/support/v4/media/session/PlaybackStateCompat.aidl
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/bin/annotations.zip
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/bin/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/bin/public.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/public.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/res/layout/notification_media_action.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/res/layout/notification_media_cancel_action.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/res/layout/notification_template_big_media.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/res/layout/notification_template_big_media_custom.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/res/layout/notification_template_big_media_narrow.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/res/layout/notification_template_big_media_narrow_custom.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/res/layout/notification_template_lines_media.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/res/layout/notification_template_media.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/res/layout/notification_template_media_custom.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/res/values-v21/values-v21.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/res/values-v24/values-v24.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/26/jl/res/values/values.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/27.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/27/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/27/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/27/jl/bin/annotations.zip
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/27/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/27/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/27/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/28.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/28/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/28/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/28/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/28/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/28/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/29.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/29/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/29/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/29/jl/bin/annotations.zip
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/29/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/29/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/29/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/3.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/3/jl/android.arch.lifecycle.common.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/30.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/30/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/30/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/30/jl/bin/annotations.zip
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/30/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/30/jl/bin/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/30/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/30/jl/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/30/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/30/jl/res/values/values.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/31.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/31/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/31/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/31/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/31/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/31/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/bin/annotations.zip
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/bin/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/bin/public.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/public.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/anim/abc_fade_in.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/anim/abc_fade_out.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/anim/abc_grow_fade_in_from_bottom.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/anim/abc_popup_enter.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/anim/abc_popup_exit.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/anim/abc_shrink_fade_out_from_bottom.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/anim/abc_slide_in_bottom.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/anim/abc_slide_in_top.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/anim/abc_slide_out_bottom.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/anim/abc_slide_out_top.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/anim/abc_tooltip_enter.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/anim/abc_tooltip_exit.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color-v21/abc_btn_colored_borderless_text_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color-v23/abc_btn_colored_borderless_text_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color-v23/abc_btn_colored_text_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color-v23/abc_color_highlight_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color-v23/abc_tint_btn_checkable.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color-v23/abc_tint_default.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color-v23/abc_tint_edittext.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color-v23/abc_tint_seek_thumb.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color-v23/abc_tint_spinner.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color-v23/abc_tint_switch_track.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_background_cache_hint_selector_material_dark.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_background_cache_hint_selector_material_light.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_btn_colored_borderless_text_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_btn_colored_text_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_hint_foreground_material_dark.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_hint_foreground_material_light.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_primary_text_disable_only_material_dark.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_primary_text_disable_only_material_light.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_primary_text_material_dark.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_primary_text_material_light.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_search_url_text.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_secondary_text_material_dark.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_secondary_text_material_light.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_tint_btn_checkable.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_tint_default.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_tint_edittext.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_tint_seek_thumb.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_tint_spinner.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/abc_tint_switch_track.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/switch_thumb_material_dark.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/color/switch_thumb_material_light.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_btn_check_to_on_mtrl_000.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_btn_check_to_on_mtrl_015.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_btn_radio_to_on_mtrl_000.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_btn_radio_to_on_mtrl_015.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_cab_background_top_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_ic_menu_copy_mtrl_am_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_ic_menu_cut_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_ic_menu_paste_mtrl_am_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_ic_menu_selectall_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_ic_menu_share_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_ic_star_black_16dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_ic_star_black_36dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_ic_star_black_48dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_ic_star_half_black_16dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_ic_star_half_black_36dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_ic_star_half_black_48dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_list_divider_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_list_focused_holo.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_list_longpressed_holo.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_list_pressed_holo_dark.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_list_pressed_holo_light.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_list_selector_disabled_holo_dark.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_list_selector_disabled_holo_light.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_popup_background_mtrl_mult.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_scrubber_control_off_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_scrubber_track_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_spinner_mtrl_am_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_switch_track_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_tab_indicator_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_text_select_handle_left_mtrl_dark.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_text_select_handle_left_mtrl_light.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_text_select_handle_middle_mtrl_dark.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_text_select_handle_middle_mtrl_light.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_text_select_handle_right_mtrl_dark.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_text_select_handle_right_mtrl_light.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_textfield_activated_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_textfield_default_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-hdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-ldrtl-hdpi-v17/abc_ic_menu_copy_mtrl_am_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-ldrtl-hdpi-v17/abc_ic_menu_cut_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-ldrtl-hdpi-v17/abc_spinner_mtrl_am_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-ldrtl-mdpi-v17/abc_ic_menu_copy_mtrl_am_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-ldrtl-mdpi-v17/abc_ic_menu_cut_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-ldrtl-mdpi-v17/abc_spinner_mtrl_am_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-ldrtl-xhdpi-v17/abc_ic_menu_copy_mtrl_am_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-ldrtl-xhdpi-v17/abc_ic_menu_cut_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-ldrtl-xhdpi-v17/abc_spinner_mtrl_am_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-ldrtl-xxhdpi-v17/abc_ic_menu_copy_mtrl_am_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-ldrtl-xxhdpi-v17/abc_ic_menu_cut_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-ldrtl-xxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-ldrtl-xxxhdpi-v17/abc_ic_menu_copy_mtrl_am_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-ldrtl-xxxhdpi-v17/abc_ic_menu_cut_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-ldrtl-xxxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_btn_check_to_on_mtrl_000.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_btn_check_to_on_mtrl_015.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_btn_radio_to_on_mtrl_000.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_btn_radio_to_on_mtrl_015.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_cab_background_top_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_ic_menu_copy_mtrl_am_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_ic_menu_cut_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_ic_menu_paste_mtrl_am_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_ic_menu_selectall_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_ic_menu_share_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_ic_star_black_16dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_ic_star_black_36dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_ic_star_black_48dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_ic_star_half_black_16dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_ic_star_half_black_36dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_ic_star_half_black_48dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_list_divider_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_list_focused_holo.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_list_longpressed_holo.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_list_pressed_holo_dark.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_list_pressed_holo_light.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_list_selector_disabled_holo_dark.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_list_selector_disabled_holo_light.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_popup_background_mtrl_mult.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_scrubber_control_off_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_scrubber_track_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_spinner_mtrl_am_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_switch_track_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_tab_indicator_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_text_select_handle_left_mtrl_dark.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_text_select_handle_left_mtrl_light.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_text_select_handle_middle_mtrl_dark.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_text_select_handle_middle_mtrl_light.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_text_select_handle_right_mtrl_dark.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_text_select_handle_right_mtrl_light.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_textfield_activated_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_textfield_default_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-mdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-v21/abc_action_bar_item_background_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-v21/abc_btn_colored_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-v21/abc_dialog_material_background.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-v21/abc_edit_text_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-v21/abc_list_divider_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-v23/abc_control_background_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-watch-v20/abc_dialog_material_background.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_btn_check_to_on_mtrl_000.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_btn_check_to_on_mtrl_015.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_btn_radio_to_on_mtrl_000.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_btn_radio_to_on_mtrl_015.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_cab_background_top_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_ic_menu_copy_mtrl_am_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_ic_menu_cut_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_ic_menu_paste_mtrl_am_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_ic_menu_selectall_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_ic_menu_share_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_ic_star_black_16dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_ic_star_black_36dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_ic_star_black_48dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_ic_star_half_black_16dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_ic_star_half_black_36dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_ic_star_half_black_48dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_list_divider_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_list_focused_holo.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_list_longpressed_holo.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_list_pressed_holo_dark.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_list_pressed_holo_light.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_list_selector_disabled_holo_dark.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_list_selector_disabled_holo_light.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_popup_background_mtrl_mult.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_scrubber_control_off_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_scrubber_track_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_spinner_mtrl_am_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_switch_track_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_tab_indicator_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_text_select_handle_left_mtrl_dark.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_text_select_handle_left_mtrl_light.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_text_select_handle_middle_mtrl_dark.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_text_select_handle_middle_mtrl_light.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_text_select_handle_right_mtrl_dark.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_text_select_handle_right_mtrl_light.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_textfield_activated_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_textfield_default_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xhdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_btn_check_to_on_mtrl_000.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_btn_check_to_on_mtrl_015.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_btn_radio_to_on_mtrl_000.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_btn_radio_to_on_mtrl_015.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_cab_background_top_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_ic_menu_copy_mtrl_am_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_ic_menu_cut_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_ic_menu_paste_mtrl_am_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_ic_menu_selectall_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_ic_menu_share_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_ic_star_black_16dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_ic_star_black_36dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_ic_star_black_48dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_ic_star_half_black_16dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_ic_star_half_black_36dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_ic_star_half_black_48dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_list_divider_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_list_focused_holo.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_list_longpressed_holo.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_list_pressed_holo_dark.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_list_pressed_holo_light.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_list_selector_disabled_holo_dark.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_list_selector_disabled_holo_light.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_popup_background_mtrl_mult.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_scrubber_control_off_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_scrubber_track_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_spinner_mtrl_am_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_switch_track_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_tab_indicator_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_text_select_handle_left_mtrl_dark.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_text_select_handle_left_mtrl_light.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_text_select_handle_middle_mtrl_dark.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_text_select_handle_middle_mtrl_light.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_text_select_handle_right_mtrl_dark.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_text_select_handle_right_mtrl_light.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_textfield_activated_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_textfield_default_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxhdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_btn_check_to_on_mtrl_000.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_btn_check_to_on_mtrl_015.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_btn_radio_to_on_mtrl_000.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_btn_radio_to_on_mtrl_015.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_ic_menu_copy_mtrl_am_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_ic_menu_cut_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_ic_menu_paste_mtrl_am_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_ic_menu_selectall_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_ic_menu_share_mtrl_alpha.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_ic_star_black_16dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_ic_star_black_36dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_ic_star_black_48dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_ic_star_half_black_16dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_ic_star_half_black_36dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_ic_star_half_black_48dp.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_spinner_mtrl_am_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_switch_track_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_tab_indicator_mtrl_alpha.9.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_text_select_handle_left_mtrl_dark.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_text_select_handle_left_mtrl_light.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_text_select_handle_right_mtrl_dark.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable-xxxhdpi-v4/abc_text_select_handle_right_mtrl_light.png
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_btn_borderless_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_btn_check_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_btn_colored_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_btn_default_mtrl_shape.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_btn_radio_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_cab_background_internal_bg.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_cab_background_top_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_dialog_material_background.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_edit_text_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_ic_ab_back_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_ic_arrow_drop_right_black_24dp.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_ic_clear_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_ic_go_search_api_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_ic_menu_overflow_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_ic_search_api_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_ic_voice_search_api_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_item_background_holo_dark.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_item_background_holo_light.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_list_divider_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_list_selector_background_transition_holo_dark.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_list_selector_background_transition_holo_light.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_list_selector_holo_dark.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_list_selector_holo_light.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_ratingbar_indicator_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_ratingbar_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_ratingbar_small_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_seekbar_thumb_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_seekbar_tick_mark_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_seekbar_track_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_spinner_textfield_background_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_switch_thumb_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_tab_indicator_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_text_cursor_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_textfield_search_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/abc_vector_test.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/tooltip_frame_dark.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/drawable/tooltip_frame_light.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout-v26/abc_screen_toolbar.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout-watch-v20/abc_alert_dialog_button_bar_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout-watch-v20/abc_alert_dialog_title_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_action_bar_title_item.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_action_bar_up_container.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_action_menu_item_layout.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_action_menu_layout.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_action_mode_bar.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_action_mode_close_item_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_activity_chooser_view.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_activity_chooser_view_list_item.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_alert_dialog_button_bar_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_alert_dialog_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_alert_dialog_title_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_cascading_menu_item_layout.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_dialog_title_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_expanded_menu_layout.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_list_menu_item_checkbox.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_list_menu_item_icon.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_list_menu_item_layout.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_list_menu_item_radio.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_popup_menu_header_item_layout.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_popup_menu_item_layout.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_screen_content_include.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_screen_simple.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_screen_simple_overlay_action_mode.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_screen_toolbar.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_search_dropdown_item_icons_2line.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_search_view.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_select_dialog_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/abc_tooltip.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/select_dialog_item_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/select_dialog_multichoice_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/select_dialog_singlechoice_material.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/layout/support_simple_spinner_dropdown_item.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-af/values-af.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-am/values-am.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-ar/values-ar.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-as/values-as.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-az/values-az.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-b+sr+Latn/values-b+sr+Latn.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-be/values-be.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-bg/values-bg.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-bn/values-bn.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-bs/values-bs.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-ca/values-ca.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-cs/values-cs.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-da/values-da.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-de/values-de.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-el/values-el.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-en-rAU/values-en-rAU.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-en-rCA/values-en-rCA.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-en-rGB/values-en-rGB.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-en-rIN/values-en-rIN.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-en-rXC/values-en-rXC.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-es-rUS/values-es-rUS.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-es/values-es.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-et/values-et.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-eu/values-eu.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-fa/values-fa.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-fi/values-fi.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-fr-rCA/values-fr-rCA.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-fr/values-fr.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-gl/values-gl.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-gu/values-gu.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-h720dp-v13/values-h720dp-v13.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-hdpi-v4/values-hdpi-v4.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-hi/values-hi.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-hr/values-hr.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-hu/values-hu.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-hy/values-hy.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-in/values-in.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-is/values-is.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-it/values-it.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-iw/values-iw.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-ja/values-ja.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-ka/values-ka.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-kk/values-kk.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-km/values-km.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-kn/values-kn.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-ko/values-ko.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-ky/values-ky.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-land/values-land.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-large-v4/values-large-v4.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-ldltr-v21/values-ldltr-v21.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-lo/values-lo.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-lt/values-lt.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-lv/values-lv.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-mk/values-mk.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-ml/values-ml.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-mn/values-mn.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-mr/values-mr.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-ms/values-ms.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-my/values-my.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-nb/values-nb.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-ne/values-ne.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-night-v8/values-night-v8.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-nl/values-nl.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-or/values-or.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-pa/values-pa.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-pl/values-pl.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-port/values-port.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-pt-rBR/values-pt-rBR.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-pt-rPT/values-pt-rPT.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-pt/values-pt.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-ro/values-ro.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-ru/values-ru.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-si/values-si.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-sk/values-sk.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-sl/values-sl.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-sq/values-sq.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-sr/values-sr.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-sv/values-sv.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-sw/values-sw.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-sw600dp-v13/values-sw600dp-v13.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-ta/values-ta.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-te/values-te.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-th/values-th.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-tl/values-tl.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-tr/values-tr.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-uk/values-uk.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-ur/values-ur.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-uz/values-uz.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-v16/values-v16.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-v17/values-v17.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-v18/values-v18.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-v21/values-v21.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-v22/values-v22.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-v23/values-v23.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-v24/values-v24.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-v25/values-v25.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-v26/values-v26.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-v28/values-v28.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-vi/values-vi.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-watch-v20/values-watch-v20.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-watch-v21/values-watch-v21.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-xlarge-v4/values-xlarge-v4.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-zh-rCN/values-zh-rCN.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-zh-rHK/values-zh-rHK.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-zh-rTW/values-zh-rTW.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values-zu/values-zu.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/32/jl/res/values/values.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/33.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/33/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/33/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/33/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/33/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/33/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/33/jl/res/values-v23/values-v23.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/33/jl/res/values/values.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/34.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/34/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/34/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/34/jl/bin/annotations.zip
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/34/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/34/jl/bin/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/34/jl/bin/public.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/34/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/34/jl/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/34/jl/public.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/34/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/34/jl/res/values/values.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/35.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/35/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/35/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/35/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/35/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/35/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/36.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/36/jl/aidl/androidx/versionedparcelable/ParcelImpl.aidl
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/36/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/36/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/36/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/36/jl/bin/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/36/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/36/jl/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/36/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/37.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/37/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/37/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/37/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/37/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/37/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/38.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/38/jl/__res_name_case_map.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/38/jl/res/xml/xamarin_essentials_fileprovider_file_paths.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/39.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/39/jl/__res_name_case_map.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/39/jl/res/anim/enterfromleft.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/39/jl/res/anim/enterfromright.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/39/jl/res/anim/exittoleft.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/39/jl/res/anim/exittoright.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/39/jl/res/layout/bottomtablayout.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/39/jl/res/layout/flyoutcontent.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/39/jl/res/layout/rootlayout.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/39/jl/res/layout/shellcontent.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/39/jl/res/values/styles.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/4.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/4/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/4/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/4/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/4/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/4/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/5.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/5/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/5/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/5/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/5/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/5/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/6.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/6/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/6/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/6/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/6/jl/bin/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/6/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/6/jl/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/6/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/7.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/7/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/7/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/7/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/7/jl/bin/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/7/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/7/jl/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/7/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/8.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/8/jl/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/8/jl/bin/AndroidManifest.xml
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/8/jl/bin/classes.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/8/jl/bin/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/8/jl/bin/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/8/jl/proguard.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/8/jl/R.txt
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/9.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/9/jl/com.android.support.support-annotations.jar
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/lp/map.cache
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/MonoAndroid,Version=v9.0.AssemblyAttributes.cs
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/OATMobile.Android.csprojAssemblyReference.cache
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/packagenamingpolicy.props
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/stamp/_CleanIntermediateIfNuGetsChange.stamp
+Software/OATMobile/OATMobile/OATMobile.Android/obj/Release/90/stamp/_ResolveLibraryProjectImports.stamp
+Software/OATMobile/OATMobile/OATMobile.iOS/obj/iPhone/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+Software/OATMobile/OATMobile/OATMobile.iOS/obj/iPhone/Debug/OATMobile.iOS.csprojAssemblyReference.cache
+Software/OATMobile/OATMobile/OATMobile.iOS/obj/iPhone/Release/build.force
+Software/OATMobile/OATMobile/OATMobile.iOS/obj/iPhone/Release/OATMobile.iOS.csprojAssemblyReference.cache
+Software/OATMobile/OATMobile/OATMobile.iOS/obj/OATMobile.iOS.csproj.nuget.cache
+Software/OATMobile/OATMobile/OATMobile.iOS/obj/OATMobile.iOS.csproj.nuget.dgspec.json
+Software/OATMobile/OATMobile/OATMobile.iOS/obj/OATMobile.iOS.csproj.nuget.g.props
+Software/OATMobile/OATMobile/OATMobile.iOS/obj/OATMobile.iOS.csproj.nuget.g.targets
+Software/OATMobile/OATMobile/OATMobile.iOS/obj/project.assets.json
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/OATMobile.UWP.csproj.nuget.cache
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/OATMobile.UWP.csproj.nuget.dgspec.json
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/OATMobile.UWP.csproj.nuget.g.props
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/OATMobile.UWP.csproj.nuget.g.targets
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/project.assets.json
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Debug/App.g.cs
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Debug/App.g.i.cs
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Debug/MainPage.g.cs
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Debug/MainPage.g.i.cs
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Debug/Microsoft.UI.Xaml/DensityStyles/Compact.g.i.cs
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Debug/OATMobile.UWP.csprojAssemblyReference.cache
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Debug/XamlSaveStateFile.xml
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Debug/XamlTypeInfo.g.cs
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Release/App.g.cs
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Release/App.g.i.cs
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Release/build.force
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Release/MainPage.g.cs
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Release/MainPage.g.i.cs
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Release/Microsoft.UI.Xaml/DensityStyles/Compact.g.i.cs
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Release/OATMobile.UWP.csprojAssemblyReference.cache
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Release/XamlSaveStateFile.xml
+Software/OATMobile/OATMobile/OATMobile.UWP/obj/x86/Release/XamlTypeInfo.g.cs
+Software/OATMobile/OATMobile/OATMobile/bin/Release/netstandard2.0/Assets/pointing.png
+Software/OATMobile/OATMobile/OATMobile/bin/Release/netstandard2.0/Assets/pointing@2x.png
+Software/OATMobile/OATMobile/OATMobile/bin/Release/netstandard2.0/Assets/pointing@3x.png
+Software/OATMobile/OATMobile/OATMobile/bin/Release/netstandard2.0/OATCommunications.dll
+Software/OATMobile/OATMobile/OATMobile/bin/Release/netstandard2.0/OATCommunications.pdb
+Software/OATMobile/OATMobile/OATMobile/bin/Release/netstandard2.0/OATMobile.deps.json
+Software/OATMobile/OATMobile/OATMobile/bin/Release/netstandard2.0/OATMobile.dll
+Software/OATMobile/OATMobile/OATMobile/bin/Release/netstandard2.0/OATMobile.pdb
+Software/OATMobile/OATMobile/OATMobile/bin/Release/netstandard2.0/ref/OATMobile.dll
+Software/OATMobile/OATMobile/OATMobile/obj/Debug/netstandard2.0/App.xaml.g.cs
+Software/OATMobile/OATMobile/OATMobile/obj/Debug/netstandard2.0/OATMobile.AssemblyInfo.cs
+Software/OATMobile/OATMobile/OATMobile/obj/Debug/netstandard2.0/OATMobile.AssemblyInfoInputs.cache
+Software/OATMobile/OATMobile/OATMobile/obj/Debug/netstandard2.0/OATMobile.assets.cache
+Software/OATMobile/OATMobile/OATMobile/obj/Debug/netstandard2.0/OATMobile.csprojAssemblyReference.cache
+Software/OATMobile/OATMobile/OATMobile/obj/Debug/netstandard2.0/Views/MainPage.xaml.g.cs
+Software/OATMobile/OATMobile/OATMobile/obj/Debug/netstandard2.0/Views/MountCalibrationView.xaml.g.cs
+Software/OATMobile/OATMobile/OATMobile/obj/Debug/netstandard2.0/Views/MountControlView.xaml.g.cs
+Software/OATMobile/OATMobile/OATMobile/obj/Debug/netstandard2.0/Views/MountSettingsView.xaml.g.cs
+Software/OATMobile/OATMobile/OATMobile/obj/Debug/netstandard2.0/Views/MountStatusView.xaml.g.cs
+Software/OATMobile/OATMobile/OATMobile/obj/OATMobile.csproj.nuget.cache
+Software/OATMobile/OATMobile/OATMobile/obj/OATMobile.csproj.nuget.dgspec.json
+Software/OATMobile/OATMobile/OATMobile/obj/OATMobile.csproj.nuget.g.props
+Software/OATMobile/OATMobile/OATMobile/obj/OATMobile.csproj.nuget.g.targets
+Software/OATMobile/OATMobile/OATMobile/obj/project.assets.json
+Software/OATMobile/OATMobile/OATMobile/obj/Release/netstandard2.0/App.xaml.g.cs
+Software/OATMobile/OATMobile/OATMobile/obj/Release/netstandard2.0/OATMobile.AssemblyInfo.cs
+Software/OATMobile/OATMobile/OATMobile/obj/Release/netstandard2.0/OATMobile.AssemblyInfoInputs.cache
+Software/OATMobile/OATMobile/OATMobile/obj/Release/netstandard2.0/OATMobile.assets.cache
+Software/OATMobile/OATMobile/OATMobile/obj/Release/netstandard2.0/OATMobile.csproj.CopyComplete
+Software/OATMobile/OATMobile/OATMobile/obj/Release/netstandard2.0/OATMobile.csproj.FileListAbsolute.txt
+Software/OATMobile/OATMobile/OATMobile/obj/Release/netstandard2.0/OATMobile.csproj.Fody.CopyLocal.cache
+Software/OATMobile/OATMobile/OATMobile/obj/Release/netstandard2.0/OATMobile.csprojAssemblyReference.cache
+Software/OATMobile/OATMobile/OATMobile/obj/Release/netstandard2.0/OATMobile.dll
+Software/OATMobile/OATMobile/OATMobile/obj/Release/netstandard2.0/OATMobile.pdb
+Software/OATMobile/OATMobile/OATMobile/obj/Release/netstandard2.0/ref/OATMobile.dll
+Software/OATMobile/OATMobile/OATMobile/obj/Release/netstandard2.0/Views/MainPage.xaml.g.cs
+Software/OATMobile/OATMobile/OATMobile/obj/Release/netstandard2.0/Views/MountCalibrationView.xaml.g.cs
+Software/OATMobile/OATMobile/OATMobile/obj/Release/netstandard2.0/Views/MountControlView.xaml.g.cs
+Software/OATMobile/OATMobile/OATMobile/obj/Release/netstandard2.0/Views/MountSettingsView.xaml.g.cs
+Software/OATMobile/OATMobile/OATMobile/obj/Release/netstandard2.0/Views/MountStatusView.xaml.g.cs
+Software/OATMobile/OATMobile/OATMobile/obj/Release/netstandard2.0/XamlC.stamp
+Software/OpenAstroTracker ASCOM/.vs/OpenAstroTracker/v16/.suo
+Software/OpenAstroTracker ASCOM/.vs/OpenAstroTracker/v16/Server/sqlite3/db.lock
+Software/OpenAstroTracker ASCOM/.vs/OpenAstroTracker/v16/Server/sqlite3/storage.ide
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/.vs/OATCommuncations.WPF/v16/.suo
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/.vs/OATCommuncations.WPF/v16/Server/sqlite3/db.lock
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/.vs/OATCommuncations.WPF/v16/Server/sqlite3/storage.ide
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/bin/Debug/OATCommuncations.WPF.dll
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/bin/Debug/OATCommuncations.WPF.pdb
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/bin/Debug/OATCommunications.dll
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/bin/Debug/OATCommunications.pdb
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/bin/Release/OATCommuncations.WPF.dll
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/bin/Release/OATCommuncations.WPF.pdb
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/bin/Release/OATCommunications.dll
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/bin/Release/OATCommunications.pdb
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/obj/Debug/OATCommuncations.WPF.csproj.CopyComplete
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/obj/Debug/OATCommuncations.WPF.csproj.FileListAbsolute.txt
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/obj/Debug/OATCommuncations.WPF.csprojAssemblyReference.cache
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/obj/Debug/OATCommuncations.WPF.dll
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/obj/Debug/OATCommuncations.WPF.pdb
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/obj/Release/OATCommuncations.WPF.csproj.CopyComplete
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/obj/Release/OATCommuncations.WPF.csproj.FileListAbsolute.txt
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/obj/Release/OATCommuncations.WPF.csprojAssemblyReference.cache
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/obj/Release/OATCommuncations.WPF.dll
+Software/OpenAstroTracker ASCOM/OATCommuncations.WPF/obj/Release/OATCommuncations.WPF.pdb
+Software/OpenAstroTracker ASCOM/OATControl/.vs/OATControl/DesignTimeBuild/.dtbcache
+Software/OpenAstroTracker ASCOM/OATControl/.vs/OATControl/v16/.suo
+Software/OpenAstroTracker ASCOM/OATControl/.vs/OATControl/v16/Server/sqlite3/db.lock
+Software/OpenAstroTracker ASCOM/OATControl/.vs/OATControl/v16/Server/sqlite3/storage.ide
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/ASCOM.Astrometry.dll
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/ASCOM.Astrometry.xml
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/ASCOM.Exceptions.dll
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/ASCOM.Exceptions.xml
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/ASCOM.Utilities.dll
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/ASCOM.Utilities.xml
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/ControlzEx.dll
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/ControlzEx.pdb
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/MahApps.Metro.dll
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/MahApps.Metro.pdb
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/MahApps.Metro.xml
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/OATCommuncations.WPF.dll
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/OATCommuncations.WPF.pdb
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/OATCommunications.dll
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/OATCommunications.pdb
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/OATControl.exe
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/OATControl.exe.config
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/OATControl.pdb
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/PointsOfInterest.xml
+Software/OpenAstroTracker ASCOM/OATControl/bin/Debug/System.Windows.Interactivity.dll
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/ASCOM.Astrometry.dll
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/ASCOM.Astrometry.xml
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/ASCOM.Exceptions.dll
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/ASCOM.Exceptions.xml
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/ASCOM.Utilities.dll
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/ASCOM.Utilities.xml
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/ControlzEx.dll
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/ControlzEx.pdb
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/MahApps.Metro.dll
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/MahApps.Metro.pdb
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/MahApps.Metro.xml
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/OATCommuncations.WPF.dll
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/OATCommuncations.WPF.pdb
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/OATCommunications.dll
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/OATCommunications.pdb
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/OATControl.exe
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/OATControl.exe.config
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/OATControl.pdb
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/PointsOfInterest.xml
+Software/OpenAstroTracker ASCOM/OATControl/bin/Release/System.Windows.Interactivity.dll
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/App.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/App.g.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/App.g.i.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/Controls/Joystick.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/Controls/Joystick.g.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/Controls/Joystick.g.i.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/Controls/PushButton.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/Controls/PushButton.g.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/Controls/PushButton.g.i.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/DlgChooseOat.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/DlgChooseOat.g.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/DlgChooseOat.g.i.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/DlgRunPolarAlignment.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/DlgRunPolarAlignment.g.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/DlgRunPolarAlignment.g.i.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/GeneratedInternalTypeHelper.g.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/GeneratedInternalTypeHelper.g.i.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/MainWindow.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/MainWindow.g.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/MainWindow.g.i.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/OATControl.csproj.CopyComplete
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/OATControl.csproj.FileListAbsolute.txt
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/OATControl.csproj.GenerateResource.cache
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/OATControl.csprojAssemblyReference.cache
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/OATControl.exe
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/OATControl.g.resources
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/OATControl.pdb
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/OATControl.Properties.Resources.resources
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/OATControl_Content.g.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/OATControl_Content.g.i.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/OATControl_MarkupCompile.cache
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/OATControl_MarkupCompile.i.cache
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/OATControl_MarkupCompile.i.lref
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/OATControl_MarkupCompile.lref
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/Resources/GreyControls.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/Resources/RedAccent.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/Resources/RedControls.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/Resources/RedTheme.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Debug/TempPE/Properties.Resources.Designer.cs.dll
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/App.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/App.g.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/App.g.i.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/Controls/Joystick.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/Controls/Joystick.g.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/Controls/Joystick.g.i.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/Controls/PushButton.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/Controls/PushButton.g.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/Controls/PushButton.g.i.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/DlgChooseOat.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/DlgChooseOat.g.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/DlgChooseOat.g.i.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/DlgRunPolarAlignment.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/DlgRunPolarAlignment.g.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/DlgRunPolarAlignment.g.i.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/GeneratedInternalTypeHelper.g.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/GeneratedInternalTypeHelper.g.i.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/MainWindow.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/MainWindow.g.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/MainWindow.g.i.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/OATControl.csproj.CopyComplete
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/OATControl.csproj.FileListAbsolute.txt
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/OATControl.csproj.GenerateResource.cache
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/OATControl.csprojAssemblyReference.cache
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/OATControl.exe
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/OATControl.g.resources
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/OATControl.pdb
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/OATControl.Properties.Resources.resources
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/OATControl_Content.g.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/OATControl_Content.g.i.cs
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/OATControl_MarkupCompile.cache
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/OATControl_MarkupCompile.lref
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/Resources/GreyControls.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/Resources/RedAccent.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/Resources/RedControls.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/Resources/RedTheme.baml
+Software/OpenAstroTracker ASCOM/OATControl/obj/Release/TempPE/Properties.Resources.Designer.cs.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/.signature.p7s
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/ASCOM.Platform.6.4.2.nupkg
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/content/BootstrapAscomProfileStore.ps1
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/contributors.txt
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.Astrometry.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.Astrometry.xml
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.Attributes.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.Attributes.XML
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.Cache.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.Cache.xml
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.Controls.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.Controls.xml
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.DeviceInterfaces.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.DeviceInterfaces.xml
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.DriverAccess.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.DriverAccess.xml
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.Exceptions.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.Exceptions.XML
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.Internal.Extensions.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.Internal.Extensions.XML
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.SettingsProvider.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.SettingsProvider.XML
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.Utilities.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net35/ASCOM.Utilities.xml
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.Astrometry.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.Astrometry.xml
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.Attributes.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.Attributes.XML
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.Cache.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.Cache.xml
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.Controls.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.Controls.xml
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.DeviceInterfaces.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.DeviceInterfaces.xml
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.DriverAccess.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.DriverAccess.xml
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.Exceptions.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.Exceptions.XML
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.Internal.Extensions.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.Internal.Extensions.XML
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.SettingsProvider.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.SettingsProvider.XML
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.Utilities.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.Utilities.Video.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/lib/net40/ASCOM.Utilities.xml
+Software/OpenAstroTracker ASCOM/OATControl/packages/ASCOM.Platform.6.4.2/ReadMe.md
+Software/OpenAstroTracker ASCOM/OATControl/packages/ControlzEx.3.0.2.4/.signature.p7s
+Software/OpenAstroTracker ASCOM/OATControl/packages/ControlzEx.3.0.2.4/ControlzEx.3.0.2.4.nupkg
+Software/OpenAstroTracker ASCOM/OATControl/packages/ControlzEx.3.0.2.4/lib/net40/ControlzEx.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ControlzEx.3.0.2.4/lib/net40/ControlzEx.pdb
+Software/OpenAstroTracker ASCOM/OATControl/packages/ControlzEx.3.0.2.4/lib/net40/System.Windows.Interactivity.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ControlzEx.3.0.2.4/lib/net45/ControlzEx.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ControlzEx.3.0.2.4/lib/net45/ControlzEx.pdb
+Software/OpenAstroTracker ASCOM/OATControl/packages/ControlzEx.3.0.2.4/lib/net45/System.Windows.Interactivity.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ControlzEx.3.0.2.4/lib/net462/ControlzEx.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/ControlzEx.3.0.2.4/lib/net462/ControlzEx.pdb
+Software/OpenAstroTracker ASCOM/OATControl/packages/ControlzEx.3.0.2.4/lib/net462/System.Windows.Interactivity.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/MahApps.Metro.1.6.5/.signature.p7s
+Software/OpenAstroTracker ASCOM/OATControl/packages/MahApps.Metro.1.6.5/lib/net40/MahApps.Metro.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/MahApps.Metro.1.6.5/lib/net40/MahApps.Metro.pdb
+Software/OpenAstroTracker ASCOM/OATControl/packages/MahApps.Metro.1.6.5/lib/net40/MahApps.Metro.xml
+Software/OpenAstroTracker ASCOM/OATControl/packages/MahApps.Metro.1.6.5/lib/net45/MahApps.Metro.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/MahApps.Metro.1.6.5/lib/net45/MahApps.Metro.pdb
+Software/OpenAstroTracker ASCOM/OATControl/packages/MahApps.Metro.1.6.5/lib/net45/MahApps.Metro.xml
+Software/OpenAstroTracker ASCOM/OATControl/packages/MahApps.Metro.1.6.5/lib/net46/MahApps.Metro.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/MahApps.Metro.1.6.5/lib/net46/MahApps.Metro.pdb
+Software/OpenAstroTracker ASCOM/OATControl/packages/MahApps.Metro.1.6.5/lib/net46/MahApps.Metro.xml
+Software/OpenAstroTracker ASCOM/OATControl/packages/MahApps.Metro.1.6.5/lib/net47/MahApps.Metro.dll
+Software/OpenAstroTracker ASCOM/OATControl/packages/MahApps.Metro.1.6.5/lib/net47/MahApps.Metro.pdb
+Software/OpenAstroTracker ASCOM/OATControl/packages/MahApps.Metro.1.6.5/lib/net47/MahApps.Metro.xml
+Software/OpenAstroTracker ASCOM/OATControl/packages/MahApps.Metro.1.6.5/MahApps.Metro.1.6.5.nupkg
+Software/OpenAstroTracker ASCOM/OpenAstroTracker Setup.exe
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.Astrometry.dll
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.Astrometry.xml
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.Attributes.dll
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.Attributes.xml
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.Cache.dll
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.Cache.xml
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.Controls.dll
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.Controls.xml
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.DeviceInterfaces.dll
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.DeviceInterfaces.xml
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.DriverAccess.dll
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.DriverAccess.xml
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.Exceptions.dll
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.Exceptions.xml
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.Internal.Extensions.dll
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.Internal.Extensions.xml
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.OpenAstroTracker.exe
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.OpenAstroTracker.exe.config
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.OpenAstroTracker.pdb
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.SettingsProvider.dll
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.SettingsProvider.xml
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.Utilities.dll
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.Utilities.Video.dll
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/bin/Debug/ASCOM.Utilities.xml
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/obj/Debug/ASCOM.OpenAstroTracker.exe
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/obj/Debug/ASCOM.OpenAstroTracker.frmMain.resources
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/obj/Debug/ASCOM.OpenAstroTracker.pdb
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/obj/Debug/OpenAstroTracker.csproj.CopyComplete
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/obj/Debug/OpenAstroTracker.csproj.FileListAbsolute.txt
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/obj/Debug/OpenAstroTracker.csproj.GenerateResource.cache
+Software/OpenAstroTracker ASCOM/OpenAstroTracker/obj/Debug/OpenAstroTracker.csprojAssemblyReference.cache
+Software/OpenAstroTracker ASCOM/TelescopeDriver/obj/Debug/TelescopeDriver.csprojAssemblyReference.cache
