@@ -36,6 +36,8 @@
 #define DEC_STEPS 2
 #define SPEED_FACTOR_DECIMALS 3
 #define BACKLASH_CORRECTION 4
+#define AZIMUTH_STEPS 5
+#define ALTITUDE_STEPS 6
 
 //////////////////////////////////////////////////////////////////
 //
@@ -60,6 +62,11 @@ public:
 #endif
 #if DEC_STEPPER_TYPE == STEP_NEMA17
     void configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration);
+#endif
+
+#if AZIMUTH_ALTITUDE_MOTORS == 1
+  void configureAzStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
+  void configureAltStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
 #endif
 
   // Configure the RA Driver (TMC2209 UART only)
@@ -201,6 +208,9 @@ public:
   // Set the speed of the given motor
   void setSpeed(int which, float speed);
 
+  // Support for moving the mount in azimuth and altitude (requires extra hardware)
+  void moveBy(int direction, float arcMinutes);
+
   // Set the number of steps to use for backlash correction
   void setBacklashCorrection(int steps);
 
@@ -273,6 +283,10 @@ private:
   #if RA_DRIVER_TYPE == TMC2009_UART
     TMC2209Stepper* _driverRA;
     TMC2209Stepper* _driverDEC;
+  #endif  
+  #if AZIMUTH_ALTITUDE_MOTORS == 1
+    AccelStepper* _stepperAZ;
+    AccelStepper* _stepperALT;
   #endif
 
   unsigned long _guideEndTime;

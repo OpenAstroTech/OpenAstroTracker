@@ -62,6 +62,18 @@
     #define DECmotorPin1  DEC_STEP_PIN
     #define DECmotorPin2  DEC_DIR_PIN
 #endif
+
+#if AZIMUTH_ALTITUDE_MOTORS == 1
+    #define AZmotorPin1  AZ_IN1_PIN    
+    #define AZmotorPin3  AZ_IN2_PIN    
+    #define AZmotorPin2  AZ_IN3_PIN    
+    #define AZmotorPin4  AZ_IN4_PIN    
+
+    #define ALTmotorPin1  ALT_IN1_PIN 
+    #define ALTmotorPin3  ALT_IN2_PIN 
+    #define ALTmotorPin2  ALT_IN3_PIN 
+    #define ALTmotorPin4  ALT_IN4_PIN 
+#endif
 // End Stepper Definitions //////////////
 /////////////////////////////////////////
 

@@ -332,6 +332,24 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, 
 }
 #endif
 
+#if AZIMUTH_ALTITUDE_MOTORS == 1
+void Mount::configureAzStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
+{
+  _stepperAZ = new AccelStepper(HALFSTEP, pin1, pin2, pin3, pin4);
+  _stepperAZ->setSpeed(0);
+  _stepperAZ->setMaxSpeed(maxSpeed);
+  _stepperAZ->setAcceleration(maxAcceleration);
+}
+
+void Mount::configureAltStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
+{
+  _stepperALT = new AccelStepper(FULLSTEP, pin1, pin2, pin3, pin4);
+  _stepperALT->setSpeed(0);
+  _stepperALT->setMaxSpeed(maxSpeed);
+  _stepperALT->setAcceleration(maxAcceleration);
+}
+#endif
+
 #if DEC_STEPPER_TYPE == STEP_NEMA17
 void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration)
 {
@@ -524,6 +542,18 @@ String Mount::getMountHardwareInfo()
 
   ret += String(DecPulleyTeeth)+"|";
   ret += String(DECStepsPerRevolution)+",";
+
+  #if USE_GPS == 1
+    ret += "GPS,";
+  #else
+    ret += "NO_GPS,";
+  #endif
+
+  #if AZIMUTH_ALTITUDE_MOTORS == 1
+    ret += "AUTO_AZ_ALT,";
+  #else
+    ret += "NO_AZ_ALT,";
+  #endif
 
   return ret;
 }
@@ -977,6 +1007,25 @@ void Mount::goHome()
 
 /////////////////////////////////
 //
+// moveBy
+//
+/////////////////////////////////
+void Mount::moveBy(int direction, float arcMinutes)
+{
+  #if AZIMUTH_ALTITUDE_MOTORS == 1
+    if (direction == AZIMUTH_STEPS){
+      int stepsToMove = 2.0f * arcMinutes * AZIMUTH_STEPS_PER_ARC_MINUTE;
+      _stepperAZ->move(stepsToMove);
+    }
+    else if (direction == ALTITUDE_STEPS){
+      int stepsToMove = arcMinutes * ALTITUDE_STEPS_PER_ARC_MINUTE;
+      _stepperALT->move(stepsToMove);
+    }
+  #endif
+}
+
+/////////////////////////////////
+//
 // mountStatus
 //
 /////////////////////////////////
@@ -1040,6 +1089,9 @@ String Mount::getStatusString() {
   else if (isGuiding()) {
     status = "Guiding,";
   }
+  else if (isFindingHome()) {
+    status = "Homing,";
+  }
   else if (slewStatus() & SLEW_MASK_ANY) {
     if (_mountStatus & STATUS_SLEWING_TO_TARGET) {
       status = "SlewToTarget,";
@@ -1058,12 +1110,16 @@ String Mount::getStatusString() {
     status = "Idle,";
   }
 
-  String disp = "---,";
+  String disp = "-----,";
   if (_mountStatus & STATUS_SLEWING) {
     byte slew = slewStatus();
     if (slew & SLEWING_RA) disp[0] = _stepperRA->speed() < 0 ? 'R' : 'r';
     if (slew & SLEWING_DEC) disp[1] = _stepperDEC->speed() < 0 ? 'D' : 'd';
     if (slew & SLEWING_TRACKING) disp[2] = 'T';
+    #if AZIMUTH_ALTITUDE_MOTORS == 1
+    if (_stepperAZ->isRunning()) disp[3] = _stepperAZ->speed() < 0 ? 'Z' : 'z';
+    if (_stepperALT->isRunning()) disp[4] = _stepperALT->speed() < 0 ? 'A' : 'a';
+    #endif
   }
   else if (isSlewingTRK()) {
     disp[2] = 'T';
@@ -1343,6 +1399,12 @@ void Mount::interruptLoop()
       _stepperRA->run();
     }
   }
+
+  #if AZIMUTH_ALTITUDE_MOTORS == 1
+  _stepperAZ->run();
+  _stepperALT->run();
+  #endif
+
 }
 
 /////////////////////////////////
