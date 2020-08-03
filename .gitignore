@@ -1,4 +1,11 @@
-
+*.gem
+.bundle
+.ruby-version
+.jekyll-cache
+.sass-cache
+_site
+Gemfile.lock
+node_modules
 Software/Arduino code/OpenAstroTracker/.pio/build/project.checksum
 Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/LiquidCrystal/examples/Autoscroll/Autoscroll.ino
 Software/Arduino code/OpenAstroTracker/.pio/libdeps/mega2560/LiquidCrystal/examples/Blink/Blink.ino
