@@ -85,20 +85,25 @@
 // :GX#
 //      Get Mount Status
 //      Returns: string reflecting the mounts' status. The string is a comma-delimited list of statuses:
-//               Idle,--T,11219,0,927,071906,+900000,#
-//                 |   |    |   |  |     |      |    
-//                 |   |    |   |  |     |      |    
-//                 |   |    |   |  |     |      |    
-//                 |   |    |   |  |     |      +------------------ [6] The current DEC position
-//                 |   |    |   |  |     +------------------------- [5] The current RA position
-//                 |   |    |   |  +------------------------------- [4] The Tracking stepper position
-//                 |   |    |   +---------------------------------- [3] The DEC stepper position
-//                 |   |    +-------------------------------------- [2] The RA stepper position
-//                 |   +------------------------------------------- [1] The motion state. 
-//                 |                                                    First character is RA slewing state ('R' is East, 'r' is West, '-' is stopped). 
-//                 |                                                    Second character is DEC slewing state ('d' is North, 'D' is South, '-' is stopped). 
-//                 |                                                    Third character is TRK slewing state ('T' is Tracking, '-' is stopped). 
-//                 +----------------------------------------------- [0] The mount status. One of 'Idle', 'Parked', 'Parking', 'Guiding', 'SlewToTarget', 'FreeSlew', 'ManualSlew', 'Tracking'
+//               Idle,--T--,11219,0,927,071906,+900000,#
+//                 |    |     |   |  |     |      |    
+//                 |    |     |   |  |     |      |    
+//                 |    |     |   |  |     |      |    
+//                 |    |     |   |  |     |      +------------------ [6] The current DEC position
+//                 |    |     |   |  |     +------------------------- [5] The current RA position
+//                 |    |     |   |  +------------------------------- [4] The Tracking stepper position
+//                 |    |     |   +---------------------------------- [3] The DEC stepper position
+//                 |    |     +-------------------------------------- [2] The RA stepper position
+//                 |    +-------------------------------------------- [1] The motion state. 
+//                 |                                                      First character is RA slewing state ('R' is East, 'r' is West, '-' is stopped). 
+//                 |                                                      Second character is DEC slewing state ('d' is North, 'D' is South, '-' is stopped). 
+//                 |                                                      Third character is TRK slewing state ('T' is Tracking, '-' is stopped). 
+//                 |                                                      * Fourth character is AZ slewing state ('Z' and 'z' is adjusting, '-' is stopped). 
+//                 |                                                      * Fifth character is ALT slewing state ('A' and 'a' is adjusting, '-' is stopped). 
+//                 +------------------------------------------------- [0] The mount status. One of 'Idle', 'Parked', 'Parking', 'Guiding', 'SlewToTarget', 'FreeSlew', 'ManualSlew', 'Tracking', 'Homing'
+//
+//       * Az and Alt are optional. The string may only be 3 characters long
+//
 //
 // : Gt#
 //      Get Site Latitude
@@ -215,6 +220,18 @@
 //      Start slewing 
 //      This starts slewing the mount in the given direction.
 //      Where c is one of 'n', 'e', 'w', or 's'. 
+//      Returns: nothing
+//
+// :MAZn.nn#
+//      Move Azimuth 
+//      If the scope supports automated azimuth operation, move azimuth by n.nn arcminutes
+//      Where n.nn is a signed floating point number representing the number of arcminutes to move the mount left or right.
+//      Returns: nothing
+//
+// :MALn.nn#
+//      Move Altitude
+//      If the scope supports automated altitude operation, move altitude by n.nn arcminutes
+//      Where n.nn is a signed floating point number representing the number of arcminutes to raise or lower the mount.
 //      Returns: nothing
 //
 //------------------------------------------------------------------
@@ -635,6 +652,18 @@ String MeadeCommandProcessor::handleMeadeMovement(String inCmd) {
       _mount->guidePulse(direction, duration);
       return "1";
     }
+  }
+  else if (inCmd[0] == 'A') {
+    // Move Azimuth or Altitude by given arcminutes
+    // :MAZ+32.1# or :MAL-32.1#
+    float arcMinute = inCmd.substring(2).toFloat();
+    if (inCmd[1] == 'Z'){
+      _mount->moveBy(AZIMUTH_STEPS, arcMinute);
+    }
+    else if (inCmd[1] == 'L'){
+      _mount->moveBy(ALTITUDE_STEPS, arcMinute);
+    }
+    return "";
   }
   else if (inCmd[0] == 'e') {
     _mount->startSlewing(EAST);

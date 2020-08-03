@@ -329,18 +329,24 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, 
   _stepperDEC->setAcceleration(maxAcceleration);
   _maxDECSpeed = maxSpeed;
   _maxDECAcceleration = maxAcceleration;
+}
+#endif
 
-  #if AZIMUTH_MOTOR == 1
-  _stepperAZ = new AccelStepper(FULLSTEP, 38, 42, 40, 44);
-  _stepperAZ ->setSpeed(150);
-  _stepperAZ ->setMaxSpeed(300);
-  _stepperAZ->setAcceleration(400);
-  _stepperALT = new AccelStepper(FULLSTEP, 46, 50, 48, 52);
-  _stepperALT ->setSpeed(150);
-  _stepperALT ->setMaxSpeed(300);
-  _stepperALT->setAcceleration(400);
-  #endif
->>>>>>> 22be349... V1.7.25.A2 - Updates
+#if AZIMUTH_ALTITUDE_MOTORS == 1
+void Mount::configureAzStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
+{
+  _stepperAZ = new AccelStepper(HALFSTEP, pin1, pin2, pin3, pin4);
+  _stepperAZ->setSpeed(0);
+  _stepperAZ->setMaxSpeed(maxSpeed);
+  _stepperAZ->setAcceleration(maxAcceleration);
+}
+
+void Mount::configureAltStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
+{
+  _stepperALT = new AccelStepper(FULLSTEP, pin1, pin2, pin3, pin4);
+  _stepperALT->setSpeed(0);
+  _stepperALT->setMaxSpeed(maxSpeed);
+  _stepperALT->setAcceleration(maxAcceleration);
 }
 #endif
 
@@ -536,6 +542,18 @@ String Mount::getMountHardwareInfo()
 
   ret += String(DecPulleyTeeth)+"|";
   ret += String(DECStepsPerRevolution)+",";
+
+  #if USE_GPS == 1
+    ret += "GPS,";
+  #else
+    ret += "NO_GPS,";
+  #endif
+
+  #if AZIMUTH_ALTITUDE_MOTORS == 1
+    ret += "AUTO_AZ_ALT,";
+  #else
+    ret += "NO_AZ_ALT,";
+  #endif
 
   return ret;
 }
@@ -994,17 +1012,13 @@ void Mount::goHome()
 /////////////////////////////////
 void Mount::moveBy(int direction, float arcMinutes)
 {
-  #if AZIMUTH_MOTOR == 1
+  #if AZIMUTH_ALTITUDE_MOTORS == 1
     if (direction == AZIMUTH_STEPS){
-      const float azimuthArcSecondsPerStep = 3.939f;
-      const float azimuthStepsPerArcMinute = 60.0f / azimuthArcSecondsPerStep;
-      int stepsToMove = arcMinutes*azimuthStepsPerArcMinute ;
+      int stepsToMove = 2.0f * arcMinutes * AZIMUTH_STEPS_PER_ARC_MINUTE;
       _stepperAZ->move(stepsToMove);
     }
     else if (direction == ALTITUDE_STEPS){
-      const float altitudeArcSecondsPerStep = 3.939f;
-      const float altitudeStepsPerArcMinute = 60.0f / altitudeArcSecondsPerStep;
-      int stepsToMove = arcMinutes * altitudeStepsPerArcMinute ;
+      int stepsToMove = arcMinutes * ALTITUDE_STEPS_PER_ARC_MINUTE;
       _stepperALT->move(stepsToMove);
     }
   #endif
@@ -1075,6 +1089,9 @@ String Mount::getStatusString() {
   else if (isGuiding()) {
     status = "Guiding,";
   }
+  else if (isFindingHome()) {
+    status = "Homing,";
+  }
   else if (slewStatus() & SLEW_MASK_ANY) {
     if (_mountStatus & STATUS_SLEWING_TO_TARGET) {
       status = "SlewToTarget,";
@@ -1093,12 +1110,16 @@ String Mount::getStatusString() {
     status = "Idle,";
   }
 
-  String disp = "---,";
+  String disp = "-----,";
   if (_mountStatus & STATUS_SLEWING) {
     byte slew = slewStatus();
     if (slew & SLEWING_RA) disp[0] = _stepperRA->speed() < 0 ? 'R' : 'r';
     if (slew & SLEWING_DEC) disp[1] = _stepperDEC->speed() < 0 ? 'D' : 'd';
     if (slew & SLEWING_TRACKING) disp[2] = 'T';
+    #if AZIMUTH_ALTITUDE_MOTORS == 1
+    if (_stepperAZ->isRunning()) disp[3] = _stepperAZ->speed() < 0 ? 'Z' : 'z';
+    if (_stepperALT->isRunning()) disp[4] = _stepperALT->speed() < 0 ? 'A' : 'a';
+    #endif
   }
   else if (isSlewingTRK()) {
     disp[2] = 'T';
@@ -1378,15 +1399,12 @@ void Mount::interruptLoop()
       _stepperRA->run();
     }
   }
-<<<<<<< HEAD
-=======
 
-  #if AZIMUTH_MOTOR == 1
+  #if AZIMUTH_ALTITUDE_MOTORS == 1
   _stepperAZ->run();
   _stepperALT->run();
   #endif
 
->>>>>>> 22be349... V1.7.25.A2 - Updates
 }
 
 /////////////////////////////////

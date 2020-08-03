@@ -109,6 +109,32 @@
 #define LCD_BUTTON_TEST 0
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                     ///
+// HARDWARE EXTENSIONS SUPPORT SECTION ///
+//                                     ///
+//////////////////////////////////////////
+//
+// Set this to 1 if the mount has motorized Azimuth and Altitude adjustment. Set pins in configuration_pins.hpp
+#define AZIMUTH_ALTITUDE_MOTORS  0
+
+#define AZIMUTH_MAX_SPEED 500
+#define AZIMUTH_MAX_ACCEL 400
+#define AZIMUTH_ARC_SECONDS_PER_STEP (3.99985f)
+#define AZIMUTH_STEPS_PER_ARC_MINUTE (60.0f/AZIMUTH_ARC_SECONDS_PER_STEP)
+
+#define ALTITUDE_MAX_SPEED 500
+#define ALTITUDE_MAX_ACCEL 400
+#define ALTITUDE_ARC_SECONDS_PER_STEP (0.61761f)
+#define ALTITUDE_STEPS_PER_ARC_MINUTE (60.0f/ALTITUDE_ARC_SECONDS_PER_STEP)
+
+//
+// Set this to 1 if you are using a NEO6m GPS module for HA/LST and location automatic determination.
+// 
+#define USE_GPS 0
+// If supported, download the library https://github.com/mikalhart/TinyGPSPlus/releases and extract it to C:\Users\*you*\Documents\Arduino\libraries
+
+
 
 #if HEADLESS_CLIENT == 0 // <-- Ignore this line
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -149,10 +175,6 @@
 
 // Set this to 1 to support Serial Meade LX200 protocol support
   #define SUPPORT_SERIAL_CONTROL       1
-
-// Set this to 1 if you are using a NEO6m GPS module
-// Download this library https://github.com/mikalhart/TinyGPSPlus/releases and extract it to C:\Users\*you*\Documents\Arduino\libraries
-  #define USE_GPS                      0
 
 #endif  // HEADLESS_CLIENT <-- Ignore this    
 

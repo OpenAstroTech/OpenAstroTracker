@@ -13,9 +13,13 @@
 #define HIGHLIGHT_RA_STEPS 4
 #define HIGHLIGHT_DEC_STEPS 5
 #define HIGHLIGHT_BACKLASH_STEPS 6
-#define HIGHLIGHT_AZIMUTH_ADJUSTMENT 7
-#define HIGHLIGHT_ALTITUDE_ADJUSTMENT 8
-#define HIGHLIGHT_LAST 8
+#if AZIMUTH_ALTITUDE_MOTORS == 1
+  #define HIGHLIGHT_AZIMUTH_ADJUSTMENT 7
+  #define HIGHLIGHT_ALTITUDE_ADJUSTMENT 8
+  #define HIGHLIGHT_LAST 8
+#else
+  #define HIGHLIGHT_LAST 6
+#endif
 
 // Polar calibration goes through these three states:
 //  11- moving to RA and DEC beyond Polaris and waiting on confirmation that Polaris is centered
@@ -69,11 +73,7 @@ byte driftDuration = 0;
 // The number of steps to use for backlash compensation (read from the mount).
 int BacklashSteps = 0;
 
-// The speed of the Azimuth Motor (scaled from 0-100)
-int AzimuthSpeed = 0;
-int lastAzimuthSpeed = 0;
-int AltitudeSpeed = 0;
-int lastAltitudeSpeed = 0;
+// The arc minutes for the adjustment of Azimuth or Altitude
 int AzimuthMinutes = 0;
 int AltitudeMinutes = 0;
 
@@ -157,87 +157,7 @@ bool processCalibrationKeys() {
       calDelay = 150;
     }
   }
-  // else if (calState == AZIMUTH_ALTITUDE_CONTROL) {
-  //   if (currentButtonState == btnLEFT) {
-  //     // Speed up to the left
-  //     if (AzimuthSpeed < 100) {
-  //       AzimuthSpeed += 1; //0.0001;
-  //     }
-
-  //     // Accelerate speed increase over time
-  //     calDelay = max(2, 0.98 * calDelay);
-  //     checkForKeyChange = false;
-  //   }
-  //   if (currentButtonState == btnRIGHT) {
-  //     // Speed up to the right
-  //     if (AzimuthSpeed > -100) {
-  //       AzimuthSpeed -= 1; //0.0001;
-  //     }
-
-  //     // Accelerate speed increase over time
-  //     calDelay = max(2, 0.98 * calDelay);
-  //     checkForKeyChange = false;
-  //   }
-  //   // If neither Left nor Right is pressed...
-  //   if ((currentButtonState != btnRIGHT) && (currentButtonState != btnLEFT)) {
-  //     // ... decelerate at 3% per cycle
-  //     if (AzimuthSpeed > 0) {
-  //       AzimuthSpeed = adjustClamp(AzimuthSpeed, -3, 0, 100);
-  //     }
-  //     else if (AzimuthSpeed < 0) {
-  //       AzimuthSpeed = adjustClamp(AzimuthSpeed, 3, -100, 0);
-  //     }
-  //   }
-    
-  //   if (currentButtonState == btnUP) {
-  //     // Speed up to the left
-  //     if (AltitudeSpeed < 100) {
-  //       AltitudeSpeed += 1; //0.0001;
-  //     }
-
-  //     // Accelerate speed increase over time
-  //     calDelay = max(2, 0.98 * calDelay);
-  //     checkForKeyChange = false;
-  //   }
-  //   if (currentButtonState == btnDOWN) {
-  //     // Speed up to the right
-  //     if (AltitudeSpeed > -100) {
-  //       AltitudeSpeed -= 1; //0.0001;
-  //     }
-
-  //     // Accelerate speed increase over time
-  //     calDelay = max(2, 0.98 * calDelay);
-  //     checkForKeyChange = false;
-  //   }
-  //       // If neither Up nor Down is pressed...
-  //   if ((currentButtonState != btnUP) && (currentButtonState != btnDOWN)) {
-  //     // ... decelerate at 3% per cycle
-  //     if (AltitudeSpeed > 0) {
-  //       AltitudeSpeed = adjustClamp(AltitudeSpeed, -3, 0, 100);
-  //     }
-  //     else if (AltitudeSpeed < 0) {
-  //       AltitudeSpeed = adjustClamp(AltitudeSpeed, 3, -100, 0);
-  //     }
-  //   }
-
-  //   if ((AzimuthSpeed == 0) && (AltitudeSpeed == 0)) {
-  //       // Once we're stopped, set the initial key delay back to 100ms
-  //       calDelay = 100;
-  //   }
-
-  //   // If we changed speeds, tell the mount motor
-  //   if (AzimuthSpeed != lastAzimuthSpeed) {
-  //     mount.setSpeed(AZIMUTH_STEPS, 300.0 * AzimuthSpeed / 100.0);
-  //     lastAzimuthSpeed = AzimuthSpeed;
-  //   }
-
-  //   if (AltitudeSpeed != lastAltitudeSpeed) {
-  //     mount.setSpeed(ALTITUDE_STEPS, 300.0 * AltitudeSpeed / 100.0);
-  //     lastAltitudeSpeed = AltitudeSpeed;
-  //   }
-
-  //   mount.delay(calDelay);
-  // }
+  #if AZIMUTH_ALTITUDE_MOTORS == 1 
   else if (calState == AZIMUTH_ADJUSTMENT) {
      checkForKeyChange = checkProgressiveUpDown(&AzimuthMinutes);
      AzimuthMinutes = clamp(AzimuthMinutes, -60, 60); // Only allow one arc hour at a time. Azimuth range is 2 arc hours
@@ -246,6 +166,7 @@ bool processCalibrationKeys() {
      checkForKeyChange = checkProgressiveUpDown(&AltitudeMinutes);
      AltitudeMinutes = clamp(AltitudeMinutes, -60, 60); 
   }
+  #endif
   else if (calState == RA_STEP_CALIBRATION) {
     checkForKeyChange = checkProgressiveUpDown(&RAStepsPerDegree);
   }
@@ -380,18 +301,7 @@ bool processCalibrationKeys() {
       }
       break;
 
-      // case AZIMUTH_ALTITUDE_CONTROL: 
-      // {
-      //   // UP, DOWN, LEFT, and RIGHT are handled above
-      //   if (key == btnSELECT) {
-      //     // Make sure motors are stoppped!
-      //     mount.setSpeed(AZIMUTH_STEPS, 0);
-      //     mount.setSpeed(ALTITUDE_STEPS, 0);
-      //     calState = HIGHLIGHT_AZIMUTH_ALTITUDE_CONTROL;
-      //   }
-      // }
-      // break;
-
+      #if AZIMUTH_ALTITUDE_MOTORS == 1 
       case AZIMUTH_ADJUSTMENT: 
       {
         // UP, DOWN, LEFT, and RIGHT are handled above
@@ -420,7 +330,7 @@ bool processCalibrationKeys() {
         }
       }
       break;
-
+      #endif
         // case BACKLIGHT_CALIBRATION:
         // {
         //   // UP and DOWN are handled above
@@ -584,21 +494,7 @@ bool processCalibrationKeys() {
       }
       break;
 
-      // case HIGHLIGHT_AZIMUTH_ALTITUDE_CONTROL:
-      // {
-      //   if (key == btnDOWN)
-      //     gotoNextHighlightState(1);
-      //   if (key == btnUP)
-      //     gotoNextHighlightState(-1);
-      //   else if (key == btnSELECT)
-      //     calState = AZIMUTH_ALTITUDE_CONTROL;
-      //   else if (key == btnRIGHT) {
-      //     lcdMenu.setNextActive();
-      //     calState = HIGHLIGHT_FIRST;
-      //   }
-      // }
-      // break;
-
+  #if AZIMUTH_ALTITUDE_MOTORS == 1 
       case HIGHLIGHT_AZIMUTH_ADJUSTMENT :
       {
         if (key == btnDOWN)
@@ -628,7 +524,7 @@ bool processCalibrationKeys() {
         }
       }
       break;
-
+#endif
         // case HIGHLIGHT_BACKLIGHT : {
         //   if (key == btnDOWN) gotoNextHighlightState(1);
         //   if (key == btnUP) gotoNextHighlightState(-1);
@@ -666,15 +562,14 @@ void printCalibrationSubmenu()
   else if (calState == HIGHLIGHT_BACKLASH_STEPS) {
     lcdMenu.printMenu(">Backlash Adjust");
   }
-  // else if (calState == HIGHLIGHT_AZIMUTH_ALTITUDE_CONTROL) {
-  //   lcdMenu.printMenu(">Az/Alt Control");
-  // }
+  #if AZIMUTH_ALTITUDE_MOTORS == 1 
   else if (calState == HIGHLIGHT_AZIMUTH_ADJUSTMENT) {
     lcdMenu.printMenu(">Azimuth Adjst.");
   }
   else if (calState == HIGHLIGHT_ALTITUDE_ADJUSTMENT) {
     lcdMenu.printMenu(">Altitude Adjst.");
   }
+  #endif
   // else if (calState == HIGHLIGHT_BACKLIGHT) {
   //   lcdMenu.printMenu(">LCD Brightness");
   // }
@@ -708,10 +603,7 @@ void printCalibrationSubmenu()
     sprintf(scratchBuffer, "Backlash: %d", BacklashSteps);
     lcdMenu.printMenu(scratchBuffer);
   }
-  // else if (calState == AZIMUTH_ALTITUDE_CONTROL) {
-  //   sprintf(scratchBuffer, "Az/Alt: %d%% %d%%", AzimuthSpeed, AltitudeSpeed);
-  //   lcdMenu.printMenu(scratchBuffer);
-  // }
+  #if AZIMUTH_ALTITUDE_MOTORS == 1 
   else if (calState == AZIMUTH_ADJUSTMENT) {
     sprintf(scratchBuffer, "Az: %d arcmins", AzimuthMinutes);
     lcdMenu.printMenu(scratchBuffer);
@@ -720,6 +612,7 @@ void printCalibrationSubmenu()
     sprintf(scratchBuffer, "Alt: %d arcmins", AltitudeMinutes);
     lcdMenu.printMenu(scratchBuffer);
   }
+  #endif
   // else if (calState == BACKLIGHT_CALIBRATION) {
   //   sprintf(scratchBuffer, "Brightness: %d", Brightness);
   //   lcdMenu.printMenu(scratchBuffer);

@@ -36,10 +36,24 @@
     #define DEC_SERIAL_PORT Serial3  // HardwareSerial port, wire to TX2 for write-only
     #define DEC_DRIVER_ADDRESS 0b01  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
     #define DEC_DIAG_PIN 41          // only needed for autohome function
+    
+    #if AZIMUTH_ALTITUDE_MOTORS == 1
+        // Azimuth and Altitude pins
+        #define AZ_IN1_PIN 38
+        #define AZ_IN2_PIN 40
+        #define AZ_IN3_PIN 42
+        #define AZ_IN4_PIN 44
+        #define ALT_IN1_PIN 46
+        #define ALT_IN2_PIN 48
+        #define ALT_IN3_PIN 50
+        #define ALT_IN4_PIN 52
+    #endif
     //---------------
-    // MISC PINS
-    #define GPS_SERIAL_PORT Serial1
-    #define GPS_BAUD_RATE 9600
+    // MISC PINS amd SETTINGS
+    #if USE_GPS == 1
+        #define GPS_SERIAL_PORT Serial1
+        #define GPS_BAUD_RATE 9600
+    #endif
 #endif //mega
 
 ////////////////////////////////////////////////////////////////////
@@ -61,6 +75,17 @@
   #define DEC_IN2_PIN  17  
   #define DEC_IN3_PIN  5   
   #define DEC_IN4_PIN  18  
+
+#if AZIMUTH_ALTITUDE_MOTORS == 1
+  #define AZ_IN1_PIN 38
+  #define AZ_IN2_PIN 40
+  #define AZ_IN3_PIN 42
+  #define AZ_IN4_PIN 44
+  #define ALT_IN1_PIN 46
+  #define ALT_IN2_PIN 48
+  #define ALT_IN3_PIN 50
+  #define ALT_IN4_PIN 52
+#endif 
 
 // ST4 Input Pins - TODO.
     /*#define st4North      SD0 
@@ -90,6 +115,9 @@
   #define DEC_IN3_PIN 16
   #define DEC_IN4_PIN 15
 
+  #if AZIMUTH_ALTITUDE_MOTORS == 1
+    #error Azimuth / Altitude motors not currently configured/supported in ESP32
+  #endif
   #if USE_GPS == 1
     #error GPS module not currently configured/supported in ESP32
   #endif

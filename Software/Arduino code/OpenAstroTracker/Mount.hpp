@@ -36,6 +36,8 @@
 #define DEC_STEPS 2
 #define SPEED_FACTOR_DECIMALS 3
 #define BACKLASH_CORRECTION 4
+#define AZIMUTH_STEPS 5
+#define ALTITUDE_STEPS 6
 
 //////////////////////////////////////////////////////////////////
 //
@@ -60,6 +62,11 @@ public:
 #endif
 #if DEC_STEPPER_TYPE == STEP_NEMA17
     void configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration);
+#endif
+
+#if AZIMUTH_ALTITUDE_MOTORS == 1
+  void configureAzStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
+  void configureAltStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
 #endif
 
   // Configure the RA Driver (TMC2209 UART only)
@@ -273,16 +280,13 @@ private:
   AccelStepper* _stepperRA;
   AccelStepper* _stepperDEC;
   AccelStepper* _stepperTRK;
-<<<<<<< HEAD
   #if RA_DRIVER_TYPE == TMC2009_UART
     TMC2209Stepper* _driverRA;
     TMC2209Stepper* _driverDEC;
-=======
-  
-  #if AZIMUTH_MOTOR == 1
-  AccelStepper* _stepperAZ;
-  AccelStepper* _stepperALT;
->>>>>>> cfb64d3... V1.7.25.A3 - Updates
+  #endif  
+  #if AZIMUTH_ALTITUDE_MOTORS == 1
+    AccelStepper* _stepperAZ;
+    AccelStepper* _stepperALT;
   #endif
 
   unsigned long _guideEndTime;
