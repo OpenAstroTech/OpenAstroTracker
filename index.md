@@ -63,7 +63,7 @@ If you're hosting your site on GitHub Pages, [set up GitHub Pages and Jekyll loc
 
 ### Configure Just the Docs
 
-- [See configuration options]({{ site.baseurl }}{% link docs/configuration.md %})
+- [See configuration options]({{ site.baseurl }}{% link docs/before_printing/before_printing.md %})
 
 ---
 
