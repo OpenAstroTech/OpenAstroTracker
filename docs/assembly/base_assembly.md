@@ -125,5 +125,5 @@ Insert the bubble level from the bottom side
 -------------------------------------------------------------------------------------
 
 
-[Next step](OpenAstroTracker/docs/assembly/ring_assembly/){: .btn .btn-blue } 
+[Next step](../ring_assembly){: .btn .btn-blue } 
 
