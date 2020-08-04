@@ -13,7 +13,7 @@ Tip: Insert M4 screws into the part first, then attach the t nut, then insert in
 ![alt_text](../parts_assembly/image5.png)
 
 <br/><br/>
-## 1.
+### 1.
 
 Parts: 2x 300mm Aluminum extrusion, b3_2020adapter
 
@@ -22,6 +22,8 @@ Parts: 2x 300mm Aluminum extrusion, b3_2020adapter
 
 
 Push the two extrusions on the adapter. This might take some force. The side where the hole is small is UP.
+
+-------------------------------------------------------------------------------------
 
 <br/><br/>
 ### 2.
@@ -34,6 +36,8 @@ Parts: 200mm aluminum extrusion, M14_mount_right_2020base, 3x M4x12 & 3x T nuts
 
 
 Dont screw the screws in tight yet, this is just to make sure the profiles are aligned properly
+
+-------------------------------------------------------------------------------------
 
 <br/><br/>
 ### 3.
@@ -55,6 +59,8 @@ Then screw the M14 mounts tight.
 
 ![alt_text](../parts_assembly/image4.png )
 
+-------------------------------------------------------------------------------------
+
 <br/><br/>
 ### 4.
 
@@ -72,6 +78,8 @@ Your rollmounts may look different depending on the latitude version youre using
 
 ![alt_text](../parts_assembly/image8.png )
 
+-------------------------------------------------------------------------------------
+
 <br/><br/>
 ### 5.
 
@@ -80,12 +88,16 @@ Parts: 02_angle_2020base, 1x **M3**x12, 2x **M4**x12 & t nuts
 Screw the M3 screw from the bottom first, then use the M4 and t nuts
 ![alt_text](../parts_assembly/image7.png )
 
+-------------------------------------------------------------------------------------
+
 <br/><br/>
 ### 6.
 
 Parts: M14_mount_rear_2020base, 2x M4x12 & nuts
 
 ![alt_text](../parts_assembly/image6.png )
+
+-------------------------------------------------------------------------------------
 
 <br/><br/>
 ### 7.
@@ -110,6 +122,8 @@ Insert the bubble level from the bottom side
 ![alt_text](../parts_assembly/image11.png )
 
 
-Continue with Step 4) from the normal assembly:
+-------------------------------------------------------------------------------------
 
-[https://docs.google.com/document/d/1SIY562QgGByBOvTSZZXaPCyijh-XW2PGFeIr0UYt3BY/edit?usp=sharing](https://docs.google.com/document/d/1SIY562QgGByBOvTSZZXaPCyijh-XW2PGFeIr0UYt3BY/edit?usp=sharing)
+
+[Next step](/docs/assembly/ring_assembly/){: .btn .btn-blue } 
+
