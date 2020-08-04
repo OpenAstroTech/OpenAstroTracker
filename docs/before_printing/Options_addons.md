@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Shoppinglist
+title: Options and Addons
 parent: Before you print
 nav_order: 1
 ---
 
 
-# Shoppinglist
+# Options and Addons
