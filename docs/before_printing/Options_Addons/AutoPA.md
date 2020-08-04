@@ -12,9 +12,11 @@ The AutoPA upgrade is a work-in-progress that allows motorized polar alignment b
 The steppers turn the OAT with an **estimated** precision of 4 arcseconds/step for Azimuth, and 1 arcsecond/step for Altitude.
 
 They can be manually controlled in arcminute integers via the calibration menu on the LCD, or via LX200 commands for finer precision.
+
 # Parts List
-|Item|Quantity|
-|-|-
+
+| Item|Quantity|
+| -|-
 |28BYJ-48 stepper|2|
 |6801 bearing|4
 |6001 bearing|1
