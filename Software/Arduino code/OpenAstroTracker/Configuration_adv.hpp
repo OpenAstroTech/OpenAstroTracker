@@ -91,7 +91,7 @@
 // 
 // UPDATE TIME
 // Time in ms between LCD screen updates during slewing operations
-#define DISPLAY_UPDATE_TIME 800
+#define DISPLAY_UPDATE_TIME 200
 //
 //
 ////////////////////////////
@@ -99,7 +99,7 @@
 // HEADLESS CLIENT
 // If you do not have a LCD shield on your Arduino Uno/Mega, set this to 1 on the line below. This is
 // useful if you are always going to run the mount from a laptop anyway.
-#define HEADLESS_CLIENT 1
+#define HEADLESS_CLIENT 0
 //
 //
 ////////////////////////////
