@@ -63,7 +63,7 @@
 // INVERT AXIS
 // Set to 1 or 0 to invert motor directions
 #define INVERT_RA_DIR 0 
-#define INVERT_DEC_DIR 1
+#define INVERT_DEC_DIR 0
 //
 //
 ////////////////////////////
@@ -78,8 +78,13 @@
 // GUIDE SETTINGS
 // This is the multiplier of the normal trackingspeed that a pulse will have 
 // standard value: RA 2.2;  DEC 1.2
+#if RA_STEPPER_TYPE == STEP_28BYJ48
+#define RA_PULSE_MULTIPLIER 2.0
+#define DEC_PULSE_MULTIPLIER 1.0
+#else
 #define RA_PULSE_MULTIPLIER 1.5
-//#define DEC_PULSE_MULTIPLIER 1.2
+#define DEC_PULSE_MULTIPLIER 1.2
+#endif
 
 
 

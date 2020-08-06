@@ -854,15 +854,15 @@ void Mount::guidePulse(byte direction, int duration) {
   switch (direction) {
     case NORTH:
     _stepperDEC->setAcceleration(2500);
-    _stepperDEC->setMaxSpeed(decTrackingSpeed * 1.2);
-    _stepperDEC->setSpeed(decTrackingSpeed);
+    _stepperDEC->setMaxSpeed(decTrackingSpeed * (DEC_PULSE_MULTIPLIER + 0.2));
+    _stepperDEC->setSpeed(decTrackingSpeed * DEC_PULSE_MULTIPLIER);
     _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_DEC;
     break;
 
     case SOUTH:
     _stepperDEC->setAcceleration(2500);
-    _stepperDEC->setMaxSpeed(decTrackingSpeed * 1.2);
-    _stepperDEC->setSpeed(-decTrackingSpeed);
+    _stepperDEC->setMaxSpeed(decTrackingSpeed * (DEC_PULSE_MULTIPLIER + 0.2));
+    _stepperDEC->setSpeed(-decTrackingSpeed * DEC_PULSE_MULTIPLIER);
     _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_DEC;
     break;
 
@@ -874,8 +874,12 @@ void Mount::guidePulse(byte direction, int duration) {
 
     case EAST:
     _stepperTRK->setMaxSpeed(raTrackingSpeed * (RA_PULSE_MULTIPLIER + 0.2));
-    //_stepperTRK->setSpeed(raTrackingSpeed + (-RA_PULSE_MULTIPLIER * (raTrackingSpeed / 2.0)));
-    _stepperTRK->setSpeed(0.6 * raTrackingSpeed);
+    #if RA_STEPPER_TYPE == STEP_28BYJ48
+      _stepperTRK->setSpeed(0);
+    #else
+      // Not sure why we don't stop tracking with NEMAs as is customary.....
+      _stepperTRK->setSpeed(0.6 * raTrackingSpeed);
+    #endif
     _mountStatus |= STATUS_GUIDE_PULSE | STATUS_GUIDE_PULSE_RA;
     break;
   }
