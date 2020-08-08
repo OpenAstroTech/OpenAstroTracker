@@ -9,33 +9,33 @@
     #define RA_IN2_PIN  24
     #define RA_IN3_PIN  26
     #define RA_IN4_PIN  28
-    #define DEC_IN1_PIN 23
-    #define DEC_IN2_PIN 25
-    #define DEC_IN3_PIN 27
-    #define DEC_IN4_PIN 29
+    #define DEC_IN1_PIN 30
+    #define DEC_IN2_PIN 32
+    #define DEC_IN3_PIN 34
+    #define DEC_IN4_PIN 36
     //-----------------------
     // If using NEMA steppers
     #define RA_STEP_PIN 22  // STEP
     #define RA_DIR_PIN  24  // DIR
-    #define RA_EN_PIN   26  // Enable
-    #define RA_DIAG_PIN 28          // only needed for autohome function
+    #define RA_EN_PIN   25  // Enable
     #define RA_MS0_PIN  30, HIGH    // 
     #define RA_MS1_PIN  32, HIGH
     #define RA_MS2_PIN  34, HIGH
     //RA TMC2209 UART specific pins
     #define RA_SERIAL_PORT Serial3  // HardwareSerial port, wire to TX3 for write-only
     #define RA_DRIVER_ADDRESS 0b00  // Set by MS1/MS2. LOW/LOW in this case
+    #define RA_DIAG_PIN 40          // only needed for autohome function
 
-    #define DEC_STEP_PIN 23  // STEP
-    #define DEC_DIR_PIN  25  // DIR
-    #define DEC_EN_PIN   27  // Enable
-    #define DEC_DIAG_PIN 29          // only needed for autohome function
+    #define DEC_STEP_PIN 26  // STEP
+    #define DEC_DIR_PIN  28  // DIR
+    #define DEC_EN_PIN   29  // Enable
     #define DEC_MS0_PIN  31  // 
     #define DEC_MS1_PIN  33
     #define DEC_MS2_PIN  35
     //DEC TMC2209 UART specific pins
     #define DEC_SERIAL_PORT Serial3  // HardwareSerial port, wire to TX2 for write-only
     #define DEC_DRIVER_ADDRESS 0b01  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
+    #define DEC_DIAG_PIN 41          // only needed for autohome function
     
     #if AZIMUTH_ALTITUDE_MOTORS == 1
         // Azimuth and Altitude pins
