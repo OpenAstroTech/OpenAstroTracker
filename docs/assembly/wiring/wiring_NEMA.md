@@ -4,13 +4,23 @@ title: NEMA wiring
 grand_parent: Assembly
 parent: Wiring
 nav_order: 3
+heading_anchors: true
 ---
+
+## Table of contents
+{: .no_toc .text-delta }
+1. TOC
+{:toc}
+
+
+<br/><br/>
+## Wiring:
 
 <img src="../2209_pins.jpg" width="100%">
 
 ------------------------
 
-For UART, the DEC driver board needs to have MS1 enabled, do this by switching the '1' button to ON.
+For UART, the DEC driver board needs to have MS1 enabled, do this by switching the '1' button to ON. All others, also on the RA driver have to be OFF
 
 Be sure to have "To Arduino GND" actually connected properly to Arduino GND. It HAS to be Arduino GND, it can not be the same GND as from the stepper powersource!
 
@@ -24,6 +34,9 @@ After you have both steppers wired up, go into the code. Make sure that all nece
 - SET_MICROSTEPPING to adjust RA slew stepping
 - TRACKING_MICROSTEPPING 
 - DEC_MICROSTEPPING
+
+!! Important !!
+If you change any microstepping and you have adjusted the RA or DEC steps at any point, you need to run the EEPROM_clear sketch in File > Examples > EEPROM!
 
 These are the important settings, but there are more detailed settings in the TMC2209 UART section in Configuration_adv.
 
@@ -44,17 +57,26 @@ If it does not:
 - You may connected to the wrong UART pin on the driver. Try the other one. There are two, and some manufacturers have only one of them enabled:
 
 
-Bigtreetech / MKS:
--
+### Bigtreetech / MKS:
+
 
 
 <img src="../BTT_UARTpin.png" width="50%">
 
 
-Watterot
--
+### Watterot
+
 
 
 <img src="../Watterot_pins.png" width="50%">
 
 You will have to solder a bridge thats right beneath the two UART pins. I is 3 pads that all need a connection with each other. Then, solder a wire or pin on the top of the board to one of the UART pins
+
+
+
+<br/><br/>
+# Troubleshooting
+{: .d-inline-block }
+- Axis only turning in one direction:
+
+In Configuration_adv.hpp, find INVERT_RA/DEC_DIR and change it to either 1 or 0 for the axis in question. If the rotation is now still in the same direction than before, doubecheck you DIR wire
