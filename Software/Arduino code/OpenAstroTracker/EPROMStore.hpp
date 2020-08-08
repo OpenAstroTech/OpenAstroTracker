@@ -13,6 +13,10 @@ public:
 
   void update(int location, uint8_t value);
   uint8_t read(int location);
+
+  void updateInt16(int loByteAddr, int hiByteAddr, int16_t value);
+  int16_t readInt16(int loByteAddr, int hiByteAddr);
+
   static EPROMStore* Storage();
 };
 

@@ -39,6 +39,14 @@
 #define AZIMUTH_STEPS 5
 #define ALTITUDE_STEPS 6
 
+#define EEPROM_RA 1
+#define EEPROM_DEC 2
+#define EEPROM_SPEED 3
+#define EEPROM_BACKLASH 4
+#define EEPROM_LATITUDE 5
+#define EEPROM_LONGITUDE 6
+
+
 //////////////////////////////////////////////////////////////////
 //
 // Class that represent the OpenAstroTracker mount, with all its parameters, motors, etc.
@@ -226,6 +234,8 @@ public:
   // Get Mount configuration data
   String getMountHardwareInfo();
 
+  // Let the mount know that the system has finished booting
+  void bootComplete();
 private:
 
   // Reads values from EEPROM that configure the mount (if previously stored)
@@ -291,6 +301,7 @@ private:
 
   unsigned long _guideEndTime;
   unsigned long _lastMountPrint = 0;
+  unsigned long _lastTrackingPrint = 0;
   float _trackingSpeed;
   float _trackingSpeedCalibration;
   unsigned long _lastDisplayUpdate;
@@ -299,6 +310,7 @@ private:
   bool _stepperWasRunning;
   bool _correctForBacklash;
   bool _slewingToHome;
+  bool _bootComplete;
 };
 
 #endif

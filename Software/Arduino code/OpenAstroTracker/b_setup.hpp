@@ -279,5 +279,6 @@ void finishSetup()
     lcdMenu.updateDisplay();
   #endif // HEADLESS_CLIENT
 
+  mount.bootComplete();
   LOGV1(DEBUG_ANY, "Setup done!");
 }

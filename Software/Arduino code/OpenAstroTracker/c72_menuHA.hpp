@@ -1,11 +1,11 @@
 #pragma once
 #include "EPROMStore.hpp"
+#include "configuration_adv.hpp"
 
 #if HEADLESS_CLIENT == 0
-
+#if USE_GPS == 0
 
 bool processHAKeys() {
-#if USE_GPS == 0
   byte key;
   bool waitForRelease = false;
   if (lcdButtons.currentState() == btnUP) {
@@ -63,59 +63,15 @@ bool processHAKeys() {
   }
 
   return waitForRelease;
-  
-#else // USE_GPS = 1
-  byte key;
-  bool waitForRelease = false;
-  if (startupState == StartupWaitForHACompletion) {
-    while (GPS_SERIAL_PORT.available()) {  
-      if (gps.encode(GPS_SERIAL_PORT.read())) {
-        if (gps.location.lng() != 0) {
-
-          lcdMenu.printMenu("Acquired Pos.");
-          
-          int hHAfromLST = Sidereal::calculateByGPS(&gps).getHours() - PolarisRAHour;
-          int mHAfromLST = Sidereal::calculateByGPS(&gps).getMinutes() - PolarisRAMinute;
-          mount.setHA(DayTime(hHAfromLST, mHAfromLST, 0));
-          
-          EPROMStore::Storage()->update(1, mount.HA().getHours());
-          EPROMStore::Storage()->update(2, mount.HA().getMinutes());
-          mount.delay(500);
-          mount.setHome(true);
-          
-          startupState = StartupHAConfirmed;
-          inStartup = true;
-        }
-      }
-    }
-  }
-  if (lcdButtons.keyChanged(&key)) {
-    waitForRelease = true;
-    if (key == btnRIGHT) {
-      lcdMenu.setNextActive();
-    }
-  }
-  return 
-#endif
+ 
 }
 
 void printHASubmenu() {
-  #if USE_GPS == 0
     char scratchBuffer[20];
     sprintf(scratchBuffer, " %02dh %02dm", mount.HA().getHours(), mount.HA().getMinutes());
     scratchBuffer[HAselect * 4] = '>';
     lcdMenu.printMenu(scratchBuffer);
-  #else
-    if (startupState == StartupWaitForHACompletion) {
-      char satbuffer[20];
-      sprintf(satbuffer, "Found %02d Sats", gps.satellites.value());
-      lcdMenu.printMenu(satbuffer);
-    }
-    else {
-      char scratchBuffer[20];
-      sprintf(scratchBuffer, " %02dh %02dm", mount.HA().getHours(), mount.HA().getMinutes());
-      lcdMenu.printMenu(scratchBuffer);
-    }
-  #endif
 }
+
+#endif
 #endif

@@ -136,7 +136,6 @@ bool processCalibrationKeys() {
       if (SpeedCalibration < 32760) {  // Don't overflow 16 bit signed
         SpeedCalibration += 1; //0.0001;
         mount.setSpeedCalibration(1.0 + SpeedCalibration / 10000.0, false);
-        mount.setSpeedCalibration(1.0 + SpeedCalibration / 10000.0, false);
       }
 
       mount.delay(calDelay);

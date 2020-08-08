@@ -129,7 +129,7 @@ bool processControlKeys() {
 #endif
         {
           lcdMenu.setCursor(0, 0);
-          lcdMenu.printMenu("Set home positn?");
+          lcdMenu.printMenu("Set home pos?");
           confirmZeroPoint = true;
           waitForRelease = true;
         }

@@ -8,7 +8,6 @@
 // You add a string and an id item and this class handles the display and navigation
 // Create a new menu, using the given number of LCD display columns and rows
 LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(8, 9, 4, 5, 6, 7) {
-  //_lcd = new LiquidCrystal(8, 9, 4, 5, 6, 7);
   _lcd.begin(cols, rows);
   _numMenuItems = 0;
   _activeMenuIndex = 0;
@@ -140,9 +139,10 @@ void LcdMenu::updateDisplay() {
   _lcd.setCursor(0, 0);
   _activeRow = 0;
   _activeCol = 0;
+  int usableColumns = _columns - 4; // Leave off last four to have distance to tracking indicator
 
   // Determine where to place the active menu item. (empty space around longest item divided by two).
-  int margin = (_columns - (_longestDisplay)) / 2;
+  int margin = (usableColumns - (_longestDisplay)) / 2;
   int offsetIntoString = offsetToActive - margin;
 
   // Pad the front if we don't have enough to offset the string to the arrow locations (happens on first item(s))
@@ -152,7 +152,7 @@ void LcdMenu::updateDisplay() {
   }
 
   // Display the actual menu string
-  while ((pBufMenu < bufMenu + _columns) && (offsetIntoString < (int)menuString.length())) {
+  while ((pBufMenu < bufMenu + usableColumns) && (offsetIntoString < (int)menuString.length())) {
     *(pBufMenu++) = menuString[offsetIntoString++];
   }
 
@@ -167,6 +167,7 @@ void LcdMenu::updateDisplay() {
   setCursor(0, 1);
 }
 
+// Print the given character to the LCD, converting some special ones to our bitmaps
 void LcdMenu::printChar(char ch) {
   if (ch == '>') {
     _lcd.write(_rightArrow);
@@ -189,6 +190,12 @@ void LcdMenu::printChar(char ch) {
   else {
     _lcd.print(ch);
   }
+}
+
+// Print a character at a specific position
+void LcdMenu::printAt(int col, int row, char ch) {
+  _lcd.setCursor(col, row);
+  printChar(ch);
 }
 
 // Print a string to the LCD at the current cursor position, substituting the special arrows and padding with spaces to the end

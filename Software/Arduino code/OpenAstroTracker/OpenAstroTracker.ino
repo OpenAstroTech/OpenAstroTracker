@@ -8,6 +8,7 @@
 #include "c722_menuPOI.hpp"
 #include "c725_menuHOME.hpp"
 #include "c72_menuHA.hpp"
+#include "c72_menuHA_GPS.hpp"
 #include "c74_menuHEAT.hpp"
 #include "c75_menuCTRL.hpp"
 #include "c76_menuCAL.hpp"

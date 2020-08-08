@@ -4,7 +4,7 @@
 
 #if SUPPORT_INFO_DISPLAY == 1
 byte infoIndex = 0;
-byte maxInfoIndex = 5;
+byte maxInfoIndex = 6;
 byte subIndex = 0;
 
 bool processStatusKeys() {
@@ -81,12 +81,22 @@ void printStatusSubmenu() {
     break;
 
     case 3: {
-      sprintf(scratchBuffer, "MemAvail: %d", freeMemory());
+      float lat = fabs(mount.latitude());
+      float lng = fabs(mount.longitude());
+      const char dirLat = (mount.latitude() < 0) ? 'S' : 'N';
+      const char dirLong = (mount.longitude() < 0) ? 'W' :'E';
+      sprintf(scratchBuffer, "Loc %s%c %s%c", String(lat,1).c_str(), dirLat, String(lng,1).c_str(), dirLong);
       lcdMenu.printMenu(scratchBuffer);
     }
     break;
 
     case 4: {
+      sprintf(scratchBuffer, "MemAvail: %d", freeMemory());
+      lcdMenu.printMenu(scratchBuffer);
+    }
+    break;
+
+    case 5: {
       long now = millis();
       long msPerDay = 60L * 60 * 24 * 1000;
       int days = (int)(now / msPerDay);
@@ -97,7 +107,7 @@ void printStatusSubmenu() {
     }
     break;
 
-    case 5: {
+    case 6: {
       lcdMenu.printMenu("Firmw.: " + version);
     }
     break;

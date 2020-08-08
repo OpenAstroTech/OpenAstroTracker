@@ -135,7 +135,7 @@
 
 //
 // Set this to 1 if you are using a NEO6m GPS module for HA/LST and location automatic determination.
-// 
+// GPS uses Serial1 by default, which is pins 18/19 on Mega. Change in configuration_adv.hpp
 #define USE_GPS 0
 // If supported, download the library https://github.com/mikalhart/TinyGPSPlus/releases and extract it to C:\Users\*you*\Documents\Arduino\libraries
 
@@ -265,15 +265,6 @@
 // Debug output is useful if you are using Wifi to control the OAT or if you are issuing
 // manual commands via a terminal.
 //
-
-
-
-
-
-
-
-
-
 
 
 

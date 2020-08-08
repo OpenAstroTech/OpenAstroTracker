@@ -69,7 +69,11 @@ public:
   // Print a string to the LCD at the current cursor position, substituting the special arrows and padding with spaces to the end
   void printMenu(String line);
 
+  // Print a character at a specific position
+  void printAt(int col, int row, char ch);
+
 private:
+  // Print a single character at the current cursor location and advance cursor by one. Substitutes special chars.
   void printChar(char ch);
 
 private:
