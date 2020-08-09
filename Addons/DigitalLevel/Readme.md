@@ -1,4 +1,6 @@
 # Electronic Level
+#### Contributed by Marcel Isler
+
 ## General
 This is a replacement for the bubble level with the aluminium extrusion body.
 It uses a Gyro/Accelerometer board using the **MPU6050 chip** (e.g. https://www.amazon.com/gp/product/B019SX74TE/ref=ppx_yo_dt_b_asin_title_o02_s00?ie=UTF8&psc=1)
