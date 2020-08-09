@@ -322,6 +322,7 @@ private:
   #if AZIMUTH_ALTITUDE_MOTORS == 1
     AccelStepper* _stepperAZ;
     AccelStepper* _stepperALT;
+    bool _azAltWasRunning;
   #endif
 
   unsigned long _guideEndTime;

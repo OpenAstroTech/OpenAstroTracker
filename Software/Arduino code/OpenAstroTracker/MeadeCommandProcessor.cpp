@@ -659,10 +659,10 @@ String MeadeCommandProcessor::handleMeadeMovement(String inCmd) {
     #if AZIMUTH_ALTITUDE_MOTORS == 1
     float arcMinute = inCmd.substring(2).toFloat();
     if (inCmd[1] == 'Z'){
-      _mount->moveBy (AZIMUTH_STEPS, arcMinute);
+      _mount->moveBy(AZIMUTH_STEPS, arcMinute);
     }
     else if (inCmd[1] == 'L'){
-      //_mount->moveBy(ALTITUDE_STEPS, arcMinute);
+      _mount->moveBy(ALTITUDE_STEPS, arcMinute);
     }
     #endif
     return "";

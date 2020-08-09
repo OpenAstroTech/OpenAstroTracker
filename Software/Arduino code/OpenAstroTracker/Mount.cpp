@@ -5,6 +5,7 @@
 #include "Utility.hpp"
 #include "EPROMStore.hpp"
 #include "Sidereal.cpp"
+#include "Configuration_adv.hpp"
 #include "Configuration_pins.hpp"
 
 //mountstatus
@@ -86,6 +87,11 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
   _mountStatus = 0;
   _lastDisplayUpdate = 0;
   _stepperWasRunning = false;
+  
+  #if AZIMUTH_ALTITUDE_MOTORS == 1
+  _azAltWasRunning = false;
+  #endif
+
   _totalDECMove = 0;
   _totalRAMove = 0;
   _moveRate = 4;
@@ -1180,11 +1186,13 @@ void Mount::goHome()
 /////////////////////////////////
 void Mount::moveBy(int direction, float arcMinutes)
 {
-    if (direction == AZIMUTH_STEPS){
+    if (direction == AZIMUTH_STEPS) {
+      enableAzAltMotors();
       int stepsToMove = 2.0f * arcMinutes * AZIMUTH_STEPS_PER_ARC_MINUTE;
       _stepperAZ->move(stepsToMove);
     }
-    else if (direction == ALTITUDE_STEPS){
+    else if (direction == ALTITUDE_STEPS) {
+      enableAzAltMotors();
       int stepsToMove = arcMinutes * ALTITUDE_STEPS_PER_ARC_MINUTE;
       _stepperALT->move(stepsToMove);
     }
@@ -1623,7 +1631,20 @@ void Mount::loop() {
     _lastMountPrint = now;
   }
   #endif
-  
+
+  #if AZIMUTH_ALTITUDE_MOTORS == 1
+  if (!_stepperALT->isRunning() && !_stepperAZ->isRunning() && _azAltWasRunning)
+  {
+    // One of the motors was running last time through the loop, but not anymore, so shutdown the outputs.
+    disableAzAltMotors();
+    _azAltWasRunning = false;
+  }
+  if (_stepperALT->isRunning() || _stepperAZ->isRunning() )
+  {
+     _azAltWasRunning = true;
+  }
+  #endif
+
   #if RA_DRIVER_TYPE == TMC2209_UART && DEC_DRIVER_TYPE == TMC2209_UART && USE_AUTOHOME == 1
   if (isFindingHome()) {
     if (digitalRead(DEC_DIAG_PIN) == HIGH) {
@@ -1684,7 +1705,9 @@ void Mount::loop() {
         _currentRAStepperPosition = _stepperRA->currentPosition();
         #if RA_DRIVER_TYPE == TMC2209_UART
         _driverRA->microsteps(TRACKING_MICROSTEPPING);
-		    startSlewing(TRACKING);					   
+        if (!isParking()) {
+		      startSlewing(TRACKING);					   
+        }
         //_driverRA->en_spreadCycle(0); // only for audio feedback for quick debug
         #endif
         if (_correctForBacklash) {
