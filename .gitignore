@@ -368,3 +368,7 @@ test
 bin/
 Software/Arduino code/HW_724_TEST
 Software/Arduino code/sketch_jun08a
+
+# gh-pages stuff
+.jekyll-cache
+_site

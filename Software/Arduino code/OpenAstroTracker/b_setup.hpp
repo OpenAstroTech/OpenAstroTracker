@@ -91,14 +91,14 @@ void setup() {
       digitalWrite(RA_MS1_PIN);  // MS1
       digitalWrite(RA_MS2_PIN);  // MS2
       #endif
-    #if RA_DRIVER_TYPE == TMC2009_STANDALONE
+    #if RA_DRIVER_TYPE == TMC2209_STANDALONE
       // include TMC2209 Standalone pins
       pinMode(40, OUTPUT);
       digitalWrite(40, LOW);  // ENABLE, LOW to enable
       digitalWrite(41, HIGH);  // MS2
       digitalWrite(42, HIGH);  // MS1
       #endif
-    #if RA_DRIVER_TYPE == TMC2009_UART
+    #if RA_DRIVER_TYPE == TMC2209_UART
       // include TMC2209 UART pins  
       pinMode(RA_EN_PIN, OUTPUT);
       pinMode(RA_DIAG_PIN, INPUT);
@@ -113,14 +113,14 @@ void setup() {
       digitalWrite(46, LOW);  // MS2
       digitalWrite(44, HIGH);  // MS1
     #endif
-    #if DEC_DRIVER_TYPE == TMC2009_STANDALONE
+    #if DEC_DRIVER_TYPE == TMC2209_STANDALONE
       // include TMC2209 Standalone pins  TODO-----------------------
       //pinMode(40, OUTPUT);
       //digitalWrite(40, LOW);  // ENABLE, LOW to enable
       //digitalWrite(41, HIGH);  // MS2
       //digitalWrite(42, HIGH);  // MS1
     #endif
-    #if DEC_DRIVER_TYPE == TMC2009_UART
+    #if DEC_DRIVER_TYPE == TMC2209_UART
       // include TMC2209 UART pins  
       pinMode(DEC_EN_PIN, OUTPUT);
       pinMode(DEC_DIAG_PIN, INPUT);
@@ -210,10 +210,10 @@ void finishSetup()
     #error New stepper type? Configure it here.
   #endif
 
-  #if RA_DRIVER_TYPE == TMC2009_UART
+  #if RA_DRIVER_TYPE == TMC2209_UART
     mount.configureRAdriver(&RA_SERIAL_PORT, R_SENSE, RA_DRIVER_ADDRESS, RA_RMSCURRENT, RA_STALL_VALUE);
   #endif
-  #if DEC_DRIVER_TYPE == TMC2009_UART
+  #if DEC_DRIVER_TYPE == TMC2209_UART
     mount.configureDECdriver(&DEC_SERIAL_PORT, R_SENSE, DEC_DRIVER_ADDRESS, DEC_RMSCURRENT, DEC_STALL_VALUE);
   #endif
 

@@ -18,7 +18,7 @@
   =======================================================================================================================================
 */
 
-String version = "V1.8.11";
+String version = "V1.8.12";
 
 ///////////////////////////////////////////////////////////////////////////
 // Also use Configuration_adv for further adjustments!
@@ -59,7 +59,7 @@ float RACircumference = 1131.0;
   int DECacceleration = 400;    // High speeds tend to make these cheap steppers unprecice
 #elif DEC_STEPPER_TYPE == STEP_NEMA17
   float DECStepsPerRevolution = 400;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
-  int DECspeed = 1500;           // You can change the speed and acceleration of the steppers here.
+  int DECspeed = 1300;           // You can change the speed and acceleration of the steppers here.
   int DECacceleration = 6000;   
 #else
   #error New DEC Stepper type? Define steps per stepper pulley revolution here...

@@ -7,7 +7,7 @@
 #include "DayTime.hpp"
 #include "LcdMenu.hpp"
 
-#if RA_DRIVER_TYPE == TMC2009_UART
+#if RA_DRIVER_TYPE == TMC2209_UART
  #include <TMCStepper.h>
  // If you get an error here, download the TMCstepper library from "Tools > Manage Libraries"
 #endif
@@ -81,11 +81,11 @@ public:
 #endif
 
   // Configure the RA Driver (TMC2209 UART only)
-#if RA_DRIVER_TYPE == TMC2009_UART
+#if RA_DRIVER_TYPE == TMC2209_UART
   void configureRAdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
 #endif
   // Configure the DEC Driver (TMC2209 UART only)
-#if DEC_DRIVER_TYPE == TMC2009_UART
+#if DEC_DRIVER_TYPE == TMC2209_UART
   void configureDECdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
 #endif
 
@@ -193,7 +193,7 @@ public:
   void setHome(bool clearZeroPos);
 
   // Auto Home with TMC2209 UART
-  #if RA_DRIVER_TYPE == TMC2009_UART  
+  #if RA_DRIVER_TYPE == TMC2209_UART  
     void startFindingHomeRA();
     void startFindingHomeDEC();
     void finishFindingHomeRA();
@@ -315,7 +315,7 @@ private:
   AccelStepper* _stepperRA;
   AccelStepper* _stepperDEC;
   AccelStepper* _stepperTRK;
-  #if RA_DRIVER_TYPE == TMC2009_UART
+  #if RA_DRIVER_TYPE == TMC2209_UART
     TMC2209Stepper* _driverRA;
     TMC2209Stepper* _driverDEC;
   #endif  

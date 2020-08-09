@@ -9,7 +9,7 @@
 #include "Mount.hpp"
 #include "MeadeCommandProcessor.hpp"
 
-#if RA_DRIVER_TYPE == TMC2009_UART
+#if RA_DRIVER_TYPE == TMC2209_UART
   #include <TMCStepper.h>
 #endif
 
@@ -79,10 +79,10 @@
 
 /////////////////////////////////////////
 // Driver definitions ///////////////////
-#if RA_DRIVER_TYPE == TMC2009_STANDALONE
+#if RA_DRIVER_TYPE == TMC2209_STANDALONE
   //#define RA_EN_PIN 40  // Enable Pin
 #endif
-#if RA_DRIVER_TYPE == TMC2009_UART 
+#if RA_DRIVER_TYPE == TMC2209_UART 
   #define R_SENSE 0.11f           // 0.11 for StepStick
 #endif
 // End Driver Definitions ///////////////

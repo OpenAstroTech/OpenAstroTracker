@@ -53,7 +53,7 @@ bool processStartupKeys() {
             startupState = StartupSetHATime;
           }
           else if (isInHomePosition == NO) {
-            #if RA_DRIVER_TYPE == TMC2009_UART && USE_AUTOHOME == 1
+            #if RA_DRIVER_TYPE == TMC2209_UART && USE_AUTOHOME == 1
             mount.startFindingHomeDEC();
             if (mount.isFindingHome()) {
               startupState = StartupWaitForPoleCompletion;            

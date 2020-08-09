@@ -32,8 +32,8 @@
 // Driver selection 
 #define ULN2003_DRIVER     0
 #define GENERIC_DRIVER     1
-#define TMC2009_STANDALONE 2
-#define TMC2009_UART       3
+#define TMC2209_STANDALONE 2
+#define TMC2209_UART       3
 
 // GENERIC drivers include A4988 and any Bipolar STEP/DIR based drivers
 #define RA_DRIVER_TYPE  ULN2003_DRIVER
@@ -47,15 +47,28 @@
 #define TRACKING_MICROSTEPPING 64  // Set the MS mode for tracking only. Slew MS is set by SET_MICROSTEPPING above
 
 #define RA_RMSCURRENT 1200       // RMS current in mA. Warning: Peak current will be 1.414 times higher!! Do not exceed your steppers max current!
-#define RA_STALL_VALUE 100
-//#define RA_SPEED_MULTIPLIER 20 // This value is multiplied with the SLEW microstepping value to get the necessary speed
+#define RA_STALL_VALUE 100       // adjust this value if the RA autohoming sequence often false triggers, or triggers too late
 
-#define DEC_MICROSTEPPING 32
-#define DEC_STALL_VALUE 10
+#define DEC_SLEW_MICROSTEPPING  16  // The microstep mode used for slewing DEC
+#define DEC_GUIDE_MICROSTEPPING 64  // The microstep mode used for Guiding DEC only
+#define DEC_STALL_VALUE 10    // adjust this value if the RA autohoming sequence often false triggers, or triggers too late
 #define DEC_RMSCURRENT 1000   // RMS current in mA. Warning: Peak current will be 1.414 times higher!! Do not exceed your steppers max current!
 #define DEC_HOLDCURRENT 20    // [0, ... , 31] x/32 of the run current when standing still. 0=1/32... 31=32/32
 #define USE_AUTOHOME 0        // Autohome with TMC2209 stall detection:  ON = 1  |  OFF = 0   
 //                  ^^^ leave at 0 for now, doesnt work properly yet
+#define RA_AUDIO_FEEDBACK  0 // If one of these are set to 1, the respective driver will shut off the stealthchop mode, resulting in a audible whine
+#define DEC_AUDIO_FEEDBACK 0 // of the stepper coils. Use this to verify that UART is working properly. 
+//
+//
+//
+////////////////////////////
+//
+// GUIDE SETTINGS
+// This is the multiplier of the normal trackingspeed that a pulse will have 
+// NEMA steppers only! Doesnt affect 28BY
+// standard value: RA 2.0;  DEC 1.0
+#define RA_PULSE_MULTIPLIER 1.5
+#define DEC_PULSE_MULTIPLIER 1.0
 //
 //
 ////////////////////////////
@@ -73,21 +86,8 @@
 #define NORTHERN_HEMISPHERE 1
 //
 //
-////////////////////////////
 //
-// GUIDE SETTINGS
-// This is the multiplier of the normal trackingspeed that a pulse will have 
-// standard value: RA 2.2;  DEC 1.2
-#if RA_STEPPER_TYPE == STEP_28BYJ48
-#define RA_PULSE_MULTIPLIER 2.0
-#define DEC_PULSE_MULTIPLIER 1.0
-#else
-#define RA_PULSE_MULTIPLIER 1.5
-#define DEC_PULSE_MULTIPLIER 1.2
-#endif
-
-
-
+//
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                  ////////
 // LCD SETTINGS     ////////
