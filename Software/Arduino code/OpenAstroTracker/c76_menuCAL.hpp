@@ -465,6 +465,10 @@ bool processCalibrationKeys()
         LOGV2(DEBUG_INFO, "CAL: Set roll to %f", angles.rollAngle);
         calState = HIGHLIGHT_ROLL_LEVEL;
       }
+      else if (key == btnLEFT)
+      {
+        calState = HIGHLIGHT_ROLL_LEVEL;
+      }
       else if (key == btnRIGHT)
       {
         gotoNextMenu();
@@ -481,6 +485,10 @@ bool processCalibrationKeys()
         mount.setPitchCalibrationAngle(angles.pitchAngle);
         PitchCalibrationAngle = angles.pitchAngle;
         LOGV2(DEBUG_INFO, "CAL: Set pitch to %f", angles.pitchAngle);
+        calState = HIGHLIGHT_PITCH_LEVEL;
+      }
+      else if (key == btnLEFT)
+      {
         calState = HIGHLIGHT_PITCH_LEVEL;
       }
       else if (key == btnRIGHT)
