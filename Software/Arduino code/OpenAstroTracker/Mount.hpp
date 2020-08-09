@@ -6,6 +6,7 @@
 #include "Configuration_adv.hpp"
 #include "DayTime.hpp"
 #include "LcdMenu.hpp"
+
 #if RA_DRIVER_TYPE == TMC2009_UART
  #include <TMCStepper.h>
  // If you get an error here, download the TMCstepper library from "Tools > Manage Libraries"
@@ -45,6 +46,8 @@
 #define EEPROM_BACKLASH 4
 #define EEPROM_LATITUDE 5
 #define EEPROM_LONGITUDE 6
+#define EEPROM_PITCH_OFFSET 7
+#define EEPROM_ROLL_OFFSET 8
 
 
 //////////////////////////////////////////////////////////////////
@@ -91,6 +94,20 @@ public:
 
   // Set the current RA tracking speed factor
   void setSpeedCalibration(float val, bool saveToStorage);
+
+#if GYRO_LEVEL == 1
+  // Get the current pitch angle calibraton
+  float getPitchCalibrationAngle();
+
+  // Set the current pitch angle calibration
+  void setPitchCalibrationAngle(float angle);
+
+  // Get the current roll angle calibration
+  float getRollCalibrationAngle();
+
+  // Set the current pitch angle calibration
+  void setRollCalibrationAngle(float angle);
+#endif
 
   // Returns the number of steps the given motor turns to move one degree
   int getStepsPerDegree(int which);
@@ -216,8 +233,12 @@ public:
   // Set the speed of the given motor
   void setSpeed(int which, float speed);
 
+#if AZIMUTH_ALTITUDE_MOTORS == 1
   // Support for moving the mount in azimuth and altitude (requires extra hardware)
   void moveBy(int direction, float arcMinutes);
+  void disableAzAltMotors();
+  void enableAzAltMotors();
+#endif
 
   // Set the number of steps to use for backlash correction
   void setBacklashCorrection(int steps);
@@ -270,6 +291,10 @@ private:
   int _maxDECAcceleration;
   int _backlashCorrectionSteps;
   int _moveRate;
+#if GYRO_LEVEL == 1
+  float _pitchCalibrationAngle;
+  float _rollCalibrationAngle;
+#endif
 
   long _lastHASet;
   DayTime _LST;

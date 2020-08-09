@@ -135,8 +135,10 @@ void Mount::readConfiguration()
 //
 // EEPROM storage location 5 must be 0xBE for the mount to read any data
 // Location 4 indicates what has been stored so far: 00000000
-//                                                     ^^^^^^
-//                                                     ||||||
+//                                                   ^^^^^^^^
+//                                                   ||||||||
+//                    Roll angle offset (19/20) -----+|||||||
+//                   Pitch angle offset (17/18) ------+||||||
 //                            Longitude (14/15) -------+|||||
 //                             Latitude (12/13) --------+||||
 //                       Backlash steps (10/11) ---------+|||
@@ -200,6 +202,26 @@ void Mount::readPersistentData()
   else {
     LOGV1(DEBUG_INFO,"Mount: EEPROM: No stored value for longitude");
   }
+
+#if GYRO_LEVEL == 1
+  if ((marker & 0xFF40) == 0xBE40) {
+    uint16_t angleValue = EPROMStore::Storage()->readInt16(17, 18);
+    _pitchCalibrationAngle = (((long)angleValue) - 16384) / 100.0;
+    LOGV3(DEBUG_INFO,"Mount: EEPROM: Pitch Offset Marker OK! Pitch Offset is %x (%f)", angleValue, _pitchCalibrationAngle);
+  }
+    else{
+    LOGV1(DEBUG_INFO,"Mount: EEPROM: No stored value for Pitch Offset");
+  }
+
+  if ((marker & 0xFF80) == 0xBE80) {
+    uint16_t angleValue = EPROMStore::Storage()->readInt16(19,20);
+    _rollCalibrationAngle = (((long)angleValue) - 16384) / 100.0;
+    LOGV3(DEBUG_INFO,"Mount: EEPROM: Roll Offset Marker OK! Roll Offset is %x (%f)", angleValue, _rollCalibrationAngle);
+  }
+  else {
+    LOGV1(DEBUG_INFO,"Mount: EEPROM: No stored value for Roll Offset");
+  }
+#endif
 
   setSpeedCalibration(speed, false);
 }
@@ -278,6 +300,25 @@ void Mount::writePersistentData(int which, int val)
       LOGV2(DEBUG_INFO,"Mount: EEPROM Write: Updating Longitude to %d", val);
     }
     break;
+    case EEPROM_PITCH_OFFSET:
+    {
+      // ... set bit 7 to indicate pitch offset angle value has been written to 17/18
+      flag |= 0x40;
+      loByteLocation = 17;
+      hiByteLocation = 18;
+      LOGV2(DEBUG_INFO,"Mount: EEPROM Write: Updating Pitch Offset to %d", val);
+    }
+    break;
+    case EEPROM_ROLL_OFFSET:
+    {
+      // ... set bit 8 to indicate pitch offset angle value has been written to 19/20
+      flag |= 0x80;
+      loByteLocation = 19;
+      hiByteLocation = 20;
+      LOGV2(DEBUG_INFO,"Mount: EEPROM Write: Updating Roll Offset to %d", val);
+    }
+    break;
+
   }
 
   LOGV3(DEBUG_INFO,"Mount: EEPROM Write: New Marker is 0xBE, flag is %x (%d)", flag, flag);
@@ -491,6 +532,54 @@ void Mount::setSpeedCalibration(float val, bool saveToStorage) {
   }
 }
 
+#if GYRO_LEVEL == 1
+/////////////////////////////////
+//
+// getPitchCalibrationAngle
+//
+// The pitch value at which the mount is level
+/////////////////////////////////
+float Mount::getPitchCalibrationAngle()
+{
+  return _pitchCalibrationAngle;
+}
+
+/////////////////////////////////
+//
+// setPitchCalibrationAngle
+//
+/////////////////////////////////
+void Mount::setPitchCalibrationAngle(float angle)
+{
+    uint16_t angleValue = (angle * 100) + 16384;
+    writePersistentData(EEPROM_PITCH_OFFSET, angleValue);
+    _pitchCalibrationAngle = angle;
+}
+
+/////////////////////////////////
+//
+// getRollCalibration
+//
+// The roll value at which the mount is level
+/////////////////////////////////
+float Mount::getRollCalibrationAngle()
+{
+  return _rollCalibrationAngle;
+}
+
+/////////////////////////////////
+//
+// setRollCalibration
+//
+/////////////////////////////////
+void Mount::setRollCalibrationAngle(float angle)
+{
+    uint16_t angleValue = (angle * 100) + 16384;
+    writePersistentData(EEPROM_ROLL_OFFSET, angleValue);
+    _rollCalibrationAngle = angle;
+}
+#endif
+
 /////////////////////////////////
 //
 // getStepsPerDegree
@@ -587,6 +676,12 @@ String Mount::getMountHardwareInfo()
     ret += "AUTO_AZ_ALT,";
   #else
     ret += "NO_AZ_ALT,";
+  #endif
+
+  #if GYRO_LEVEL == 1
+    ret += "GYRO,";
+  #else
+    ret += "NO_GYRO,";
   #endif
 
   return ret;
@@ -1046,6 +1141,7 @@ void Mount::goHome()
   _slewingToHome = true;
 }
 
+#if AZIMUTH_ALTITUDE_MOTORS == 1
 /////////////////////////////////
 //
 // moveBy
@@ -1053,7 +1149,6 @@ void Mount::goHome()
 /////////////////////////////////
 void Mount::moveBy(int direction, float arcMinutes)
 {
-  #if AZIMUTH_ALTITUDE_MOTORS == 1
     if (direction == AZIMUTH_STEPS){
       int stepsToMove = 2.0f * arcMinutes * AZIMUTH_STEPS_PER_ARC_MINUTE;
       _stepperAZ->move(stepsToMove);
@@ -1062,8 +1157,34 @@ void Mount::moveBy(int direction, float arcMinutes)
       int stepsToMove = arcMinutes * ALTITUDE_STEPS_PER_ARC_MINUTE;
       _stepperALT->move(stepsToMove);
     }
-  #endif
 }
+
+/////////////////////////////////
+//
+// disableAzAltMotors
+//
+/////////////////////////////////
+void Mount::disableAzAltMotors() {
+  _stepperALT->stop();
+  _stepperAZ->stop();
+  while (_stepperALT->isRunning() || _stepperAZ->isRunning()){
+    loop();
+  }
+  _stepperALT->disableOutputs();
+  _stepperAZ->disableOutputs();
+}
+
+/////////////////////////////////
+//
+// disableAzAltMotors
+//
+/////////////////////////////////
+void Mount::enableAzAltMotors() {
+  _stepperALT->enableOutputs();
+  _stepperAZ->enableOutputs();
+}
+
+#endif
 
 /////////////////////////////////
 //
