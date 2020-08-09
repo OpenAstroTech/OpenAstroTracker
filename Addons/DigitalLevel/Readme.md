@@ -1,4 +1,4 @@
-# Electronic Level
+# Digital Level
 #### Contributed by Marcel Isler
 
 ## General
