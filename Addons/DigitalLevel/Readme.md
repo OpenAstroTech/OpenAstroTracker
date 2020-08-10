@@ -1,4 +1,4 @@
-# Digital Level
+# Digital Level (optional GPS)
 #### Contributed by Marcel Isler
 
 ## General
@@ -31,3 +31,6 @@ Before using the digital level, we need to tell the mount what horizontal is. To
 ## Usage
 When you setup the mount, go to the LCD Roll menu and use the front M14s to make it level. Press the **LEFT** button (**NOT SELECT**) to quit the menu.
 If you want to level in pitch, repeat, but this is not neccessary.
+
+## GPS support
+There is a second STL `Digital Level And GPS Holder.stl` that has a location for the GPS module. They can share wiring this way. This is a remix of Marcels holder and has nut recesses for regular M3 nuts and bolts.
