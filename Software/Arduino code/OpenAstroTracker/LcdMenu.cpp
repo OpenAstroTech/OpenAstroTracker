@@ -314,51 +314,7 @@ void LcdMenu::printMenu(String line) {}
 
 void LcdMenu::printChar(char ch) {}
 
+void LcdMenu::printAt(int col, int row, char ch) {}
+
 #endif
 
-/*
-class SubMenu {
-	
-  display() { }
-  onUp() { } 
-  onDown() { } 
-
-	}
-}
-
-class Menu {
-	List<SubMenu> subMenu
-	int activeSubIndex=0
-	UseContinuousKeys(UP|DOWN|LEFT|RIGHT)
-
-	virtual OnUp() { previousSubmenu }
-	virtual OnDown() { nextSubmenu }
-	virtual OnRight() { nextmenu }	
-	virtual OnLeft() { nextItemInSubmenu }
-	virtual OnSelect() { confirm }
-	
-	displayMenu() { }
-	
-	run(){
-		if (any continuous keys)
-		{
-			if 
-		}
-	}
-}
-
-class MenuSystem {
-	List<Menu> menus;
-	
-	run() {
-		if (!activeMenu->run())
-		{
-			activeMenu++
-		}
-	}
-}
-
-Menu RA ;
-RA.fnDisplay = [] { _lcdMenu.goto(0,1); _lcdMenu.printMenu(_mount.targetRA()); }
-RA.fnUp() = [] { }
-*/
