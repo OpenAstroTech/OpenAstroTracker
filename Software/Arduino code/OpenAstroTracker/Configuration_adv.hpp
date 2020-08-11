@@ -65,8 +65,9 @@
 //
 // GUIDE SETTINGS
 // This is the multiplier of the normal trackingspeed that a pulse will have 
-// NEMA steppers only! Doesnt affect 28BY
-// standard value: RA 2.0;  DEC 1.0
+// NEMA steppers only! Doesnt affect 28BY (which is hardcoded to 2x and 0)
+// Note that the East trackingspeed is calculated as the multiplier-1.0
+// Standard value: RA 2.0;  DEC 1.0
 #define RA_PULSE_MULTIPLIER 1.5
 #define DEC_PULSE_MULTIPLIER 1.0
 //
@@ -149,7 +150,7 @@
 #define GYRO_LEVEL 0
 
 // Set this to 1 if your gyro is mounted such that roll and pitch are in the wrong direction
-#define GYRO_AXIS_SWAP 0
+#define GYRO_AXIS_SWAP 1
 
 
 

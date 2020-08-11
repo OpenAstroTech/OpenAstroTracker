@@ -74,4 +74,18 @@ static angle_t Gyro::getCurrentAngles()
     return result;
 }
 
+static float Gyro::getCurrentTemperature()
+{
+    // Read the temperature data
+    float result = 0.0;
+    int16_t tempValue;
+    Wire.beginTransmission(MPU);
+    Wire.write(0x41); // Start with register 0x41 (TEMP_OUT_H)
+    Wire.endTransmission(false);
+    Wire.requestFrom(MPU, 2, true);             // Read 2 registers total, the temperature value is stored in 2 registers
+    tempValue = Wire.read() << 8 | Wire.read(); // Raw Temperature value
+    // Calculating the actual temperature value
+    result = float(tempValue) / 340 + 36.53;
+    return result;
+}
 #endif

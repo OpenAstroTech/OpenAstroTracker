@@ -11,7 +11,8 @@ public:
   static void startup();
   static void shutdown();
   static angle_t getCurrentAngles();
-
+  static float getCurrentTemperature();
+  
 private:
   static int16_t AcX, AcY, AcZ;
   static int16_t AcXOffset, AcYOffset, AcZOffset;
