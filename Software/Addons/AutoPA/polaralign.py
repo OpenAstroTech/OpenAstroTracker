@@ -89,13 +89,14 @@ p2DEC = sys.argv[8]
 p3RA = sys.argv[9]
 p3DEC = sys.argv[10]
 
-serialport = '/dev/ttyACM0'
+#Serial port address for Arduino, typically /dev/ttyACM0 in Astroberry, possibly /dev/ttyACM1
+serialport = sys.argv[11]
 
 result = polarcalc(mylat, mylong, myelev, time, p1RA, p1DEC, p2RA, p2DEC, p3RA, p3DEC)
 
-#Verify error correction can be handled by AutoPA hardware (assuming it is in home/centered position)
+#Verify error correction values can be handled by AutoPA hardware (assuming it is in home/centered position)
 moveAz = "N"
-if abs(result[0]) > 192:
+if abs(result[0]) > 120:
 	moveAz = input("Azimuth error may be out of bounds of hardware capabilities if not in home position. Continue? (Y/N): ") 
 else:
 	moveAz = "Y"
