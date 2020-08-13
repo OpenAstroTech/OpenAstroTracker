@@ -1,6 +1,6 @@
 # Guide scope
 
-This is an improved version of the already great OpenAstroGuider which mounts to the new aluminium base. 
+This is an improved version of the already great OpenAstroGuider which mounts to the new aluminum camera mount. 
 
 ## Whats new:
 
@@ -14,7 +14,7 @@ This is an improved version of the already great OpenAstroGuider which mounts to
 - multiple further small improvements
 
 ## What you'll need:
-- Achromatic lens with 50mm diameter and 182,8 focal lenght
+- Achromatic lens with 50mm diameter and 182,8 focal length
 - Camera sensor performing well in low light (e.g. AR0130 or IMX290). Monochrome sensor recommended.
 - 2 x M4x8 screws
 - 2 x M4 t-nuts
