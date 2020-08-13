@@ -87,6 +87,7 @@ void setup() {
     #if RA_DRIVER_TYPE == GENERIC_DRIVER
       // include A4988 microstep pins
       //#error "Define Microstep pins and delete this error."
+      digitalWrite(RA_EN_PIN, HIGH);
       digitalWrite(RA_MS0_PIN);  // MS0
       digitalWrite(RA_MS1_PIN);  // MS1
       digitalWrite(RA_MS2_PIN);  // MS2
@@ -108,10 +109,10 @@ void setup() {
   #endif
   #if DEC_STEPPER_TYPE == STEP_NEMA17  // DEC driver startup (for A4988)
     #if DEC_DRIVER_TYPE == GENERIC_DRIVER  // DEC driver startup (for A4988)
-      pinMode(45, OUTPUT);
-      digitalWrite(45, LOW);  // ENABLE
-      digitalWrite(46, LOW);  // MS2
-      digitalWrite(44, HIGH);  // MS1
+      digitalWrite(DEC_EN_PIN, HIGH);
+      digitalWrite(DEC_MS0_PIN);  // MS1
+      digitalWrite(DEC_MS1_PIN);  // MS2
+      digitalWrite(DEC_MS2_PIN);  // MS3
     #endif
     #if DEC_DRIVER_TYPE == TMC2209_STANDALONE
       // include TMC2209 Standalone pins  TODO-----------------------

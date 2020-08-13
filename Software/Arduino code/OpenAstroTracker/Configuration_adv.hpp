@@ -4,15 +4,13 @@
 #include <WString.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Some definitions.    ////
+//  Some definitions.   ////
 //                      ////
 //  DO NOT EDIT THESE   ////
 ////////////////////////////
 // Stepper motor types
 #define STEP_28BYJ48 0
 #define STEP_NEMA17 1
-
-// Driver selection 
 #define ULN2003_DRIVER     0
 #define GENERIC_DRIVER     1
 #define TMC2209_STANDALONE 2
@@ -28,8 +26,8 @@
 ////////////////////////////
 //
 // STEPPER TYPE
-#define RA_STEPPER_TYPE   STEP_28BYJ48
-#define DEC_STEPPER_TYPE  STEP_28BYJ48
+#define RA_STEPPER_TYPE   STEP_28BYJ48  //  STEP_28BYJ48  |  STEP_NEMA17
+#define DEC_STEPPER_TYPE  STEP_28BYJ48  //  Change according to the steppers you are using
 //
 //
 ////////////////////////////
@@ -37,17 +35,17 @@
 // MICROSTEPPING
 // Only affects NEMA steppers!
 // Only affects calculations, Microstepping is set by MS pins, 
-// EXCEPT for TMC2209 UART where this value actually sets the SLEW microstepping
+// !!EXCEPT for TMC2209 UART where this value actually sets the SLEW microstepping
 #define SET_MICROSTEPPING 8        // 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256
 //                                                        ^-----------------^
 //                                                         only if your driver can handle it.
 //                                                         TMC2209 can
 ////////////////////////////
 //
-
-// GENERIC drivers include A4988 and any Bipolar STEP/DIR based drivers
-#define RA_DRIVER_TYPE  ULN2003_DRIVER
-#define DEC_DRIVER_TYPE ULN2003_DRIVER
+// DRIVER SELECTION
+// GENERIC drivers include A4988 and any Bipolar STEP/DIR based drivers. Note Microstep assignments in config_pins.
+#define RA_DRIVER_TYPE  ULN2003_DRIVER  //  ULN2003_DRIVER  |  GENERIC_DRIVER  |  TMC2209_STANDALONE  |  TMC2209_UART
+#define DEC_DRIVER_TYPE ULN2003_DRIVER  //  
 //
 //
 ////////////////////////////

@@ -74,11 +74,11 @@ float DEC_Circumference = 565.5;
 // These values are needed to calculate the current position during initial alignment.
 // Use something like Stellarium to look up the RA of Polaris in JNow (on date) variant.
 // This changes slightly over weeks, so adjust every couple of months.
-// This value is from 15.Jul.2020, next adjustment suggested at end 2020
+// This value is from 13.Aug.2020, next adjustment suggested at end 2020
 // The same could be done for the DEC coordinates but they dont change significantly for the next 5 years
 byte PolarisRAHour = 2;
 byte PolarisRAMinute = 57;
-byte PolarisRASecond = 22;
+byte PolarisRASecond = 27;
 
 // Some explanations:
 

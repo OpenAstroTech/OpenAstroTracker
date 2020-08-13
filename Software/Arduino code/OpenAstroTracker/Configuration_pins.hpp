@@ -30,9 +30,9 @@
     #define DEC_DIR_PIN  25  // DIR
     #define DEC_EN_PIN   27  // Enable
     #define DEC_DIAG_PIN 29  // only needed for autohome function
-    #define DEC_MS0_PIN  31  // 
-    #define DEC_MS1_PIN  33
-    #define DEC_MS2_PIN  35
+    #define DEC_MS0_PIN  31, HIGH  // 
+    #define DEC_MS1_PIN  33, HIGH
+    #define DEC_MS2_PIN  35, HIGH
     //DEC TMC2209 UART specific pins
     #define DEC_SERIAL_PORT Serial3  // HardwareSerial port, wire to TX2 for write-only
     #define DEC_DRIVER_ADDRESS 0b01  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
