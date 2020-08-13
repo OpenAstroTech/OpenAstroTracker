@@ -1,21 +1,24 @@
 #pragma once
 
 #if HEADLESS_CLIENT == 0
+bool showTargetRA = true;
 bool processRAKeys() {
   byte key;
   bool waitForRelease = false;
   if (lcdButtons.currentState() == btnUP) {
-    if (RAselect == 0) mount.targetRA().addHours(1);
-    if (RAselect == 1) mount.targetRA().addMinutes(1);
-    if (RAselect == 2) mount.targetRA().addSeconds(1);
+    if (RAselect == 0) { mount.targetRA().addHours(1); showTargetRA = true; }
+    if (RAselect == 1) { mount.targetRA().addMinutes(1); showTargetRA = true; }
+    if (RAselect == 2) { mount.targetRA().addSeconds(1); showTargetRA = true; }
+    if (RAselect == 3) { showTargetRA = !showTargetRA; waitForRelease=true; }
 
     // slow down key repetitions
     mount.delay(200);
   }
   else if (lcdButtons.currentState() == btnDOWN) {
-    if (RAselect == 0) mount.targetRA().addHours(-1);
-    if (RAselect == 1) mount.targetRA().addMinutes(-1);
-    if (RAselect == 2) mount.targetRA().addSeconds(-1);
+    if (RAselect == 0) { mount.targetRA().addHours(-1); showTargetRA = true; }
+    if (RAselect == 1) { mount.targetRA().addMinutes(-1); showTargetRA = true; }
+    if (RAselect == 2) { mount.targetRA().addSeconds(-1); showTargetRA = true; }
+    if (RAselect == 3) { showTargetRA = !showTargetRA; waitForRelease=true; }
 
     // slow down key repetitions
     mount.delay(200);
@@ -25,7 +28,7 @@ bool processRAKeys() {
     switch (key)
     {
       case btnLEFT: {
-        RAselect = adjustWrap(RAselect, 1, 0, 2);
+        RAselect = adjustWrap(RAselect, 1, 0, 3);
       }
       break;
 
@@ -51,7 +54,10 @@ bool processRAKeys() {
 
 void printRASubmenu() {
   if (mount.isSlewingIdle()) {
-    lcdMenu.printMenu(mount.RAString(LCDMENU_STRING | TARGET_STRING, RAselect));
+    String ra = mount.RAString(LCDMENU_STRING | (showTargetRA ? TARGET_STRING : CURRENT_STRING), RAselect).substring(0,12);
+    ra += (RAselect == 3) ? ">" : " ";
+    ra += showTargetRA ? "Ta" : "Cu";
+    lcdMenu.printMenu(ra);
   }
 }
 #endif

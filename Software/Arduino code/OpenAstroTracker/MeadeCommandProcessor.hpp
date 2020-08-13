@@ -19,6 +19,7 @@ private:
   String handleMeadeHome(String inCmd);
   String handleMeadeInit(String inCmd);
   String handleMeadeQuit(String inCmd);
+  String handleMeadeDistance(String inCmd);
   String handleMeadeSetSlewRate(String inCmd);
   String handleMeadeExtraCommands(String inCmd);
   Mount* _mount;

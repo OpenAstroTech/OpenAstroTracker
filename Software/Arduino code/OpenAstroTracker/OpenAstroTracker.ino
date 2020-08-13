@@ -1,5 +1,5 @@
-// Configuration is now done in OpenAstroTracker.hpp and Globals.hpp 
-#include "OpenAstroTracker.hpp"
+// Configuration is now done in Configuration.hpp and Configuration_adv.hpp 
+#include "Configuration.hpp"
 #include "a_inits.hpp"
 #include "b_setup.hpp"
 #include "c65_startup.hpp"
@@ -8,6 +8,7 @@
 #include "c722_menuPOI.hpp"
 #include "c725_menuHOME.hpp"
 #include "c72_menuHA.hpp"
+#include "c72_menuHA_GPS.hpp"
 #include "c74_menuHEAT.hpp"
 #include "c75_menuCTRL.hpp"
 #include "c76_menuCAL.hpp"

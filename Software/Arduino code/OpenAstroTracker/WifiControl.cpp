@@ -28,6 +28,10 @@ void WifiControl::setup() {
       startInfrastructureMode();
       _infraStart = millis();
       break;
+  case 3: // Disabled
+      WiFi.mode(WIFI_OFF);
+      btStop();
+      break;
   }
 }
 
@@ -77,6 +81,10 @@ String wifiStatus(int status){
 
 String WifiControl::getStatus()
 {
+  if( WIFI_MODE == 3 ){
+    return "0,";
+  }
+
   String result = "1," + wifiStatus(WiFi.status()) + ",";
 #ifdef ESP8266
   result += WiFi.hostname();
@@ -85,11 +93,15 @@ String WifiControl::getStatus()
 #endif
 
   result += "," + WiFi.localIP().toString() + ":" + PORT; 
+  result += "," + String(INFRA_SSID) + "," + String(HOSTNAME);
   return result;
 }
 
 void WifiControl::loop()
 {
+    if( WIFI_MODE == 3 ){
+        return;
+    }
     if (_status != WiFi.status()) {
         _status = WiFi.status();
         LOGV2(DEBUG_WIFI,"Wifi: Connected status changed to %s", wifiStatus(_status).c_str());
@@ -134,13 +146,28 @@ void WifiControl::infraToAPFailover() {
 void WifiControl::tcpLoop() {
     if (client && client.connected()) {
         while (client.available()) {
-            String cmd = client.readStringUntil('#');
-            LOGV2(DEBUG_WIFI,"WifiTCP: Query <-- %s#", cmd.c_str());
-            String retVal = _cmdProcessor->processCommand(cmd);
+            LOGV2(DEBUG_WIFI,"WifiTCP: Available bytes %d. Peeking.", client.available());
 
-            if (retVal != "") {
-                client.write(retVal.c_str());
-                LOGV2(DEBUG_WIFI,"WifiTCP: Reply --> %s", retVal.c_str());
+            // Peek first byte and check for ACK (0x06) handshake
+            LOGV2(DEBUG_WIFI,"WifiTCP: First byte is %x", client.peek());
+            if (client.peek() == 0x06) {
+                client.read();
+                LOGV1(DEBUG_WIFI,"WifiTCP: Query <-- Handshake request");
+                client.write("1");
+                LOGV1(DEBUG_WIFI,"WifiTCP: Reply --> 1");
+            }
+            else {
+                String cmd = client.readStringUntil('#');
+                LOGV2(DEBUG_WIFI,"WifiTCP: Query <-- %s#", cmd.c_str());
+                String retVal = _cmdProcessor->processCommand(cmd);
+
+                if (retVal != "") {
+                    client.write(retVal.c_str());
+                    LOGV2(DEBUG_WIFI,"WifiTCP: Reply --> %s", retVal.c_str());
+                }
+                else{
+                    LOGV1(DEBUG_WIFI,"WifiTCP: No Reply");
+                }
             }
 
             _mount->loop();

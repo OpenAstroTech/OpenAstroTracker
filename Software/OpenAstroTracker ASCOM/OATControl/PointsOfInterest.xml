@@ -1,11 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <PointsOfInterest>
-	<Object Name="Polaris (Celestial Pole)" RA="02:58:51" DEC="89:21:13" />
-	<Object Name="Big Dipper"               RA="12:16:26" DEC="56:55:07" />
-	<Object Name="M31 - Andromeda Galaxy"   RA="00:43:52" DEC="41:22:53" />
-	<Object Name="M42 - Orion Nebula"       RA="05:36:18" DEC="-5:22:44" />
-	<Object Name="M51 - Whirlpool Galaxy"   RA="13:30:45" DEC="47:05:21" />
-	<Object Name="M63 - Sunflower Galaxy"   RA="13:16:45" DEC="41:55:14" />
-	<Object Name="M81 - Bodes Galaxy"       RA="09:57:13" DEC="68:58:01" />
-	<Object Name="M101 - Pinwheel Galaxy"   RA="14:03:56" DEC="54:15:00" />
+	<Object Name="Polaris (Celestial Pole)"  RA="02:58:51" DEC="89:21:13" />
+	<Object Name="M81 - Bodes Galaxy"        RA="09:57:13" DEC="68:58:01" />
+	<Object Name="Cederblad 214"             RA="00:05:46" DEC="67:16:45" />
+	<Object Name="Heart Nebula - Cassiopeia" RA="02:34:57" DEC="61:31:17" />
+	<Object Name="Soul Nebula - Cassiopeia"  RA="02:52:47" DEC="60:30:56" />
+	<Object Name="Navi - Cassiopeia"         RA="00:57:57" DEC="60:49:33" />
+	<Object Name="Elephant Trunk Nebula"     RA="21:39:44" DEC="57:35:31" />
+	<Object Name="Big Dipper"                RA="12:16:26" DEC="56:55:07" />
+	<Object Name="M101 - Pinwheel Galaxy"    RA="14:03:56" DEC="54:15:00" />
+	<Object Name="M51 - Whirlpool Galaxy"    RA="13:30:45" DEC="47:05:21" />
+	<Object Name="Deneb - Cygnus Nebula"     RA="20:42:07" DEC="45:21:12" />
+	<Object Name="M63 - Sunflower Galaxy"    RA="13:16:45" DEC="41:55:14" />
+	<Object Name="M31 - Andromeda Galaxy"    RA="00:43:52" DEC="41:22:53" />
+	<Object Name="Vega"                      RA="18:37:37" DEC="38:48:07" />
+	<Object Name="Veil Nebula"               RA="20:51:19" DEC="31:03:34" />
+	<Object Name="Triangulum Nebula"         RA="01:34:59" DEC="30:45:40" />
+	<Object Name="Arcturus"                  RA="14:16:37" DEC="19:05:21" />
+	<Object Name="Altair"                    RA="19:51:45" DEC="8:55:15" />
+	<Object Name="M42 - Orion Nebula"        RA="05:36:18" DEC="-5:22:44" />
+	<Object Name="Lagoon Nebula"             RA="18:05:02" DEC="-24:22:52" />
 </PointsOfInterest>

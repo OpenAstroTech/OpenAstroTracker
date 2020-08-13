@@ -8,7 +8,6 @@
 // You add a string and an id item and this class handles the display and navigation
 // Create a new menu, using the given number of LCD display columns and rows
 LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(8, 9, 4, 5, 6, 7) {
-  //_lcd = new LiquidCrystal(8, 9, 4, 5, 6, 7);
   _lcd.begin(cols, rows);
   _numMenuItems = 0;
   _activeMenuIndex = 0;
@@ -20,7 +19,7 @@ LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(8, 9, 4, 5, 6, 7) {
   _lastDisplay[1] = "";
   _menuItems = new MenuItem * [maxItems];  
 
-  _brightness = EPROMStore::Storage()->read(11);
+  _brightness = EPROMStore::Storage()->read(16);
   LOGV2(DEBUG_INFO, "LCD: Brightness from EEPROM is %d", _brightness);
   // pinMode(10, OUTPUT);
   // analogWrite(10, _brightness);
@@ -88,7 +87,7 @@ void LcdMenu::setBacklightBrightness(int level, bool persist) {
   LOGV2(DEBUG_INFO, "LCD: Wrote %d as brightness", _brightness  );
   if (persist) {
     LOGV2(DEBUG_INFO, "LCD: Saving %d as brightness", (_brightness & 0x00FF));
-    EPROMStore::Storage()->update(11, (byte)(_brightness & 0x00FF));
+    EPROMStore::Storage()->update(16, (byte)(_brightness & 0x00FF));
   }
 }
 
@@ -140,9 +139,10 @@ void LcdMenu::updateDisplay() {
   _lcd.setCursor(0, 0);
   _activeRow = 0;
   _activeCol = 0;
+  int usableColumns = _columns - 4; // Leave off last four to have distance to tracking indicator
 
   // Determine where to place the active menu item. (empty space around longest item divided by two).
-  int margin = (_columns - (_longestDisplay)) / 2;
+  int margin = (usableColumns - (_longestDisplay)) / 2;
   int offsetIntoString = offsetToActive - margin;
 
   // Pad the front if we don't have enough to offset the string to the arrow locations (happens on first item(s))
@@ -152,7 +152,7 @@ void LcdMenu::updateDisplay() {
   }
 
   // Display the actual menu string
-  while ((pBufMenu < bufMenu + _columns) && (offsetIntoString < (int)menuString.length())) {
+  while ((pBufMenu < bufMenu + usableColumns) && (offsetIntoString < (int)menuString.length())) {
     *(pBufMenu++) = menuString[offsetIntoString++];
   }
 
@@ -167,6 +167,7 @@ void LcdMenu::updateDisplay() {
   setCursor(0, 1);
 }
 
+// Print the given character to the LCD, converting some special ones to our bitmaps
 void LcdMenu::printChar(char ch) {
   if (ch == '>') {
     _lcd.write(_rightArrow);
@@ -189,6 +190,12 @@ void LcdMenu::printChar(char ch) {
   else {
     _lcd.print(ch);
   }
+}
+
+// Print a character at a specific position
+void LcdMenu::printAt(int col, int row, char ch) {
+  _lcd.setCursor(col, row);
+  printChar(ch);
 }
 
 // Print a string to the LCD at the current cursor position, substituting the special arrows and padding with spaces to the end
@@ -307,51 +314,7 @@ void LcdMenu::printMenu(String line) {}
 
 void LcdMenu::printChar(char ch) {}
 
+void LcdMenu::printAt(int col, int row, char ch) {}
+
 #endif
 
-/*
-class SubMenu {
-	
-  display() { }
-  onUp() { } 
-  onDown() { } 
-
-	}
-}
-
-class Menu {
-	List<SubMenu> subMenu
-	int activeSubIndex=0
-	UseContinuousKeys(UP|DOWN|LEFT|RIGHT)
-
-	virtual OnUp() { previousSubmenu }
-	virtual OnDown() { nextSubmenu }
-	virtual OnRight() { nextmenu }	
-	virtual OnLeft() { nextItemInSubmenu }
-	virtual OnSelect() { confirm }
-	
-	displayMenu() { }
-	
-	run(){
-		if (any continuous keys)
-		{
-			if 
-		}
-	}
-}
-
-class MenuSystem {
-	List<Menu> menus;
-	
-	run() {
-		if (!activeMenu->run())
-		{
-			activeMenu++
-		}
-	}
-}
-
-Menu RA ;
-RA.fnDisplay = [] { _lcdMenu.goto(0,1); _lcdMenu.printMenu(_mount.targetRA()); }
-RA.fnUp() = [] { }
-*/

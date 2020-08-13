@@ -1,5 +1,5 @@
 #include "MeadeCommandProcessor.hpp"
-#include "Globals.hpp"
+#include "Configuration_adv.hpp"
 #include "Utility.hpp"
 #include "WifiControl.hpp"
 
@@ -30,6 +30,13 @@
 //      This tells the scope what it is currently pointing at.
 //      The scope synchronizes to the current target coordinates (set with :Sd# and :Sr#)
 //      Returns: NONE#
+//
+//------------------------------------------------------------------
+// DISTANCE FAMILY
+//
+// :D#
+//      Returns slewing status
+//      Returns: '|#' if slewing, ' #' if not
 //
 //------------------------------------------------------------------
 // GET FAMILY
@@ -78,20 +85,25 @@
 // :GX#
 //      Get Mount Status
 //      Returns: string reflecting the mounts' status. The string is a comma-delimited list of statuses:
-//               Idle,--T,11219,0,927,071906,+900000,#
-//                 |   |    |   |  |     |      |    
-//                 |   |    |   |  |     |      |    
-//                 |   |    |   |  |     |      |    
-//                 |   |    |   |  |     |      +------------------ [6] The current DEC position
-//                 |   |    |   |  |     +------------------------- [5] The current RA position
-//                 |   |    |   |  +------------------------------- [4] The Tracking stepper position
-//                 |   |    |   +---------------------------------- [3] The DEC stepper position
-//                 |   |    +-------------------------------------- [2] The RA stepper position
-//                 |   +------------------------------------------- [1] The motion state. 
-//                 |                                                    First character is RA slewing state ('R' is East, 'r' is West, '-' is stopped). 
-//                 |                                                    Second character is DEC slewing state ('d' is North, 'D' is South, '-' is stopped). 
-//                 |                                                    Third character is TRK slewing state ('T' is Tracking, '-' is stopped). 
-//                 +----------------------------------------------- [0] The mount status. One of 'Idle', 'Parked', 'Parking', 'Guiding', 'SlewToTarget', 'FreeSlew', 'ManualSlew', 'Tracking'
+//               Idle,--T--,11219,0,927,071906,+900000,#
+//                 |    |     |   |  |     |      |    
+//                 |    |     |   |  |     |      |    
+//                 |    |     |   |  |     |      |    
+//                 |    |     |   |  |     |      +------------------ [6] The current DEC position
+//                 |    |     |   |  |     +------------------------- [5] The current RA position
+//                 |    |     |   |  +------------------------------- [4] The Tracking stepper position
+//                 |    |     |   +---------------------------------- [3] The DEC stepper position
+//                 |    |     +-------------------------------------- [2] The RA stepper position
+//                 |    +-------------------------------------------- [1] The motion state. 
+//                 |                                                      First character is RA slewing state ('R' is East, 'r' is West, '-' is stopped). 
+//                 |                                                      Second character is DEC slewing state ('d' is North, 'D' is South, '-' is stopped). 
+//                 |                                                      Third character is TRK slewing state ('T' is Tracking, '-' is stopped). 
+//                 |                                                      * Fourth character is AZ slewing state ('Z' and 'z' is adjusting, '-' is stopped). 
+//                 |                                                      * Fifth character is ALT slewing state ('A' and 'a' is adjusting, '-' is stopped). 
+//                 +------------------------------------------------- [0] The mount status. One of 'Idle', 'Parked', 'Parking', 'Guiding', 'SlewToTarget', 'FreeSlew', 'ManualSlew', 'Tracking', 'Homing'
+//
+//       * Az and Alt are optional. The string may only be 3 characters long
+//
 //
 // : Gt#
 //      Get Site Latitude
@@ -210,6 +222,18 @@
 //      Where c is one of 'n', 'e', 'w', or 's'. 
 //      Returns: nothing
 //
+// :MAZn.nn#
+//      Move Azimuth 
+//      If the scope supports automated azimuth operation, move azimuth by n.nn arcminutes
+//      Where n.nn is a signed floating point number representing the number of arcminutes to move the mount left or right.
+//      Returns: nothing
+//
+// :MALn.nn#
+//      Move Altitude
+//      If the scope supports automated altitude operation, move altitude by n.nn arcminutes
+//      Where n.nn is a signed floating point number representing the number of arcminutes to raise or lower the mount.
+//      Returns: nothing
+//
 //------------------------------------------------------------------
 // SYNC FAMILY
 //
@@ -284,16 +308,28 @@
 //      Get the adjustment factor used to speed up (>1.0) or slow down (<1.0) the tracking speed of the mount.
 //      Returns: float
 //
+// :XGT#
+//      Get Tracking speed
+//      Get the absolute tracking speed of the mount.
+//      Returns: float
+//
 // :XGH#
 //      Get HA
 //      Get the current HA of the mount.
 //      Returns: HHMMSS
 //
+// :XGM#
+//      Get Mount configuration settings 
+//      Returns: <board>>,<RA Stepper Info>,<DEC Stepper Info>,#
+//      Where <board> is one of the supported boards (currently Uno, Mega, ESP8266, ESP32)
+//            <Stepper Info> is a pipe-delimited string of Motor type (NEMA or 28BYJ), Pulley Teeth, Steps per revolution)
+//      Example: ESP32,28BYJ|16|4096.00,28BYJ|16|4096.00,#
+//
 // :XGN#
 //      Get network settings
 //      Gets the current status of the Wifi connection. Reply only available when running on ESP8266 boards.
-//      Returns: 1,<stats>,<hostname>,<ip>:<port>#     - if Wifi is enabled
-//      Returns: 0,#                                   - if Wifi is not enabled
+//      Returns: 1,<stats>,<hostname>,<ip>:<port>,<SSID>,<OATHostname>#     - if Wifi is enabled
+//      Returns: 0,#     - if Wifi is not enabled
 //
 // :XGL#
 //      Get LST
@@ -451,8 +487,7 @@ String MeadeCommandProcessor::handleMeadeSyncControl(String inCmd) {
     return "NONE#";
   }
 
-  return "0";
-
+  return "FAIL#";
 }
 
 /////////////////////////////
@@ -464,7 +499,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     //   0123456789
     // :Sd+84*03:02
     int sgn = inCmd[1] == '+' ? 1 : -1;
-    if ((inCmd[4] == '*') && (inCmd[7] == ':'))
+    if (((inCmd[4] == '*') || (inCmd[4] == ':')) && (inCmd[7] == ':'))
     {
       int deg = sgn * inCmd.substring(2, 4).toInt();
       if (NORTHERN_HEMISPHERE) {
@@ -514,7 +549,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     }
     else if (inCmd[1] == 'P') {
       // Set home point
-      _mount->setHome();
+      _mount->setHome(false);
       _mount->startSlewing(TRACKING);
     }
     else {
@@ -532,7 +567,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     //   0123456789012345678
     // :SY+84*03:02.18:34:12
     int sgn = inCmd[1] == '+' ? 1 : -1;
-    if ((inCmd[4] == '*') && (inCmd[7] == ':') && (inCmd[10] == '.') && (inCmd[13] == ':') && (inCmd[16] == ':')) {
+    if (((inCmd[4] == '*') || (inCmd[4] == ':')) && (inCmd[7] == ':') && (inCmd[10] == '.') && (inCmd[13] == ':') && (inCmd[16] == ':')) {
       int deg = inCmd.substring(2, 4).toInt();
       _mount->syncPosition(inCmd.substring(11, 13).toInt(), inCmd.substring(14, 16).toInt(), inCmd.substring(17, 19).toInt(), sgn * deg + (NORTHERN_HEMISPHERE ? -90 : 90), inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
       return "1";
@@ -542,7 +577,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
   else if ((inCmd[0] == 't')) // latitude: :St+30*29#
   {
     float sgn = inCmd[1] == '+' ? 1.0f : -1.0f;
-    if (inCmd[4] == '*') {
+    if ((inCmd[4] == '*') || (inCmd[4] == ':')) {
       int deg = inCmd.substring(2, 4).toInt();
       int minute = inCmd.substring(5, 7).toInt();
       _mount->setLatitude(sgn * (1.0f * deg + (minute / 60.0f)));
@@ -552,7 +587,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
   }
   else if (inCmd[0] == 'g') // longitude :Sg097*34#
   {
-    if (inCmd[4] == '*') {
+    if ((inCmd[4] == '*') || (inCmd[4] == ':')) {
       int deg = inCmd.substring(1, 4).toInt();
       int minute = inCmd.substring(5, 7).toInt();
       float lon = 1.0f * deg + (1.0f * minute / 60.0f);
@@ -618,6 +653,20 @@ String MeadeCommandProcessor::handleMeadeMovement(String inCmd) {
       return "1";
     }
   }
+  else if (inCmd[0] == 'A') {
+    // Move Azimuth or Altitude by given arcminutes
+    // :MAZ+32.1# or :MAL-32.1#
+    #if AZIMUTH_ALTITUDE_MOTORS == 1
+    float arcMinute = inCmd.substring(2).toFloat();
+    if (inCmd[1] == 'Z'){
+      _mount->moveBy(AZIMUTH_STEPS, arcMinute);
+    }
+    else if (inCmd[1] == 'L'){
+      _mount->moveBy(ALTITUDE_STEPS, arcMinute);
+    }
+    #endif
+    return "";
+  }
   else if (inCmd[0] == 'e') {
     _mount->startSlewing(EAST);
     return "";
@@ -653,6 +702,13 @@ String MeadeCommandProcessor::handleMeadeHome(String inCmd) {
     return "1";
   }
   return "";
+}
+
+String MeadeCommandProcessor::handleMeadeDistance(String inCmd) {
+  if (_mount->isSlewingRAorDEC()){
+    return "|#";
+  }
+  return " #";
 }
 
 /////////////////////////////
@@ -696,8 +752,17 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
     else if (inCmd[1] == 'S') {
       return String(_mount->getSpeedCalibration(), 5) + "#";
     }
+    else if (inCmd[1] == 'T') {
+      return String(_mount->getSpeed(TRACKING), 7) + "#";
+    }
     else if (inCmd[1] == 'B') {
       return String(_mount->getBacklashCorrection()) + "#";
+    }
+    else if (inCmd[1] == 'M') {
+      return String(_mount->getMountHardwareInfo()) + "#";
+    }
+    else if (inCmd[1] == 'O') {
+      return getLogBuffer();
     }
     else if (inCmd[1] == 'H') {
       char scratchBuffer[10];
@@ -820,6 +885,7 @@ String MeadeCommandProcessor::processCommand(String inCmd) {
       case 'I': return handleMeadeInit(inCmd);
       case 'Q': return handleMeadeQuit(inCmd);
       case 'R': return handleMeadeSetSlewRate(inCmd);
+      case 'D': return handleMeadeDistance(inCmd);
       case 'X': return handleMeadeExtraCommands(inCmd);
       default:
         LOGV2(DEBUG_MEADE, "MEADE: Received unknown command '%s'", inCmd.c_str());

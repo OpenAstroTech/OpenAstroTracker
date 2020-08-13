@@ -1,7 +1,11 @@
 #pragma once
+#include "Configuration_adv.hpp"
 
 #if HEADLESS_CLIENT == 0
 #if SUPPORT_GUIDED_STARTUP == 1
+
+#include "Sidereal.hpp"
+
 //////////////////////////////////////////////////////////////
 // This file contains the Starup 'wizard' that guides you through initial setup
 
@@ -21,8 +25,12 @@ int startupState = StartupIsInHomePosition;
 int isInHomePosition = NO;
 
 void startupIsCompleted() {
+  LOGV1(DEBUG_INFO, "STARTUP: Completed!");
+
   startupState = StartupCompleted;
   inStartup = false;
+
+  mount.startSlewing(TRACKING);
 
   // Start on the RA menu
   lcdMenu.setActive(RA_Menu);
@@ -45,14 +53,32 @@ bool processStartupKeys() {
             startupState = StartupSetHATime;
           }
           else if (isInHomePosition == NO) {
+            #if RA_DRIVER_TYPE == TMC2209_UART && USE_AUTOHOME == 1
+            mount.startFindingHomeDEC();
+            if (mount.isFindingHome()) {
+              startupState = StartupWaitForPoleCompletion;            
+              lcdMenu.clear();
+              lcdMenu.setCursor(0, 0);
+              lcdMenu.printMenu("Finding Home....");
+              lcdMenu.setCursor(0, 1);
+              lcdMenu.printMenu("Please Wait");              
+              //break;
+              
+            }
+            else {
+              startupState = StartupSetHATime;
+            }
+
+            #else
             startupState = StartupWaitForPoleCompletion;
             inStartup = false;
             lcdMenu.setCursor(0, 0);
-            lcdMenu.printMenu("Use ^~<> to home");
+            lcdMenu.printMenu("Home with ^~<>");
             lcdMenu.setActive(Control_Menu);
 
             // Skip the 'Manual control' prompt
             inControlMode = true;
+            #endif
           }
           else if (isInHomePosition == CANCEL) {
             startupIsCompleted();
@@ -64,16 +90,28 @@ bool processStartupKeys() {
 
     case StartupSetHATime: {
       inStartup = false;
+      LOGV1(DEBUG_INFO, "STARTUP: Switching to HA menu!");
 
-      // Jump to the HA menu
-      lcdMenu.setCursor(0, 0);
-      lcdMenu.printMenu("Set current HA");
-      lcdMenu.setActive(HA_Menu);
-      startupState = StartupWaitForHACompletion;
+      #if USE_GPS == 0
+        // Jump to the HA menu
+        lcdMenu.setCursor(0, 0);
+        lcdMenu.printMenu("Set current HA");
+        lcdMenu.setActive(HA_Menu);
+        startupState = StartupWaitForHACompletion;
+      #else
+        lcdMenu.setCursor(0, 0);
+        lcdMenu.printMenu("Finding GPS...");
+        lcdMenu.setActive(HA_Menu);
+        startupState = StartupWaitForHACompletion;
+      #endif
     }
     break;
 
     case StartupHAConfirmed: {
+      mount.setHome(true);
+      DayTime ha(mount.HA());
+      mount.setHA(ha);
+      mount.targetRA() = mount.currentRA();
       startupIsCompleted();
     }
     break;
@@ -92,7 +130,6 @@ bool processStartupKeys() {
 
 
 void printStartupMenu() {
-
   switch (startupState) {
     case StartupIsInHomePosition: {
       //              0123456789012345

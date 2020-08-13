@@ -1,5 +1,5 @@
 #pragma once
-#include "Globals.hpp"
+#include "Configuration_adv.hpp"
 
 #ifdef WIFI_ENABLED
 #include "Mount.hpp"

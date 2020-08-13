@@ -3,9 +3,14 @@
 
 #include <LiquidCrystal.h>
 #include <AccelStepper.h>
-#include "Globals.hpp"
+#include "Configuration_adv.hpp"
 #include "DayTime.hpp"
 #include "LcdMenu.hpp"
+
+#if RA_DRIVER_TYPE == TMC2209_UART
+ #include <TMCStepper.h>
+ // If you get an error here, download the TMCstepper library from "Tools > Manage Libraries"
+#endif
 
 #define NORTH                      B00000001
 #define EAST                       B00000010
@@ -32,6 +37,18 @@
 #define DEC_STEPS 2
 #define SPEED_FACTOR_DECIMALS 3
 #define BACKLASH_CORRECTION 4
+#define AZIMUTH_STEPS 5
+#define ALTITUDE_STEPS 6
+
+#define EEPROM_RA 1
+#define EEPROM_DEC 2
+#define EEPROM_SPEED 3
+#define EEPROM_BACKLASH 4
+#define EEPROM_LATITUDE 5
+#define EEPROM_LONGITUDE 6
+#define EEPROM_PITCH_OFFSET 7
+#define EEPROM_ROLL_OFFSET 8
+
 
 //////////////////////////////////////////////////////////////////
 //
@@ -43,19 +60,33 @@ public:
   Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu);
 
   // Configure the RA stepper motor. This also sets up the TRK stepper on the same pins.
-#if RA_Stepper_TYPE == 0
+#if RA_STEPPER_TYPE == STEP_28BYJ48
     void configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
 #endif
-#if RA_Stepper_TYPE == 1
+#if RA_STEPPER_TYPE == STEP_NEMA17
     void configureRAStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration);
 #endif
 
   // Configure the DEC stepper motor.
-#if DEC_Stepper_TYPE == 0
+#if DEC_STEPPER_TYPE == STEP_28BYJ48
     void configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
 #endif
-#if DEC_Stepper_TYPE == 1
+#if DEC_STEPPER_TYPE == STEP_NEMA17
     void configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration);
+#endif
+
+#if AZIMUTH_ALTITUDE_MOTORS == 1
+  void configureAzStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
+  void configureAltStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
+#endif
+
+  // Configure the RA Driver (TMC2209 UART only)
+#if RA_DRIVER_TYPE == TMC2209_UART
+  void configureRAdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
+#endif
+  // Configure the DEC Driver (TMC2209 UART only)
+#if DEC_DRIVER_TYPE == TMC2209_UART
+  void configureDECdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
 #endif
 
   // Get the current RA tracking speed factor
@@ -63,6 +94,20 @@ public:
 
   // Set the current RA tracking speed factor
   void setSpeedCalibration(float val, bool saveToStorage);
+
+#if GYRO_LEVEL == 1
+  // Get the current pitch angle calibraton
+  float getPitchCalibrationAngle();
+
+  // Set the current pitch angle calibration
+  void setPitchCalibrationAngle(float angle);
+
+  // Get the current roll angle calibration
+  float getRollCalibrationAngle();
+
+  // Set the current pitch angle calibration
+  void setRollCalibrationAngle(float angle);
+#endif
 
   // Returns the number of steps the given motor turns to move one degree
   int getStepsPerDegree(int which);
@@ -115,6 +160,11 @@ public:
   bool isParked() const;
   bool isParking() const;
   bool isGuiding() const;
+  bool isFindingHome() const;
+  #if AZIMUTH_ALTITUDE_MOTORS == 1
+  bool isRunningAZ() const;
+  bool isRunningALT() const;
+  #endif
 
   // Starts manual slewing in one of eight directions or tracking
   void startSlewing(int direction);
@@ -144,7 +194,15 @@ public:
   void goHome();
 
   // Set the current stepper positions to be home.
-  void setHome();
+  void setHome(bool clearZeroPos);
+
+  // Auto Home with TMC2209 UART
+  #if RA_DRIVER_TYPE == TMC2209_UART  
+    void startFindingHomeRA();
+    void startFindingHomeDEC();
+    void finishFindingHomeRA();
+    void finishFindingHomeDEC();
+  #endif
 
   // Asynchronously parks the mount. Moves to the home position and stops all motors. 
   void park();
@@ -176,8 +234,15 @@ public:
   // Toggle the state where we run the motors at a constant speed
   void setManualSlewMode(bool state);
 
-  // Set the speed of the given motoer
+  // Set the speed of the given motor
   void setSpeed(int which, float speed);
+
+#if AZIMUTH_ALTITUDE_MOTORS == 1
+  // Support for moving the mount in azimuth and altitude (requires extra hardware)
+  void moveBy(int direction, float arcMinutes);
+  void disableAzAltMotors();
+  void enableAzAltMotors();
+#endif
 
   // Set the number of steps to use for backlash correction
   void setBacklashCorrection(int steps);
@@ -191,6 +256,11 @@ public:
   // Read the saved configuration from persistent storage
   void readConfiguration();
   
+  // Get Mount configuration data
+  String getMountHardwareInfo();
+
+  // Let the mount know that the system has finished booting
+  void bootComplete();
 private:
 
   // Reads values from EEPROM that configure the mount (if previously stored)
@@ -210,9 +280,9 @@ private:
   // Returns some combination of these flags: STATUS_PARKED, STATUS_SLEWING, STATUS_SLEWING_TO_TARGET, STATUS_SLEWING_FREE, STATUS_TRACKING, STATUS_PARKING
   byte mountStatus();
 
-#if DEBUG_LEVEL&(DEBUG_MOUNT|DEBUG_MOUNT_VERBOSE)
-  String mountStatusString();
-#endif
+  #if DEBUG_LEVEL&(DEBUG_MOUNT|DEBUG_MOUNT_VERBOSE)
+    String mountStatusString();
+  #endif
 
 
 private:
@@ -225,6 +295,10 @@ private:
   int _maxDECAcceleration;
   int _backlashCorrectionSteps;
   int _moveRate;
+#if GYRO_LEVEL == 1
+  float _pitchCalibrationAngle;
+  float _rollCalibrationAngle;
+#endif
 
   long _lastHASet;
   DayTime _LST;
@@ -245,9 +319,19 @@ private:
   AccelStepper* _stepperRA;
   AccelStepper* _stepperDEC;
   AccelStepper* _stepperTRK;
+  #if RA_DRIVER_TYPE == TMC2209_UART
+    TMC2209Stepper* _driverRA;
+    TMC2209Stepper* _driverDEC;
+  #endif  
+  #if AZIMUTH_ALTITUDE_MOTORS == 1
+    AccelStepper* _stepperAZ;
+    AccelStepper* _stepperALT;
+    bool _azAltWasRunning;
+  #endif
 
   unsigned long _guideEndTime;
   unsigned long _lastMountPrint = 0;
+  unsigned long _lastTrackingPrint = 0;
   float _trackingSpeed;
   float _trackingSpeedCalibration;
   unsigned long _lastDisplayUpdate;
@@ -256,6 +340,7 @@ private:
   bool _stepperWasRunning;
   bool _correctForBacklash;
   bool _slewingToHome;
+  bool _bootComplete;
 };
 
 #endif

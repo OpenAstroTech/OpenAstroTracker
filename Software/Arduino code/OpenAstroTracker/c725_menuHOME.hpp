@@ -16,8 +16,11 @@ bool processHomeKeys() {
         if (subGoIndex == 0) {
           mount.goHome(); 
         }
-        else {
+        else if (mount.isSlewingTRK()) {
           mount.park();
+        }
+        else {
+          mount.startSlewing(TRACKING);
         }
       }
       break;
@@ -41,14 +44,14 @@ bool processHomeKeys() {
 
 void printHomeSubmenu() {
   char scratchBuffer[16];
-  if (mount.isParked() && (subGoIndex == 1)) {
-    lcdMenu.printMenu("Parked...");
+  if (mount.isSlewingTRK()) {
+    strcpy(scratchBuffer, " Home  Park");
   }
   else {
-    strcpy(scratchBuffer, " Home  Park");
-    scratchBuffer[subGoIndex * 6] = '>';
-    lcdMenu.printMenu(scratchBuffer);
+    strcpy(scratchBuffer, " Home  Unpark");
   }
+  scratchBuffer[subGoIndex * 6] = '>';
+  lcdMenu.printMenu(scratchBuffer);
 }
 
 #endif

@@ -2,7 +2,7 @@
 #define UTILITY_HPP_
 
 #include <Arduino.h>
-#include "Globals.hpp"
+#include "Configuration_adv.hpp"
 
 // LCD shield buttons
 #define btnRIGHT  0
@@ -11,6 +11,9 @@
 #define btnLEFT   3
 #define btnSELECT 4
 #define btnNONE   5
+
+String getLogBuffer();
+int freeMemory();
 
 #if DEBUG_LEVEL>0
 

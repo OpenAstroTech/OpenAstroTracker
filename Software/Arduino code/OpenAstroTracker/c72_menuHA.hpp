@@ -1,7 +1,9 @@
 #pragma once
 #include "EPROMStore.hpp"
+#include "configuration_adv.hpp"
 
 #if HEADLESS_CLIENT == 0
+#if USE_GPS == 0
 
 bool processHAKeys() {
   byte key;
@@ -37,7 +39,6 @@ bool processHAKeys() {
         EPROMStore::Storage()->update(2, mount.HA().getMinutes());
         lcdMenu.printMenu("Stored.");
         mount.delay(500);
-        mount.setHome();
 
 #if SUPPORT_GUIDED_STARTUP == 1
         if (startupState == StartupWaitForHACompletion) {
@@ -45,6 +46,7 @@ bool processHAKeys() {
           inStartup = true;
         }
 #endif
+        mount.startSlewing(TRACKING);
       }
       break;
 
@@ -61,12 +63,15 @@ bool processHAKeys() {
   }
 
   return waitForRelease;
+ 
 }
 
 void printHASubmenu() {
-  char scratchBuffer[20];
-  sprintf(scratchBuffer, " %02dh %02dm", mount.HA().getHours(), mount.HA().getMinutes());
-  scratchBuffer[HAselect * 4] = '>';
-  lcdMenu.printMenu(scratchBuffer);
+    char scratchBuffer[20];
+    sprintf(scratchBuffer, " %02dh %02dm", mount.HA().getHours(), mount.HA().getMinutes());
+    scratchBuffer[HAselect * 4] = '>';
+    lcdMenu.printMenu(scratchBuffer);
 }
+
+#endif
 #endif
