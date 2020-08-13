@@ -118,7 +118,7 @@ void gotoNextMenu()
 {
   lcdMenu.setNextActive();
 
-#if AZIMUTH_ALTIUTUDE_MOTORS == 1
+#if AZIMUTH_ALTITUDE_MOTORS == 1
   mount.disableAzAltMotors();
   azAltMotorsStarted = false;
 #endif
@@ -201,7 +201,7 @@ bool processCalibrationKeys()
   bool waitForRelease = false;
   bool checkForKeyChange = true;
 
-#if AZIMUTH_ALTIUTUDE_MOTORS == 1
+#if AZIMUTH_ALTITUDE_MOTORS == 1
   if (!azAltMotorsStarted)
   {
     mount.enableAzAltMotors();
@@ -291,6 +291,28 @@ bool processCalibrationKeys()
       lcdMenu.updateDisplay();
       calState = HIGHLIGHT_POLAR;
     }
+  }
+  else if (calState == POLAR_CALIBRATION_WAIT_CENTER_POLARIS){
+      #if AZIMUTH_ALTITUDE_MOTORS == 1
+      if (currentButtonState == btnUP)
+      {
+        if (!mount.isRunningALT()) {
+          mount.setSpeed(ALTITUDE_STEPS, 500) ;
+        }
+      }
+      else if (currentButtonState == btnDOWN)
+      {
+        if (!mount.isRunningALT()) {
+          mount.setSpeed(ALTITUDE_STEPS, -500) ;
+        }
+      }
+      else if (currentButtonState == btnNONE)
+      {
+        if (mount.isRunningALT()) {
+          mount.setSpeed(ALTITUDE_STEPS, 0) ;
+        }
+      }
+      #endif
   }
   else if (calState == DRIFT_CALIBRATION_RUNNING)
   {

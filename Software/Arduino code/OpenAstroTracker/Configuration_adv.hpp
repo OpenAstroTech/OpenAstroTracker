@@ -1,8 +1,25 @@
-#ifndef _GLOBALS_HPP_
-#define _GLOBALS_HPP_
+#pragma once
 
 #include <Arduino.h>
 #include <WString.h>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Some definitions.    ////
+//                      ////
+//  DO NOT EDIT THESE   ////
+////////////////////////////
+// Stepper motor types
+#define STEP_28BYJ48 0
+#define STEP_NEMA17 1
+
+// Driver selection 
+#define ULN2003_DRIVER     0
+#define GENERIC_DRIVER     1
+#define TMC2209_STANDALONE 2
+#define TMC2209_UART       3
+//// DO NOT EDIT ABOVE HERE //////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                      ////
@@ -11,8 +28,6 @@
 ////////////////////////////
 //
 // STEPPER TYPE
-#define STEP_28BYJ48 0
-#define STEP_NEMA17 1
 #define RA_STEPPER_TYPE   STEP_28BYJ48
 #define DEC_STEPPER_TYPE  STEP_28BYJ48
 //
@@ -29,11 +44,6 @@
 //                                                         TMC2209 can
 ////////////////////////////
 //
-// Driver selection 
-#define ULN2003_DRIVER     0
-#define GENERIC_DRIVER     1
-#define TMC2209_STANDALONE 2
-#define TMC2209_UART       3
 
 // GENERIC drivers include A4988 and any Bipolar STEP/DIR based drivers
 #define RA_DRIVER_TYPE  ULN2003_DRIVER
@@ -58,9 +68,8 @@
 //                  ^^^ leave at 0 for now, doesnt work properly yet
 #define RA_AUDIO_FEEDBACK  0 // If one of these are set to 1, the respective driver will shut off the stealthchop mode, resulting in a audible whine
 #define DEC_AUDIO_FEEDBACK 0 // of the stepper coils. Use this to verify that UART is working properly. 
-//
-//
-//
+
+
 ////////////////////////////
 //
 // GUIDE SETTINGS
@@ -70,25 +79,23 @@
 // Standard value: RA 2.0;  DEC 1.0
 #define RA_PULSE_MULTIPLIER 1.5
 #define DEC_PULSE_MULTIPLIER 1.0
-//
-//
+
+
 ////////////////////////////
 //
 // INVERT AXIS
 // Set to 1 or 0 to invert motor directions
 #define INVERT_RA_DIR 0 
 #define INVERT_DEC_DIR 0
-//
-//
+
+
 ////////////////////////////
 //
 // HEMISPHERE
 // Set to 1 if you are in the northern hemisphere.
 #define NORTHERN_HEMISPHERE 1
-//
-//
-//
-//
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                  ////////
 // LCD SETTINGS     ////////
@@ -98,16 +105,16 @@
 // UPDATE TIME
 // Time in ms between LCD screen updates during slewing operations
 #define DISPLAY_UPDATE_TIME 200
-//
-//
+
+
 ////////////////////////////
 //
 // HEADLESS CLIENT
 // If you do not have a LCD shield on your Arduino Uno/Mega, set this to 1 on the line below. This is
 // useful if you are always going to run the mount from a laptop anyway.
 #define HEADLESS_CLIENT 0
-//
-//
+
+
 ////////////////////////////
 //
 // LCD BUTTON TEST
@@ -125,26 +132,22 @@
 #define AZIMUTH_ALTITUDE_MOTORS  0
 
 #define AZIMUTH_MAX_SPEED 500
-#define AZIMUTH_MAX_ACCEL 400
+#define AZIMUTH_MAX_ACCEL 200
 #define AZIMUTH_ARC_SECONDS_PER_STEP (3.99985f)
 #define AZIMUTH_STEPS_PER_ARC_MINUTE (60.0f/AZIMUTH_ARC_SECONDS_PER_STEP)
 
 #define ALTITUDE_MAX_SPEED 500
-#define ALTITUDE_MAX_ACCEL 400
+#define ALTITUDE_MAX_ACCEL 200
 #define ALTITUDE_ARC_SECONDS_PER_STEP (0.61761f)
 #define ALTITUDE_STEPS_PER_ARC_MINUTE (60.0f/ALTITUDE_ARC_SECONDS_PER_STEP)
 
 
-
-//
 // Set this to 1 if you are using a NEO6m GPS module for HA/LST and location automatic determination.
 // GPS uses Serial1 by default, which is pins 18/19 on Mega. Change in configuration_adv.hpp
 #define USE_GPS 0
 // If supported, download the library https://github.com/mikalhart/TinyGPSPlus/releases and extract it to C:\Users\*you*\Documents\Arduino\libraries
 
 
-
-//
 // Set this to 1 if you are using a MPU6050 electronic level
 // Wire the board to 20/21 on Mega. Change in configuration_adv.hpp
 #define GYRO_LEVEL 0
@@ -231,10 +234,9 @@
   
 #endif // End WIFI SETTINGS
 
+
 // This is set to 1 for boards that do not support interrupt timers
 #define RUN_STEPPERS_IN_MAIN_LOOP 0
-
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -254,13 +256,12 @@
 #define DEBUG_MEADE          0x40
 #define DEBUG_VERBOSE        0x80
 #define DEBUG_ANY            0xFF
-//
-//
+
 ////////////////////////////
 //
 // DEBUG OUTPUT
 //
-#define DEBUG_LEVEL (DEBUG_NONE)
+#define DEBUG_LEVEL (DEBUG_MOUNT|DEBUG_INFO)
 // #define DEBUG_LEVEL (DEBUG_SERIAL|DEBUG_WIFI|DEBUG_INFO|DEBUG_MOUNT|DEBUG_GENERAL)
 // #define DEBUG_LEVEL (DEBUG_ANY)
 // #define DEBUG_LEVEL (DEBUG_INFO|DEBUG_MOUNT|DEBUG_GENERAL)
@@ -278,10 +279,6 @@
 // Debug output is useful if you are using Wifi to control the OAT or if you are issuing
 // manual commands via a terminal.
 //
-
-
-
-
 
 
 
@@ -323,6 +320,3 @@ extern int RAPulleyTeeth;
 extern float RACircumference;
 extern float DECStepsPerRevolution;
 extern int DecPulleyTeeth;
-
-
-#endif // _GLOBALS_HPP

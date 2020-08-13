@@ -1146,6 +1146,52 @@ void Mount::setSpeed(int which, float speed) {
   else if (which == DEC_STEPS) {
     _stepperDEC->setSpeed(speed);
   }
+  #if AZIMUTH_ALTITUDE_MOTORS == 1
+  else if (which == AZIMUTH_STEPS) {
+    float curAzSpeed = _stepperAZ->speed();
+
+    // If we are changing directions or asking for a stop, do a stop
+    if ((signbit(speed) != signbit(curAzSpeed)) || (speed == 0))
+    {
+      _stepperAZ->stop();
+      while (_stepperAZ->isRunning()){
+        loop();
+      }
+    }
+
+    // Are we starting a move or changing speeds?
+    if (speed != 0) {
+      _stepperAZ->enableOutputs();
+      _stepperAZ->setSpeed(speed);
+      _stepperAZ->move(speed * 100000);
+    } // Are we stopping a move?
+    else if (speed == 0) {
+      _stepperAZ->disableOutputs();
+    }
+  }
+  else if (which == ALTITUDE_STEPS) {
+    float curAltSpeed = _stepperALT->speed();
+
+    // If we are changing directions or asking for a stop, do a stop
+    if ((signbit(speed) != signbit(curAltSpeed)) || (speed == 0))
+    {
+      _stepperALT->stop();
+      while (_stepperALT->isRunning()){
+        loop();
+      }
+    }
+
+    // Are we starting a move or changing speeds?
+    if (speed != 0) {
+      _stepperALT->enableOutputs();
+      _stepperALT->setSpeed(speed);
+      _stepperALT->move(speed * 100000);
+    } // Are we stopping a move?
+    else if (speed == 0) {
+      _stepperALT->disableOutputs();
+    }
+  }
+  #endif
 }
 
 /////////////////////////////////
@@ -1179,6 +1225,23 @@ void Mount::goHome()
 }
 
 #if AZIMUTH_ALTITUDE_MOTORS == 1
+/////////////////////////////////
+//
+// isRunningAZ
+//
+/////////////////////////////////
+bool Mount::isRunningAZ() const {
+  return _stepperAZ->isRunning();
+}
+
+/////////////////////////////////
+//
+// isRunningALT
+//
+/////////////////////////////////
+bool Mount::isRunningALT() const {
+  return _stepperALT->isRunning();
+}
 /////////////////////////////////
 //
 // moveBy

@@ -161,6 +161,10 @@ public:
   bool isParking() const;
   bool isGuiding() const;
   bool isFindingHome() const;
+  #if AZIMUTH_ALTITUDE_MOTORS == 1
+  bool isRunningAZ() const;
+  bool isRunningALT() const;
+  #endif
 
   // Starts manual slewing in one of eight directions or tracking
   void startSlewing(int direction);
