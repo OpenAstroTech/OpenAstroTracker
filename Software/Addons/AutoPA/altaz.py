@@ -4,7 +4,7 @@ import serial
 import re
 
 def altaz(axis, errorvalue, serialport):
-	if not re.match(r"^[-+]?([0-9]*\.[0-9]+|[0-9]+)$", errorvalue):
+	if not re.match(r"^[-+]?([0-9]*\.[0-9]+|[0-9]+)$", str(errorvalue)):
 		print("Error value not valid")
 		return
 		
@@ -20,9 +20,7 @@ def altaz(axis, errorvalue, serialport):
 		return
 
 	#print(command) #For debugging
-
 	ser = serial.Serial(serialport, 57600, timeout = 1)
-	#commandToSend = ':Sr16:00:00#:MS#'
 	ser.write(str(commandToSend).encode())
 	return
 	
