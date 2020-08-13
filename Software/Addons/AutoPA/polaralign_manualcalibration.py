@@ -11,7 +11,7 @@ def polarcalibrate(mylat, mylong, myelev):
 	#iers.conf.auto_max_age = None
 
 	#Create location object based on lat/long/elev
-	observing_location = EarthLocation(lat=mylat*u.deg, lon=mylong*u.deg, height=177*u.m)
+	observing_location = EarthLocation(lat=mylat*u.deg, lon=mylong*u.deg, height=myelev*u.m)
 
 	p1RA = input("Enter first RA value in 00h00m00.0s format: ")
 	p1DEC = input("Enter first DEC value in 00d00m00.0s format: ")
@@ -52,6 +52,6 @@ mylat = float(sys.argv[1])
 mylong = float(sys.argv[2])
 
 #Elevation in meters
-myelev = sys.argv[3]
+myelev = float(sys.argv[3])
 
 polarcalibrate(mylat, mylong, myelev)
