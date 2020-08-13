@@ -39,14 +39,14 @@
     
     #if AZIMUTH_ALTITUDE_MOTORS == 1
         // Azimuth and Altitude pins
-        #define AZ_IN1_PIN 46
-        #define AZ_IN2_PIN 48
-        #define AZ_IN3_PIN 50
-        #define AZ_IN4_PIN 52
-        #define ALT_IN1_PIN 47
-        #define ALT_IN2_PIN 49
-        #define ALT_IN3_PIN 51
-        #define ALT_IN4_PIN 53
+        #define ALT_IN1_PIN 46
+        #define ALT_IN2_PIN 48
+        #define ALT_IN3_PIN 50
+        #define ALT_IN4_PIN 52
+        #define AZ_IN1_PIN 47
+        #define AZ_IN2_PIN 49
+        #define AZ_IN3_PIN 51
+        #define AZ_IN4_PIN 53
     #endif
     //---------------
     // MISC PINS amd SETTINGS
