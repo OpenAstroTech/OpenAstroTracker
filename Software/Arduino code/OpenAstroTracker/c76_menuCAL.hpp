@@ -107,9 +107,6 @@ float RollCalibrationAngle = 0.0;
 bool gyroStarted = false;
 #endif
 
-#if AZIMUTH_ATLITUDE_MOTORS == 1
-bool azAltMotorsEnabled = false;
-#endif
 
 // The brightness of the backlight of the LCD shield.
 // int Brightness = 255;
@@ -117,11 +114,6 @@ bool azAltMotorsEnabled = false;
 void gotoNextMenu()
 {
   lcdMenu.setNextActive();
-
-#if AZIMUTH_ALTITUDE_MOTORS == 1
-  mount.disableAzAltMotors();
-  azAltMotorsStarted = false;
-#endif
 
 #if GYRO_LEVEL == 1
   Gyro::shutdown();
@@ -182,12 +174,10 @@ void gotoNextHighlightState(int dir)
   else if (calState == HIGHLIGHT_PITCH_LEVEL)
   {
     PitchCalibrationAngle = mount.getPitchCalibrationAngle();
-    LOGV2(DEBUG_INFO, "CAL: initial pitch is %f", PitchCalibrationAngle);
   }
   else if (calState == HIGHLIGHT_ROLL_LEVEL)
   {
     RollCalibrationAngle = mount.getRollCalibrationAngle();
-    LOGV2(DEBUG_INFO, "CAL: initial roll is %f", RollCalibrationAngle);
   }
 #endif
   // else if (calState == HIGHLIGHT_BACKLIGHT) {
@@ -200,15 +190,6 @@ bool processCalibrationKeys()
   byte key;
   bool waitForRelease = false;
   bool checkForKeyChange = true;
-
-#if AZIMUTH_ALTITUDE_MOTORS == 1
-  if (!azAltMotorsStarted)
-  {
-    mount.enableAzAltMotors();
-    azAltMotorsStarted = true;
-  }
-
-#endif
 
 #if GYRO_LEVEL == 1
   if (!gyroStarted)
@@ -306,10 +287,25 @@ bool processCalibrationKeys()
           mount.setSpeed(ALTITUDE_STEPS, -500) ;
         }
       }
+      else if (currentButtonState == btnRIGHT)
+      {
+        if (!mount.isRunningAZ()) {
+          mount.setSpeed(AZIMUTH_STEPS, 500) ;
+        }
+      }
+      else if (currentButtonState == btnLEFT)
+      {
+        if (!mount.isRunningAZ()) {
+          mount.setSpeed(AZIMUTH_STEPS, -500) ;
+        }
+      }
       else if (currentButtonState == btnNONE)
       {
         if (mount.isRunningALT()) {
           mount.setSpeed(ALTITUDE_STEPS, 0) ;
+        }
+        if (mount.isRunningAZ()) {
+          mount.setSpeed(AZIMUTH_STEPS, 0) ;
         }
       }
       #endif
@@ -351,12 +347,10 @@ bool processCalibrationKeys()
 
     case POLAR_CALIBRATION_WAIT_HOME:
     {
-      if (key == btnSELECT)
-      {
-        calState = HIGHLIGHT_POLAR;
-      }
       if (key == btnRIGHT)
       {
+        mount.stopSlewing(ALL_DIRECTIONS);
+        mount.waitUntilStopped(ALL_DIRECTIONS);
         gotoNextMenu();
         calState = HIGHLIGHT_POLAR;
       }
@@ -424,7 +418,6 @@ bool processCalibrationKeys()
       // UP and DOWN are handled above
       if (key == btnSELECT)
       {
-        LOGV2(DEBUG_GENERAL, "CAL Menu: Set backlash to %d", BacklashSteps);
         mount.setBacklashCorrection(BacklashSteps);
         lcdMenu.printMenu("Backlash stored.");
         mount.delay(500);
@@ -484,7 +477,6 @@ bool processCalibrationKeys()
         auto angles = Gyro::getCurrentAngles();
         mount.setRollCalibrationAngle(angles.rollAngle);
         RollCalibrationAngle = angles.rollAngle;
-        LOGV2(DEBUG_INFO, "CAL: Set roll to %f", angles.rollAngle);
         calState = HIGHLIGHT_ROLL_LEVEL;
       }
       else if (key == btnLEFT)
@@ -506,7 +498,6 @@ bool processCalibrationKeys()
         auto angles = Gyro::getCurrentAngles();
         mount.setPitchCalibrationAngle(angles.pitchAngle);
         PitchCalibrationAngle = angles.pitchAngle;
-        LOGV2(DEBUG_INFO, "CAL: Set pitch to %f", angles.pitchAngle);
         calState = HIGHLIGHT_PITCH_LEVEL;
       }
       else if (key == btnLEFT)
@@ -579,13 +570,6 @@ bool processCalibrationKeys()
         // Go home from here
         mount.setTargetToHome();
         mount.startSlewingToTarget();
-        gotoNextMenu();
-        calState = HIGHLIGHT_POLAR;
-      }
-      else if (key == btnRIGHT)
-      {
-        gotoNextMenu();
-        calState = HIGHLIGHT_POLAR;
       }
     }
     break;

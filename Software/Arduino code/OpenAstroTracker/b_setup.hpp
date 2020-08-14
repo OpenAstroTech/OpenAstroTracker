@@ -186,14 +186,17 @@ void finishSetup()
     unsigned long now = millis();
   #endif
   // Create the command processor singleton
+  LOGV1(DEBUG_ANY, "Initialize LX200 handler...");
   MeadeCommandProcessor::createProcessor(&mount, &lcdMenu);
 
   #ifdef WIFI_ENABLED
+    LOGV1(DEBUG_ANY, "Setup Wifi...");
     wifiControl.setup();
   #endif
 
   // Configure the mount
   
+  LOGV1(DEBUG_ANY, "Configure RA stepper...");
   // Set the stepper motor parameters
   #if RA_STEPPER_TYPE == STEP_28BYJ48 
     mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);
@@ -203,6 +206,7 @@ void finishSetup()
     #error New stepper type? Configure it here.
   #endif
 
+  LOGV1(DEBUG_ANY, "Configure DEC stepper...");
   #if DEC_STEPPER_TYPE == STEP_28BYJ48
     mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
   #elif DEC_STEPPER_TYPE == STEP_NEMA17
@@ -212,19 +216,24 @@ void finishSetup()
   #endif
 
   #if RA_DRIVER_TYPE == TMC2209_UART
+    LOGV1(DEBUG_ANY, "Configure RA driver...");
     mount.configureRAdriver(&RA_SERIAL_PORT, R_SENSE, RA_DRIVER_ADDRESS, RA_RMSCURRENT, RA_STALL_VALUE);
   #endif
   #if DEC_DRIVER_TYPE == TMC2209_UART
+    LOGV1(DEBUG_ANY, "Configure DEC driver...");
     mount.configureDECdriver(&DEC_SERIAL_PORT, R_SENSE, DEC_DRIVER_ADDRESS, DEC_RMSCURRENT, DEC_STALL_VALUE);
   #endif
 
   #if AZIMUTH_ALTITUDE_MOTORS == 1
+    LOGV1(DEBUG_ANY, "Configure AZ stepper...");
     mount.configureAzStepper(HALFSTEP, AZmotorPin1, AZmotorPin2, AZmotorPin3, AZmotorPin4, AZIMUTH_MAX_SPEED, AZIMUTH_MAX_ACCEL);
+    LOGV1(DEBUG_ANY, "Configure Alt stepper...");
     mount.configureAltStepper(FULLSTEP, ALTmotorPin1, ALTmotorPin2, ALTmotorPin3, ALTmotorPin4, ALTITUDE_MAX_SPEED, ALTITUDE_MAX_ACCEL);
   #endif
 
   // The mount uses EEPROM storage locations 0-10 that it reads during construction
   // The LCD uses EEPROM storage location 11
+  LOGV1(DEBUG_ANY, "Read configuration...");
   mount.readConfiguration();
   
   // Read other persisted values and set in mount
@@ -242,9 +251,12 @@ void finishSetup()
   mount.startTimerInterrupts();
 
   // Start the tracker.
+  LOGV1(DEBUG_ANY, "Start Tracking...");
   mount.startSlewing(TRACKING);
 
   #if HEADLESS_CLIENT == 0
+    LOGV1(DEBUG_ANY, "Setup menu system...");
+
     // Create the LCD top-level menu items
     lcdMenu.addItem("RA", RA_Menu);
     lcdMenu.addItem("DEC", DEC_Menu);
@@ -277,6 +289,7 @@ void finishSetup()
       mount.loop();
     }
 
+    LOGV1(DEBUG_ANY, "Update display...");
     lcdMenu.updateDisplay();
   #endif // HEADLESS_CLIENT
 
