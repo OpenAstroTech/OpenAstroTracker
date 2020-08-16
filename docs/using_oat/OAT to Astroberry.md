@@ -16,7 +16,7 @@ OAT Arduino must have either **SUPPORTS_SERIAL** or **HEADLESS_CLIENT** enabled.
    ![](../Astroberry_Connect/Launch_KStars.png)  
     
    
-2. Launch Ekos from the menu bar Tools -> Ekos (or shortcut Alt-K)  
+2. Launch Ekos from the menu bar Tools -> Ekos (or shortcut Ctrl-K)  
    ![Launch Ekos](../Astroberry_Connect/Launch_Ekos.png)  
 
 
