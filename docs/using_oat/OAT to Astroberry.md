@@ -20,7 +20,7 @@ OAT Arduino must have either **SUPPORTS_SERIAL** or **HEADLESS_CLIENT** enabled.
    ![Launch Ekos](../Astroberry_Connect/Launch_Ekos.png)  
 
 
-3. Under ""Select Profile" click the Add Profile button  
+3. Under "Select Profile" click the Add Profile button  
    ![Create Profile](../Astroberry_Connect/Create_Profile.png)  
 
    
