@@ -28,8 +28,8 @@ OAT Arduino must have either **SUPPORTS_SERIAL** or **HEADLESS_CLIENT** enabled.
    ![Select Gear](../Astroberry_Connect/Select_Gear.png)  
 
 
-5. Under Start & Stop Ekos, clidk the Start button.  
-   ![](../Astroberry_Connect/Start_Ekos.png)  
+5. Under Start & Stop Ekos, click the Start button.  
+   ![Start Ekos](../Astroberry_Connect/Start_Ekos.png)  
 
    
 6. setup Mount: In the LX200 GPS -> Connection tab set baud rate to 57600 and set the port to the system port by clicking on the button next to "System Ports"  If this is blank try clicking on the "Scan Ports" button.  
