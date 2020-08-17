@@ -1,3 +1,11 @@
+---
+layout: default
+title: Connecting OAT to Astroberry
+parent: How to use the OAT
+nav_order: 4
+
+---
+
 # **Connecting Arduino based OAT to Astroberry Server.**
 
 This guide assumes you have Astroberry installed on a Raspberry Pi and you are able to access the desktop. (See [Astroberry Quick Start Guide](https://www.astroberry.io/docs/index.php?title=Astroberry_Server#Quick_Start "Astroberry Quick Start Guide") for Astroberry setup.)
