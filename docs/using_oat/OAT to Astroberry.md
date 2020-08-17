@@ -2,7 +2,7 @@
 layout: default
 title: Connecting OAT to Astroberry
 parent: How to use the OAT
-nav_order: 4
+nav_order: 3
 
 ---
 
