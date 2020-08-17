@@ -292,11 +292,18 @@ namespace MenuPrototype
 
 			var calMenu = new MenuItem("CAL");
 			var calList = new ScrollList();
-			
+
+
+			var storeSync = new MenuItem("Adjust mount ","StoreAndSync");
+			storeSync.addMenuItem(new Button(storeSync, "Centered", storeAndSync));
+
+			var slewToPolaris = new ActionRunnerModal(calMenu, "Slewing....", "SlewToPolaris", storeSync);
 			var paBtn = new Button(calMenu, "Polar Alignmnt", (eventArgs) => calMenu.getMainMenu().activateDialog("SlewToPolaris"));
 			calList.addMenuItem(paBtn);
-			//var daBtn = new Button(calMenu, "Drift Alignmnt", );
-			//calList.addMenuItem(daBtn);
+
+			// var driftAlign= new MenuItem("Drift align", "DriftAlign");
+			var driftAlign= new ActionRunnerModal(calMenu, "Drift align", "DriftAlign");
+			calList.addMenuItem(driftAlign);
 
 			var speedBtn = new Button(calMenu, "Speed Calibratn", new NumberInput(calMenu, "SPD", 1, "SpdFctr: @", null, speedIncr, 1));
 			calList.addMenuItem(speedBtn);
@@ -321,7 +328,7 @@ namespace MenuPrototype
 			//infoList.addMenuItem(new TextInfo(infoMenu, "Temp: ", getTemperature));
 			//infoList.addMenuItem(new TextInfo(infoMenu, "MemAvail: ", getMemAvail));
 			//infoList.addMenuItem(new TextInfo(infoMenu, "Up: ", getUpTime));
-			infoList.addMenuItem(new TextInfo(infoMenu, "Firmw.: ", () => "V1.9.00")); 
+			infoList.addMenuItem(new TextInfo(infoMenu, "Firmw.: ", () => "V1.9.00"));
 			infoMenu.addMenuItem(infoList);
 
 			menu.addMenuItem(raMenu);
@@ -333,6 +340,8 @@ namespace MenuPrototype
 			menu.addMenuItem(infoMenu);
 			menu.addModalDialog(manualControl);
 			menu.addModalDialog(setHomeDialog);
+			menu.addModalDialog(slewToPolaris);
+			menu.addModalDialog(storeSync);
 
 			/// Startup Wizard
 			var startupIsHomeDialog = new MenuItem("Home Position?", "StartIsHome");
@@ -411,6 +420,13 @@ namespace MenuPrototype
 			}
 		}
 
+		public static void storeAndSync(EventArgs args)
+		{
+			Console.CursorTop = 4;
+			Console.WriteLine("Set mount sync to Polaris.                 ");
+			args.source.getMainMenu().closeDialog();
+		}
+
 		public static string getRASteps(int index)
 		{
 			switch (index)
@@ -439,7 +455,7 @@ namespace MenuPrototype
 			int steps = now.Second + now.Minute * 60;
 			switch (index)
 			{
-				case 0: return "TRK Stpr: "+steps.ToString();
+				case 0: return "TRK Stpr: " + steps.ToString();
 				case 1: return "TRK Spd:1.678766";
 			}
 			return "?";
@@ -664,6 +680,7 @@ namespace MenuPrototype
 			//public bool isActive() { return _active; }
 			//public void setActive(bool state) { _active = state; }
 			public string getTag() { return _tag; }
+			public void setTag(string tag) { _tag = tag; }
 			public string getDisplayName() { return _displayName; }
 
 			public virtual void onDisplay(bool modal = false)
@@ -1144,6 +1161,52 @@ namespace MenuPrototype
 					_parent.closeMenuItem(this);
 				}
 				return base.onKeypressed(key);
+			}
+		}
+
+		/////////////////////////////////////////////////////////////
+		public class ActionRunnerModal : MenuItem
+		{
+			MenuItem _parent;
+			MenuItem _followModal;
+			Func<bool> _isComplete;
+
+			public ActionRunnerModal(MenuItem parent, string prompt, string tag, MenuItem followModal = null) : base(prompt, tag)
+			{
+				_parent = parent;
+				_isComplete = null;
+				_followModal = followModal;
+			}
+
+			public ActionRunnerModal(MenuItem parent, string prompt, string tag, Func<bool> isComplete, MenuItem followModal = null) : base(prompt, tag)
+			{
+				_parent = parent;
+				_isComplete = isComplete;
+				_followModal = followModal;
+			}
+
+			public virtual bool isComplete() { return true; }
+
+			public override void onDisplay(bool modal = false)
+			{
+				if (!string.IsNullOrEmpty(_displayName))
+				{
+					Console.WriteLine(_displayName + "            ");
+				}
+
+				bool complete = _isComplete == null ? isComplete() : _isComplete();
+				if (complete)
+				{
+
+					if (_followModal != null)
+					{
+						getMainMenu().activateDialog(_followModal.getTag());
+					}
+					else
+					{
+						getMainMenu().closeDialog();
+					}
+				}
 			}
 		}
 
