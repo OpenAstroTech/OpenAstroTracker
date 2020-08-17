@@ -93,3 +93,62 @@ Assembly:
 12. Install a GT2 belt tension spring within the opening of each M14 belt ring.
 13. Tighten the belt screw on one of the M14 belt rings. Pull the loose belt end while simultaneously pulling the motor block away from the tightened belt screw **(both tension springs should be stretched at this point)**
 14. Tighten the remaining belt screw.
+
+# Software
+
+The AutoPA system uses Python scripts to control the OAT and camera via an INDI server such as [Astroberry](https://www.astroberry.io/).
+
+Requirements:
+1. INDI server running and connected to the OAT and camera
+2. Python3 installed
+4. Astrometry config file (Default config location: `/home/astroberry/.local/share/kstars/astrometry/astrometry.cfg`)
+5. Astrometry index files downloaded to local device (Default location per config file: `/home/astroberry/.local/share/kstars/astrometry`)
+	1) Index files can be downloaded via the Kstars/Ekos GUI: `Ekos -> Alignment Tab -> Options -> Index Files`
+3. [Astropy](https://docs.astropy.org/en/stable/install.html) installed
+4. Astropy config installed at `~/.astropy/config/astropy.cfg`
+
+# Calibration
+In order for the alt/az system to work, it must be calibrated. This is done using either `polaralign_manualcalibration.py` or `polaralign_autocalibration.py`. Each axis (alt or az) must be calibrated separately.
+
+#### Manual Calibration
+This program calculates the alt/az difference between two sets of RA/DEC input values. The RA/DEC values must be obtained elsewhere via plate solving two images. 
+1. Take a photo and record the time
+2. Adjust the altitude or azimuth axis by a specific amount of arcminutes via the calibration menu on the LCD screen or using the `joystick.py` program .
+3. Take another photo and record the time
+4. Plate solve each photo using any familiar method or by uploading here: [https://nova.astrometry.net/upload](https://nova.astrometry.net/upload)
+5. Run script using the correct lat/long/elevation then input the requested information
+6. The output will be the actual alt/az movement in arcminutes.
+7. Compare the output values to what was originally input on the LCD to determine the calibration factor.
+
+#### Auto-calibration - Not Available Yet (WIP)
+This program will:
+1. Capture an image in the current direction of the camera and plate solve
+2. Rotate the axis being calibrated by a predefined (or configurable) angular value
+3. Capture a second image and plate solve
+4. Compare the two images to determine the actual amount rotated
+5. Output a factor of `actual ÷ expected` movement.
+
+It is recommended to run the calibration routine on each axis three times and take the average of the three before editing the arcminutes/step.
+
+# Usage - Not Available Yet (WIP)
+
+Once each axis is calibrated the `autopolaralign.py` program can be used.
+
+The following input parameters are required:
+`autopolaralign.py [latitude] [longitude] [elevation] --telescope=[Name of OAT in INDI] --ccd="Name of camera in INDI"`
+
+Starting with a default target of RA/DEC 0 deg, 85 deg (configurable in command options), the OAT will slew to target and start the following routine:
+1. Capture image and solve.
+2. Slew +30 degrees, capture another image and solve.
+3. Slew +30 degrees, capture another image and solve.
+4. Calculate the current center of RA rotation in RA/DEC coordinates.
+5. Convert that location into altitude azimuth coordinates.
+6. Send command to the OAT to adjust each altitude and azimuth axis to correct.
+
+Note: there are optional input parameters that can speed up the process of solving (e.g. focal length and pixel size). All options can be viewed by running `autopolaralign.py -h` or `autopolaralign.py --help`
+
+# Troubleshooting
+
+|Known Potential Issue|Most Likely Reason|
+|-|-
+|Program Hangs|Incorrect name used for INDI devices. The program waits until the specified named device connects to the INDI server. If the wrong name is used, it will keep waiting.
