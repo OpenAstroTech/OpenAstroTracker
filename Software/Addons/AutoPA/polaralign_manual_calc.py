@@ -17,9 +17,9 @@ def polarcalc(mylat, mylong, myelev, observing_time, p1RA, p1DEC, p2RA, p2DEC, p
     observing_location = EarthLocation(lat=mylat*u.deg, lon=mylong*u.deg, height=myelev*u.m)
 
     #Create coordinate objects for each point
-    p1 = SkyCoord(p1RA, p1DEC, unit='deg')
-    p2 = SkyCoord(p2RA, p2DEC, unit='deg')
-    p3 = SkyCoord(p3RA, p3DEC, unit='deg')
+    p1 = SkyCoord(p1RA, p1DEC, frame='itrs', unit='deg', representation_type='spherical', obstime=observing_time)
+    p2 = SkyCoord(p2RA, p2DEC, frame='itrs', unit='deg', representation_type='spherical', obstime=observing_time)
+    p3 = SkyCoord(p3RA, p3DEC, frame='itrs', unit='deg', representation_type='spherical', obstime=observing_time)
     p1X = (90 - p1.dec.degree) * math.cos(p1.ra.radian)
     p1Y = (90 - p1.dec.degree) * math.sin(p1.ra.radian)
     p2X = (90 - p2.dec.degree) * math.cos(p2.ra.radian)
@@ -42,18 +42,18 @@ def polarcalc(mylat, mylong, myelev, observing_time, p1RA, p1DEC, p2RA, p2DEC, p
             resultRA = (180-abs(resultRA))+180
 
     #Create coordinate object for current alignment offset
-    offset = SkyCoord(resultRA, resultDEC, frame='itrs', unit='deg', representation_type='spherical', obstime=Time(observing_time))
+    offset = SkyCoord(resultRA, resultDEC, frame='itrs', unit='deg', representation_type='spherical', obstime=observing_time)
     print(f"Current alignment in RA/DEC: {Angle(resultRA*u.deg).to_string(u.hour, precision=2)}/{Angle(resultDEC*u.deg).to_string(u.degree, precision=2)}.")
 
     #Create coordinate object for pole
-    pole = SkyCoord(0, 90, frame='itrs', unit='deg', representation_type='spherical', obstime=Time(observing_time))
+    pole = SkyCoord(0, 90, frame='itrs', unit='deg', representation_type='spherical', obstime=observing_time)
     
     #Create coordinate object for pole
-    poleAzAlt = pole.transform_to(AltAz(obstime=Time(observing_time),location=observing_location))
+    poleAzAlt = pole.transform_to(AltAz(obstime=observing_time,location=observing_location))
     print(f"True polar alignment in Az./Alt.: 0h00m00s/{poleAzAlt.alt.to_string(u.degree, precision=2)}.")
 
     #Transform current alignment to Alt/Az coordinate system
-    offsetAzAlt = offset.transform_to(AltAz(obstime=Time(observing_time),location=observing_location))
+    offsetAzAlt = offset.transform_to(AltAz(obstime=observing_time,location=observing_location))
     print(f"Current alignment in Az./Alt.: {offsetAzAlt.az.to_string(u.hour, precision=2)}/{offsetAzAlt.alt.to_string(u.degree, precision=2)}.")
 
     #Calculate offset deltas from pole
