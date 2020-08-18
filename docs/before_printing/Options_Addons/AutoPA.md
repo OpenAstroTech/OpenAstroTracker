@@ -61,8 +61,10 @@ Assembly:
 9. Wire stepper according to **configure_pins.hpp** and run motor using the altitude control in the CAL menu to move Altitude Track into place.
 
 ### Azimuth
-![AutoPA_Azimuth1](../AutoPA_images/AutoPA_Azimuth1.png)|![AutoPA_Azimuth2](../AutoPA_images/AutoPA_Azimuth2.png)
--|-
+
+<img  src="../AutoPA_images/AutoPA_Azimuth1.png" width="49%">
+<img  src="../AutoPA_images/AutoPA_Azimuth2.png" width="49%">
+
 1. Assembly pivot frame using M3 10mm screws and M3 nuts
 2. Insert 6001 bearing into pivot frame
 3. Assemble slide frame and motor mount using M3 12mm screws.
