@@ -9,8 +9,6 @@ markdown:
 	
 ------------------
 Images:
-MD file should have a permalink
-	permalink: /docs/parent/bla
 Images should be in a appropriately named subfolder
 Markdown:
 	![alt_text](../subfolder/image.png)

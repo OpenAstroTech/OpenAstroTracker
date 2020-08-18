@@ -13,7 +13,7 @@ The steppers turn the OAT with an **estimated** precision of 4 arcseconds/step f
 
 They can be manually controlled in arcminute integers via the calibration menu on the LCD, or via LX200 commands for finer precision.
 
-![AutoPA_Overall](./AutoPA_images/AutoPA_Overall.png)
+![AutoPA_Overall](../AutoPA_images/AutoPA_Overall.png)
 
 # Parts List
 
@@ -38,7 +38,7 @@ They can be manually controlled in arcminute integers via the calibration menu o
 
 ### Altitude
 
-![AutoPA_Altitude](./AutoPA_images/AutoPA_Altitude.png)
+![AutoPA_Altitude](../AutoPA_images/AutoPA_Altitude.png)
 
 Assembly:
 1. Superglue a strip of belt onto altitude track and ensure it's centered perfectly, otherwise there will be too much friction between the track and the rear mount.
@@ -61,7 +61,7 @@ Assembly:
 9. Wire stepper according to **configure_pins.hpp** and run motor using the altitude control in the CAL menu to move Altitude Track into place.
 
 ### Azimuth
-![AutoPA_Azimuth1](./AutoPA_images/AutoPA_Azimuth1.png)|![AutoPA_Azimuth2](./AutoPA_images/AutoPA_Azimuth2.png)
+![AutoPA_Azimuth1](../AutoPA_images/AutoPA_Azimuth1.png)|![AutoPA_Azimuth2](../AutoPA_images/AutoPA_Azimuth2.png)
 -|-
 1. Assembly pivot frame using M3 10mm screws and M3 nuts
 2. Insert 6001 bearing into pivot frame
@@ -81,7 +81,7 @@ Assembly:
 14. Tighten the remaining belt screw.
 
 ### Assembly Finished
-![AutoPA_NoOAT](./AutoPA_images/AutoPA_NoOAT.png)
+![AutoPA_NoOAT](../AutoPA_images/AutoPA_NoOAT.png)
 
 Once assembled and wired to a 6 V power source, the system can be tested. Although the 28BYJ steppers are rated for 5 V, they can be  overvolted for more torque. The OAT firmware is designed to power down the steppers when not actively moving to prevent overheating from the higher voltage. Since (ideally) they only move for a few seconds each session, overheating is not expected to be an issue.
 
