@@ -13,47 +13,32 @@ The steppers turn the OAT with an **estimated** precision of 4 arcseconds/step f
 
 They can be manually controlled in arcminute integers via the calibration menu on the LCD, or via LX200 commands for finer precision.
 
+![AutoPA_Overall](./AutoPA_images/AutoPA_Overall.png)
+
 # Parts List
 
-| Item|Quantity|
-| -|-
-| 28BYJ-48 stepper|2|
-|6801 bearing|4
-|6001 bearing|1
-|5 mm shaft, 57 mm long minimum|1
-|16T pulley|3
-|GT2 6 mm belt|Approx. 500 mm
-|Superglue|
-|GT2 belt tension spring|2
-|Scotch (cellophane) tape|
-|Various size M3 screws (mostly 12mm)|Approx. 20
-|M3 nuts|6
-|M4 12 mm screws|2
-|M4 8 mm screws|4
-|LM2596 buck converter (6V output)|1
+|Purchased Parts|Quantity||Printed Parts|Quantity|
+|-|-|-|-|-|
+| 28BYJ-48 stepper|2||13_rear_AltAz_mount.stl|1 - Replaces default rear mount
+|6801 bearing|4||Alt_gearbox.stl|1
+|6001 bearing|1||Alt_track.stl|1
+|5 mm shaft, 57 mm long minimum|1||Alt_wormgear_cap.stl|1
+|16T pulley|3||Alt_wormgear_largegear.stl|1
+|GT2 6 mm belt|Approx. 500 mm||Alt_wormgear_worm.stl|1
+|Superglue|||Az_M14_belt_ring.stl|2
+|GT2 belt tension spring|2||Az_M14_dome_cap.stl|2
+|Scotch (cellophane) tape|||Az_motor_mount.stl|1
+|Various size M3 screws (mostly 12mm)|Approx. 20||Az_pivot_frameA.stl|1
+|M3 nuts|6||Az_pivot_frameB.stl|1
+|M4 12 mm screws|2||Az_slide_frame_left.stl|1
+|M4 8 mm screws|4||Az_slide_frame_right.stl|1
+|LM2596 buck converter (6 V output)|1||Az_slide_plate.stl|2
 
+# Assembly Instructions
 
-# Printed Parts List
+### Altitude
 
-| Item|Quantity|
-| -|-|
-|13_rear_AltAz_mount.stl|1 - Replaces default rear mount
-|Alt_gearbox.stl|1
-|Alt_track.stl|1
-|Alt_wormgear_cap.stl|1
-|Alt_wormgear_largegear.stl|1
-|Alt_wormgear_worm.stl|1
-|Az_M14_belt_ring.stl|2
-|Az_M14_dome_cap.stl|2
-|Az_motor_mount.stl|1
-|Az_pivot_frameA.stl|1
-|Az_pivot_frameB.stl|1
-|Az_slide_frame_left.stl|1
-|Az_slide_frame_right.stl|1
-|Az_slide_plate.stl|2
-
-
-# Altitude Assembly Instructions
+![AutoPA_Altitude](./AutoPA_images/AutoPA_Altitude.png)
 
 Assembly:
 1. Superglue a strip of belt onto altitude track and ensure it's centered perfectly, otherwise there will be too much friction between the track and the rear mount.
@@ -75,8 +60,9 @@ Assembly:
 8. Install the 28BYJ using M4 screws and tighten motor shaft in the worm using 2x M3 screws
 9. Wire stepper according to **configure_pins.hpp** and run motor using the altitude control in the CAL menu to move Altitude Track into place.
 
-# Azimuth Assembly Instructions
-
+### Azimuth
+![AutoPA_Azimuth1](./AutoPA_images/AutoPA_Azimuth1.png)|![AutoPA_Azimuth2](./AutoPA_images/AutoPA_Azimuth2.png)
+-|-
 1. Assembly pivot frame using M3 10mm screws and M3 nuts
 2. Insert 6001 bearing into pivot frame
 3. Assemble slide frame and motor mount using M3 12mm screws.
@@ -94,6 +80,11 @@ Assembly:
 13. Tighten the belt screw on one of the M14 belt rings. Pull the loose belt end while simultaneously pulling the motor block away from the tightened belt screw **(both tension springs should be stretched at this point)**
 14. Tighten the remaining belt screw.
 
+### Assembly Finished
+![AutoPA_NoOAT](./AutoPA_images/AutoPA_NoOAT.png)
+
+Once assembled and wired to a 6 V power source, the system can be tested. Although the 28BYJ steppers are rated for 5 V, they can be  overvolted for more torque. The OAT firmware is designed to power down the steppers when not actively moving to prevent overheating from the higher voltage. Since (ideally) they only move for a few seconds each session, overheating is not expected to be an issue.
+
 # Software
 
 The AutoPA system uses Python scripts to control the OAT and camera via an INDI server such as [Astroberry](https://www.astroberry.io/).
@@ -101,16 +92,17 @@ The AutoPA system uses Python scripts to control the OAT and camera via an INDI 
 Requirements:
 1. INDI server running and connected to the OAT and camera
 2. Python3 installed
+3. [pyindi-client](https://pypi.org/project/pyindi-client/)
 4. Astrometry config file (Default config location: `/home/astroberry/.local/share/kstars/astrometry/astrometry.cfg`)
 5. Astrometry index files downloaded to local device (Default location per config file: `/home/astroberry/.local/share/kstars/astrometry`)
 	1) Index files can be downloaded via the Kstars/Ekos GUI: `Ekos -> Alignment Tab -> Options -> Index Files`
-3. [Astropy](https://docs.astropy.org/en/stable/install.html) installed
-4. Astropy config installed at `~/.astropy/config/astropy.cfg`
+6. [Astropy](https://docs.astropy.org/en/stable/install.html) installed
+7. Astropy config installed at `~/.astropy/config/astropy.cfg`
 
 # Calibration
 In order for the alt/az system to work, it must be calibrated. This is done using either `polaralign_manualcalibration.py` or `polaralign_autocalibration.py`. Each axis (alt or az) must be calibrated separately.
 
-#### Manual Calibration
+### Manual Calibration
 This program calculates the alt/az difference between two sets of RA/DEC input values. The RA/DEC values must be obtained elsewhere via plate solving two images. 
 1. Take a photo and record the time
 2. Adjust the altitude or azimuth axis by a specific amount of arcminutes via the calibration menu on the LCD screen or using the `joystick.py` program .
@@ -120,13 +112,13 @@ This program calculates the alt/az difference between two sets of RA/DEC input v
 6. The output will be the actual alt/az movement in arcminutes.
 7. Compare the output values to what was originally input on the LCD to determine the calibration factor.
 
-#### Auto-calibration - Not Available Yet (WIP)
+### Auto-calibration - Not Available Yet (WIP)
 This program will:
 1. Capture an image in the current direction of the camera and plate solve
 2. Rotate the axis being calibrated by a predefined (or configurable) angular value
 3. Capture a second image and plate solve
 4. Compare the two images to determine the actual amount rotated
-5. Output a factor of `actual ÷ expected` movement.
+5. Output a factor of `actual ? expected` movement.
 
 It is recommended to run the calibration routine on each axis three times and take the average of the three before editing the arcminutes/step.
 
