@@ -1380,14 +1380,14 @@ String Mount::getStatusString() {
     if (slew & SLEWING_RA) disp[0] = _stepperRA->speed() < 0 ? 'R' : 'r';
     if (slew & SLEWING_DEC) disp[1] = _stepperDEC->speed() < 0 ? 'D' : 'd';
     if (slew & SLEWING_TRACKING) disp[2] = 'T';
-    #if AZIMUTH_ALTITUDE_MOTORS == 1
-    if (_stepperAZ->isRunning()) disp[3] = _stepperAZ->speed() < 0 ? 'Z' : 'z';
-    if (_stepperALT->isRunning()) disp[4] = _stepperALT->speed() < 0 ? 'A' : 'a';
-    #endif
   }
   else if (isSlewingTRK()) {
     disp[2] = 'T';
   }
+  #if AZIMUTH_ALTITUDE_MOTORS == 1
+  if (_stepperAZ->isRunning()) disp[3] = _stepperAZ->speed() < 0 ? 'Z' : 'z';
+  if (_stepperALT->isRunning()) disp[4] = _stepperALT->speed() < 0 ? 'A' : 'a';
+  #endif
 
   status += disp;
   status += String(_stepperRA->currentPosition()) + ",";
