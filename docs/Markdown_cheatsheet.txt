@@ -1,5 +1,36 @@
+https://www.markdownguide.org/basic-syntax/
+
+
 Link in new tab:
 html:
-  <a href="https://fancy.link" target="_blank">Hello, world!</a>
+	<a href="https://fancy.link" target="_blank">Hello, world!</a>
 markdown:
-  [Hello, world!](https://fancy.link){:target="_blank"}
+	[Hello, world!](https://fancy.link){:target="_blank"}
+	
+------------------
+Images:
+MD file should have a permalink
+	permalink: /docs/parent/bla
+Images should be in a appropriately named subfolder
+Markdown:
+	![alt_text](../subfolder/image.png)
+html:
+	<img align="left" src="../subfolder/image.png" width="x%">
+center image:
+	<p align="center">
+		<img src="../subfolder/image.png" width="x%">
+	</p>
+	
+-----------------
+Table of contents
+### Table of contents
+{: .no_toc .text-delta }
+1. TOC
+{:toc}
+
+{: .no_toc }  under a #headline to exclude it
+	
+-------------------
+Paragraph:
+<br/><br/>
+\
