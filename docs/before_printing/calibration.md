@@ -3,7 +3,6 @@ layout: default
 title: Printer calibration
 parent: Before you print
 nav_order: 3
-permalink: /docs/before_printing/calibration
 ---
 
 
