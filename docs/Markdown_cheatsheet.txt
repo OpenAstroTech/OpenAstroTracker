@@ -1,0 +1,5 @@
+Link in new tab:
+html:
+  <a href="https://fancy.link" target="_blank">Hello, world!</a>
+markdown:
+  [Hello, world!](https://fancy.link){:target="_blank"}
