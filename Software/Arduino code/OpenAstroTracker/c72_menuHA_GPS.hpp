@@ -1,8 +1,8 @@
 #pragma once
 
 #include "EPROMStore.hpp"
-#include "configuration_adv.hpp"
-#include "configuration_pins.hpp"
+#include "Configuration_adv.hpp"
+#include "Configuration_pins.hpp"
 
 #if HEADLESS_CLIENT == 0
 #if USE_GPS == 1

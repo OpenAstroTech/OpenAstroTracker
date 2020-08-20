@@ -2,7 +2,7 @@
 
 #include <AccelStepper.h>
 #include <LiquidCrystal.h>
-#include "configuration_pins.hpp"
+#include "Configuration_pins.hpp"
 
 #include "Utility.hpp"
 #include "DayTime.hpp"
