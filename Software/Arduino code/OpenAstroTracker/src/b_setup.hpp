@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Configuration.hpp"
+#include "../Configuration.hpp"
 #include "a_inits.hpp"
 #include "LcdMenu.hpp"
 #include "Utility.hpp"

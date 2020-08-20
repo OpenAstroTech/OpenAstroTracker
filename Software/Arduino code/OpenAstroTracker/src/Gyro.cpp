@@ -1,4 +1,4 @@
-#include "Configuration_adv.hpp"
+#include "../Configuration_adv.hpp"
 
 #if GYRO_LEVEL == 1
 #include <Wire.h> // I2C communication library

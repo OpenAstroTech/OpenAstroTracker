@@ -5,8 +5,8 @@
 #include "Utility.hpp"
 #include "EPROMStore.hpp"
 #include "Sidereal.cpp"
-#include "Configuration_adv.hpp"
-#include "Configuration_pins.hpp"
+#include "../Configuration_adv.hpp"
+#include "../Configuration_pins.hpp"
 
 //mountstatus
 #define STATUS_PARKED              0B0000000000000000

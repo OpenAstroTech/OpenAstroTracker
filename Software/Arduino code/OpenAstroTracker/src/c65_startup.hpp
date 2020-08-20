@@ -1,5 +1,5 @@
 #pragma once
-#include "Configuration_adv.hpp"
+#include "../Configuration_adv.hpp"
 
 #if HEADLESS_CLIENT == 0
 #if SUPPORT_GUIDED_STARTUP == 1

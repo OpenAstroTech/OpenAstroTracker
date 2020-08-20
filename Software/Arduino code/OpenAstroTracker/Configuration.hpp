@@ -1,6 +1,6 @@
 #pragma once
-#include "Configuration_adv.hpp"   // <-- 
-#include "Configuration_pins.hpp"  // <-- ignore these
+#include "../Configuration_adv.hpp"   // <-- 
+#include "../Configuration_pins.hpp"  // <-- ignore these
 /*
   =======================================================================================================================================
 
