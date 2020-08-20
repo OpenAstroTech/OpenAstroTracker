@@ -28,7 +28,7 @@ Be sure to have "To Arduino GND" actually connected properly to Arduino GND. It 
 
 For both drivers, you can get away with exactly 6 wires + 2 for the DIAG pins (used by autohoming). So you can fit everything into 1 Ethernet cable.
 
-<img src="../nema_wiring/image1.jpg" width="75%">
+<img src="../nema_wiring/image1.png" width="75%">
 
 To not get confused later, it helps a lot to colorcode you connections and write them down. The side of the CAT6 adapter will have some numbers on it. For example write down: Slot 1, Blue, RA STEP.
 This will help a lot when you do the other side. 
@@ -42,7 +42,7 @@ The pins can be changed in the configuration_pins.hpp, but the dafault wiring is
 
 As you can see in the image, bend pin connectors help a lot. 
 
-<img src="../nema_wiring/image2.jpg" width="75%">
+<img src="../nema_wiring/image2.png" width="75%">
 
 On the drivers side, connect the correct slots to the driver pins. If you wrote down which slot has which signal this will be fairly straightforward.
 There are some special cases to be noted:
