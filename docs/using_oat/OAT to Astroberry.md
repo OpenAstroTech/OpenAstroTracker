@@ -32,7 +32,10 @@ OAT Arduino must have either **SUPPORTS_SERIAL** or **HEADLESS_CLIENT** enabled.
    ![Create Profile](../Astroberry_Connect/Create_Profile.png)  
 
    
-4. Enter a name for your new profile.  Select "LX200 GPS" for your Mount, "V4L2 CCD" for your Guider and your imaging camera driver for "CCD".  
+4. Enter a name for your new profile.  Select "LX200 GPS" for your Mount, "INDI Webcam" for your Guider and your imaging camera driver for "CCD".  
+   
+   NOTE: If "INDI Webcam" is not in the list of drivers, it can be installed by opening a terminal window and typing "sudo apt-get install INDI-webcam"  
+   
    ![Select Gear](../Astroberry_Connect/Select_Gear.png)  
 
 
