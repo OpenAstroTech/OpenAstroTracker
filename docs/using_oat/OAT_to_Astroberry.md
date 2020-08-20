@@ -33,7 +33,10 @@ OAT Arduino must have either **SUPPORTS_SERIAL** or **HEADLESS_CLIENT** enabled.
    ![Create Profile](../Astroberry_Connect/Create_Profile.png)  
 
    
-4. Enter a name for your new profile.  Select "LX200 GPS" for your Mount, "V4L2 CCD" for your Guider and your imaging camera driver for "CCD".  
+4. Enter a name for your new profile.  Select "LX200 GPS" for your Mount, your imaging camera driver for "CCD" and "INDI Webcam" for your Guider.  
+   
+   NOTE: If "INDI Webcam" is not in the list of drivers, it can be installed by opening a terminal window and typing "sudo apt-get install INDI-webcam"  
+   
    ![Select Gear](../Astroberry_Connect/Select_Gear.png)  
 
 
@@ -53,7 +56,7 @@ OAT Arduino must have either **SUPPORTS_SERIAL** or **HEADLESS_CLIENT** enabled.
    ![Configure Imaging Camera](../Astroberry_Connect/Configure_Primary_Camera.png)  
 
 
-8. setup Guide Camera: In the V4L2 CCD -> Options tab, click the "Guide" button next to Telescope to assign this as the guide camera.  
+8. setup Guide Camera: In the INDI Webcam -> Options tab, click the "Guide" button next to Telescope to assign this as the guide camera.  
    ![Configure Guide Camera](../Astroberry_Connect/Configure_Guide_Camera.png)  
 
 
@@ -63,7 +66,4 @@ OAT Arduino must have either **SUPPORTS_SERIAL** or **HEADLESS_CLIENT** enabled.
 
 10. If all accessories have connected successfully, the Ekos window should now have tabs for CCD, Align, Mount and Guide.  
    ![Connected Tabs](../Astroberry_Connect/Complet_tabs.png)  
-
-
-   
 
