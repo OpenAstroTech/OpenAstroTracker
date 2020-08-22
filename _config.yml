@@ -57,7 +57,7 @@ heading_anchors: true
 # Aux links for the upper right navigation
 aux_links:
   "OpenAstroTech on GitHub":
-    - "//https://github.com/OpenAstroTech/OpenAstroTracker"
+    - "//github.com/OpenAstroTech/OpenAstroTracker"
 
 # Makes Aux links open in a new tab. Default is false
 aux_links_new_tab: false
