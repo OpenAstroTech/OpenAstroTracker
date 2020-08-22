@@ -309,7 +309,6 @@
 
 // Make some variables in the sketch files available to the C++ code.
 extern bool inSerialControl;
-extern String version;
 extern byte PolarisRAHour;
 extern byte PolarisRAMinute;
 extern byte PolarisRASecond;

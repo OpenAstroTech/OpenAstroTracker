@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../Configuration.hpp"
+#include "../Version.h"
 #include "a_inits.hpp"
 #include "LcdMenu.hpp"
 #include "Utility.hpp"
@@ -136,7 +137,7 @@ void setup() {
   Serial.begin(57600);
   //BT.begin(9600);
 
-  LOGV2(DEBUG_ANY, "Hello, universe, this is OAT %s!", version.c_str());
+  LOGV2(DEBUG_ANY, "Hello, universe, this is OAT %s!", VERSION.c_str());
 
   EPROMStore::initialize();
 
@@ -180,8 +181,8 @@ void finishSetup()
   // Show a splash screen
   lcdMenu.setCursor(0, 0);
   lcdMenu.printMenu("OpenAstroTracker");
-  lcdMenu.setCursor(0, 1);
-  lcdMenu.printMenu("     " + version);
+  lcdMenu.setCursor(5, 1);
+  lcdMenu.printMenu(VERSION);
   #if HEADLESS_CLIENT == 0
     unsigned long now = millis();
   #endif

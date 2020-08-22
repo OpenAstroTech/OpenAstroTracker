@@ -1,5 +1,6 @@
 #include "MeadeCommandProcessor.hpp"
 #include "../Configuration_adv.hpp"
+#include "../Version.h"
 #include "Utility.hpp"
 #include "WifiControl.hpp"
 
@@ -426,7 +427,7 @@ String MeadeCommandProcessor::handleMeadeGetInfo(String inCmd) {
   switch (cmdOne) {
     case 'V':
     if (cmdTwo == 'N') {
-      return version + "#";
+      return String(VERSION) + "#";
     }
     else if (cmdTwo == 'P') {
       return "OpenAstroTracker#";
