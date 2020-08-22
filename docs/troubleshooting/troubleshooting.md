@@ -2,7 +2,7 @@
 layout: default
 title: Troubleshooting / common issues
 nav_order: 5
-permalink: /docs/troubleshooting
+
 ---
 
 # Troubleshooting Guide
@@ -28,6 +28,12 @@ If you are using a Mega, make sure you wired the steppers as indicated in the Me
 
 If you're using the Mega with the standard pinout according to the wiring guide, go to the a_inits.ino in the code and change the numbers for the RA and DECmotorpins as following: 22, 24, 26, 28 for RA, 30, 34, 32, 36 for DEC (yes, the order is correct). This is going to be automated in the next update. 
 
+## Motors STILL not moving / only vibrating
+It has been reported that certain kinds of ULN2003 versions dont work as intended. Take a very close look to the small black piece on the drivers and the number written on it. 
+
+<img src="../image1.jpg" width="75%">
+
+If it says "ULN2003APG" you may have one of those strange behaving drivers. Buy new ones from a different source. Tip: you can [buy the IC only](https://www2.mouser.com/ProductDetail/Texas-Instruments/ULN2003AN?qs=FOlmdCx%252BAA1wYQ1G8c8hpQ==) instead of the whole driver board, but you'll have to switch it manually which can be a bit hard. 
 
 ## Is it moving correctly?
 When you use either the LCD or the PC OATControl app, using the arrows to move the mount from startup should cause this behavior (in the northern hemisphere):
@@ -64,7 +70,6 @@ Yes, the current code base does not support Bluetooth, yet. It is on our plan of
 For ASCOM Logs: In the ASCOM Chooser Dialog, check the option to enable Trace Logging. Then execute the action that causes problems and shutdown the app.
 Navigate to your \Documents\ASCOM\Logs YYYY-MM-DD\ folder, you’ll find log files in here.
 For OATControl logs: Navigate to the following folder in your AppData folder: C:\Users\<you>\AppData\Roaming\OpenAstroTracker\. The logfiles of you last 6 sessions will be saved there.
-
 
 ## Is there a support avenue?
 Well, this is an Open Source project, so technically there is no official support. However, we will all try to help you as best we can, either on Reddit in [/r/OpenAstroTech](https://www.reddit.com/r/OpenAstroTech/) or on our Slack server where we hang out and discuss the tracker (amongst other things, like 3D printing, weather, AP equipment, pandemics, etc.) The server can be reached [>here<](https://join.slack.com/t/spaceonly/shared_invite/zt-5qejkkme-mj5gLaWuwhCJ_fNRIUY7Ow) Join the #oat channel.
