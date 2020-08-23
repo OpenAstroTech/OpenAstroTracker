@@ -1,6 +1,6 @@
 #include "MeadeCommandProcessor.hpp"
-#include "../Configuration_adv.hpp"
-#include "../Version.h"
+#include "inc/Config.hpp"
+#include "inc/Globals.hpp"
 #include "Utility.hpp"
 #include "WifiControl.hpp"
 

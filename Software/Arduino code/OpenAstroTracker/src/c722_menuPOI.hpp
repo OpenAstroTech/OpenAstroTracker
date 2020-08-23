@@ -16,7 +16,7 @@ struct PointOfInterest {
 PointOfInterest pointOfInterest[] = {
   //    Name (15chars)    RA (hms)     DEC (dms)
   //  012345678901234
-  { ">Polaris"           ,  PolarisRAHour, PolarisRAMinute, PolarisRASecond,  89, 21,  6 },
+  { ">Polaris"           ,  POLARIS_RA_HOUR, POLARIS_RA_MINUTE, POLARIS_RA_SECOND,  89, 21,  6 },
   { ">Veil Nebula"     ,20, 51, 28,   30, 59, 30 },
 	{ ">M81 Bodes Galxy" , 9, 57, 13,   68, 58,  1 },
 	{ ">Cederblad 214"   , 0,  5, 46,   67, 16, 45 },

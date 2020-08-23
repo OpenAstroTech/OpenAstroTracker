@@ -7,7 +7,7 @@
 #include "DayTime.hpp"
 #include "LcdMenu.hpp"
 
-#if RA_DRIVER_TYPE == TMC2209_UART
+#if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
  #include <TMCStepper.h>
  // If you get an error here, download the TMCstepper library from "Tools > Manage Libraries"
 #endif
@@ -60,18 +60,18 @@ public:
   Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu);
 
   // Configure the RA stepper motor. This also sets up the TRK stepper on the same pins.
-#if RA_STEPPER_TYPE == STEP_28BYJ48
+#if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
     void configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
 #endif
-#if RA_STEPPER_TYPE == STEP_NEMA17
+#if RA_STEPPER_TYPE == STEPPER_TYPE_NEMA17
     void configureRAStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration);
 #endif
 
   // Configure the DEC stepper motor.
-#if DEC_STEPPER_TYPE == STEP_28BYJ48
+#if DEC_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
     void configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
 #endif
-#if DEC_STEPPER_TYPE == STEP_NEMA17
+#if DEC_STEPPER_TYPE == STEPPER_TYPE_NEMA17
     void configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration);
 #endif
 
@@ -81,11 +81,11 @@ public:
 #endif
 
   // Configure the RA Driver (TMC2209 UART only)
-#if RA_DRIVER_TYPE == TMC2209_UART
+#if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
   void configureRAdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
 #endif
   // Configure the DEC Driver (TMC2209 UART only)
-#if DEC_DRIVER_TYPE == TMC2209_UART
+#if DEC_STEPPER_TYPE == DRIVER_TYPE_TMC2209_UART
   void configureDECdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
 #endif
 
@@ -95,7 +95,7 @@ public:
   // Set the current RA tracking speed factor
   void setSpeedCalibration(float val, bool saveToStorage);
 
-#if GYRO_LEVEL == 1
+#if USE_GYRO == 1
   // Get the current pitch angle calibraton
   float getPitchCalibrationAngle();
 
@@ -197,7 +197,7 @@ public:
   void setHome(bool clearZeroPos);
 
   // Auto Home with TMC2209 UART
-  #if RA_DRIVER_TYPE == TMC2209_UART  
+  #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART  
     void startFindingHomeRA();
     void startFindingHomeDEC();
     void finishFindingHomeRA();
@@ -295,7 +295,7 @@ private:
   int _maxDECAcceleration;
   int _backlashCorrectionSteps;
   int _moveRate;
-#if GYRO_LEVEL == 1
+#if USE_GYRO == 1
   float _pitchCalibrationAngle;
   float _rollCalibrationAngle;
 #endif
@@ -319,7 +319,7 @@ private:
   AccelStepper* _stepperRA;
   AccelStepper* _stepperDEC;
   AccelStepper* _stepperTRK;
-  #if RA_DRIVER_TYPE == TMC2209_UART
+  #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
     TMC2209Stepper* _driverRA;
     TMC2209Stepper* _driverDEC;
   #endif  

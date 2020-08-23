@@ -1,4 +1,4 @@
-#include "../Configuration.hpp"
+#include "inc/Config.hpp"
 #include "a_inits.hpp"
 #include "b_setup.hpp"
 #include "c65_startup.hpp"

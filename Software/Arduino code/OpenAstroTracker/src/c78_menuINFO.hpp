@@ -95,7 +95,7 @@ void printStatusSubmenu() {
       break;
 
       case 4: {
-        #if GYRO_LEVEL == 1
+        #if USE_GYRO == 1
         int celsius = (int)round(Gyro::getCurrentTemperature());
         int fahrenheit = (int)round(32.0 + 9.0 * Gyro::getCurrentTemperature() / 5.0);
 

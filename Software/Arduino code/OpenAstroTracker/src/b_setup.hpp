@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include "../Configuration.hpp"
-#include "../Version.h"
+#include "inc/Config.hpp"
 #include "a_inits.hpp"
 #include "LcdMenu.hpp"
 #include "Utility.hpp"
@@ -16,7 +15,7 @@ LcdButtons lcdButtons(0);
 #ifdef ESP32
 DRAM_ATTR Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
 #else
-Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
+Mount mount(RA_STEPS_PER_DEGREE, DEC_STEPS_PER_DEGREE, &lcdMenu);
 #endif
 
 #ifdef WIFI_ENABLED
@@ -84,8 +83,8 @@ void setup() {
   /////////////////////////////////
   //   Microstepping/driver pins
   /////////////////////////////////
-  #if RA_STEPPER_TYPE == STEP_NEMA17  // RA driver startup (for A4988)
-    #if RA_DRIVER_TYPE == GENERIC_DRIVER
+  #if RA_STEPPER_TYPE == STEPPER_TYPE_NEMA17  // RA driver startup (for A4988)
+    #if RA_DRIVER_TYPE == DRIVER_TYPE_GENERIC
       // include A4988 microstep pins
       //#error "Define Microstep pins and delete this error."
       digitalWrite(RA_EN_PIN, HIGH);
@@ -93,14 +92,14 @@ void setup() {
       digitalWrite(RA_MS1_PIN);  // MS1
       digitalWrite(RA_MS2_PIN);  // MS2
       #endif
-    #if RA_DRIVER_TYPE == TMC2209_STANDALONE
+    #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE
       // include TMC2209 Standalone pins
       pinMode(40, OUTPUT);
       digitalWrite(40, LOW);  // ENABLE, LOW to enable
       digitalWrite(41, HIGH);  // MS2
       digitalWrite(42, HIGH);  // MS1
       #endif
-    #if RA_DRIVER_TYPE == TMC2209_UART
+    #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
       // include TMC2209 UART pins  
       pinMode(RA_EN_PIN, OUTPUT);
       pinMode(RA_DIAG_PIN, INPUT);
@@ -108,21 +107,21 @@ void setup() {
       RA_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
     #endif
   #endif
-  #if DEC_STEPPER_TYPE == STEP_NEMA17  // DEC driver startup (for A4988)
-    #if DEC_DRIVER_TYPE == GENERIC_DRIVER  // DEC driver startup (for A4988)
+  #if DEC_STEPPER_TYPE == STEPPER_TYPE_NEMA17  // DEC driver startup (for A4988)
+    #if DEC_DRIVER_TYPE == DRIVER_TYPE_GENERIC  // DEC driver startup (for A4988)
       digitalWrite(DEC_EN_PIN, HIGH);
       digitalWrite(DEC_MS0_PIN);  // MS1
       digitalWrite(DEC_MS1_PIN);  // MS2
       digitalWrite(DEC_MS2_PIN);  // MS3
     #endif
-    #if DEC_DRIVER_TYPE == TMC2209_STANDALONE
+    #if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE
       // include TMC2209 Standalone pins  TODO-----------------------
       //pinMode(40, OUTPUT);
       //digitalWrite(40, LOW);  // ENABLE, LOW to enable
       //digitalWrite(41, HIGH);  // MS2
       //digitalWrite(42, HIGH);  // MS1
     #endif
-    #if DEC_DRIVER_TYPE == TMC2209_UART
+    #if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
       // include TMC2209 UART pins  
       pinMode(DEC_EN_PIN, OUTPUT);
       pinMode(DEC_DIAG_PIN, INPUT);
@@ -199,28 +198,28 @@ void finishSetup()
   
   LOGV1(DEBUG_ANY, "Configure RA stepper...");
   // Set the stepper motor parameters
-  #if RA_STEPPER_TYPE == STEP_28BYJ48 
-    mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);
-  #elif RA_STEPPER_TYPE == STEP_NEMA17
-    mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
+  #if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48 
+    mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RA_STEPPER_SPEED, RA_STEPPER_ACCELERATION);
+  #elif RA_STEPPER_TYPE == STEPPER_TYPE_NEMA17
+    mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RA_STEPPER_SPEED, RA_STEPPER_ACCELERATION);
   #else
     #error New stepper type? Configure it here.
   #endif
 
   LOGV1(DEBUG_ANY, "Configure DEC stepper...");
-  #if DEC_STEPPER_TYPE == STEP_28BYJ48
-    mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
-  #elif DEC_STEPPER_TYPE == STEP_NEMA17
-    mount.configureDECStepper(DRIVER, DECmotorPin1, DECmotorPin2, DECspeed, DECacceleration);
+  #if DEC_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
+    mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, RA_STEPPER_SPEED, DEC_STEPPER_ACCELERATION);
+  #elif DEC_STEPPER_TYPE == STEPPER_TYPE_NEMA17
+    mount.configureDECStepper(DRIVER, DECmotorPin1, DECmotorPin2, RA_STEPPER_SPEED, DEC_STEPPER_ACCELERATION);
   #else
     #error New stepper type? Configure it here.
   #endif
 
-  #if RA_DRIVER_TYPE == TMC2209_UART
+  #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
     LOGV1(DEBUG_ANY, "Configure RA driver...");
     mount.configureRAdriver(&RA_SERIAL_PORT, R_SENSE, RA_DRIVER_ADDRESS, RA_RMSCURRENT, RA_STALL_VALUE);
   #endif
-  #if DEC_DRIVER_TYPE == TMC2209_UART
+  #if DEC_STEPPER_TYPE == DRIVER_TYPE_TMC2209_UART
     LOGV1(DEBUG_ANY, "Configure DEC driver...");
     mount.configureDECdriver(&DEC_SERIAL_PORT, R_SENSE, DEC_DRIVER_ADDRESS, DEC_RMSCURRENT, DEC_STALL_VALUE);
   #endif

@@ -1,12 +1,13 @@
 #pragma once
 #include "../Configuration_adv.hpp"
+#include "inc/Globals.hpp"
 #include "b_setup.hpp"
 
 #if HEADLESS_CLIENT == 0
 
 #if SUPPORT_CALIBRATION == 1
 
-#if GYRO_LEVEL == 1
+#if USE_GYRO == 1
 #include "Gyro.hpp"
 #endif
 // HIGHLIGHT states allow you to pick one of the three sub functions.
@@ -21,7 +22,7 @@
 #if AZIMUTH_ALTITUDE_MOTORS == 1
 #define HIGHLIGHT_AZIMUTH_ADJUSTMENT 7
 #define HIGHLIGHT_ALTITUDE_ADJUSTMENT 8
-#if GYRO_LEVEL == 1
+#if USE_GYRO == 1
 #define HIGHLIGHT_ROLL_LEVEL 9
 #define HIGHLIGHT_PITCH_LEVEL 10
 #define HIGHLIGHT_LAST 10
@@ -29,7 +30,7 @@
 #define HIGHLIGHT_LAST 8
 #endif
 #else
-#if GYRO_LEVEL == 1
+#if USE_GYRO == 1
 #define HIGHLIGHT_ROLL_LEVEL 7
 #define HIGHLIGHT_PITCH_LEVEL 8
 #define HIGHLIGHT_LAST 8
@@ -101,7 +102,7 @@ int AzimuthMinutes = 0;
 int AltitudeMinutes = 0;
 
 // Pitch and roll offset
-#if GYRO_LEVEL == 1
+#if USE_GYRO == 1
 float PitchCalibrationAngle = 0.0;
 float RollCalibrationAngle = 0.0;
 bool gyroStarted = false;
@@ -115,7 +116,7 @@ void gotoNextMenu()
 {
   lcdMenu.setNextActive();
 
-#if GYRO_LEVEL == 1
+#if USE_GYRO == 1
   Gyro::shutdown();
   gyroStarted = false;
 #endif
@@ -170,7 +171,7 @@ void gotoNextHighlightState(int dir)
   {
     SpeedCalibration = (mount.getSpeedCalibration() - 1.0) * 10000.0 + 0.5;
   }
-#if GYRO_LEVEL == 1
+#if USE_GYRO == 1
   else if (calState == HIGHLIGHT_PITCH_LEVEL)
   {
     PitchCalibrationAngle = mount.getPitchCalibrationAngle();
@@ -191,7 +192,7 @@ bool processCalibrationKeys()
   bool waitForRelease = false;
   bool checkForKeyChange = true;
 
-#if GYRO_LEVEL == 1
+#if USE_GYRO == 1
   if (!gyroStarted)
   {
     Gyro::startup();
@@ -469,7 +470,7 @@ bool processCalibrationKeys()
     break;
 #endif
 
-#if GYRO_LEVEL == 1
+#if USE_GYRO == 1
     case ROLL_OFFSET_CALIBRATION:
     {
       if (key == btnSELECT)
@@ -541,7 +542,7 @@ bool processCalibrationKeys()
 
         // Move the RA to that of Polaris. Moving to this RA aligns the DEC axis such that
         // it swings along the line between Polaris and the Celestial Pole.
-        mount.targetRA() = DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond);
+        mount.targetRA() = DayTime(POLARIS_RA_HOUR, POLARIS_RA_MINUTE, POLARIS_RA_SECOND);
 
         // Set DEC to move the same distance past Polaris as
         // it is from the Celestial Pole. That equates to 88deg 42' 11.2".
@@ -715,7 +716,7 @@ bool processCalibrationKeys()
     break;
 #endif
 
-#if GYRO_LEVEL == 1
+#if USE_GYRO == 1
     case HIGHLIGHT_ROLL_LEVEL:
     {
       if (key == btnDOWN)
@@ -820,7 +821,7 @@ void printCalibrationSubmenu()
   }
 #endif
 
-#if GYRO_LEVEL == 1
+#if USE_GYRO == 1
   else if (calState == HIGHLIGHT_ROLL_LEVEL)
   {
     lcdMenu.printMenu(">Roll Offset");
@@ -882,7 +883,7 @@ void printCalibrationSubmenu()
     lcdMenu.printMenu(scratchBuffer);
   }
 #endif
-#if GYRO_LEVEL == 1
+#if USE_GYRO == 1
   else if (calState == ROLL_OFFSET_CALIBRATION)
   {
     auto angles = Gyro::getCurrentAngles();

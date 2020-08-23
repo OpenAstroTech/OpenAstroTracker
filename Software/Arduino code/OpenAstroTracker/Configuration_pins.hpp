@@ -1,3 +1,6 @@
+#pragma once
+
+#include "Configuration.hpp"
 
 ////////////////////////////////////////////////////////////////////
 // Arduino MEGA 
@@ -19,7 +22,7 @@
     #define RA_DIR_PIN  24  // DIR
     #define RA_EN_PIN   26  // Enable
     #define RA_DIAG_PIN 28  // only needed for autohome function
-    #define RA_MS0_PIN  30, HIGH    // 
+    #define RA_MS0_PIN  30, HIGH
     #define RA_MS1_PIN  32, HIGH
     #define RA_MS2_PIN  34, HIGH
     //RA TMC2209 UART specific pins
@@ -30,7 +33,7 @@
     #define DEC_DIR_PIN  25  // DIR
     #define DEC_EN_PIN   27  // Enable
     #define DEC_DIAG_PIN 29  // only needed for autohome function
-    #define DEC_MS0_PIN  31, HIGH  // 
+    #define DEC_MS0_PIN  31, HIGH
     #define DEC_MS1_PIN  33, HIGH
     #define DEC_MS2_PIN  35, HIGH
     //DEC TMC2209 UART specific pins
@@ -60,7 +63,7 @@
 // ESP32
 ////////////////////////////////////////////////////////////////////
 #ifdef ESP32
-  #if (RA_STEPPER_TYPE != STEP_28BYJ48) || (DEC_STEPPER_TYPE != STEP_28BYJ48)
+  #if (RA_STEPPER_TYPE != STEPPER_TYPE_28BYJ48) || (DEC_STEPPER_TYPE != STEPPER_TYPE_28BYJ48)
     #error Only 28BJY-48 stepper motors are supported on the ESP (for now)
   #endif
 
@@ -101,7 +104,7 @@
 // Arduino UNO
 ////////////////////////////////////////////////////////////////////
 #ifdef __AVR_ATmega328P__ // Arduino Uno
-  #if (RA_STEPPER_TYPE != STEP_28BYJ48) || (DEC_STEPPER_TYPE != STEP_28BYJ48)
+  #if (RA_STEPPER_TYPE != STEPPER_TYPE_28BYJ48) || (DEC_STEPPER_TYPE != STEPPER_TYPE_28BYJ48)
     #error Only 28BJY-48 stepper motors are supported on the UNO (for now)
   #endif
 

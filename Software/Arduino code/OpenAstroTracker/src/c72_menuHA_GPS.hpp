@@ -37,8 +37,8 @@ bool gpsAqcuisitionComplete()
                 lcdMenu.printMenu("GPS sync'd....");
 
                 DayTime lst = Sidereal::calculateByGPS(&gps);
-                int hHAfromLST = lst.getHours() - PolarisRAHour;
-                int mHAfromLST = lst.getMinutes() - PolarisRAMinute;
+                int hHAfromLST = lst.getHours() - POLARIS_RA_HOUR;
+                int mHAfromLST = lst.getMinutes() - POLARIS_RA_MINUTE;
                 mount.setHA(DayTime(hHAfromLST, mHAfromLST, 0));
 
                 EPROMStore::Storage()->update(1, mount.HA().getHours());
