@@ -259,78 +259,86 @@ namespace MenuPrototype
 			var decIncr = new RaDecIncrementer("DEC");
 			var raIncr = new RaDecIncrementer("RA");
 
+			// Main top-level menu
 			var menu = new MainMenu();
 
+			//////  RA  ///////
 			var raMenu = new MenuItem("RA");
-			raMenu.addMenuItem(new NumberInput(raMenu, "TRA", 4, "^%02dh^%02dm^%02ds ^@", raConfirmed, raIncr, 0));
+			raMenu.addMenuItem(new NumberInput("TRA", 4, "^%02dh^%02dm^%02ds ^@", raConfirmed, raIncr));
 
+			//////  DEC  ///////
 			var decMenu = new MenuItem("DEC");
-			decMenu.addMenuItem(new NumberInput(decMenu, "TDEC", 4, "^%02d*^%02d\"^%02d' ^@", decConfirmed, decIncr, 0));
+			decMenu.addMenuItem(new NumberInput("TDEC", 4, "^%02d*^%02d\"^%02d' ^@", decConfirmed, decIncr));
 
+			//////  GO  ///////
 			var goMenu = new MenuItem("GO");
 			var goList = new ScrollList();
-			goList.addMenuItem(new Button(goMenu, "Polaris", goPointChosen));
-			goList.addMenuItem(new Button(goMenu, "Vega", goPointChosen));
-			goList.addMenuItem(new Button(goMenu, "Orions Nebla", goPointChosen));
-			goList.addMenuItem(new Button(goMenu, "M31 Andromeda", goPointChosen));
-			goList.addMenuItem(new Button(goMenu, "Navi", goPointChosen));
-			goList.addMenuItem(new Button(goMenu, "Antares", goPointChosen));
-			goList.addMenuItem(new Button(goMenu, "Home", goPointChosen));
-			goList.addMenuItem(new Button(goMenu, "Unpark", goPointChosen));
-			goList.addMenuItem(new Button(goMenu, "Park", goPointChosen));
+			goList.addMenuItem(new Button("Polaris", goPointChosen));
+			goList.addMenuItem(new Button("Vega", goPointChosen));
+			goList.addMenuItem(new Button("Orions Nebla", goPointChosen));
+			goList.addMenuItem(new Button("M31 Andromeda", goPointChosen));
+			goList.addMenuItem(new Button("Navi", goPointChosen));
+			goList.addMenuItem(new Button("Antares", goPointChosen));
+			goList.addMenuItem(new Button("Home", goPointChosen));
+			goList.addMenuItem(new Button("Unpark", goPointChosen));
+			goList.addMenuItem(new Button("Park", goPointChosen));
 			goMenu.addMenuItem(goList);
 
+			//////  HA  ///////
 			var haMenu = new MenuItem("HA");
-			haMenu.addMenuItem(new NumberInput(haMenu, "HA", new[] { 15, 32 }, "^%02dh^%02dm", haConfirmed, hourIncr, 0));
+			haMenu.addMenuItem(new NumberInput("HA", new[] { 15, 32 }, "^%02dh^%02dm", haConfirmed, hourIncr));
 
+			//////  CTRL  ///////
 			var ctrlMenu = new MenuItem("CTRL");
-			ctrlMenu.addMenuItem(new Button(ctrlMenu, "Manual Control", startManualControl));
-			var manualControl = new ManualControlMenuItem(manualCompleted);
+			ctrlMenu.addMenuItem(new Button("Manual Control", startManualControl));
+			var dlgManualControl = new ManualControlMenuItem(manualCompleted);
 
-			var setHomeDialog = new MenuItem("Set home pos?", "ConfirmHome");
-			setHomeDialog.addMenuItem(new OptionChooser(haMenu, new string[] { "Yes", "No" }, setHomePosition));
+			var dlgSetHome = new MenuItem("Set home pos?", "ConfirmHome");
+			dlgSetHome.addMenuItem(new OptionChooser(new string[] { "Yes", "No" }, 0, setHomePosition));
 
+			//////  CAL  ///////
 			var calMenu = new MenuItem("CAL");
 			var calList = new ScrollList();
 
+			var dlgStoreSync = new MenuItem("Adjust mount ", "StoreAndSync");
+			dlgStoreSync.addMenuItem(new Button("Centered", storeAndSync));
 
-			var storeSync = new MenuItem("Adjust mount ","StoreAndSync");
-			storeSync.addMenuItem(new Button(storeSync, "Centered", storeAndSync));
-
-			var slewToPolaris = new ActionRunnerModal(calMenu, "Slewing....", "SlewToPolaris", storeSync);
-			var paBtn = new Button(calMenu, "Polar Alignmnt", (eventArgs) => calMenu.getMainMenu().activateDialog("SlewToPolaris"));
+			var dlgSlewToPolaris = new ActionRunnerModal("Slewing....", "SlewToPolaris", dlgStoreSync);
+			var paBtn = new Button("Polar Alignmnt", (eventArgs) => menu.activateDialog("SlewToPolaris"));
 			calList.addMenuItem(paBtn);
 
-			// var driftAlign= new MenuItem("Drift align", "DriftAlign");
-			var driftAlign= new ActionRunnerModal(calMenu, "Drift align", "DriftAlign");
-			calList.addMenuItem(driftAlign);
+			var driftAlignBtn = new Button("Drift Alignmnt", (eventArgs) => menu.activateDialog("DriftAlign"));
+			var dlgDriftAlign = new ActionRunnerModal("Drift alignment", "DriftAlign");
+			calList.addMenuItem(driftAlignBtn);
 
-			var speedBtn = new Button(calMenu, "Speed Calibratn", new NumberInput(calMenu, "SPD", 1, "SpdFctr: @", null, speedIncr, 1));
+			var speedBtn = new Button("Speed Calibratn", new NumberInput("SPD", 1, "SpdFctr: @", null, speedIncr, NumberInput.BehaviorFlags.AcceleratingRepetition));
 			calList.addMenuItem(speedBtn);
-			var raBtn = new Button(calMenu, "RA Step Adjust", new NumberInput(calMenu, "RA", 1, "RA Steps: @", null, speedIncr, 1));
+			var raBtn = new Button("RA Step Adjust", new NumberInput("RA", 1, "RA Steps: @", null, speedIncr, NumberInput.BehaviorFlags.AcceleratingRepetition));
 			calList.addMenuItem(raBtn);
-			var decBtn = new Button(calMenu, "DEC Step Adjust", new NumberInput(calMenu, "DEC", 1, "DEC Steps: @", null, speedIncr, 1));
+			var decBtn = new Button("DEC Step Adjust", new NumberInput("DEC", 1, "DEC Steps: @", null, speedIncr, NumberInput.BehaviorFlags.AcceleratingRepetition));
 			calList.addMenuItem(decBtn);
-			var backBtn = new Button(calMenu, "Backlash Adjust", new NumberInput(calMenu, "DEC", 1, "DEC Steps: @", null, speedIncr, 1));
+			var backBtn = new Button("Backlash Adjust", new NumberInput("DEC", 1, "DEC Steps: @", null, speedIncr, NumberInput.BehaviorFlags.AcceleratingRepetition));
 			calList.addMenuItem(backBtn);
-			var rollBtn = new Button(calMenu, "Roll Offset", new PitchRollDisplay(calMenu, "ROLL"));
+			var rollBtn = new Button("Roll Offset", new PitchRollDisplay("ROLL"));
 			calList.addMenuItem(rollBtn);
-			var pitchBtn = new Button(calMenu, "Pitch Offset", new PitchRollDisplay(calMenu, "PITCH"));
+			var pitchBtn = new Button("Pitch Offset", new PitchRollDisplay("PITCH"));
 			calList.addMenuItem(pitchBtn);
 			calMenu.addMenuItem(calList);
 
+			//////  INFO  ///////
 			var infoMenu = new MenuItem("INFO");
 			var infoList = new ScrollList();
-			infoList.addMenuItem(new TextInfoMulti(infoMenu, 3, getRASteps));
-			infoList.addMenuItem(new TextInfoMulti(infoMenu, 3, getDECSteps));
-			infoList.addMenuItem(new TextInfoMulti(infoMenu, 2, getTRKSteps));
-			//infoList.addMenuItem(new TextInfo(infoMenu, "Loc ", getLocation));
-			//infoList.addMenuItem(new TextInfo(infoMenu, "Temp: ", getTemperature));
-			//infoList.addMenuItem(new TextInfo(infoMenu, "MemAvail: ", getMemAvail));
-			//infoList.addMenuItem(new TextInfo(infoMenu, "Up: ", getUpTime));
-			infoList.addMenuItem(new TextInfo(infoMenu, "Firmw.: ", () => "V1.9.00"));
+			infoList.addMenuItem(new TextInfoMulti( 3, getRASteps));
+			infoList.addMenuItem(new TextInfoMulti( 3, getDECSteps));
+			infoList.addMenuItem(new TextInfoMulti( 2, getTRKSteps));
+			//infoList.addMenuItem(new TextInfo( "Loc ", getLocation));
+			//infoList.addMenuItem(new TextInfo( "Temp: ", getTemperature));
+			//infoList.addMenuItem(new TextInfo( "MemAvail: ", getMemAvail));
+			//infoList.addMenuItem(new TextInfo( "Up: ", getUpTime));
+			infoList.addMenuItem(new TextInfo( "Firmw.: ", () => "V1.9.00"));
 			infoMenu.addMenuItem(infoList);
 
+			// Add all the menus
 			menu.addMenuItem(raMenu);
 			menu.addMenuItem(decMenu);
 			menu.addMenuItem(goMenu);
@@ -338,28 +346,32 @@ namespace MenuPrototype
 			menu.addMenuItem(ctrlMenu);
 			menu.addMenuItem(calMenu);
 			menu.addMenuItem(infoMenu);
-			menu.addModalDialog(manualControl);
-			menu.addModalDialog(setHomeDialog);
-			menu.addModalDialog(slewToPolaris);
-			menu.addModalDialog(storeSync);
 
-			/// Startup Wizard
-			var startupIsHomeDialog = new MenuItem("Home Position?", "StartIsHome");
-			startupIsHomeDialog.addMenuItem(new OptionChooser(null, new string[] { "Yes", "No", "Cancl" }, startupIsHomePosition));
-			var startFindGPSDialog = new MenuItem("Finding GPS...", "StartFindGPS");
-			startFindGPSDialog.addMenuItem(new FindGPSDisplay(startFindGPSDialog, "FINDGPS"));
-			var startHAGetGPSDialog = new MenuItem("Set HA via?", "StartHAChooser");
-			startHAGetGPSDialog.addMenuItem(new OptionChooser(null, new string[] { "GPS Sync", "Manual Set" }, startupHowToGetHA));
-			var startHAGetManualDialog = new MenuItem("Polaris HA?", "StartEnterHA");
-			startHAGetManualDialog.addMenuItem(new NumberInput(null, "HA", new[] { 15, 32 }, "^%02dh^%02dm", startHAConfirmed, hourIncr, 0));
-			var startManualControlDialog = new ManualControlMenuItem(startManualCompleted, "StartManualControl");
+			// Add all the model dialogs.
+			menu.addModalDialog(dlgManualControl);
+			menu.addModalDialog(dlgSetHome);
+			menu.addModalDialog(dlgSlewToPolaris);
+			menu.addModalDialog(dlgStoreSync);
+			menu.addModalDialog(dlgDriftAlign);
 
-			menu.addModalDialog(startupIsHomeDialog);
-			menu.addModalDialog(startFindGPSDialog);
-			menu.addModalDialog(startHAGetGPSDialog);
-			menu.addModalDialog(startHAGetManualDialog);
-			menu.addModalDialog(startManualControlDialog);
+			// Startup Wizard
+			var dlgStartIsHome = new MenuItem("Home Position?", "StartIsHome");
+			dlgStartIsHome.addMenuItem(new OptionChooser(new string[] { "Yes", "No", "Cancl" }, 1, startupIsHomePosition));
+			var dlgStartFindGPS = new MenuItem("Finding GPS...", "StartFindGPS");
+			dlgStartFindGPS.addMenuItem(new FindGPSDisplay("FINDGPS"));
+			var dlgStartHAGetGPS = new MenuItem("Set HA via?", "StartHAChooser");
+			dlgStartHAGetGPS.addMenuItem(new OptionChooser(new string[] { "GPS Sync", "Manual Set" }, 0, startupHowToGetHA));
+			var dlgStartHAGetManual = new MenuItem("Polaris HA?", "StartEnterHA");
+			dlgStartHAGetManual.addMenuItem(new NumberInput("HA", new[] { 15, 32 }, "^%02dh^%02dm", startHAConfirmed, hourIncr, NumberInput.BehaviorFlags.ConstantRepetition));
+			var dlgStartManualControl = new ManualControlMenuItem(startManualCompleted, "StartManualControl");
 
+			menu.addModalDialog(dlgStartIsHome);
+			menu.addModalDialog(dlgStartFindGPS);
+			menu.addModalDialog(dlgStartHAGetGPS);
+			menu.addModalDialog(dlgStartHAGetManual);
+			menu.addModalDialog(dlgStartManualControl);
+
+			// Set the first modal dialog on the menu system
 			menu.activateDialog("StartIsHome");
 
 			do
@@ -394,7 +406,6 @@ namespace MenuPrototype
 			switch (selectArgs.getSelected())
 			{
 				case "Yes":
-					//args.source.getMainMenu().closeDialog();
 					args.source.getMainMenu().activateDialog("StartFindGPS");
 					break;
 				case "No":
@@ -559,6 +570,7 @@ namespace MenuPrototype
 				_activeDialog = null;
 			}
 
+
 			public void closeDialog()
 			{
 				_activeDialog = null;
@@ -630,6 +642,18 @@ namespace MenuPrototype
 				Console.WriteLine(menu);
 
 				_topMenuList[_activeItem].onDisplay();
+			}
+
+			public virtual void closeMenuItem(MenuItem closeMe)
+			{
+				if (_activeDialog != null)
+				{
+					_activeDialog.closeMenuItem(closeMe);
+				}
+				else
+				{
+					_topMenuList[_activeItem].closeMenuItem(closeMe);
+				}
 			}
 		}
 
@@ -765,13 +789,11 @@ namespace MenuPrototype
 		////////////////////////////////////////////////////////////////////
 		public class TextInfo : MenuItem
 		{
-			MenuItem _parent;
 			String _prompt;
 			Func<string> _displayFunc;
 
-			public TextInfo(MenuItem parent, String prompt, Func<string> displayFunc) : base("")
+			public TextInfo(String prompt, Func<string> displayFunc) : base("")
 			{
-				_parent = parent;
 				_prompt = prompt;
 				_displayFunc = displayFunc;
 			}
@@ -785,17 +807,15 @@ namespace MenuPrototype
 		////////////////////////////////////////////////////////////////////
 		public class TextInfoMulti : MenuItem
 		{
-			MenuItem _parent;
 			String _prompt;
 			Func<int, string> _displayFunc;
 			int _currentSubItem;
 			int _subItems;
 
-			public TextInfoMulti(MenuItem parent, int subItems, Func<int, string> displayFunc) : base("")
+			public TextInfoMulti(int subItems, Func<int, string> displayFunc) : base("")
 			{
 				_subItems = subItems;
 				_currentSubItem = 0;
-				_parent = parent;
 				_displayFunc = displayFunc;
 			}
 
@@ -817,22 +837,20 @@ namespace MenuPrototype
 		////////////////////////////////////////////////////////////////////
 		public class NumberInput : MenuItem
 		{
-			// 1 (RAsteps), 2 (HA), or 3(RA/DEC) with limits/wrap/clamp. Accelerates?
+			public enum BehaviorFlags { ConstantRepetition, AcceleratingRepetition} 
 			String _mask;
 			int _activeNumber;
 			int[] _numbers;
-			MenuItem _parent;
 			Action<EventArgs> _selectCallback;
 			ulong _nextKeyOk;
 			ulong _waitFor;
-			int _flags;
+			BehaviorFlags _flags;
 			bool _useIncrForDisplay;
 			Incrementer _incr;
 
-			public NumberInput(MenuItem parent, string tag, int numNumbers, String mask, Action<EventArgs> selectCallback, Incrementer incr, int flags = 1) : base("", tag)
+			public NumberInput(string tag, int numNumbers, String mask, Action<EventArgs> selectCallback, Incrementer incr, BehaviorFlags flags = BehaviorFlags.ConstantRepetition) : base("", tag)
 			{
 				_activeNumber = 0;
-				_parent = parent;
 				_mask = mask;
 				_numbers = new int[numNumbers];
 				_selectCallback = selectCallback;
@@ -841,10 +859,9 @@ namespace MenuPrototype
 				_useIncrForDisplay = true;
 			}
 
-			public NumberInput(MenuItem parent, string tag, int[] numbers, String mask, Action<EventArgs> selectCallback, Incrementer incr = null, int flags = 1) : base("", tag)
+			public NumberInput(string tag, int[] numbers, String mask, Action<EventArgs> selectCallback, Incrementer incr = null, BehaviorFlags flags = BehaviorFlags.ConstantRepetition) : base("", tag)
 			{
 				_activeNumber = 0;
-				_parent = parent;
 				_mask = mask;
 				_numbers = numbers;
 				_selectCallback = selectCallback;
@@ -917,7 +934,7 @@ namespace MenuPrototype
 					if (millis() > _nextKeyOk)
 					{
 						_incr.onChange(_tag, _numbers, _activeNumber, -1);
-						_waitFor = (_flags == 1) ? (ulong)Math.Max(10, 0.95 * _waitFor) : 200;
+						_waitFor = (_flags == NumberInput.BehaviorFlags.AcceleratingRepetition) ? (ulong)Math.Max(10, 0.95 * _waitFor) : 200;
 						_nextKeyOk = millis() + _waitFor;
 					}
 				}
@@ -926,7 +943,7 @@ namespace MenuPrototype
 					if (millis() > _nextKeyOk)
 					{
 						_incr.onChange(_tag, _numbers, _activeNumber, 1);
-						_waitFor = (_flags == 1) ? (ulong)Math.Max(10, 0.95 * _waitFor) : 200;
+						_waitFor = (_flags == NumberInput.BehaviorFlags.AcceleratingRepetition) ? (ulong)Math.Max(10, 0.95 * _waitFor) : 200;
 						_nextKeyOk = millis() + _waitFor;
 					}
 				}
@@ -969,8 +986,9 @@ namespace MenuPrototype
 			private int _activeOption;
 			string[] _choices;
 			Action<EventArgs> _chosenFunc;
-			public OptionChooser(MenuItem parent, string[] choices, Action<EventArgs> chosenFunc) : base("")
+			public OptionChooser(string[] choices, int activeItemIndex, Action<EventArgs> chosenFunc) : base("")
 			{
+				_activeOption = activeItemIndex;
 				_chosenFunc = chosenFunc;
 				_choices = choices.ToArray();
 			}
@@ -1013,14 +1031,14 @@ namespace MenuPrototype
 			Action<EventArgs> _chosenFunc;
 			MenuItem _subMenu;
 			bool _subMenuActivated;
-			public Button(MenuItem parent, string choice, MenuItem subMenu) : base(choice)
+			public Button(string choice, MenuItem subMenu) : base(choice)
 			{
 				_chosenFunc = null;
 				_subMenu = subMenu;
 				_subMenuActivated = false;
 			}
 
-			public Button(MenuItem parent, string choice, Action<EventArgs> chosenFunc) : base(choice)
+			public Button(string choice, Action<EventArgs> chosenFunc) : base(choice)
 			{
 				_chosenFunc = chosenFunc;
 				_subMenu = null;
@@ -1029,12 +1047,18 @@ namespace MenuPrototype
 
 			public override void closeMenuItem(MenuItem closeMe)
 			{
-				if (_subMenuActivated && _subMenu == closeMe)
+				if (_subMenuActivated) 
 				{
-					_subMenuActivated = false;
+					if (_subMenu == closeMe)
+					{
+						_subMenuActivated = false;
+					}
+					else
+					{
+						_subMenu.closeMenuItem(closeMe);
+					}
 				}
 			}
-
 
 			public override bool onKeypressed(int key)
 			{
@@ -1100,10 +1124,8 @@ namespace MenuPrototype
 
 		public class FindGPSDisplay : MenuItem
 		{
-			MenuItem _parent;
-			public FindGPSDisplay(MenuItem parent, string pitchOrRoll) : base("GPS", pitchOrRoll)
+			public FindGPSDisplay(string pitchOrRoll) : base("GPS", pitchOrRoll)
 			{
-				_parent = parent;
 			}
 
 			public override void onDisplay(bool modal = false)
@@ -1129,11 +1151,8 @@ namespace MenuPrototype
 
 		public class PitchRollDisplay : MenuItem
 		{
-			MenuItem _parent;
-
-			public PitchRollDisplay(MenuItem parent, string pitchOrRoll) : base("Roll Offset", pitchOrRoll)
+			public PitchRollDisplay(string pitchOrRoll) : base("Roll Offset", pitchOrRoll)
 			{
-				_parent = parent;
 			}
 
 			public override void onDisplay(bool modal = false)
@@ -1158,29 +1177,36 @@ namespace MenuPrototype
 			{
 				if (key == btnLEFT)
 				{
-					_parent.closeMenuItem(this);
+					getMainMenu().closeMenuItem(this);
 				}
 				return base.onKeypressed(key);
+			}
+
+			public override bool onPreviewKey(int keyState)
+			{
+				// Ignore Up and Down buttons.
+				if (keyState == btnUP) return true;
+				if (keyState == btnDOWN) return true;
+				if (keyState == btnRIGHT) return true;
+			
+				return base.onPreviewKey(keyState);
 			}
 		}
 
 		/////////////////////////////////////////////////////////////
 		public class ActionRunnerModal : MenuItem
 		{
-			MenuItem _parent;
-			MenuItem _followModal;
-			Func<bool> _isComplete;
+			protected MenuItem _followModal;
+			protected Func<bool> _isComplete;
 
-			public ActionRunnerModal(MenuItem parent, string prompt, string tag, MenuItem followModal = null) : base(prompt, tag)
+			public ActionRunnerModal(string prompt, string tag, MenuItem followModal = null) : base(prompt, tag)
 			{
-				_parent = parent;
 				_isComplete = null;
 				_followModal = followModal;
 			}
 
-			public ActionRunnerModal(MenuItem parent, string prompt, string tag, Func<bool> isComplete, MenuItem followModal = null) : base(prompt, tag)
+			public ActionRunnerModal(string prompt, string tag, Func<bool> isComplete, MenuItem followModal = null) : base(prompt, tag)
 			{
-				_parent = parent;
 				_isComplete = isComplete;
 				_followModal = followModal;
 			}
@@ -1189,15 +1215,9 @@ namespace MenuPrototype
 
 			public override void onDisplay(bool modal = false)
 			{
-				if (!string.IsNullOrEmpty(_displayName))
-				{
-					Console.WriteLine(_displayName + "            ");
-				}
-
 				bool complete = _isComplete == null ? isComplete() : _isComplete();
 				if (complete)
 				{
-
 					if (_followModal != null)
 					{
 						getMainMenu().activateDialog(_followModal.getTag());
@@ -1237,6 +1257,27 @@ namespace MenuPrototype
 				return false;
 			}
 
+		}
+
+		public class DriftAlignRunner: ActionRunnerModal
+		{
+			int phase = 0;
+			bool _completed = false;
+			public DriftAlignRunner(string prompt, string tag, MenuItem followModal = null) : base(prompt, tag, followModal)
+			{
+			}
+
+			public override bool isComplete() { return _completed; }
+
+			public override void onDisplay(bool modal = false)
+			{
+				if (!string.IsNullOrEmpty(_displayName))
+				{
+					Console.WriteLine(_displayName + "            ");
+				}
+
+				base.onDisplay(modal);
+			}
 		}
 	}
 }
