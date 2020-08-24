@@ -1242,6 +1242,26 @@ bool Mount::isRunningAZ() const {
 bool Mount::isRunningALT() const {
   return _stepperALT->isRunning();
 }
+
+/////////////////////////////////
+//
+// getAltAzPositions
+//
+/////////////////////////////////
+void Mount::getAltAzPositions(long * altSteps, long* azSteps, float* altDeltaSecs, float*  azDeltaSecs){
+  if (altSteps != nullptr) {
+    *altSteps = _stepperALT->currentPosition();
+  }
+  if (azSteps != nullptr) {
+    *azSteps = _stepperAZ->currentPosition();
+  }
+  if (altDeltaSecs != nullptr) {
+    *altDeltaSecs = _stepperALT->currentPosition() * ALTITUDE_ARC_SECONDS_PER_STEP;
+  }
+  if (azDeltaSecs != nullptr) {
+    *azDeltaSecs = _stepperAZ->currentPosition() * AZIMUTH_ARC_SECONDS_PER_STEP;
+  }
+}
 /////////////////////////////////
 //
 // moveBy
