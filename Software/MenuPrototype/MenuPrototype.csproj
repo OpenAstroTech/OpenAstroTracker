@@ -43,8 +43,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionRunnerModal.cs" />
+    <Compile Include="Button.cs" />
+    <Compile Include="EventArgs.cs" />
+    <Compile Include="FindGPSDisplay.cs" />
+    <Compile Include="Incrementer.cs" />
+    <Compile Include="MainMenu.cs" />
+    <Compile Include="ManualControlMenuItem.cs" />
+    <Compile Include="MenuItem.cs" />
+    <Compile Include="MultiStepActionRunnerModal.cs" />
+    <Compile Include="NumberInput.cs" />
+    <Compile Include="OptionChooser.cs" />
+    <Compile Include="PitchRollDisplay.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RaDecIncrementer.cs" />
+    <Compile Include="ScrollList.cs" />
+    <Compile Include="SelectEventArgs.cs" />
+    <Compile Include="SpeedIncrementer.cs" />
+    <Compile Include="StepStateChangeArgs.cs" />
+    <Compile Include="TextInfo.cs" />
+    <Compile Include="TextInfoMulti.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
