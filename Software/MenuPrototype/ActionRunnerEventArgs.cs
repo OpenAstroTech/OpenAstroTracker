@@ -2,7 +2,7 @@
 {
 	partial class Program
 	{
-		public class StepStateChangeArgs
+		public class ActionRunnerEventArgs
 		{
 			public enum StepState { Starting, Running, Ending };
 			public enum StepStateChange { NoChange, Backtrack, Proceed, Completed };

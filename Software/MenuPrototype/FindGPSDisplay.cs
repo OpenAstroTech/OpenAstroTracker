@@ -13,6 +13,10 @@ namespace MenuPrototype
 			public override void onDisplay(bool modal = false)
 			{
 				Console.WriteLine("* Found 0 sats              ");
+				//if (foundEnoughSats)
+				{
+					getMainMenu().closeDialog();
+				}
 			}
 
 			//public override void onSelect()

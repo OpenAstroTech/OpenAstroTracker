@@ -37,6 +37,11 @@ namespace MenuPrototype
 						break;
 					}
 				}
+
+				if (_activeDialog == null)
+				{
+					throw new ArgumentException("No dialog named [" + tag + "] was found");
+				}
 			}
 
 			public void addMenuItem(MenuItem item)

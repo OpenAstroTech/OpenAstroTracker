@@ -49,8 +49,6 @@ namespace MenuPrototype
 				}
 			}
 
-			//public bool isActive() { return _active; }
-			//public void setActive(bool state) { _active = state; }
 			public string getTag() { return _tag; }
 			public void setTag(string tag) { _tag = tag; }
 			public string getDisplayName() { return _displayName; }

@@ -5,14 +5,13 @@ namespace MenuPrototype
 	partial class Program
 	{
 		////////////////////////////////////////////////////////////////////
-		public class TextInfoMulti : MenuItem
+		public class MultiTextInfo : MenuItem
 		{
-			String _prompt;
 			Func<int, string> _displayFunc;
 			int _currentSubItem;
 			int _subItems;
 
-			public TextInfoMulti(int subItems, Func<int, string> displayFunc) : base("")
+			public MultiTextInfo(int subItems, Func<int, string> displayFunc) : base("")
 			{
 				_subItems = subItems;
 				_currentSubItem = 0;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Design;
+using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -116,7 +117,7 @@ namespace MenuPrototype
 			//////  CTRL  ///////
 			var ctrlMenu = new MenuItem("CTRL");
 			ctrlMenu.addMenuItem(new Button("Manual Control", startManualControl));
-			var dlgManualControl = new ManualControlMenuItem(manualCompleted);
+			var dlgManualControl = new ManualControlModal(manualControlEvent, "RADECControl");
 
 			var dlgSetHome = new MenuItem("Set home pos?", "ConfirmHome");
 			dlgSetHome.addMenuItem(new OptionChooser(new string[] { "Yes", "No" }, 0, setHomePosition));
@@ -147,9 +148,9 @@ namespace MenuPrototype
 			//////  INFO  ///////
 			var infoMenu = new MenuItem("INFO");
 			var infoList = new ScrollList();
-			infoList.addMenuItem(new TextInfoMulti(3, getRASteps));
-			infoList.addMenuItem(new TextInfoMulti(3, getDECSteps));
-			infoList.addMenuItem(new TextInfoMulti(2, getTRKSteps));
+			infoList.addMenuItem(new MultiTextInfo(3, getRASteps));
+			infoList.addMenuItem(new MultiTextInfo(3, getDECSteps));
+			infoList.addMenuItem(new MultiTextInfo(2, getTRKSteps));
 			//infoList.addMenuItem(new TextInfo( "Loc ", getLocation));
 			//infoList.addMenuItem(new TextInfo( "Temp: ", getTemperature));
 			//infoList.addMenuItem(new TextInfo( "MemAvail: ", getMemAvail));
@@ -178,15 +179,15 @@ namespace MenuPrototype
 			dlgStartIsHome.addMenuItem(new OptionChooser(new string[] { "Yes", "No", "Cancl" }, 1, startupIsHomePosition));
 			var dlgStartFindGPS = new MenuItem("Finding GPS...", "StartFindGPS");
 			dlgStartFindGPS.addMenuItem(new FindGPSDisplay("FINDGPS"));
-			var dlgStartHAGetGPS = new MenuItem("Set HA via?", "StartHAChooser");
-			dlgStartHAGetGPS.addMenuItem(new OptionChooser(new string[] { "GPS Sync", "Manual Set" }, 0, startupHowToGetHA));
+			var dlgStartHowToGetHA = new MenuItem("Set HA via?", "StartHAChooser");
+			dlgStartHowToGetHA.addMenuItem(new OptionChooser(new string[] { "GPS Sync", "Manual Set" }, 0, startupHowToGetHA));
 			var dlgStartHAGetManual = new MenuItem("Polaris HA?", "StartEnterHA");
 			dlgStartHAGetManual.addMenuItem(new NumberInput("HA", new[] { 15, 32 }, "^%02dh^%02dm", startHAConfirmed, hourIncr, NumberInput.BehaviorFlags.ConstantRepetition));
-			var dlgStartManualControl = new ManualControlMenuItem(startManualCompleted, "StartManualControl");
+			var dlgStartManualControl = new ManualControlModal(manualControlEvent, "StartManualControl");
 
 			menu.addModalDialog(dlgStartIsHome);
 			menu.addModalDialog(dlgStartFindGPS);
-			menu.addModalDialog(dlgStartHAGetGPS);
+			menu.addModalDialog(dlgStartHowToGetHA);
 			menu.addModalDialog(dlgStartHAGetManual);
 			menu.addModalDialog(dlgStartManualControl);
 
@@ -214,30 +215,30 @@ namespace MenuPrototype
 			while (true);
 		}
 
-		private static void polarAlignFunction(StepStateChangeArgs arg)
+		private static void polarAlignFunction(ActionRunnerEventArgs arg)
 		{
-			if (arg.State == StepStateChangeArgs.StepState.Running)
+			if (arg.State == ActionRunnerEventArgs.StepState.Running)
 			{
 				arg.Display = "Slewing...";
 				//if (mount.nothingslewing)
 				{
-					arg.Result = StepStateChangeArgs.StepStateChange.Completed;
+					arg.Result = ActionRunnerEventArgs.StepStateChange.Completed;
 				}
 			}
 		}
 
 			static ulong driftStart = 0;
-		private static void driftAlignPhaseFunction(StepStateChangeArgs arg)
+		private static void driftAlignPhaseFunction(ActionRunnerEventArgs arg)
 		{
 			arg.Heading = "Drift Algnmnt...";
 			switch (arg.State)
 			{
-				case StepStateChangeArgs.StepState.Starting:
+				case ActionRunnerEventArgs.StepState.Starting:
 					{
 						driftStart = millis();
 					}
 					break;
-				case StepStateChangeArgs.StepState.Running:
+				case ActionRunnerEventArgs.StepState.Running:
 					{
 						switch (arg.Step)
 						{
@@ -246,7 +247,7 @@ namespace MenuPrototype
 									arg.Display = "Pause 1.5s...";
 									if (millis() - driftStart > 1500)
 									{
-										arg.Result = StepStateChangeArgs.StepStateChange.Proceed;
+										arg.Result = ActionRunnerEventArgs.StepStateChange.Proceed;
 										driftStart = millis();
 									}
 								}
@@ -256,7 +257,7 @@ namespace MenuPrototype
 									arg.Display = "Eastward pass...";
 									if (millis() - driftStart > 10000)
 									{
-										arg.Result = StepStateChangeArgs.StepStateChange.Proceed;
+										arg.Result = ActionRunnerEventArgs.StepStateChange.Proceed;
 										driftStart = millis();
 									}
 								}
@@ -266,7 +267,7 @@ namespace MenuPrototype
 									arg.Display = "Pause 1.5s...";
 									if (millis() - driftStart > 1500)
 									{
-										arg.Result = StepStateChangeArgs.StepStateChange.Proceed;
+										arg.Result = ActionRunnerEventArgs.StepStateChange.Proceed;
 										driftStart = millis();
 									}
 								}
@@ -276,7 +277,7 @@ namespace MenuPrototype
 									arg.Display = "Westward pass...";
 									if (millis() - driftStart > 10000)
 									{
-										arg.Result = StepStateChangeArgs.StepStateChange.Proceed;
+										arg.Result = ActionRunnerEventArgs.StepStateChange.Proceed;
 										driftStart = millis();
 									}
 								}
@@ -286,7 +287,7 @@ namespace MenuPrototype
 									arg.Display = "Pause 1.5s...";
 									if (millis() - driftStart > 1500)
 									{
-										arg.Result = StepStateChangeArgs.StepStateChange.Proceed;
+										arg.Result = ActionRunnerEventArgs.StepStateChange.Proceed;
 										driftStart = millis();
 									}
 								}
@@ -294,18 +295,13 @@ namespace MenuPrototype
 							case 5:
 								{
 									arg.Display = "Reset mount...";
-									arg.Result = StepStateChangeArgs.StepStateChange.Completed;
+									arg.Result = ActionRunnerEventArgs.StepStateChange.Completed;
 								}
 								break;
 						}
 					}
 					break;
 			}
-		}
-
-		private static void startManualCompleted(EventArgs args)
-		{
-			args.source.getMainMenu().activateDialog("StartIsHome");
 		}
 
 		public static void startupIsHomePosition(EventArgs args)
@@ -381,14 +377,49 @@ namespace MenuPrototype
 
 		}
 
-		public static void manualCompleted(EventArgs args)
+		public static void manualControlEvent(ManualControlEventArgs args)
 		{
-			args.source.getMainMenu().activateDialog("ConfirmHome");
+			if (args.Event == ManualControlEventArgs.EventType.Close)
+			{
+				if (args.source.getTag() == "StartManualControl")
+				{
+					args.source.getMainMenu().activateDialog("StartIsHome");
+				}
+				else
+				{
+					args.source.getMainMenu().activateDialog("ConfirmHome");
+				}
+			}
+			else
+			{
+				int keyState = args.getNewState();
+				if (keyState == btnNONE)
+				{
+					// Stop all motors
+					Console.WriteLine("            ");
+				}
+				else if (keyState == btnLEFT)
+				{
+					Console.WriteLine("RA East    ");
+				}
+				else if (keyState == btnRIGHT)
+				{
+					Console.WriteLine("RA West    ");
+				}
+				else if (keyState == btnUP)
+				{
+					Console.WriteLine("DEC Up    ");
+				}
+				else if (keyState == btnDOWN)
+				{
+					Console.WriteLine("DEC Down    ");
+				}
+			}
 		}
 
 		public static void startManualControl(EventArgs arg)
 		{
-			arg.source.getMainMenu().activateDialog("Control");
+			arg.source.getMainMenu().activateDialog("RADECControl");
 		}
 
 		public static void answered(EventArgs args)

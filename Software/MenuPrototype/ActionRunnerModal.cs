@@ -10,13 +10,13 @@ namespace MenuPrototype
 			protected MenuItem _followModal;
 			protected Func<bool> _isComplete;
 
-			public ActionRunnerModal(string prompt, string tag, MenuItem followModal = null) : base(prompt, tag)
+			public ActionRunnerModal(string displayname, string tag, MenuItem followModal = null) : base(displayname, tag)
 			{
 				_isComplete = null;
 				_followModal = followModal;
 			}
-
-			public ActionRunnerModal(string prompt, string tag, Func<bool> isComplete, MenuItem followModal = null) : base(prompt, tag)
+			
+			public ActionRunnerModal(string displayname, string tag, Func<bool> isComplete, MenuItem followModal = null) : base(displayname, tag)
 			{
 				_isComplete = isComplete;
 				_followModal = followModal;
