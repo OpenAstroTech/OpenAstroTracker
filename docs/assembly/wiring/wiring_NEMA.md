@@ -18,6 +18,12 @@ heading_anchors: true
 
 <img src="../nema_wiring/2209_pins.jpg" width="100%">
 
+Wire|Pin||Wire|Pin
+-|-|-|-|-
+RA Step|22||DEC Step|23
+RA Direction|24||DEC Direction|25
+RA Enable|26||DEC Enable|27
+RA UART|TX3||DEC UART|TX3
 ------------------------
 
 For UART, the DEC driver board needs to have MS1 enabled, do this by switching the '1' button to ON. All others, also on the RA driver have to be OFF
