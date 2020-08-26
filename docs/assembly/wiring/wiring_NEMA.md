@@ -59,6 +59,26 @@ There are some special cases to be noted:
 - To save wires, there is no EN signal transmitted from Arduino. The TMC2209 needs to have its EN pins driven with a logic LOW signal to work,
 in order to do that wire the E pins of the drivers to a GND. Alternatively you can use the DIAG wires for that (if you dont use autohoming) and wire them to the Arduino pins 26/27
 
+## Stepper wires
+
+Sometimes, NEMAs dont get shipped with connectors, so you'll have to do that yourself. You can either solder or crimp. The best method is to solder or crimp a 4 pin JST connector to the wires, but Duponts are ok too.
+They just dont hold as well.
+
+The order in which to connect the wires is as following:
+
+**RED** - **BLUE** - **GREEN** - **BLACK**
+
+The order isnt important, if you do black green blue red the motor will simply have its direction reversed. If you wired everything up and find your stepper turning in the wrng direction, simply reverse it in the code with: 
+INVERT_RA_DIR or INVERT_DEC_DIR
+
+If your stepper has other colors, take a look at its datasheet. It's usually sent with the stepper or you can find it online. 
+You'll have to align the wires as following:
+
+**COIL 1** - **COIL 1** - **COIL 2** - **COIL 2**
+
+Coils are sometimes also referred to as COIL A and COIL B.
+It doesnt matter if you switch the wires within the Coils, so within COIL 1 or COIL 2, but you should never put a wire from COIL 2 together with a wire from COIL 1. E.g. Coil1 - Coil2 - Coil1 - Coil2. **Do not do this!**
+
 # How to test the UART connection:
 
 After you have both steppers wired up, go into the code. Make sure that all necessary settings for TMC UART are set. Those are:
@@ -93,12 +113,11 @@ If it does not:
 - You may connected to the wrong UART pin on the driver. Try the other one. There are two, and some manufacturers have only one of them enabled:
 
 
-### Bigtreetech / MKS UART pin:
+### Bigtreetech UART pin:
 
 
 
 <img src="../nema_wiring/BTT_UARTpin.png" width="50%">
-
 
 ### Watterot UART pin:
 
@@ -108,9 +127,15 @@ If it does not:
 
 You will have to solder a bridge thats right beneath the two UART pins. It is 3 pads that all need a connection with each other. Then, solder a wire or pin on the top of the board to one of the UART pins
 
+### MKS UART pin:
 
+
+Like on the Watterot drivers, you will have to solder a pin or wire to the top of the board, to the marked pin. But you wont have to solder the bridge.
+
+<img src="../nema_wiring/MKS_UART.jpg" width="50%">
 
 <br/><br/>
+
 # Troubleshooting
 {: .d-inline-block }
 - Axis only turning in one direction:
