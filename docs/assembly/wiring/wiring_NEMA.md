@@ -125,14 +125,16 @@ If it does not:
 
 <img src="../nema_wiring/Watterot_pins.png" width="50%">
 
-You will have to solder a bridge thats right beneath the two UART pins. It is 3 pads that all need a connection with each other. Then, solder a wire or pin on the top of the board to one of the UART pins
+You will have to solder a bridge thats right beneath the two UART pins. It is 3 pads that all need a connection with each other. Then, solder a wire or pin on the top of the board to one of the UART pins.
 
 ### MKS UART pin:
 
 
+<img src="../nema_wiring/MKS_UART.jpg" width="50%">
+
 Like on the Watterot drivers, you will have to solder a pin or wire to the top of the board, to the marked pin. But you wont have to solder the bridge.
 
-<img src="../nema_wiring/MKS_UART.jpg" width="50%">
+
 
 <br/><br/>
 # Troubleshooting
