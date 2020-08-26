@@ -135,7 +135,6 @@ Like on the Watterot drivers, you will have to solder a pin or wire to the top o
 <img src="../nema_wiring/MKS_UART.jpg" width="50%">
 
 <br/><br/>
-
 # Troubleshooting
 {: .d-inline-block }
 - Axis only turning in one direction:
