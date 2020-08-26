@@ -1,19 +1,9 @@
 #pragma once
-
+#include "Constants.hpp"
 /*
 * This Configuration file contains basic settings. Use Configuration_adv for
 * more advanced adjustments! 
 */
-
-// Supported stepper models, do not modify these values.
-#define STEPPER_TYPE_28BYJ48  0
-#define STEPPER_TYPE_NEMA17   1
-
-// Supported stepper driver models, do not modify these values.
-#define DRIVER_TYPE_ULN2003              0
-#define DRIVER_TYPE_GENERIC              1
-#define DRIVER_TYPE_TMC2209_STANDALONE   2
-#define DRIVER_TYPE_TMC2209_UART         3
 
 // Set to 1 for the northern hemisphere, 0 otherwise
 #define NORTHERN_HEMISPHERE 1
