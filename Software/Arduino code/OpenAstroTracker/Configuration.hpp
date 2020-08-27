@@ -12,8 +12,8 @@
 #define RA_WHEEL_VERSION 2
 
 // Stepper types/models. See supported stepper values. Change according to the steppers you are using
-#define RA_STEPPER_TYPE     STEPPER_TYPE_28BYJ48
-#define DEC_STEPPER_TYPE    STEPPER_TYPE_28BYJ48
+#define RA_STEPPER_TYPE     STEPPER_TYPE_NEMA17
+#define DEC_STEPPER_TYPE    STEPPER_TYPE_NEMA17
 
 // Driver selection
 // GENERIC drivers include A4988 and any Bipolar STEP/DIR based drivers. Note Microstep assignments in config_pins.

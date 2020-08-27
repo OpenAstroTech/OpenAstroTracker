@@ -7,7 +7,7 @@
   #define RA_STEPPER_SPR            4096  // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
   #define RA_STEPPER_SPEED          400   // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
   #define RA_STEPPER_ACCELERATION   600   // High speeds tend to make these cheap steppers unprecice
-#elif RA_STEPPER_TYPE == STEP_TYPE_NEMA17
+#elif RA_STEPPER_TYPE == STEPPER_TYPE_NEMA17
   #define RA_STEPPER_SPR            400   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
   #define RA_STEPPER_SPEED          1200  // You can change the speed and acceleration of the steppers here. Max. Speed = 3000. 
   #define RA_STEPPER_ACCELERATION   6000
@@ -19,7 +19,7 @@
   #define DEC_STEPPER_SPR            4096  // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
   #define DEC_STEPPER_SPEED          600   // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
   #define DEC_STEPPER_ACCELERATION   400   // High speeds tend to make these cheap steppers unprecice
-#elif DEC_STEPPER_TYPE == STEP_TYPE_NEMA17
+#elif DEC_STEPPER_TYPE == STEPPER_TYPE_NEMA17
   #define DEC_STEPPER_SPR            400   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
   #define DEC_STEPPER_SPEED          1300  // You can change the speed and acceleration of the steppers here. Max. Speed = 3000. 
   #define DEC_STEPPER_ACCELERATION   6000
@@ -293,7 +293,7 @@
 #error "Do you really want to set the RMS motorcurrent above 2 Ampere? Thats almost 3A peak! Delete this error if you know what youre doing" 
 #endif
 #if RA_STEPPER_TYPE != STEPPER_TYPE_28BYJ48 && ESP32
-#error "Sorry, ESP32 only supports 28BYJ48 steppers."
+#error "Sorry, ESP32 only supports 28BYJ48 steppers at this moment"
 #endif
 #if RA_STEPPER_TYPE != STEPPER_TYPE_28BYJ48 && __AVR_ATmega328P__
 #error "Sorry, Arduino Uno only supports 28BYJ48 steppers."

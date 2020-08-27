@@ -3,7 +3,7 @@
 
 #include <LiquidCrystal.h>
 #include <AccelStepper.h>
-#include "../Configuration_adv.hpp"
+#include "inc/Config.hpp"
 #include "DayTime.hpp"
 #include "LcdMenu.hpp"
 
@@ -323,7 +323,7 @@ private:
   #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
     TMC2209Stepper* _driverRA;
   #endif  
-  #if DEC_DRIVER_TYPE == TMC2209_UART
+  #if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
     TMC2209Stepper* _driverDEC;
   #endif  
   #if AZIMUTH_ALTITUDE_MOTORS == 1
