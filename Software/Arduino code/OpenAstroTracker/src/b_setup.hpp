@@ -208,15 +208,17 @@ void finishSetup()
 
   LOGV1(DEBUG_ANY, "Configure DEC stepper...");
   #if DEC_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
+    LOGV1(DEBUG_ANY, "Configure DEC stepper 28BYJ-48...");
     mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, RA_STEPPER_SPEED, DEC_STEPPER_ACCELERATION);
   #elif DEC_STEPPER_TYPE == STEPPER_TYPE_NEMA17
+    LOGV1(DEBUG_ANY, "Configure DEC stepper NEMA...");
     mount.configureDECStepper(DRIVER, DECmotorPin1, DECmotorPin2, RA_STEPPER_SPEED, DEC_STEPPER_ACCELERATION);
   #else
     #error New stepper type? Configure it here.
   #endif
 
   #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-    LOGV1(DEBUG_ANY, "Configure RA driver...");
+    LOGV1(DEBUG_ANY, "Configure DEC driver TMC2009 UART...");
     mount.configureRAdriver(&RA_SERIAL_PORT, R_SENSE, RA_DRIVER_ADDRESS, RA_RMSCURRENT, RA_STALL_VALUE);
   #endif
   #if DEC_STEPPER_TYPE == DRIVER_TYPE_TMC2209_UART

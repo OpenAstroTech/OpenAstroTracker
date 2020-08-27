@@ -7,7 +7,7 @@
 #include "DayTime.hpp"
 #include "LcdMenu.hpp"
 
-#if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+#if (RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART)
  #include <TMCStepper.h>
  // If you get an error here, download the TMCstepper library from "Tools > Manage Libraries"
 #endif
@@ -164,6 +164,7 @@ public:
   #if AZIMUTH_ALTITUDE_MOTORS == 1
   bool isRunningAZ() const;
   bool isRunningALT() const;
+  void getAltAzPositions(long * altSteps, long* azSteps, float* altDelta, float*  azDelta);
   #endif
 
   // Starts manual slewing in one of eight directions or tracking
@@ -197,7 +198,7 @@ public:
   void setHome(bool clearZeroPos);
 
   // Auto Home with TMC2209 UART
-  #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART  
+  #if (RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART)
     void startFindingHomeRA();
     void startFindingHomeDEC();
     void finishFindingHomeRA();
@@ -321,6 +322,8 @@ private:
   AccelStepper* _stepperTRK;
   #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
     TMC2209Stepper* _driverRA;
+  #endif  
+  #if DEC_DRIVER_TYPE == TMC2209_UART
     TMC2209Stepper* _driverDEC;
   #endif  
   #if AZIMUTH_ALTITUDE_MOTORS == 1
