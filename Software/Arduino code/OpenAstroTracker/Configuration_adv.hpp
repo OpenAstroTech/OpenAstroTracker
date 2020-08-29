@@ -30,7 +30,7 @@
 // the Circumference of the RA wheel.  V1 = 1057.1  |  V2 = 1131.0
 #if RA_WHEEL_VERSION == 1
   #define RA_WHEEL_CIRCUMFERENCE 1057.1
-#elif RA_WHEEL_VERSION == 2
+#elif RA_WHEEL_VERSION >= 2
   #define RA_WHEEL_CIRCUMFERENCE 1131.0
 #else
   #error Unsupported RA wheel version, please recheck RA_STEPPER_TYPE
