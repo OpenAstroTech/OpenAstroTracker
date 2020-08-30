@@ -22,9 +22,9 @@
     #define RA_DIR_PIN  24  // DIR
     #define RA_EN_PIN   26  // Enable
     #define RA_DIAG_PIN 28  // only needed for autohome function
-    #define RA_MS0_PIN  30, HIGH
-    #define RA_MS1_PIN  32, HIGH
-    #define RA_MS2_PIN  34, HIGH
+    #define RA_MS0_PIN  30
+    #define RA_MS1_PIN  32
+    #define RA_MS2_PIN  34
     //RA TMC2209 UART specific pins
     #define RA_SERIAL_PORT Serial3  // HardwareSerial port, wire to TX3 for write-only
     #define RA_DRIVER_ADDRESS 0b00  // Set by MS1/MS2. LOW/LOW in this case
@@ -33,9 +33,9 @@
     #define DEC_DIR_PIN  25  // DIR
     #define DEC_EN_PIN   27  // Enable
     #define DEC_DIAG_PIN 29  // only needed for autohome function
-    #define DEC_MS0_PIN  31, HIGH
-    #define DEC_MS1_PIN  33, HIGH
-    #define DEC_MS2_PIN  35, HIGH
+    #define DEC_MS0_PIN  31
+    #define DEC_MS1_PIN  33
+    #define DEC_MS2_PIN  35
     //DEC TMC2209 UART specific pins
     #define DEC_SERIAL_PORT Serial3  // HardwareSerial port, wire to TX2 for write-only
     #define DEC_DRIVER_ADDRESS 0b01  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
