@@ -82,7 +82,7 @@
 #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE
   //#define RA_EN_PIN 40  // Enable Pin
 #endif
-#if (RA_DRIVER_TYPE == TMC2209_UART) || (DEC_DRIVER_TYPE == TMC2209_UART)
+#if (RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART)
   #define R_SENSE 0.11f           // 0.11 for StepStick
 #endif
 // End Driver Definitions ///////////////
