@@ -262,6 +262,7 @@ void Mount::writePersistentData(int which, int val)
       LOGV2(DEBUG_INFO,"Mount: EEPROM Write: Updating RA steps to %d", val);
     }
     break;
+
     case EEPROM_DEC:
     {
       // ... set bit 1 to indicate DEC value has been written to 8/9
@@ -271,6 +272,7 @@ void Mount::writePersistentData(int which, int val)
       LOGV2(DEBUG_INFO,"Mount: EEPROM Write: Updating DEC steps to %d", val);
     }
     break;
+
     case EEPROM_SPEED:
     {
       // ... set bit 3 to indicate speed factor value has been written to 0/3
@@ -280,6 +282,7 @@ void Mount::writePersistentData(int which, int val)
       LOGV2(DEBUG_INFO,"Mount: EEPROM Write: Updating Speed factor to %d", val);
     }
     break;
+
     case EEPROM_BACKLASH:
     {
       // ... set bit 4 to indicate backlash has been written to 10/11
@@ -288,6 +291,7 @@ void Mount::writePersistentData(int which, int val)
       hiByteLocation = 11;
       LOGV2(DEBUG_INFO,"Mount: EEPROM Write: Updating Backlash to %d", val);
     }
+    break;
 
     case EEPROM_LATITUDE:
     {
@@ -297,6 +301,7 @@ void Mount::writePersistentData(int which, int val)
       hiByteLocation = 13;
       LOGV2(DEBUG_INFO,"Mount: EEPROM Write: Updating Latitude to %d", val);
     }
+    break;
 
     case EEPROM_LONGITUDE:
     {
@@ -307,6 +312,7 @@ void Mount::writePersistentData(int which, int val)
       LOGV2(DEBUG_INFO,"Mount: EEPROM Write: Updating Longitude to %d", val);
     }
     break;
+
     case EEPROM_PITCH_OFFSET:
     {
       // ... set bit 7 to indicate pitch offset angle value has been written to 17/18
@@ -316,6 +322,7 @@ void Mount::writePersistentData(int which, int val)
       LOGV2(DEBUG_INFO,"Mount: EEPROM Write: Updating Pitch Offset to %d", val);
     }
     break;
+
     case EEPROM_ROLL_OFFSET:
     {
       // ... set bit 8 to indicate pitch offset angle value has been written to 19/20
