@@ -43,27 +43,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActionRunnerModal.cs" />
-    <Compile Include="Button.cs" />
-    <Compile Include="EventArgs.cs" />
-    <Compile Include="FindGPSDisplay.cs" />
-    <Compile Include="Incrementer.cs" />
-    <Compile Include="MainMenu.cs" />
-    <Compile Include="ManualControlModal.cs" />
-    <Compile Include="MenuItem.cs" />
-    <Compile Include="MultiStepActionRunnerModal.cs" />
-    <Compile Include="NumberInput.cs" />
-    <Compile Include="OptionChooser.cs" />
-    <Compile Include="PitchRollDisplay.cs" />
+    <Compile Include="Modals\ActionRunnerModal.cs" />
+    <Compile Include="Controls\Button.cs" />
+    <Compile Include="Controls\EventArgs.cs" />
+    <Compile Include="OATSpecific\FindGPSDisplay.cs" />
+    <Compile Include="Incrementers\Incrementer.cs" />
+    <Compile Include="Controls\MainMenu.cs" />
+    <Compile Include="OATSpecific\ManualControlModal.cs" />
+    <Compile Include="Controls\MenuItem.cs" />
+    <Compile Include="Modals\MultiStepActionRunnerModal.cs" />
+    <Compile Include="Controls\NumberInput.cs" />
+    <Compile Include="Controls\OptionChooser.cs" />
+    <Compile Include="OATSpecific\PitchRollDisplay.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RaDecIncrementer.cs" />
-    <Compile Include="ScrollList.cs" />
-    <Compile Include="SelectEventArgs.cs" />
-    <Compile Include="SpeedIncrementer.cs" />
-    <Compile Include="ActionRunnerEventArgs.cs" />
-    <Compile Include="TextInfo.cs" />
-    <Compile Include="MultiTextInfo.cs" />
+    <Compile Include="Incrementers\RaDecIncrementer.cs" />
+    <Compile Include="Controls\ScrollList.cs" />
+    <Compile Include="Controls\SelectEventArgs.cs" />
+    <Compile Include="Incrementers\SpeedIncrementer.cs" />
+    <Compile Include="Modals\ActionRunnerEventArgs.cs" />
+    <Compile Include="Controls\TextInfo.cs" />
+    <Compile Include="Controls\MultiTextInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
