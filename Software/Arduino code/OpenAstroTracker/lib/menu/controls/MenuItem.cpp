@@ -1,5 +1,8 @@
 ﻿#include "MenuItem.hpp"
 
+#define btnRIGHT  0
+#define btnSELECT 4
+
 MenuItem::MenuItem(const char *displayName, const char *tag = "") : _tag(tag), _displayName(displayName)
 {
 	_subMenuList = new List<MenuItem*>();
@@ -33,7 +36,7 @@ void MenuItem::setMainMenu(MainMenu* mainMenu)
 	}
 }
 
-void MenuItem::onDisplay(bool modal = false)
+void MenuItem::onDisplay(bool modal)
 {
 	if (modal)
 	{

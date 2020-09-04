@@ -1,4 +1,5 @@
-﻿#include "Button.hpp"
+﻿#include "SelectEventArgs.hpp"
+#include "Button.hpp"
 
 Button::Button(const char *choice, MenuItem *subMenu) : MenuItem(choice)
 {
@@ -14,7 +15,7 @@ Button::Button(const char *choice, eventAction chosenFunc) : MenuItem(choice)
 	_subMenuActivated = false;
 }
 
-void Button::closeMenuItem(MenuItem *closeMe) override
+void Button::closeMenuItem(MenuItem *closeMe)
 {
 	if (_subMenuActivated)
 	{
@@ -29,7 +30,7 @@ void Button::closeMenuItem(MenuItem *closeMe) override
 	}
 }
 
-bool Button::onKeypressed(int key) override
+bool Button::onKeypressed(int key)
 {
 	if (_subMenuActivated)
 	{
@@ -38,7 +39,7 @@ bool Button::onKeypressed(int key) override
 	return MenuItem::onKeypressed(key);
 }
 
-bool Button::onPreviewKey(int keyState) override
+bool Button::onPreviewKey(int keyState)
 {
 	if (_subMenuActivated)
 	{
@@ -47,7 +48,7 @@ bool Button::onPreviewKey(int keyState) override
 	return MenuItem::onPreviewKey(keyState);
 }
 
-void Button::setMainMenu(MainMenu *mainMenu) override
+void Button::setMainMenu(MainMenu *mainMenu)
 {
 	MenuItem::setMainMenu(mainMenu);
 	if (_subMenu != nullptr)
@@ -56,7 +57,7 @@ void Button::setMainMenu(MainMenu *mainMenu) override
 	}
 }
 
-void Button::onDisplay(bool modal = false) override
+void Button::onDisplay(bool modal)
 {
 	if ((_subMenu != nullptr) && _subMenuActivated)
 	{
@@ -70,7 +71,7 @@ void Button::onDisplay(bool modal = false) override
 	}
 }
 
-void Button::onSelect() override
+void Button::onSelect()
 {
 	if (_subMenu != nullptr)
 	{

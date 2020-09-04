@@ -1,22 +1,29 @@
-﻿#include "EventArgs.hpp"
+﻿#ifndef _BUTTON_HPP_
+#define _BUTTON_HPP_
 
-class Button : MenuItem
+#include "EventArgs.hpp"
+#include "MenuItem.hpp"
+
+class Button : public MenuItem
 {
 private:
 	eventAction _chosenFunc;
 
 	MenuItem *_subMenu;
 	bool _subMenuActivated;
+
 public:
 	Button(const char *choice, MenuItem *subMenu);
 	Button(const char *choice, eventAction chosenFunc);
 
-	virtual void closeMenuItem(MenuItem *closeMe) override;
-	virtual void setMainMenu(MainMenu* mainMenu) override;
+	virtual void closeMenuItem(MenuItem *closeMe);
+	virtual void setMainMenu(MainMenu *mainMenu);
 
-	virtual void onDisplay(bool modal = false) override;
-	virtual void onSelect() override;
+	virtual void onDisplay(bool modal = false);
+	virtual void onSelect();
 
-	virtual bool onPreviewKey(int keyState) override;
-	virtual bool onKeypressed(int key) override;
+	virtual bool onPreviewKey(int keyState);
+	virtual bool onKeypressed(int key);
 };
+
+#endif

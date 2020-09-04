@@ -17,7 +17,7 @@ LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(8, 9, 4, 5, 6, 7) {
   _activeCol = -1;
   _lastDisplay[0] = "";
   _lastDisplay[1] = "";
-  _menuItems = new MenuItem * [maxItems];  
+  _menuItems = new LcdMenuItem * [maxItems];  
 
   _brightness = EPROMStore::Storage()->read(16);
   LOGV2(DEBUG_INFO, "LCD: Brightness from EEPROM is %d", _brightness);
@@ -34,7 +34,7 @@ LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(8, 9, 4, 5, 6, 7) {
 }
 
 // Find a menu item by its ID
-MenuItem* LcdMenu::findById(byte id)
+LcdMenuItem* LcdMenu::findById(byte id)
 {
   for (byte i = 0; i < _numMenuItems; i++) {
     if (_menuItems[i]->id() == id) {
@@ -46,7 +46,7 @@ MenuItem* LcdMenu::findById(byte id)
 
 // Add a new menu item to the list (order matters)
 void LcdMenu::addItem(const char* disp, byte id) {
-  _menuItems[_numMenuItems++] = new MenuItem(disp, id);
+  _menuItems[_numMenuItems++] = new LcdMenuItem(disp, id);
   _longestDisplay = max(_longestDisplay, strlen(disp));
 }
 
@@ -126,7 +126,7 @@ void LcdMenu::updateDisplay() {
   char scratchBuffer[12];
   // Build the entire menu string
   for (byte i = 0; i < _numMenuItems; i++) {
-    MenuItem* item = _menuItems[i];
+    LcdMenuItem* item = _menuItems[i];
     bool isActive = i == _activeMenuIndex;
     sprintf(scratchBuffer, "%c%s%c", isActive ? '>' : ' ', item->display(), isActive ? '<' : ' ');
 
@@ -290,7 +290,7 @@ byte LcdMenu::MinutesBitmap[8] = {
 LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) {
 }
 
-MenuItem* LcdMenu::findById(byte id) {
+LcdMenuItem* LcdMenu::findById(byte id) {
   return NULL;
 }
 

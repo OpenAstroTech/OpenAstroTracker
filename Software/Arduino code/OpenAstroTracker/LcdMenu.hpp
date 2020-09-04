@@ -10,11 +10,11 @@
 // A single menu item (like RA, HEAT, POL, etc.)
 // The ID is just a number, it has no relevance for the order of the items
 // The display is what is shown on the menu.
-class MenuItem {
+class LcdMenuItem {
   const char* _display;     // What to display on the screen
   byte _id;             // The ID of the menu item
 public:
-  MenuItem(const char* display, byte id) {
+  LcdMenuItem(const char* display, byte id) {
     _display = display;
     _id = id;
   }
@@ -36,7 +36,7 @@ public:
   LcdMenu(byte cols, byte rows, int maxItems);
 
   // Find a menu item by its ID
-  MenuItem* findById(byte id);
+  LcdMenuItem* findById(byte id);
 
   // Add a new menu item to the list (order matters)
   void addItem(const char* disp, byte id);
@@ -79,7 +79,7 @@ private:
 private:
 #if HEADLESS_CLIENT == 0
   LiquidCrystal _lcd;   // The LCD screen that we'll display the menu on
-  MenuItem** _menuItems;  // The first menu item (linked list)
+  LcdMenuItem** _menuItems;  // The first menu item (linked list)
   byte _numMenuItems;
   byte _activeMenuIndex;
   byte _longestDisplay;   // The number of characters in the longest menu item

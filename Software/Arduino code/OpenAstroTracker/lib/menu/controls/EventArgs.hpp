@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿#ifndef _EVENTARGS_HPP_
+#define _EVENTARGS_HPP_
+
 #include "MenuItem.hpp"
 
 class EventArgs
@@ -10,4 +12,6 @@ public:
 	MenuItem* getSource() const;
 };
 
-typedef void (*eventAction)(EventArgs);
+typedef void (*eventAction)(EventArgs*);
+
+#endif

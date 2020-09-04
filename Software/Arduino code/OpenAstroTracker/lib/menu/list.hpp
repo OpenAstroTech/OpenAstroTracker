@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _LIST_HPP_
+#define _LIST_HPP_
 
 template <class T>
 struct Node
@@ -35,7 +36,7 @@ public:
 
 	T getItem(int i)
 	{
-		Node<T> h = _head;
+		Node<T> *h = _head;
 		while (i > 0)
 		{
 			if (h == nullptr)
@@ -63,3 +64,5 @@ public:
 		return _count;
 	}
 };
+
+#endif

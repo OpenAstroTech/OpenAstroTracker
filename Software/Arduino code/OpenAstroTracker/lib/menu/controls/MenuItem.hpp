@@ -1,7 +1,9 @@
-﻿#pragma once
+﻿#ifndef _MENUITEM_HPP_
+#define _MENUITEM_HPP_
 
 #include "../list.hpp"
-#include "MainMenu.hpp"
+
+class MainMenu;
 
 class MenuItem
 {
@@ -23,7 +25,9 @@ public:
 	virtual MainMenu* getMainMenu();
 	virtual void setMainMenu(MainMenu* mainMenu);
 	virtual void onDisplay(bool modal = false);
-	virtual void onSelect() {}
+	virtual void onSelect();
 	virtual bool onPreviewKey(int keyState);
 	virtual bool onKeypressed(int key);
 };
+
+#endif

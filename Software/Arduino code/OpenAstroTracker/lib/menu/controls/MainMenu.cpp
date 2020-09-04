@@ -1,4 +1,8 @@
-﻿#include "MainMenu.hpp"
+﻿
+#include "MenuItem.hpp"
+#include "MainMenu.hpp"
+
+#define btnRIGHT 0
 
 MainMenu::MainMenu()
 {

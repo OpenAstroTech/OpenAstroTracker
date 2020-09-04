@@ -6,11 +6,14 @@
 #include "a_inits.hpp"
 #include "LcdMenu.hpp"
 #include "Utility.hpp"
+#include "lib/menu/controls/MainMenu.hpp"
+#include "lib/menu/controls/Button.hpp"
 #include "EPROMStore.hpp"
 //#include "Sidereal.hpp"
 
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(0);
+MainMenu mainMenu;
 
 #ifdef ESP32
 DRAM_ATTR Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
@@ -174,6 +177,12 @@ void setup() {
   #endif
 }
 
+void testPressed(EventArgs* arg) {
+  lcdMenu.setCursor(0, 1);
+  lcdMenu.printMenu("Test!");
+  mount.delay(1000);
+}
+
 void finishSetup()
 {
   LOGV1(DEBUG_ANY, "Finishing setup...");
@@ -294,6 +303,8 @@ void finishSetup()
     LOGV1(DEBUG_ANY, "Update display...");
     lcdMenu.updateDisplay();
   #endif // HEADLESS_CLIENT
+
+  mainMenu.addMenuItem(new Button("Test Action", testPressed));
 
   mount.bootComplete();
   LOGV1(DEBUG_ANY, "Setup done!");

@@ -1,5 +1,9 @@
-﻿#pragma once
-#include "MenuItem.hpp"
+﻿#ifndef _MAINMENU_HPP_
+#define _MAINMENU_HPP_
+
+#include "../list.hpp"
+
+class MenuItem;
 
 class MainMenu
 {
@@ -24,4 +28,6 @@ public:
 	void updateDisplay();
 
 	virtual void closeMenuItem(MenuItem* closeMe);
-}
+};
+
+#endif

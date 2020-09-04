@@ -1,8 +1,11 @@
-﻿#pragma once
-#include "EventArgs.hpp"
-#include "MenuItem.hpp"
+﻿#ifndef _SELECTEVENTARGs_HPP_
+#define _SELECTEVENTARGs_HPP_
 
-class SelectEventArgs : EventArgs
+#include "EventArgs.hpp"
+
+class MenuItem;
+
+class SelectEventArgs : public EventArgs
 {
 private:
 	const char *_selected;
@@ -12,3 +15,5 @@ public:
 	SelectEventArgs(MenuItem *source, const char *selected);
 	const char *getSelected();
 };
+
+#endif
