@@ -1,4 +1,5 @@
-﻿#include "MenuItem.hpp"
+﻿#include <Arduino.h>
+#include "MenuItem.hpp"
 
 #define btnRIGHT  0
 #define btnSELECT 4
@@ -61,20 +62,22 @@ bool MenuItem::onPreviewKey(int keyState)
 
 bool MenuItem::onKeypressed(int key)
 { // True if should wait for release
+	Serial.println("MenuItem::onKeypressed "+String(key));
 	if ((key == btnRIGHT) && (_subMenuList->count() > 0))
 	{
 		_activeSubMenu = (_activeSubMenu + 1) % _subMenuList->count();
 		return true;
 	}
+
 	if (_subMenuList->count() > 0)
 	{
 		if (key == btnSELECT)
 		{
+			Serial.println("MenuItem::onKeypressed SELECT, calling active onSelect!");
 			_subMenuList->getItem(_activeSubMenu)->onSelect();
 			return true;
 		}
 		return _subMenuList->getItem(_activeSubMenu)->onKeypressed(key);
-		;
 	}
 	return false;
 }

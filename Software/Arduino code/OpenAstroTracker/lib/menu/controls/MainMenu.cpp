@@ -1,10 +1,11 @@
 ﻿
 #include "MenuItem.hpp"
 #include "MainMenu.hpp"
+#include "MainMenu.hpp"
 
 #define btnRIGHT 0
 
-MainMenu::MainMenu()
+MainMenu::MainMenu(LiquidCrystal *lcdMenu) : _lcdMenu(lcdMenu)
 {
 	// _topMenuList = new List<MenuItem*>();
 	// _dialogs = new List<MenuItem*>();
@@ -74,7 +75,7 @@ bool MainMenu::processKeys(int key)
 
 void MainMenu::updateDisplay()
 {
-	const char *menu = "";
+	String menu = "";
 	if (_activeDialog != nullptr)
 	{
 		_activeDialog->onDisplay(true);
@@ -84,9 +85,13 @@ void MainMenu::updateDisplay()
 	for (int i = 0; i < _topMenuList.count(); i++)
 	{
 		// TODO: Main menu display on LCD
-		//menu += const char *.Format("{0}{1}{2} ", _activeItem == i ? '>' : ' ', _topMenuList[i].getDisplayName(), _activeItem == i ? '<' : ' ');
+		menu += _activeItem == i ? '>' : ' ';
+		menu += _topMenuList.getItem(i)->getDisplayName();
+		menu += _activeItem == i ? '<' : ' ';
 	}
-	//Console.WriteLine(menu);
+
+	_lcdMenu->setCursor(0, 1);
+	_lcdMenu->print(menu);
 
 	_topMenuList.getItem(_activeItem)->onDisplay();
 }
@@ -101,4 +106,10 @@ void MainMenu::closeMenuItem(MenuItem *closeMe)
 	{
 		_topMenuList.getItem(_activeItem)->closeMenuItem(closeMe);
 	}
+}
+
+void MainMenu::writeToLCD(int col, int row, String text)
+{
+	_lcdMenu->setCursor(col, row);
+	_lcdMenu->print(text);
 }

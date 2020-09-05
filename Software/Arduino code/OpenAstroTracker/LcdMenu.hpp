@@ -38,6 +38,8 @@ public:
   // Find a menu item by its ID
   LcdMenuItem* findById(byte id);
 
+  LiquidCrystal* getLCD() {return &_lcd; }   // The LCD screen that we'll display the menu on
+
   // Add a new menu item to the list (order matters)
   void addItem(const char* disp, byte id);
 

@@ -13,7 +13,7 @@
 
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(0);
-MainMenu mainMenu;
+MainMenu mainMenu(lcdMenu.getLCD());
 
 #ifdef ESP32
 DRAM_ATTR Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
@@ -178,6 +178,7 @@ void setup() {
 }
 
 void testPressed(EventArgs* arg) {
+  LOGV1(DEBUG_INFO, "PRESSED SELECT");
   lcdMenu.setCursor(0, 1);
   lcdMenu.printMenu("Test!");
   mount.delay(1000);
@@ -266,45 +267,47 @@ void finishSetup()
   mount.startSlewing(TRACKING);
 
   #if HEADLESS_CLIENT == 0
-    LOGV1(DEBUG_ANY, "Setup menu system...");
+    // LOGV1(DEBUG_ANY, "Setup menu system...");
 
-    // Create the LCD top-level menu items
-    lcdMenu.addItem("RA", RA_Menu);
-    lcdMenu.addItem("DEC", DEC_Menu);
+    // // Create the LCD top-level menu items
+    // lcdMenu.addItem("RA", RA_Menu);
+    // lcdMenu.addItem("DEC", DEC_Menu);
 
-    #if SUPPORT_POINTS_OF_INTEREST == 1
-      lcdMenu.addItem("GO", POI_Menu);
-    #else
-      lcdMenu.addItem("GO", Home_Menu);
-    #endif
+    // #if SUPPORT_POINTS_OF_INTEREST == 1
+    //   lcdMenu.addItem("GO", POI_Menu);
+    // #else
+    //   lcdMenu.addItem("GO", Home_Menu);
+    // #endif
 
-    lcdMenu.addItem("HA", HA_Menu);
+    // lcdMenu.addItem("HA", HA_Menu);
 
-    #if SUPPORT_HEATING == 1
-      lcdMenu.addItem("HEA", Heat_Menu);
-    #endif
+    // #if SUPPORT_HEATING == 1
+    //   lcdMenu.addItem("HEA", Heat_Menu);
+    // #endif
 
-    #if SUPPORT_MANUAL_CONTROL == 1
-      lcdMenu.addItem("CTRL", Control_Menu);
-    #endif
+    // #if SUPPORT_MANUAL_CONTROL == 1
+    //   lcdMenu.addItem("CTRL", Control_Menu);
+    // #endif
 
-    #if SUPPORT_CALIBRATION == 1
-      lcdMenu.addItem("CAL", Calibration_Menu);
-    #endif
+    // #if SUPPORT_CALIBRATION == 1
+    //   lcdMenu.addItem("CAL", Calibration_Menu);
+    // #endif
 
-    #if SUPPORT_INFO_DISPLAY == 1
-      lcdMenu.addItem("INFO", Status_Menu);
-    #endif
+    // #if SUPPORT_INFO_DISPLAY == 1
+    //   lcdMenu.addItem("INFO", Status_Menu);
+    // #endif
 
     while (millis() - now < 750) {
       mount.loop();
     }
 
     LOGV1(DEBUG_ANY, "Update display...");
-    lcdMenu.updateDisplay();
+    // lcdMenu.updateDisplay();
   #endif // HEADLESS_CLIENT
 
-  mainMenu.addMenuItem(new Button("Test Action", testPressed));
+  auto raMenu = new MenuItem("RA");
+  raMenu->addMenuItem(new Button("Test Action", testPressed));
+  mainMenu.addMenuItem(raMenu);
 
   mount.bootComplete();
   LOGV1(DEBUG_ANY, "Setup done!");
