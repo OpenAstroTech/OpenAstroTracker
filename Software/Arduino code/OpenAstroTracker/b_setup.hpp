@@ -187,11 +187,21 @@ void testPressed(EventArgs* arg) {
 void finishSetup()
 {
   LOGV1(DEBUG_ANY, "Finishing setup...");
+
   // Show a splash screen
   lcdMenu.setCursor(0, 0);
   lcdMenu.printMenu("OpenAstroTracker");
   lcdMenu.setCursor(0, 1);
   lcdMenu.printMenu("     " + version);
+
+  if (lcdButtons.currentState() == btnDOWN){
+    LOGV1(DEBUG_ANY, "Erasing configuration in EEPROM!");
+    mount.clearConfiguration();
+    while (lcdButtons.currentState() != btnNONE) {
+      delay(10);
+    }
+  }
+
   #if HEADLESS_CLIENT == 0
     unsigned long now = millis();
   #endif
@@ -205,7 +215,9 @@ void finishSetup()
   #endif
 
   // Configure the mount
-  
+  LOGV1(DEBUG_ANY, "Delay for a while to get UARTs booted...");
+  delay(1000);
+
   LOGV1(DEBUG_ANY, "Configure RA stepper...");
   // Set the stepper motor parameters
   #if RA_STEPPER_TYPE == STEP_28BYJ48 
@@ -303,8 +315,11 @@ void finishSetup()
 
     LOGV1(DEBUG_ANY, "Update display...");
     // lcdMenu.updateDisplay();
+  #else
+    createMenuSystem(mainMenu);
   #endif // HEADLESS_CLIENT
 
+  auto raIncr = new RaDecIncrementer("RA");
   auto raMenu = new MenuItem("RA");
   raMenu->addMenuItem(new Button("Test Action", testPressed));
   mainMenu.addMenuItem(raMenu);

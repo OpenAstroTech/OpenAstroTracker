@@ -4,14 +4,6 @@
 #include <Arduino.h>
 #include "Configuration_adv.hpp"
 
-// LCD shield buttons
-#define btnRIGHT  0
-#define btnUP     1
-#define btnDOWN   2
-#define btnLEFT   3
-#define btnSELECT 4
-#define btnNONE   5
-
 String getLogBuffer();
 int freeMemory();
 
@@ -135,78 +127,6 @@ void logv(int levelFlags, const char* input, ...);
 #define LOGV7(level,a,b,c,d,e,f,g)
 
 #endif // DEBUG_LEVEL>0
-
-class LcdButtons {
-public:
-  LcdButtons(byte pin) {
-    _analogPin = pin;
-    _lastKeyChange = 0;
-
-    _newKey = -1;
-    _lastNewKey = -2;
-
-    _currentKey = -1;
-    _lastKey = -2;
-  }
-
-  byte currentKey() {
-    checkKey();
-    return _newKey;
-  }
-
-  byte currentState() {
-    checkKey();
-    return _currentKey;
-  }
-
-  int currentAnalogState() {
-    checkKey();
-    return _analogKeyValue;
-  }
-
-  bool keyChanged(byte* pNewKey) {
-    checkKey();
-    if (_newKey != _lastNewKey) {
-      *pNewKey = _newKey;
-      _lastNewKey = _newKey;
-      return true;
-    }
-    return false;
-  }
-
-private:
-  void checkKey() {
-    _analogKeyValue = analogRead(_analogPin);
-    if (_analogKeyValue > 1000) _currentKey = btnNONE;
-    else if (_analogKeyValue < 50)   _currentKey = btnRIGHT;
-    else if (_analogKeyValue < 240)  _currentKey = btnUP;
-    else if (_analogKeyValue < 400)  _currentKey = btnDOWN;
-    else if (_analogKeyValue < 600)  _currentKey = btnLEFT;
-    else if (_analogKeyValue < 920)  _currentKey = btnSELECT;
-
-    if (_currentKey != _lastKey) {
-      _lastKey = _currentKey;
-      _lastKeyChange = millis();
-    }
-    else {
-      // If the keys haven't changed in 5ms, commit the change to the new keys.
-      if (millis() - _lastKeyChange > 5) {
-        _newKey = _currentKey;
-      }
-    }
-  }
-
-private:
-
-  unsigned long _lastKeyChange;
-  byte _analogPin;
-  int _analogKeyValue;
-  byte _lastKey;
-  byte _newKey;
-  byte _lastNewKey;
-  byte _currentKey;
-};
-
 
 // Adjust the given number by the given adjustment, wrap around the limits.
 // Limits are inclusive, so they represent the lowest and highest valid number.

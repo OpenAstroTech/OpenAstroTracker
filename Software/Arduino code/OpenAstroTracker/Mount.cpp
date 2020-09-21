@@ -66,6 +66,9 @@ void mountLoop(void* payload) {
   mount->interruptLoop();
 }
 
+Mount* Mount::_instance = nullptr;
+Mount Mount::instance() { return *_instance; };
+
 const float siderealDegreesInHour = 14.95902778;
 /////////////////////////////////
 //
@@ -73,6 +76,8 @@ const float siderealDegreesInHour = 14.95902778;
 //
 /////////////////////////////////
 Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
+  _instance = this;
+
   #if RA_DRIVER_TYPE != ULN2003_DRIVER
   _stepsPerRADegree = stepsPerRADegree * SET_MICROSTEPPING; // hier
   #else
@@ -87,6 +92,8 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
   _mountStatus = 0;
   _lastDisplayUpdate = 0;
   _stepperWasRunning = false;
+  _latitude = 45;
+  _longitude = 100;
   
   #if AZIMUTH_ALTITUDE_MOTORS == 1
   _azAltWasRunning = false;
@@ -102,6 +109,12 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
 #endif
   _correctForBacklash = false;
   _slewingToHome = false;
+  
+  #if GYRO_LEVEL == 1
+  _pitchCalibrationAngle = 0;
+  _rollCalibrationAngle = 0;
+  #endif
+
   readPersistentData();
 }
 
@@ -120,6 +133,12 @@ void Mount::startTimerInterrupts()
   }
 #endif // !ESPBOARD
 
+}
+
+void Mount::clearConfiguration()
+{
+  EPROMStore::Storage()->update(4, 0);
+  EPROMStore::Storage()->update(5, 0);
 }
 
 /////////////////////////////////
@@ -378,13 +397,16 @@ void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, b
 #if RA_STEPPER_TYPE == STEP_NEMA17
 void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration)
 {
+  LOGV1(DEBUG_ANY,"RACFG: CreateRA");
   _stepperRA = new AccelStepper(stepMode, pin1, pin2);
+  LOGV1(DEBUG_ANY,"RACFG: Cfg");
   _stepperRA->setMaxSpeed(maxSpeed);
   _stepperRA->setAcceleration(maxAcceleration);
   _maxRASpeed = maxSpeed;
   _maxRAAcceleration = maxAcceleration;
 
   // Use another AccelStepper to run the RA motor as well. This instance tracks earths rotation.
+  LOGV1(DEBUG_ANY,"RACFG: CreateTRK");
   _stepperTRK = new AccelStepper(DRIVER, pin1, pin2);
   _stepperTRK->setMaxSpeed(500);
   _stepperTRK->setAcceleration(10000);
@@ -398,6 +420,7 @@ void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed
   _stepperRA->setPinsInverted(true, false, false);
   _stepperTRK->setPinsInverted(true, false, false);
   #endif
+  LOGV1(DEBUG_ANY,"RACFG: Done");
 }
 #endif
 

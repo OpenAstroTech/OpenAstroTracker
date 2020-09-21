@@ -37,7 +37,7 @@ String version = "V1.8.23";
 #elif RA_STEPPER_TYPE == STEP_NEMA17
   float RAStepsPerRevolution = 400;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
   int RAspeed = 1200;          // You can change the speed and acceleration of the steppers here. Max. 
-  int RAacceleration = 6000;
+  int RAacceleration = 1000;
 #else
   #error New RA Stepper type? Define steps per stepper pulley revolution here...
 #endif
@@ -60,7 +60,7 @@ float RACircumference = 1131.0;
 #elif DEC_STEPPER_TYPE == STEP_NEMA17
   float DECStepsPerRevolution = 400;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
   int DECspeed = 1300;           // You can change the speed and acceleration of the steppers here.
-  int DECacceleration = 6000;   
+  int DECacceleration = 1000;   
 #else
   #error New DEC Stepper type? Define steps per stepper pulley revolution here...
 #endif
