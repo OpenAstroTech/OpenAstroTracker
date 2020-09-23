@@ -1,4 +1,5 @@
 #pragma once
+/*
 #include "Configuration_adv.hpp"
 
 #if HEADLESS_CLIENT == 0
@@ -165,3 +166,4 @@ void printStartupMenu() {
 }
 #endif
 #endif
+*/

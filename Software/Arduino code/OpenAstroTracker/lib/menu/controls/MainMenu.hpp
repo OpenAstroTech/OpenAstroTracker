@@ -2,7 +2,7 @@
 #define _MAINMENU_HPP_
 
 #include "../list.hpp"
-#include "LiquidCrystal.h"
+#include "../../output/LcdDisplay.hpp"
 
 class MenuItem;
 
@@ -13,10 +13,10 @@ private:
 	int _activeItem;
 	List<MenuItem *> _topMenuList;
 	List<MenuItem *> _dialogs;
-	LiquidCrystal *_lcdMenu;
+	LcdDisplay *_lcdDisplay;
 
 public:
-	MainMenu(LiquidCrystal *lcdMenu);
+	MainMenu(LcdDisplay* lcdDisplay);
 
 	void writeToLCD(int col, int row, String text);
 	

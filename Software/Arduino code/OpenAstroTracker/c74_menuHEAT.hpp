@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 #if HEADLESS_CLIENT == 0
 #if SUPPORT_HEATING == 1
 
@@ -75,3 +75,4 @@ void printHeatSubmenu() {
 
 #endif
 #endif
+*/

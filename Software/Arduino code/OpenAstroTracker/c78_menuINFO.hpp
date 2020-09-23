@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 #if HEADLESS_CLIENT == 0
 
 #if SUPPORT_INFO_DISPLAY == 1
@@ -136,3 +136,4 @@ void printStatusSubmenu() {
 #endif
 
 #endif
+*/

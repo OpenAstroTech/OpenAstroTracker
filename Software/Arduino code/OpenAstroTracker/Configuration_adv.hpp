@@ -26,8 +26,8 @@
 ////////////////////////////
 //
 // STEPPER TYPE
-#define RA_STEPPER_TYPE   STEP_28BYJ48  //  STEP_28BYJ48  |  STEP_NEMA17
-#define DEC_STEPPER_TYPE  STEP_28BYJ48  //  Change according to the steppers you are using
+#define RA_STEPPER_TYPE   STEP_28BYJ48 //  STEP_28BYJ48  |  STEP_NEMA17
+#define DEC_STEPPER_TYPE  STEP_28BYJ48 //  Change according to the steppers you are using
 //
 //
 ////////////////////////////
@@ -44,7 +44,7 @@
 //
 // DRIVER SELECTION
 // GENERIC drivers include A4988 and any Bipolar STEP/DIR based drivers. Note Microstep assignments in config_pins.
-#define RA_DRIVER_TYPE  ULN2003_DRIVER  //  ULN2003_DRIVER  |  GENERIC_DRIVER  |  TMC2209_STANDALONE  |  TMC2209_UART
+#define RA_DRIVER_TYPE  ULN2003_DRIVER //  ULN2003_DRIVER  |  GENERIC_DRIVER  |  TMC2209_STANDALONE  |  TMC2209_UART
 #define DEC_DRIVER_TYPE ULN2003_DRIVER  //  
 //
 //
@@ -54,13 +54,13 @@
 // These settings work only with TMC2209 in UART connection (single wire to TX)
 #define TRACKING_MICROSTEPPING 64  // Set the MS mode for tracking only. Slew MS is set by SET_MICROSTEPPING above
 
-#define RA_RMSCURRENT 1200       // RMS current in mA. Warning: Peak current will be 1.414 times higher!! Do not exceed your steppers max current!
+#define RA_RMSCURRENT 900       // RMS current in mA. Warning: Peak current will be 1.414 times higher!! Do not exceed your steppers max current!
 #define RA_STALL_VALUE 100       // adjust this value if the RA autohoming sequence often false triggers, or triggers too late
 
 #define DEC_SLEW_MICROSTEPPING  16  // The microstep mode used for slewing DEC
 #define DEC_GUIDE_MICROSTEPPING 64  // The microstep mode used for Guiding DEC only
 #define DEC_STALL_VALUE 10    // adjust this value if the RA autohoming sequence often false triggers, or triggers too late
-#define DEC_RMSCURRENT 1000   // RMS current in mA. Warning: Peak current will be 1.414 times higher!! Do not exceed your steppers max current!
+#define DEC_RMSCURRENT 800   // RMS current in mA. Warning: Peak current will be 1.414 times higher!! Do not exceed your steppers max current!
 #define DEC_HOLDCURRENT 20    // [0, ... , 31] x/32 of the run current when standing still. 0=1/32... 31=32/32
 #define USE_AUTOHOME 0        // Autohome with TMC2209 stall detection:  ON = 1  |  OFF = 0   
 //                  ^^^ leave at 0 for now, doesnt work properly yet
@@ -306,15 +306,3 @@
 // Set this to 1 this to enable the heating menu
 // NOTE: Heating is currently not supported!
 #define SUPPORT_HEATING 0
-
-// Make some variables in the sketch files available to the C++ code.
-extern bool inSerialControl;
-extern String version;
-extern byte PolarisRAHour;
-extern byte PolarisRAMinute;
-extern byte PolarisRASecond;
-extern float RAStepsPerRevolution;
-extern int RAPulleyTeeth;
-extern float RACircumference;
-extern float DECStepsPerRevolution;
-extern int DecPulleyTeeth;

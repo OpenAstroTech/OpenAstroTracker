@@ -12,6 +12,9 @@
 
 class LcdButtons {
 public:
+  // Instance of the menu
+  static LcdButtons* instance();
+
   LcdButtons(byte pin);
   byte currentKey();
   byte currentState();
@@ -28,5 +31,6 @@ private:
   byte _newKey;
   byte _lastNewKey;
   byte _currentKey;
+  static LcdButtons* _instance;
 };
 

@@ -1,29 +1,34 @@
 // Create the LCD menu variable and initialize the LCD (16x2 characters)
-/*
-#pragma once
-
-#include "Configuration.hpp"
-#include "a_inits.hpp"
-#include "LcdMenu.hpp"
-#include "Utility.hpp"
 #include "lib/menu/controls/MainMenu.hpp"
 #include "lib/menu/controls/Button.hpp"
+#include "lib/input/LcdButtons.hpp"
+#include "Configuration.hpp"
+#include "Mount.hpp"
+#include "MeadeCommandProcessor.hpp"
+#include "Utility.hpp"
 #include "EPROMStore.hpp"
-//#include "Sidereal.hpp"
+#include "OatMenu.hpp"
+#include "a_inits.hpp"
 
-LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
+LcdDisplay lcdDisplay(16, 2);
 LcdButtons lcdButtons(0);
-MainMenu mainMenu(lcdMenu.getLCD());
+MainMenu mainMenu(&lcdDisplay);
 
 #ifdef ESP32
-DRAM_ATTR Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
+DRAM_ATTR Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdDisplay);
 #else
-Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
+Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdDisplay);
 #endif
 
 #ifdef WIFI_ENABLED
 #include "WifiControl.hpp"
-WifiControl wifiControl(&mount, &lcdMenu);
+WifiControl wifiControl(&mount, &lcdDisplay);
+#endif
+
+#if SUPPORT_GUIDED_STARTUP == 1
+bool inStartup = true;        // Start with a guided startup
+#else
+bool inStartup = false;        // Start with a guided startup
 #endif
 
 void finishSetup();
@@ -139,7 +144,7 @@ void setup() {
   Serial.begin(57600);
   //BT.begin(9600);
 
-  LOGV2(DEBUG_ANY, "Hello, universe, this is OAT %s!", version.c_str());
+  LOGV2(DEBUG_ANY, "Hello, universe, this is OAT %s!", Version);
 
   EPROMStore::initialize();
 
@@ -177,27 +182,20 @@ void setup() {
   #endif
 }
 
-void testPressed(EventArgs* arg) {
-  LOGV1(DEBUG_INFO, "PRESSED SELECT");
-  lcdMenu.setCursor(0, 1);
-  lcdMenu.printMenu("Test!");
-  mount.delay(1000);
-}
-
 void finishSetup()
 {
   LOGV1(DEBUG_ANY, "Finishing setup...");
 
   // Show a splash screen
-  lcdMenu.setCursor(0, 0);
-  lcdMenu.printMenu("OpenAstroTracker");
-  lcdMenu.setCursor(0, 1);
-  lcdMenu.printMenu("     " + version);
+  lcdDisplay.setCursor(0, 0);
+  lcdDisplay.printLine("OpenAstroTracker");
+  lcdDisplay.setCursor(0, 1);
+  lcdDisplay.printLine("     " + String(Version));
 
-  if (lcdButtons.currentState() == btnDOWN){
+  if (LcdButtons::instance()->currentState() == btnDOWN){
     LOGV1(DEBUG_ANY, "Erasing configuration in EEPROM!");
     mount.clearConfiguration();
-    while (lcdButtons.currentState() != btnNONE) {
+    while (LcdButtons::instance()->currentState() != btnNONE) {
       delay(10);
     }
   }
@@ -207,7 +205,7 @@ void finishSetup()
   #endif
   // Create the command processor singleton
   LOGV1(DEBUG_ANY, "Initialize LX200 handler...");
-  MeadeCommandProcessor::createProcessor(&mount, &lcdMenu);
+  MeadeCommandProcessor::createProcessor(&mount, &lcdDisplay);
 
   #ifdef WIFI_ENABLED
     LOGV1(DEBUG_ANY, "Setup Wifi...");
@@ -221,9 +219,9 @@ void finishSetup()
   LOGV1(DEBUG_ANY, "Configure RA stepper...");
   // Set the stepper motor parameters
   #if RA_STEPPER_TYPE == STEP_28BYJ48 
-    mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);
+    mount.configureRAStepper(FULLSTEP_MODE, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);
   #elif RA_STEPPER_TYPE == STEP_NEMA17
-    mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
+    mount.configureRAStepper(DRIVER_MODE, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
   #else
     #error New stepper type? Configure it here.
   #endif
@@ -282,31 +280,31 @@ void finishSetup()
     // LOGV1(DEBUG_ANY, "Setup menu system...");
 
     // // Create the LCD top-level menu items
-    // lcdMenu.addItem("RA", RA_Menu);
-    // lcdMenu.addItem("DEC", DEC_Menu);
+    // lcdDisplay.addItem("RA", RA_Menu);
+    // lcdDisplay.addItem("DEC", DEC_Menu);
 
     // #if SUPPORT_POINTS_OF_INTEREST == 1
-    //   lcdMenu.addItem("GO", POI_Menu);
+    //   lcdDisplay.addItem("GO", POI_Menu);
     // #else
-    //   lcdMenu.addItem("GO", Home_Menu);
+    //   lcdDisplay.addItem("GO", Home_Menu);
     // #endif
 
-    // lcdMenu.addItem("HA", HA_Menu);
+    // lcdDisplay.addItem("HA", HA_Menu);
 
     // #if SUPPORT_HEATING == 1
-    //   lcdMenu.addItem("HEA", Heat_Menu);
+    //   lcdDisplay.addItem("HEA", Heat_Menu);
     // #endif
 
     // #if SUPPORT_MANUAL_CONTROL == 1
-    //   lcdMenu.addItem("CTRL", Control_Menu);
+    //   lcdDisplay.addItem("CTRL", Control_Menu);
     // #endif
 
     // #if SUPPORT_CALIBRATION == 1
-    //   lcdMenu.addItem("CAL", Calibration_Menu);
+    //   lcdDisplay.addItem("CAL", Calibration_Menu);
     // #endif
 
     // #if SUPPORT_INFO_DISPLAY == 1
-    //   lcdMenu.addItem("INFO", Status_Menu);
+    //   lcdDisplay.addItem("INFO", Status_Menu);
     // #endif
 
     while (millis() - now < 750) {
@@ -314,17 +312,13 @@ void finishSetup()
     }
 
     LOGV1(DEBUG_ANY, "Update display...");
-    // lcdMenu.updateDisplay();
+    // lcdDisplay.updateDisplay();
   #else
     createMenuSystem(mainMenu);
   #endif // HEADLESS_CLIENT
 
-  auto raIncr = new RaDecIncrementer("RA");
-  auto raMenu = new MenuItem("RA");
-  raMenu->addMenuItem(new Button("Test Action", testPressed));
-  mainMenu.addMenuItem(raMenu);
+  createMenuSystem(mainMenu);
 
   mount.bootComplete();
   LOGV1(DEBUG_ANY, "Setup done!");
 }
-*/

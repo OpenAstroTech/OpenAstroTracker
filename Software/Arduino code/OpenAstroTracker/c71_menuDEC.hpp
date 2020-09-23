@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 #if HEADLESS_CLIENT == 0
 bool showTargetDEC = true;
 bool processDECKeys() {
@@ -60,3 +60,4 @@ void printDECSubmenu() {
 }
 
 #endif
+*/

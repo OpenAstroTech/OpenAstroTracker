@@ -1,3 +1,4 @@
+/*
 #pragma once
 
 #include <AccelStepper.h>
@@ -139,3 +140,4 @@ int DECheat = 0;  // Are we heating the DEC stepper?
 
 //debugging
 String inBT;
+*/

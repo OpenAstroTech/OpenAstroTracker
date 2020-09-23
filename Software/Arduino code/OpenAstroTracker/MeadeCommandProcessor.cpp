@@ -1,5 +1,5 @@
 #include "MeadeCommandProcessor.hpp"
-#include "Configuration_adv.hpp"
+#include "Configuration.hpp"
 #include "Utility.hpp"
 #include "WifiControl.hpp"
 
@@ -382,8 +382,8 @@ MeadeCommandProcessor* MeadeCommandProcessor::_instance = nullptr;
 /////////////////////////////
 // Create the processor 
 /////////////////////////////
-MeadeCommandProcessor* MeadeCommandProcessor::createProcessor(Mount* mount, LcdMenu* lcdMenu) {
-  _instance = new MeadeCommandProcessor(mount, lcdMenu);
+MeadeCommandProcessor* MeadeCommandProcessor::createProcessor(Mount* mount, LcdDisplay* lcdDisplay) {
+  _instance = new MeadeCommandProcessor(mount, lcdDisplay);
   return _instance;
 }
 
@@ -397,11 +397,11 @@ MeadeCommandProcessor* MeadeCommandProcessor::instance() {
 /////////////////////////////
 // Constructor 
 /////////////////////////////
-MeadeCommandProcessor::MeadeCommandProcessor(Mount* mount, LcdMenu* lcdMenu) {
+MeadeCommandProcessor::MeadeCommandProcessor(Mount* mount, LcdDisplay* lcdDisplay) {
   _mount = mount;
 
-  // In HEADLESS_CLIENT mode, the lcdMenu is just an empty shell class to save having to null check everywhere
-  _lcdMenu = lcdMenu;
+  // In HEADLESS_CLIENT mode, the lcdDisplay is just an empty shell class to save having to null check everywhere
+  _lcdDisplay = lcdDisplay;
 }
 
 /////////////////////////////
@@ -409,10 +409,10 @@ MeadeCommandProcessor::MeadeCommandProcessor(Mount* mount, LcdMenu* lcdMenu) {
 /////////////////////////////
 String MeadeCommandProcessor::handleMeadeInit(String inCmd) {
   inSerialControl = true;
-  _lcdMenu->setCursor(0, 0);
-  _lcdMenu->printMenu("Remote control");
-  _lcdMenu->setCursor(0, 1);
-  _lcdMenu->printMenu(">SELECT to quit");
+  _lcdDisplay->setCursor(0, 0);
+  _lcdDisplay->printLine("Remote control");
+  _lcdDisplay->setCursor(0, 1);
+  _lcdDisplay->printLine(">SELECT to quit");
   return "";
 }
 
@@ -426,7 +426,7 @@ String MeadeCommandProcessor::handleMeadeGetInfo(String inCmd) {
   switch (cmdOne) {
     case 'V':
     if (cmdTwo == 'N') {
-      return version + "#";
+      return String(Version) + "#";
     }
     else if (cmdTwo == 'P') {
       return "OpenAstroTracker#";
@@ -719,27 +719,27 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
   // :XDmmm
   if (inCmd[0] == 'D') {  // Drift Alignemnt
     int duration = inCmd.substring(1, 4).toInt() - 3;
-    _lcdMenu->setCursor(0, 0);
-    _lcdMenu->printMenu(">Drift Alignment");
-    _lcdMenu->setCursor(0, 1);
-    _lcdMenu->printMenu("Pause 1.5s....");
+    _lcdDisplay->setCursor(0, 0);
+    _lcdDisplay->printLine(">Drift Alignment");
+    _lcdDisplay->setCursor(0, 1);
+    _lcdDisplay->printLine("Pause 1.5s....");
     _mount->stopSlewing(ALL_DIRECTIONS | TRACKING);
     _mount->waitUntilStopped(ALL_DIRECTIONS);
     _mount->delay(1500);
-    _lcdMenu->setCursor(0, 1);
-    _lcdMenu->printMenu("Eastward pass...");
+    _lcdDisplay->setCursor(0, 1);
+    _lcdDisplay->printLine("Eastward pass...");
     _mount->runDriftAlignmentPhase(EAST, duration);
-    _lcdMenu->setCursor(0, 1);
-    _lcdMenu->printMenu("Pause 1.5s....");
+    _lcdDisplay->setCursor(0, 1);
+    _lcdDisplay->printLine("Pause 1.5s....");
     _mount->delay(1500);
-    _lcdMenu->printMenu("Westward pass...");
+    _lcdDisplay->printLine("Westward pass...");
     _mount->runDriftAlignmentPhase(WEST, duration);
-    _lcdMenu->setCursor(0, 1);
-    _lcdMenu->printMenu("Pause 1.5s....");
+    _lcdDisplay->setCursor(0, 1);
+    _lcdDisplay->printLine("Pause 1.5s....");
     _mount->delay(1500);
-    _lcdMenu->printMenu("Reset _mount->..");
+    _lcdDisplay->printLine("Reset _mount->..");
     _mount->runDriftAlignmentPhase(0, duration);
-    _lcdMenu->setCursor(0, 1);
+    _lcdDisplay->setCursor(0, 1);
     _mount->startSlewing(TRACKING);
   }
   else if (inCmd[0] == 'G') { // Get RA/DEC steps/deg, speedfactor
@@ -839,8 +839,8 @@ String MeadeCommandProcessor::handleMeadeQuit(String inCmd) {
     break;
     case 'q':
     inSerialControl = false;
-    _lcdMenu->setCursor(0, 0);
-    _lcdMenu->updateDisplay();
+    _lcdDisplay->setCursor(0, 0);
+    //_lcdDisplay->updateDisplay();
     break;
   }
 

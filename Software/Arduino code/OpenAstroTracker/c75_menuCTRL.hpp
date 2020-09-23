@@ -1,5 +1,6 @@
 #pragma once
 
+/*
 #if HEADLESS_CLIENT == 0
 #if SUPPORT_MANUAL_CONTROL == 1
 bool confirmZeroPoint = false;
@@ -163,3 +164,4 @@ void printControlSubmenu() {
 }
 #endif
 #endif
+*/

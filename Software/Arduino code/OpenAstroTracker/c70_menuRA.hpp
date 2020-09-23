@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 #if HEADLESS_CLIENT == 0
 bool showTargetRA = true;
 bool processRAKeys() {
@@ -61,3 +61,4 @@ void printRASubmenu() {
   }
 }
 #endif
+*/

@@ -1,12 +1,13 @@
-#include "InterruptCallback.hpp"
 
-#include "LcdMenu.hpp"
+#include "lib/output/LcdDisplay.hpp"
+#include "lib/util/utils.hpp"
+
+#include "InterruptCallback.hpp"
 #include "Mount.hpp"
 #include "Utility.hpp"
 #include "EPROMStore.hpp"
 #include "Sidereal.cpp"
-#include "Configuration_adv.hpp"
-#include "Configuration_pins.hpp"
+#include "Configuration.hpp"
 
 //mountstatus
 #define STATUS_PARKED              0B0000000000000000
@@ -67,7 +68,7 @@ void mountLoop(void* payload) {
 }
 
 Mount* Mount::_instance = nullptr;
-Mount Mount::instance() { return *_instance; };
+Mount* Mount::instance() { return _instance; };
 
 const float siderealDegreesInHour = 14.95902778;
 /////////////////////////////////
@@ -75,7 +76,7 @@ const float siderealDegreesInHour = 14.95902778;
 // CTOR
 //
 /////////////////////////////////
-Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
+Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdDisplay* lcdDisplay) {
   _instance = this;
 
   #if RA_DRIVER_TYPE != ULN2003_DRIVER
@@ -88,7 +89,7 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
   #else
   _stepsPerDECDegree = stepsPerDECDegree;
   #endif
-  _lcdMenu = lcdMenu;
+  _lcdDisplay = lcdDisplay;
   _mountStatus = 0;
   _lastDisplayUpdate = 0;
   _stepperWasRunning = false;
@@ -385,9 +386,9 @@ void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, b
 
   // Use another AccelStepper to run the RA motor as well. This instance tracks earths rotation.
 #if NORTHERN_HEMISPHERE
-  _stepperTRK = new AccelStepper(HALFSTEP, pin4, pin3, pin2, pin1);
+  _stepperTRK = new AccelStepper(HALFSTEP_MODE, pin4, pin3, pin2, pin1);
 #else
-  _stepperTRK = new AccelStepper(HALFSTEP, pin1, pin2, pin3, pin4);
+  _stepperTRK = new AccelStepper(HALFSTEP_MODE, pin1, pin2, pin3, pin4);
 #endif
   _stepperTRK->setMaxSpeed(10);
   _stepperTRK->setAcceleration(2500);
@@ -407,7 +408,7 @@ void Mount::configureRAStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed
 
   // Use another AccelStepper to run the RA motor as well. This instance tracks earths rotation.
   LOGV1(DEBUG_ANY,"RACFG: CreateTRK");
-  _stepperTRK = new AccelStepper(DRIVER, pin1, pin2);
+  _stepperTRK = new AccelStepper(DRIVER_MODE, pin1, pin2);
   _stepperTRK->setMaxSpeed(500);
   _stepperTRK->setAcceleration(10000);
 
@@ -447,7 +448,7 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, 
 #if AZIMUTH_ALTITUDE_MOTORS == 1
 void Mount::configureAzStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
 {
-  _stepperAZ = new AccelStepper(HALFSTEP, pin1, pin2, pin3, pin4);
+  _stepperAZ = new AccelStepper(HALFSTEP_MODE, pin1, pin2, pin3, pin4);
   _stepperAZ->setSpeed(0);
   _stepperAZ->setMaxSpeed(maxSpeed);
   _stepperAZ->setAcceleration(maxAcceleration);
@@ -455,7 +456,7 @@ void Mount::configureAzStepper(byte stepMode, byte pin1, byte pin2, byte pin3, b
 
 void Mount::configureAltStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
 {
-  _stepperALT = new AccelStepper(FULLSTEP, pin1, pin2, pin3, pin4);
+  _stepperALT = new AccelStepper(FULLSTEP_MODE, pin1, pin2, pin3, pin4);
   _stepperALT->setSpeed(0);
   _stepperALT->setMaxSpeed(maxSpeed);
   _stepperALT->setAcceleration(maxAcceleration);
@@ -1855,14 +1856,15 @@ void Mount::loop() {
         // Make sure we do one last update when the steppers have stopped.
         displayStepperPosition();
         if (!inSerialControl) {
-          _lcdMenu->updateDisplay();
+          // TODO: menu display
+          // _lcdDisplay->updateDisplay();
         }
       }
     }
 
     if ((_bootComplete) && (now - _lastTrackingPrint > 200)) {
-      _lcdMenu->printAt(14,0, ' ');
-      _lcdMenu->printAt(15,0, isSlewingTRK() ? 'T' : '.');
+      _lcdDisplay->printAt(14,0, ' ');
+      _lcdDisplay->printAt(15,0, isSlewingTRK() ? 'T' : '.');
       _lastTrackingPrint = now;
     }
 
@@ -2094,11 +2096,11 @@ void Mount::displayStepperPosition() {
     float raDist = 100.0 - 100.0 * _stepperRA->distanceToGo() / _totalRAMove;
 
     sprintf(scratchBuffer, "R %s %d%%", RAString(LCD_STRING | CURRENT_STRING).c_str(), (int)raDist);
-    _lcdMenu->setCursor(0, 0);
-    _lcdMenu->printMenu(String(scratchBuffer));
+    _lcdDisplay->setCursor(0, 0);
+    _lcdDisplay->printLine(String(scratchBuffer));
     sprintf(scratchBuffer, "D%s %d%%", DECString(LCD_STRING | CURRENT_STRING).c_str(), (int)decDist);
-    _lcdMenu->setCursor(0, 1);
-    _lcdMenu->printMenu(String(scratchBuffer));
+    _lcdDisplay->setCursor(0, 1);
+    _lcdDisplay->printLine(String(scratchBuffer));
     return;
   }
 
@@ -2106,37 +2108,37 @@ void Mount::displayStepperPosition() {
     // Only DEC moving to target
     float decDist = 100.0 - 100.0 * _stepperDEC->distanceToGo() / _totalDECMove;
     sprintf(scratchBuffer, "D%s %d%%", DECString(LCD_STRING | CURRENT_STRING).c_str(), (int)decDist);
-    _lcdMenu->setCursor(0, 1);
-    _lcdMenu->printMenu(String(scratchBuffer));
+    _lcdDisplay->setCursor(0, 1);
+    _lcdDisplay->printLine(String(scratchBuffer));
   }
   else if (abs(_totalRAMove) > 0.001) {
     // Only RAmoving to target
     float raDist = 100.0 - 100.0 * _stepperRA->distanceToGo() / _totalRAMove;
     sprintf(scratchBuffer, "R %s %d%%", RAString(LCD_STRING | CURRENT_STRING).c_str(), (int)raDist);
     disp = disp + String(scratchBuffer);
-    _lcdMenu->setCursor(0, inSerialControl ? 0 : 1);
-    _lcdMenu->printMenu(String(scratchBuffer));
+    _lcdDisplay->setCursor(0, inSerialControl ? 0 : 1);
+    _lcdDisplay->printLine(String(scratchBuffer));
   }
   else {
     // Nothing moving
 #if SUPPORT_SERIAL_CONTROL == 1
     if (inSerialControl) {
       sprintf(scratchBuffer, " RA: %s", RAString(LCD_STRING | CURRENT_STRING).c_str());
-      _lcdMenu->setCursor(0, 0);
-      _lcdMenu->printMenu(scratchBuffer);
+      _lcdDisplay->setCursor(0, 0);
+      _lcdDisplay->printLine(scratchBuffer);
       sprintf(scratchBuffer, "DEC: %s", DECString(LCD_STRING | CURRENT_STRING).c_str());
-      _lcdMenu->setCursor(0, 1);
-      _lcdMenu->printMenu(scratchBuffer);
+      _lcdDisplay->setCursor(0, 1);
+      _lcdDisplay->printLine(scratchBuffer);
     }
     else {
       sprintf(scratchBuffer, "R%s D%s", RAString(COMPACT_STRING | CURRENT_STRING).c_str(), DECString(COMPACT_STRING | CURRENT_STRING).c_str());
-      _lcdMenu->setCursor(0, 1);
-      _lcdMenu->printMenu(scratchBuffer);
+      _lcdDisplay->setCursor(0, 1);
+      _lcdDisplay->printLine(scratchBuffer);
     }
 #else
     sprintf(scratchBuffer, "R%s D%s", RAString(COMPACT_STRING | CURRENT_STRING).c_str(), DECString(COMPACT_STRING | CURRENT_STRING).c_str());
-    _lcdMenu->setCursor(0, 1);
-    _lcdMenu->printMenu(scratchBuffer);
+    _lcdDisplay->setCursor(0, 1);
+    _lcdDisplay->printLine(scratchBuffer);
 #endif
     }
 #endif
@@ -2178,7 +2180,7 @@ String Mount::DECString(byte type, byte active) {
   //LOGV2(DEBUG_MOUNT_VERBOSE,"DECString: Postcheck : %s", dec.ToString());
 
   sprintf(scratchBuffer, formatStringsDEC[type & FORMAT_STRING_MASK], dec.getPrintDegrees() > 0 ? '+' : '-', int(fabs(dec.getPrintDegrees())), dec.getMinutes(), dec.getSeconds());
-  if ((type & FORMAT_STRING_MASK) == LCDMENU_STRING) {
+  if ((type & FORMAT_STRING_MASK) == LCDDISPLAY_STRING) {
     scratchBuffer[active * 4 + (active > 0 ? 1 : 0)] = '>';
   }
 
@@ -2201,7 +2203,7 @@ String Mount::RAString(byte type, byte active) {
   }
 
   sprintf(scratchBuffer, formatStringsRA[type & FORMAT_STRING_MASK], ra.getHours(), ra.getMinutes(), ra.getSeconds());
-  if ((type & FORMAT_STRING_MASK) == LCDMENU_STRING) {
+  if ((type & FORMAT_STRING_MASK) == LCDDISPLAY_STRING) {
     scratchBuffer[active * 4] = '>';
   }
   return String(scratchBuffer);

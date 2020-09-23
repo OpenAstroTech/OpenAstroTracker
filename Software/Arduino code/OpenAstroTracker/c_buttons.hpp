@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 #include <Arduino.h>
 #include "b_setup.hpp"
 #include "c65_startup.hpp"
@@ -11,6 +11,7 @@
 #include "c75_menuCTRL.hpp"
 #include "c76_menuCAL.hpp"
 #include "c78_menuINFO.hpp"
+#include "lib/input/LcdButtons.hpp"
 
 extern MainMenu mainMenu;
 
@@ -89,7 +90,7 @@ void loop()
 #if SUPPORT_SERIAL_CONTROL == 1
   if (inSerialControl)
   {
-    if (lcdButtons.keyChanged(&lcd_key))
+    if (LcdButtons::instance()->keyChanged(&lcd_key))
     {
       if (lcd_key == btnSELECT)
       {
@@ -106,29 +107,34 @@ void loop()
   else
 #endif
   {
-    int keyState = lcdButtons.currentState();
-    if (!mainMenu.onPreviewKey(keyState))
-    {
-      if (mainMenu.processKeys(keyState))
-      {
-        do
-        {
-          byte key;
-          if (lcdButtons.keyChanged(&key))
-          {
-            if (key == btnNONE)
-            {
-              break;
-            }
-          }
+    runMenuSystem(mainMenu);
 
-          // Make sure tracker can still run while fiddling with menus....
-          mount.loop();
-        } while (true);
-      }
-    }
+    // int keyState = lcdButtons.currentState();
+    // if (!mainMenu.onPreviewKey(keyState))
+    // {
+    //   if (mainMenu.processKeys(keyState))
+    //   {
+    //     do
+    //     {
+    //       byte key;
+    //       if (lcdButtons.keyChanged(&key))
+    //       {
+    //         if (key == btnNONE)
+    //         {
+    //           break;
+    //         }
+    //       }
 
-    mainMenu.updateDisplay();
+    //       // Make sure tracker can still run while fiddling with menus....
+    //       mount.loop();
+    //     } while (true);
+    //   }
+    // }
+
+    // mainMenu.updateDisplay();
+
+
+
 
 //     bool waitForButtonRelease = false;
 
@@ -291,3 +297,4 @@ void loop()
 }
 
 #endif
+*/

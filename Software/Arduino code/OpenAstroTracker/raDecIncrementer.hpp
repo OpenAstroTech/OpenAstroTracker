@@ -4,11 +4,6 @@
 #include "Utility.hpp"
 #include "Mount.hpp"
 
-int minDec[] = {-90, 0, 0, 0};
-int maxDec[] = {90, 59, 59, 1};
-int minRa[] = {0, 0, 0, 0};
-int maxRa[] = {23, 59, 59, 1};
-
 class RaDecIncrementer : public Incrementer
 {
     bool _isRA;

@@ -18,7 +18,7 @@
   =======================================================================================================================================
 */
 
-String version = "V1.8.23";
+#define Version "V2.0.00"
 
 ///////////////////////////////////////////////////////////////////////////
 // Also use Configuration_adv for further adjustments!
@@ -31,22 +31,22 @@ String version = "V1.8.23";
 ///////////////////////////////////////////////////////////////////////////
 // This is how many steps your stepper needs for a full rotation.
 #if RA_STEPPER_TYPE == STEP_28BYJ48
-  float RAStepsPerRevolution = 4096;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
-  int RAspeed = 400;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
-  int RAacceleration = 600;   // High speeds tend to make these cheap steppers unprecice
+  #define RAStepsPerRevolution  4096    // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+  #define RAspeed                400    // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+  #define RAacceleration         600    // High speeds tend to make these cheap steppers unprecice
 #elif RA_STEPPER_TYPE == STEP_NEMA17
-  float RAStepsPerRevolution = 400;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
-  int RAspeed = 1200;          // You can change the speed and acceleration of the steppers here. Max. 
-  int RAacceleration = 1000;
+  #define RAStepsPerRevolution   400    // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+  #define RAspeed               1200    // You can change the speed and acceleration of the steppers here. Max. 
+  #define RAacceleration        1000
 #else
   #error New RA Stepper type? Define steps per stepper pulley revolution here...
 #endif
 
 // Your RA pulley tooth count:
-int RAPulleyTeeth = 16;
+#define RAPulleyTeeth 16
 
 // the Circumference of the RA wheel.  V1 = 1057.1  |  V2 = 1131 
-float RACircumference = 1131.0;
+#define RACircumference  1131.0
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -54,21 +54,20 @@ float RACircumference = 1131.0;
 ///////////////////////////////////////////////////////////////////////////
 // This is how many steps your stepper needs for a full rotation.
 #if DEC_STEPPER_TYPE == STEP_28BYJ48
-  float DECStepsPerRevolution = 4096;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
-  int DECspeed = 600;          // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
-  int DECacceleration = 400;    // High speeds tend to make these cheap steppers unprecice
+  #define DECStepsPerRevolution   4096   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+  #define DECspeed                 600   // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+  #define DECacceleration          400   // High speeds tend to make these cheap steppers unprecice
 #elif DEC_STEPPER_TYPE == STEP_NEMA17
-  float DECStepsPerRevolution = 400;   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
-  int DECspeed = 1300;           // You can change the speed and acceleration of the steppers here.
-  int DECacceleration = 1000;   
+  #define DECStepsPerRevolution    400   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+  #define DECspeed                1300   // You can change the speed and acceleration of the steppers here.
+  #define DECacceleration         1000   
 #else
   #error New DEC Stepper type? Define steps per stepper pulley revolution here...
 #endif
 
 // Your DEC pulley tooth count:
-int DecPulleyTeeth = 16;
-float DEC_Circumference = 565.5;
-
+#define DecPulleyTeeth  16
+#define DEC_Circumference  565.5f
 
 
 // These values are needed to calculate the current position during initial alignment.
@@ -76,9 +75,9 @@ float DEC_Circumference = 565.5;
 // This changes slightly over weeks, so adjust every couple of months.
 // This value is from 13.Aug.2020, next adjustment suggested at end 2020
 // The same could be done for the DEC coordinates but they dont change significantly for the next 5 years
-byte PolarisRAHour = 2;
-byte PolarisRAMinute = 57;
-byte PolarisRASecond = 27;
+#define PolarisRAHour   2
+#define PolarisRAMinute 57
+#define PolarisRASecond 27
 
 // Some explanations:
 
@@ -99,5 +98,98 @@ byte PolarisRASecond = 27;
 // So there are 160.85 steps/degree (57907/360) (this is for 20T)
 
 // Some calculations, ignore 
-int RAStepsPerDegree = (RACircumference / (RAPulleyTeeth * 2.0) * RAStepsPerRevolution / 360.0);
-int DECStepsPerDegree = (DEC_Circumference / (DecPulleyTeeth * 2.0) * DECStepsPerRevolution / 360.0);
+#define RAStepsPerDegree ((RACircumference / (RAPulleyTeeth * 2.0f) * RAStepsPerRevolution / 360.0f))
+#define DECStepsPerDegree ((DEC_Circumference / (DecPulleyTeeth * 2.0f) * DECStepsPerRevolution / 360.0f))
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+//
+// IGNORE THE FOLLOWING AREA
+//
+/////////////////////////////////////////////////////////////////////////////////////
+#if (RA_DRIVER_TYPE == TMC2209_UART) || (DEC_DRIVER_TYPE == TMC2209_UART)
+  #include <TMCStepper.h>
+#endif
+
+#if USE_GPS == 1
+  #include <TinyGPS++.h>
+  TinyGPSPlus gps;
+#endif
+
+#define HALFSTEP_MODE 8
+#define FULLSTEP_MODE 4
+#define DRIVER_MODE 1
+
+////////////////////////////////////
+// Stepper definitions /////////////
+#if RA_STEPPER_TYPE == STEP_28BYJ48
+  // RA Motor pins
+  #if INVERT_RA_DIR == 1
+    #define RAmotorPin1  RA_IN1_PIN
+    #define RAmotorPin3  RA_IN2_PIN
+    #define RAmotorPin2  RA_IN3_PIN
+    #define RAmotorPin4  RA_IN4_PIN
+  #else
+    #define RAmotorPin1  RA_IN4_PIN
+    #define RAmotorPin3  RA_IN3_PIN
+    #define RAmotorPin2  RA_IN2_PIN
+    #define RAmotorPin4  RA_IN1_PIN
+  #endif
+#elif RA_STEPPER_TYPE == STEP_NEMA17
+    #define RAmotorPin1  RA_STEP_PIN
+    #define RAmotorPin2  RA_DIR_PIN
+#endif
+
+// DEC Motor pins
+#if DEC_STEPPER_TYPE == STEP_28BYJ48
+  #if INVERT_DEC_DIR == 1
+    #define DECmotorPin1  DEC_IN4_PIN
+    #define DECmotorPin3  DEC_IN3_PIN
+    #define DECmotorPin2  DEC_IN2_PIN
+    #define DECmotorPin4  DEC_IN1_PIN
+  #else
+    #define DECmotorPin1  DEC_IN1_PIN
+    #define DECmotorPin3  DEC_IN2_PIN
+    #define DECmotorPin2  DEC_IN3_PIN
+    #define DECmotorPin4  DEC_IN4_PIN
+  #endif
+#elif DEC_STEPPER_TYPE == STEP_NEMA17
+    #define DECmotorPin1  DEC_STEP_PIN
+    #define DECmotorPin2  DEC_DIR_PIN
+#endif
+
+#if AZIMUTH_ALTITUDE_MOTORS == 1
+    #define AZmotorPin1  AZ_IN1_PIN    
+    #define AZmotorPin3  AZ_IN2_PIN    
+    #define AZmotorPin2  AZ_IN3_PIN    
+    #define AZmotorPin4  AZ_IN4_PIN    
+
+    #define ALTmotorPin1  ALT_IN1_PIN 
+    #define ALTmotorPin3  ALT_IN2_PIN 
+    #define ALTmotorPin2  ALT_IN3_PIN 
+    #define ALTmotorPin4  ALT_IN4_PIN 
+#endif
+// End Stepper Definitions //////////////
+/////////////////////////////////////////
+
+/////////////////////////////////////////
+// Driver definitions ///////////////////
+#if RA_DRIVER_TYPE == TMC2209_STANDALONE
+  //#define RA_EN_PIN 40  // Enable Pin
+#endif
+#if (RA_DRIVER_TYPE == TMC2209_UART) || (DEC_DRIVER_TYPE == TMC2209_UART)
+  #define R_SENSE 0.11f           // 0.11 for StepStick
+#endif
+// End Driver Definitions ///////////////
+/////////////////////////////////////////
+
+extern bool inStartup;        // Start with a guided startup
+
+// Serial control variables
+extern bool inSerialControl; // When the serial port is in control
+
+//// Variables for use in the CONTROL menu
+//extern bool inControlMode;  // Is manual control enabled
+
+// Global variables
+// bool isUnreachable = false;

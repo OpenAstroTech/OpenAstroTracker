@@ -5,7 +5,7 @@
 #include <AccelStepper.h>
 #include "Configuration_adv.hpp"
 #include "DayTime.hpp"
-#include "LcdMenu.hpp"
+#include "lib/output/LcdDisplay.hpp"
 
 #if (RA_DRIVER_TYPE == TMC2209_UART) || (DEC_DRIVER_TYPE == TMC2209_UART)
  #include <TMCStepper.h>
@@ -19,7 +19,7 @@
 #define ALL_DIRECTIONS             B00001111
 #define TRACKING                   B00010000
 
-#define LCDMENU_STRING      B0001
+#define LCDDISPLAY_STRING   B0001
 #define MEADE_STRING        B0010
 #define PRINT_STRING        B0011
 #define LCD_STRING          B0100
@@ -28,10 +28,6 @@
 
 #define TARGET_STRING      B01000
 #define CURRENT_STRING     B10000
-
-#define HALFSTEP 8
-#define FULLSTEP 4
-#define DRIVER 1
 
 #define RA_STEPS  1
 #define DEC_STEPS 2
@@ -57,9 +53,10 @@
 //////////////////////////////////////////////////////////////////
 class Mount {
 public:
-  Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu);
+  Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdDisplay* lcdDisplay);
 
-  static Mount instance();
+  static Mount* instance();
+  
   // Configure the RA stepper motor. This also sets up the TRK stepper on the same pins.
 #if RA_STEPPER_TYPE == STEP_28BYJ48
     void configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
@@ -291,7 +288,7 @@ private:
 
 
 private:
-  LcdMenu* _lcdMenu;
+  LcdDisplay* _lcdDisplay;
   int  _stepsPerRADegree;
   int _stepsPerDECDegree;
   int _maxRASpeed;

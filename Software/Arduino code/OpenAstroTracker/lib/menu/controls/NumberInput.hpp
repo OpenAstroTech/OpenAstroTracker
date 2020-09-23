@@ -2,15 +2,16 @@
 
 #include <Arduino.h>
 #include "MenuItem.hpp"
+#include "../incrementers/incrementer.hpp"
 
 class NumberInput : public MenuItem
 {
 public:
-    typedef enum BehaviorFlags
+    typedef enum 
     {
         ConstantRepetition,
         AcceleratingRepetition
-    };
+    } BehaviorFlags;
 
 private:
     String _mask;
@@ -32,4 +33,5 @@ public:
     int getValue(int index);
     bool onPreviewKey(int keyState) override;
     bool onKeypressed(int key) override;
-}
+};
+

@@ -5,7 +5,7 @@
 
 #define btnRIGHT 0
 
-MainMenu::MainMenu(LiquidCrystal *lcdMenu) : _lcdMenu(lcdMenu)
+MainMenu::MainMenu(LcdDisplay *lcdDisplay) : _lcdDisplay(lcdDisplay)
 {
 	// _topMenuList = new List<MenuItem*>();
 	// _dialogs = new List<MenuItem*>();
@@ -90,8 +90,8 @@ void MainMenu::updateDisplay()
 		menu += _activeItem == i ? '<' : ' ';
 	}
 
-	_lcdMenu->setCursor(0, 1);
-	_lcdMenu->print(menu);
+	_lcdDisplay->setCursor(0, 1);
+	_lcdDisplay->printLine(menu);
 
 	_topMenuList.getItem(_activeItem)->onDisplay();
 }
@@ -110,6 +110,6 @@ void MainMenu::closeMenuItem(MenuItem *closeMe)
 
 void MainMenu::writeToLCD(int col, int row, String text)
 {
-	_lcdMenu->setCursor(col, row);
-	_lcdMenu->print(text);
+	_lcdDisplay->setCursor(col, row);
+	_lcdDisplay->printLine(text);
 }

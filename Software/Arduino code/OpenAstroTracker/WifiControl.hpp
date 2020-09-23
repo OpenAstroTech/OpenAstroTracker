@@ -3,7 +3,7 @@
 
 #ifdef WIFI_ENABLED
 #include "Mount.hpp"
-#include "LcdMenu.hpp"
+#include "LcdDisplay.hpp"
 #include "MeadeCommandProcessor.hpp"
 #include "WiFiServer.h"
 #include "WiFiUDP.h"
@@ -20,7 +20,7 @@
 
 class WifiControl {
 public: 
-    WifiControl(Mount* mount, LcdMenu* lcdMenu);
+    WifiControl(Mount* mount, LcdDisplay* lcdDisplay);
     void setup();
     void loop();
     String getStatus();
@@ -32,7 +32,7 @@ private:
     void udpLoop();
     wl_status_t _status;
     Mount* _mount;
-    LcdMenu* _lcdMenu;
+    LcdDisplay* _lcdDisplay;
     MeadeCommandProcessor* _cmdProcessor;
 
     WiFiServer* _tcpServer;

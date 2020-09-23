@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 #if HEADLESS_CLIENT == 0
 #if SUPPORT_POINTS_OF_INTEREST == 1
 struct PointOfInterest {
@@ -102,3 +102,4 @@ void printPOISubmenu() {
 }
 #endif
 #endif
+*/

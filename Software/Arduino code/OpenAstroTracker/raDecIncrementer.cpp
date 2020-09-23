@@ -1,4 +1,10 @@
+#include "lib/util/utils.hpp"
 #include "raDecIncrementer.hpp"
+
+int minDec[] = {-90, 0, 0, 0};
+int maxDec[] = {90, 59, 59, 1};
+int minRa[] = {0, 0, 0, 0};
+int maxRa[] = {23, 59, 59, 1};
 
 RaDecIncrementer::RaDecIncrementer(String which) : Incrementer(INCREMENT_WRAP, maxDec, minDec)
 {
@@ -38,14 +44,14 @@ void RaDecIncrementer::getNumbers(String tag, int *numbers)
     {
         if (numbers[3] == 0)
         {
-            DayTime ra = Mount::instance().targetRA();
+            DayTime ra = Mount::instance()->targetRA();
             numbers[0] = ra.getHours();   // mount get target ra/dec
             numbers[1] = ra.getMinutes(); // mount get target ra/dec
             numbers[2] = ra.getSeconds(); // mount get target ra/dec
         }
         else if (numbers[3] == 1)
         {
-            DayTime ra = Mount::instance().currentRA();
+            DayTime ra = Mount::instance()->currentRA();
             numbers[0] = ra.getHours();   // mount get target ra/dec
             numbers[1] = ra.getMinutes(); // mount get target ra/dec
             numbers[2] = ra.getSeconds(); // mount get target ra/dec
@@ -55,14 +61,14 @@ void RaDecIncrementer::getNumbers(String tag, int *numbers)
     {
         if (numbers[3] == 0)
         {
-            DayTime dec = Mount::instance().targetDEC();
+            DayTime dec = Mount::instance()->targetDEC();
             numbers[0] = dec.getHours();   // mount get target ra/dec
             numbers[1] = dec.getMinutes(); // mount get target ra/dec
             numbers[2] = dec.getSeconds(); // mount get target ra/dec
         }
         else if (numbers[3] == 1)
         {
-            DayTime dec = Mount::instance().currentDEC();
+            DayTime dec = Mount::instance()->currentDEC();
             numbers[0] = dec.getHours();   // mount get target ra/dec
             numbers[1] = dec.getMinutes(); // mount get target ra/dec
             numbers[2] = dec.getSeconds(); // mount get target ra/dec

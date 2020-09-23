@@ -1,4 +1,5 @@
 #include "incrementer.hpp"
+#include "../../util/utils.hpp"
 
 Incrementer::Incrementer(int mode = INCREMENT_NO_LIMITS, int *maxVals = nullptr, int *minVals = nullptr)
 {

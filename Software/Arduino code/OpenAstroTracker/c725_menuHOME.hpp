@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 #include "b_setup.hpp"
 
 #if HEADLESS_CLIENT == 0
@@ -55,3 +55,4 @@ void printHomeSubmenu() {
 }
 
 #endif
+*/

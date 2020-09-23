@@ -5,10 +5,10 @@
 
 #define PORT 4030
 
-WifiControl::WifiControl(Mount* mount, LcdMenu* lcdMenu) 
+WifiControl::WifiControl(Mount* mount, LcdDisplay* lcdDisplay) 
 {
     _mount = mount;
-    _lcdMenu = lcdMenu;
+    _lcdDisplay = lcdDisplay;
 }
 
 void WifiControl::setup() {
