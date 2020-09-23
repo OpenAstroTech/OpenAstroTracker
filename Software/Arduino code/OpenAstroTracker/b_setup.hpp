@@ -182,7 +182,20 @@ void finishSetup()
   lcdMenu.printMenu("OpenAstroTracker");
   lcdMenu.setCursor(0, 1);
   lcdMenu.printMenu("     " + version);
+
   #if HEADLESS_CLIENT == 0
+    // Check for EEPROM reset (Button down during boot)
+    if (lcdButtons.currentState() == btnDOWN){
+      LOGV1(DEBUG_ANY, "Erasing configuration in EEPROM!");
+      mount.clearConfiguration();
+      // Wait for button release
+      lcdMenu.setCursor(13, 1);
+      lcdMenu.printMenu("CLR");
+      while (lcdButtons.currentState() != btnNONE) {
+        delay(10);
+      }
+    }
+
     unsigned long now = millis();
   #endif
   // Create the command processor singleton
@@ -195,7 +208,9 @@ void finishSetup()
   #endif
 
   // Configure the mount
-  
+  // Delay for a while to get UARTs booted...
+  delay(1000);  
+
   LOGV1(DEBUG_ANY, "Configure RA stepper...");
   // Set the stepper motor parameters
   #if RA_STEPPER_TYPE == STEP_28BYJ48 
@@ -235,7 +250,6 @@ void finishSetup()
 
   // The mount uses EEPROM storage locations 0-10 that it reads during construction
   // The LCD uses EEPROM storage location 11
-  LOGV1(DEBUG_ANY, "Read configuration...");
   mount.readConfiguration();
   
   // Read other persisted values and set in mount
@@ -293,7 +307,7 @@ void finishSetup()
 
     LOGV1(DEBUG_ANY, "Update display...");
     lcdMenu.updateDisplay();
-  #endif // HEADLESS_CLIENT
+  #endif // not HEADLESS_CLIENT
 
   mount.bootComplete();
   LOGV1(DEBUG_ANY, "Setup done!");

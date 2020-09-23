@@ -66,6 +66,9 @@ void mountLoop(void* payload) {
   mount->interruptLoop();
 }
 
+Mount* Mount::_instance = nullptr;
+Mount Mount::instance() { return *_instance; };
+
 const float siderealDegreesInHour = 14.95902778;
 /////////////////////////////////
 //
@@ -73,6 +76,8 @@ const float siderealDegreesInHour = 14.95902778;
 //
 /////////////////////////////////
 Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
+   _instance = this;
+
   #if RA_DRIVER_TYPE != ULN2003_DRIVER
   _stepsPerRADegree = stepsPerRADegree * SET_MICROSTEPPING; // hier
   #else
@@ -87,7 +92,9 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
   _mountStatus = 0;
   _lastDisplayUpdate = 0;
   _stepperWasRunning = false;
-  
+  _latitude = 45;
+  _longitude = 100;
+
   #if AZIMUTH_ALTITUDE_MOTORS == 1
   _azAltWasRunning = false;
   #endif
@@ -102,6 +109,12 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
 #endif
   _correctForBacklash = false;
   _slewingToHome = false;
+    
+  #if GYRO_LEVEL == 1
+  _pitchCalibrationAngle = 0;
+  _rollCalibrationAngle = 0;
+  #endif
+
   readPersistentData();
 }
 
@@ -113,13 +126,24 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
 void Mount::startTimerInterrupts()
 {
 #ifndef ESPBOARD
-  // 2 kHz updates
-  if (!InterruptCallback::setInterval(1.0f, mountLoop, this))
+  // 2 kHz updates (higher frequency interferes with serial communications and complete messes up OATControl communications)
+  if (!InterruptCallback::setInterval(0.5f, mountLoop, this))
   {
     LOGV1(DEBUG_MOUNT, "Mount:: CANNOT setup interrupt timer!");
   }
 #endif // !ESPBOARD
 
+}
+
+/////////////////////////////////
+//
+// clearConfiguration
+//
+/////////////////////////////////
+void Mount::clearConfiguration()
+{
+  EPROMStore::Storage()->update(4, 0);
+  EPROMStore::Storage()->update(5, 0);
 }
 
 /////////////////////////////////
@@ -1695,7 +1719,7 @@ void Mount::interruptLoop()
   _stepperAZ->run();
   _stepperALT->run();
   #endif
-
+  
 }
 
 /////////////////////////////////

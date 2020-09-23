@@ -59,6 +59,8 @@ class Mount {
 public:
   Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu);
 
+  static Mount instance();
+
   // Configure the RA stepper motor. This also sets up the TRK stepper on the same pins.
 #if RA_STEPPER_TYPE == STEP_28BYJ48
     void configureRAStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
@@ -256,6 +258,9 @@ public:
 
   // Read the saved configuration from persistent storage
   void readConfiguration();
+
+  // Clear all saved configuration data from persistent storage
+  void clearConfiguration();
   
   // Get Mount configuration data
   String getMountHardwareInfo();
@@ -344,6 +349,8 @@ private:
   bool _correctForBacklash;
   bool _slewingToHome;
   bool _bootComplete;
+  
+  static Mount* _instance;
 };
 
 #endif
