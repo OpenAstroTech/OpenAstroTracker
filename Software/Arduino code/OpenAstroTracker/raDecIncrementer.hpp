@@ -7,7 +7,7 @@
 class RaDecIncrementer : public Incrementer
 {
     bool _isRA;
-    int targetOrCurrent;
+    int showingTarget;
 public:
     RaDecIncrementer(String which);
     void onChange(String tag, int *numbers, int index, int val) override;

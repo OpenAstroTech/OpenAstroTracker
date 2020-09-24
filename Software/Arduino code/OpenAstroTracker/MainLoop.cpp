@@ -15,7 +15,7 @@ bool quitSerialOnNextButtonRelease  = false;
 void loop()
 {
   delay(20);
-  LOGV1(DEBUG_ANY, "main loop start");
+  //LOGV1(DEBUG_ANY, "main loop start");
 
   Mount::instance()->loop();
 
@@ -43,5 +43,5 @@ void loop()
     runMenuSystem(mainMenu);
   }
 
-  LOGV1(DEBUG_ANY, "main loop end");
+  //LOGV1(DEBUG_ANY, "main loop end");
 }

@@ -8,7 +8,7 @@ int maxRa[] = {23, 59, 59, 1};
 
 RaDecIncrementer::RaDecIncrementer(String which) : Incrementer(INCREMENT_WRAP, maxDec, minDec)
 {
-    targetOrCurrent = 1;
+    showingTarget = 0;
     _isRA = which == "RA";
     if (_isRA)
     {
@@ -22,51 +22,59 @@ RaDecIncrementer::RaDecIncrementer(String which) : Incrementer(INCREMENT_WRAP, m
     }
 }
 
-void RaDecIncrementer::onChange(String tag, int *numbers, int index, int val)
+void RaDecIncrementer::onChange(String tag, int *numbers, int index, int changeBy)
 {
+    LOGV4(DEBUG_INFO, "RADEC: OnChange1, idx %d. Cur: %d, changeBy: %d", index, numbers[index], changeBy);
     if ((index == 0) && !_isRA)
     {
-        numbers[0] = adjustClamp(numbers[0], val, -180, 0);
+        numbers[0] = adjustClamp(numbers[0], changeBy, -180, 0);
     }
     else
     {
-        Incrementer::onChange(tag, numbers, index, val);
+        Incrementer::onChange(tag, numbers, index, changeBy);
+        LOGV4(DEBUG_INFO, "RADEC: OnChange2, idx %d. Cur: %d, changeBy: %d", index, numbers[index], changeBy);
     }
 
-    targetOrCurrent = numbers[3];
+    LOGV2(DEBUG_INFO, "RADEC: OnChange, Pre  Ta/Cu: %d", showingTarget);
+    showingTarget = numbers[3];
+    LOGV2(DEBUG_INFO, "RADEC: OnChange, Post Ta/Cu: %d", showingTarget);
 
-    if (_isRA)
+    if (index != 3)
     {
-        if (targetOrCurrent)
+        if (_isRA)
         {
-            Mount::instance()->targetRA().set(numbers[0], numbers[1], numbers[2]);
+            if (showingTarget)
+            {
+                Mount::instance()->targetRA().set(numbers[0], numbers[1], numbers[2]);
+            }
+            else
+            {
+                // We don't allow editing of current, so switch back to target
+                Mount::instance()->targetRA().set(numbers[0], numbers[1], numbers[2]);
+                showingTarget = 1;
+            }
         }
         else
         {
-            // We don't allow editing of current, so switch back to target
-            Mount::instance()->targetRA().set(numbers[0], numbers[1], numbers[2]);
-            targetOrCurrent = 1;
+            if (showingTarget)
+            {
+                Mount::instance()->targetDEC().set(numbers[0], numbers[1], numbers[2]);
+            }
+            else
+            {
+                Mount::instance()->targetDEC().set(numbers[0], numbers[1], numbers[2]);
+                showingTarget = 1;
+            }
         }
     }
-    else
-    {
-        if (targetOrCurrent)
-        {
-            Mount::instance()->targetDEC().set(numbers[0], numbers[1], numbers[2]);
-        }
-        else
-        {
-            Mount::instance()->targetDEC().set(numbers[0], numbers[1], numbers[2]);
-            targetOrCurrent = 1;
-        }
-    }
+    LOGV2(DEBUG_INFO, "RADEC: OnChange, Post2Ta/Cu: %d", showingTarget);
 }
 
 String RaDecIncrementer::getDisplay(String tag, int index, int val, String formatString)
 {
     if (index == 3)
     {
-        return val == 0 ? "Ta" : "Cu";
+        return val == 0 ? "Cu" : "Ta";
     }
 
     if ((index == 0) && !_isRA)
@@ -78,10 +86,10 @@ String RaDecIncrementer::getDisplay(String tag, int index, int val, String forma
     {
         char achBuffer[10];
         sprintf(achBuffer, formatString.c_str(), val);
-        LOGV4(DEBUG_INFO, "RADEC: Format string is [%s], val is %d, buffer is [%s]", formatString.c_str(), val, achBuffer);
+        // LOGV4(DEBUG_INFO, "RADEC: Format string is [%s], val is %d, buffer is [%s]", formatString.c_str(), val, achBuffer);
         return String(achBuffer);
     }
-    
+
     return String(val);
 }
 
@@ -89,40 +97,40 @@ void RaDecIncrementer::getNumbers(String tag, int *numbers)
 {
     if (_isRA)
     {
-        if (targetOrCurrent)
+        if (showingTarget)
         {
             DayTime ra = Mount::instance()->targetRA();
-            numbers[0] = ra.getHours();   // mount get target ra/dec
-            numbers[1] = ra.getMinutes(); // mount get target ra/dec
-            numbers[2] = ra.getSeconds(); // mount get target ra/dec
-            numbers[3] = 0;
+            numbers[0] = ra.getHours();   
+            numbers[1] = ra.getMinutes(); 
+            numbers[2] = ra.getSeconds(); 
+            numbers[3] = 1;
         }
         else
         {
             DayTime ra = Mount::instance()->currentRA();
-            numbers[0] = ra.getHours();   // mount get target ra/dec
-            numbers[1] = ra.getMinutes(); // mount get target ra/dec
-            numbers[2] = ra.getSeconds(); // mount get target ra/dec
-            numbers[3] = 1;
+            numbers[0] = ra.getHours();   
+            numbers[1] = ra.getMinutes(); 
+            numbers[2] = ra.getSeconds(); 
+            numbers[3] = 0;
         }
     }
     else
     {
-        if (targetOrCurrent)
+        if (showingTarget)
         {
             DayTime dec = Mount::instance()->targetDEC();
-            numbers[0] = dec.getHours();   // mount get target ra/dec
-            numbers[1] = dec.getMinutes(); // mount get target ra/dec
-            numbers[2] = dec.getSeconds(); // mount get target ra/dec
-            numbers[3] = 0;
+            numbers[0] = dec.getHours();   
+            numbers[1] = dec.getMinutes(); 
+            numbers[2] = dec.getSeconds(); 
+            numbers[3] = 1;
         }
         else
         {
             DayTime dec = Mount::instance()->currentDEC();
-            numbers[0] = dec.getHours();   // mount get target ra/dec
-            numbers[1] = dec.getMinutes(); // mount get target ra/dec
-            numbers[2] = dec.getSeconds(); // mount get target ra/dec
-            numbers[3] = 1;
+            numbers[0] = dec.getHours();   
+            numbers[1] = dec.getMinutes(); 
+            numbers[2] = dec.getSeconds(); 
+            numbers[3] = 0;
         }
     }
 }

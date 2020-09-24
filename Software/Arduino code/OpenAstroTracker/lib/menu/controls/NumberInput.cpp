@@ -1,5 +1,3 @@
-#pragma once
-
 #include "../../input/LcdButtons.hpp"
 #include "../incrementers/incrementer.hpp"
 #include "SelectEventArgs.hpp"
@@ -16,6 +14,7 @@ NumberInput::NumberInput(String tag, int numNumbers, String mask, eventAction se
     _flags = flags;
     _incr = (incr == nullptr) ? new Incrementer() : incr;
     _useIncrForDisplay = true;
+    _incr->setMenuItem(this);
 }
 
 NumberInput::NumberInput(String tag, int *numbers, int numNumbers, String mask, eventAction selectCallback, Incrementer *incr, BehaviorFlags flags) : MenuItem("", tag.c_str())
@@ -27,6 +26,7 @@ NumberInput::NumberInput(String tag, int *numbers, int numNumbers, String mask, 
     _selectCallback = selectCallback;
     _flags = flags;
     _incr = (incr == nullptr) ? new Incrementer() : incr;
+    _incr->setMenuItem(this);
     _useIncrForDisplay = false;
 }
 

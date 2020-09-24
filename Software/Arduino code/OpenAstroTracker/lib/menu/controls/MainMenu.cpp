@@ -75,11 +75,10 @@ bool MainMenu::processKeys(int key)
 
 void MainMenu::updateDisplay()
 {
-    LOGV1(DEBUG_ANY, "MMUD: Start");
 	String menu = "    ";
 	if (_activeDialog != nullptr)
 	{
-    	LOGV1(DEBUG_ANY, "MMUD: ActiveMenu!!");
+    	// LOGV1(DEBUG_ANY, "MMUD: ActiveMenu!!");
 		_activeDialog->onDisplay(true);
 		return;
 	}
@@ -95,7 +94,7 @@ void MainMenu::updateDisplay()
 	int activeItemPos = menu.indexOf('>');
 
 	_lcdDisplay->setCursor(0, 0);
-	LOGV2(DEBUG_INFO, "MMUD: Menu  is [%s]", menu.substring(activeItemPos - 4).c_str());
+	// LOGV2(DEBUG_INFO, "MMUD: Menu  is [%s]", menu.substring(activeItemPos - 4).c_str());
 	_lcdDisplay->printLine(menu.substring(activeItemPos - 4));
 
 	_topMenuList.getItem(_activeItem)->onDisplay();

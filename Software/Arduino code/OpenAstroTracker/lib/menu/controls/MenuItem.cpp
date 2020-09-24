@@ -60,9 +60,9 @@ bool MenuItem::onPreviewKey(int keyState)
 	return false;
 }
 
+ // True if should wait for release
 bool MenuItem::onKeypressed(int key)
-{ // True if should wait for release
-	Serial.println("MenuItem::onKeypressed "+String(key));
+{
 	if ((key == btnRIGHT) && (_subMenuList->count() > 0))
 	{
 		_activeSubMenu = (_activeSubMenu + 1) % _subMenuList->count();
