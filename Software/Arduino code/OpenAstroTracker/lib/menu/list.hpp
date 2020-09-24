@@ -54,8 +54,20 @@ public:
 	{
 		Node<T> *n = new Node<T>();
 		n->data = value;
-		n->next = _head;
-		_head = n;
+		n->next = nullptr;
+		Node<T> *hp = _head;
+		if (_head == nullptr)
+		{
+			_head = n;
+		}
+		else
+		{
+			while (hp->next != nullptr)
+			{
+				hp = hp->next;
+			}
+			hp->next = n;
+		}
 		_count++;
 	}
 

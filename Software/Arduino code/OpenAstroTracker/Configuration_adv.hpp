@@ -259,10 +259,11 @@
 //
 // DEBUG OUTPUT
 //
-#define DEBUG_LEVEL (DEBUG_NONE)
+//#define DEBUG_LEVEL (DEBUG_NONE)
 // #define DEBUG_LEVEL (DEBUG_SERIAL|DEBUG_WIFI|DEBUG_INFO|DEBUG_MOUNT|DEBUG_GENERAL)
 // #define DEBUG_LEVEL (DEBUG_ANY)
 // #define DEBUG_LEVEL (DEBUG_INFO|DEBUG_MOUNT|DEBUG_GENERAL)
+#define DEBUG_LEVEL (DEBUG_INFO|DEBUG_GENERAL)
 //
 // Bit Name                 Output
 //  0  DEBUG_INFO           General output, like startup variables and status

@@ -29,26 +29,39 @@ void createMenuSystem(MainMenu &mainMenu)
 
     //////  DEC  ///////
     auto decMenu = new MenuItem("DEC");
-    decMenu->addMenuItem(new NumberInput("TDEC", 4, "^%02d*^%02d\"^%02d' ^@", decConfirmed, decIncr));
+    decMenu->addMenuItem(new NumberInput("TDEC", 4, "^%+02d*^%02d\"^%02d'^@", decConfirmed, decIncr));
 
     mainMenu.addMenuItem(raMenu);
     mainMenu.addMenuItem(decMenu);
 }
 
+long lastUpdate = 0;
 void runMenuSystem(MainMenu &mainMenu)
 {
+    delay(20);
     int keyState = LcdButtons::instance()->currentState();
 
     if (!mainMenu.onPreviewKey(keyState))
     {
+        LOGV1(DEBUG_ANY, "RMS: No preview key ");
         if (mainMenu.processKeys(keyState))
         {
-            while (LcdButtons::instance()->currentState() != btnNONE){
+            delay(20);
+            LOGV1(DEBUG_ANY, "RMS: Preview used, wait for release");
+            while (LcdButtons::instance()->currentState() != btnNONE)
+            {
                 Mount::instance()->delay(20);
             }
-                
+            LOGV1(DEBUG_ANY, "RMS: released");
         }
     }
 
-    mainMenu.updateDisplay();
+    if (millis() - lastUpdate > 200)
+    {
+        LOGV1(DEBUG_ANY, "RMS: updating menu");
+        mainMenu.updateDisplay();
+        lastUpdate = millis();
+    }
+
+    LOGV1(DEBUG_ANY, "RMS: done");
 }

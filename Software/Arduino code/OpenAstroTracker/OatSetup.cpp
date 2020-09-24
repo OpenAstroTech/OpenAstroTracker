@@ -317,6 +317,7 @@ void finishSetup()
     createMenuSystem(mainMenu);
   #endif // HEADLESS_CLIENT
 
+  LOGV1(DEBUG_ANY, "Creating main menu...");
   createMenuSystem(mainMenu);
 
   mount.bootComplete();

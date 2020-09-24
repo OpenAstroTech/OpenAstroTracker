@@ -50,18 +50,16 @@ void NumberInput::onDisplay(bool modal = false)
         {
             line += _incr->getDisplay(_tag, numberCursor, _numbers[numberCursor]);
             numberCursor++;
-            ;
         }
         else if (_mask[i] == '%')
         {
             int start = i;
-            i++;
-            while (isdigit(_mask[i]))
+            while (!isalpha(_mask[i]))
             {
                 i++;
             }
-
-            line += _incr->getDisplay(_tag, numberCursor, _numbers[numberCursor], _mask.substring(start, i));
+            
+            line += _incr->getDisplay(_tag, numberCursor, _numbers[numberCursor], _mask.substring(start, i + 1));
             numberCursor++;
         }
         else
@@ -70,7 +68,7 @@ void NumberInput::onDisplay(bool modal = false)
         }
     }
 
-    _mainMenu->writeToLCD(0, 0, line);
+    _mainMenu->writeToLCD(0, 1, line);
 }
 
 void NumberInput::onSelect()

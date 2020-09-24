@@ -1,10 +1,11 @@
 #include "LcdButtons.hpp"
 
-LcdButtons* LcdButtons::_instance = nullptr;
-LcdButtons* LcdButtons::instance() { return _instance; };
+LcdButtons *LcdButtons::_instance = nullptr;
+LcdButtons *LcdButtons::instance() { return _instance; };
 
 LcdButtons::LcdButtons(byte pin)
 {
+    _instance = this;
     _analogPin = pin;
     _lastKeyChange = 0;
 

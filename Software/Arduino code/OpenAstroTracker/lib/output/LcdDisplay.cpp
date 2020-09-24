@@ -52,7 +52,7 @@ void LcdDisplay::printChar(char ch) {
   else if (ch == '~') {
     _lcd.write(_downArrow);
   }
-  else if (ch == '@') {
+  else if (ch == '*') {
     _lcd.write(_degrees);
   }
   else if (ch == '\'') {

@@ -2,8 +2,8 @@
 #include "MenuItem.hpp"
 #include "MainMenu.hpp"
 #include "MainMenu.hpp"
-
-#define btnRIGHT 0
+#include "../../../Utility.hpp"
+#include "../../input/LcdButtons.hpp"
 
 MainMenu::MainMenu(LcdDisplay *lcdDisplay) : _lcdDisplay(lcdDisplay)
 {
@@ -75,9 +75,11 @@ bool MainMenu::processKeys(int key)
 
 void MainMenu::updateDisplay()
 {
-	String menu = "";
+    LOGV1(DEBUG_ANY, "MMUD: Start");
+	String menu = "    ";
 	if (_activeDialog != nullptr)
 	{
+    	LOGV1(DEBUG_ANY, "MMUD: ActiveMenu!!");
 		_activeDialog->onDisplay(true);
 		return;
 	}
@@ -90,8 +92,11 @@ void MainMenu::updateDisplay()
 		menu += _activeItem == i ? '<' : ' ';
 	}
 
-	_lcdDisplay->setCursor(0, 1);
-	_lcdDisplay->printLine(menu);
+	int activeItemPos = menu.indexOf('>');
+
+	_lcdDisplay->setCursor(0, 0);
+	LOGV2(DEBUG_INFO, "MMUD: Menu  is [%s]", menu.substring(activeItemPos - 4).c_str());
+	_lcdDisplay->printLine(menu.substring(activeItemPos - 4));
 
 	_topMenuList.getItem(_activeItem)->onDisplay();
 }
