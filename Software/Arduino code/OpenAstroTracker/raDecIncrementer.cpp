@@ -1,3 +1,4 @@
+#include "Configuration.hpp"
 #include "lib/util/utils.hpp"
 #include "raDecIncrementer.hpp"
 
@@ -24,7 +25,7 @@ RaDecIncrementer::RaDecIncrementer(String which) : Incrementer(INCREMENT_WRAP, m
 
 void RaDecIncrementer::onChange(String tag, int *numbers, int index, int changeBy)
 {
-    LOGV4(DEBUG_INFO, "RADEC: OnChange1, idx %d. Cur: %d, changeBy: %d", index, numbers[index], changeBy);
+    //LOGV4(DEBUG_INFO, "RADEC: OnChange1, idx %d. Cur: %d, changeBy: %d", index, numbers[index], changeBy);
     if ((index == 0) && !_isRA)
     {
         numbers[0] = adjustClamp(numbers[0], changeBy, -180, 0);
@@ -32,12 +33,12 @@ void RaDecIncrementer::onChange(String tag, int *numbers, int index, int changeB
     else
     {
         Incrementer::onChange(tag, numbers, index, changeBy);
-        LOGV4(DEBUG_INFO, "RADEC: OnChange2, idx %d. Cur: %d, changeBy: %d", index, numbers[index], changeBy);
+        //LOGV4(DEBUG_INFO, "RADEC: OnChange2, idx %d. Cur: %d, changeBy: %d", index, numbers[index], changeBy);
     }
 
-    LOGV2(DEBUG_INFO, "RADEC: OnChange, Pre  Ta/Cu: %d", showingTarget);
+    //LOGV2(DEBUG_INFO, "RADEC: OnChange, Pre  Ta/Cu: %d", showingTarget);
     showingTarget = numbers[3];
-    LOGV2(DEBUG_INFO, "RADEC: OnChange, Post Ta/Cu: %d", showingTarget);
+    //LOGV2(DEBUG_INFO, "RADEC: OnChange, Post Ta/Cu: %d", showingTarget);
 
     if (index != 3)
     {
@@ -67,7 +68,7 @@ void RaDecIncrementer::onChange(String tag, int *numbers, int index, int changeB
             }
         }
     }
-    LOGV2(DEBUG_INFO, "RADEC: OnChange, Post2Ta/Cu: %d", showingTarget);
+    //LOGV2(DEBUG_INFO, "RADEC: OnChange, Post2Ta/Cu: %d", showingTarget);
 }
 
 String RaDecIncrementer::getDisplay(String tag, int index, int val, String formatString)

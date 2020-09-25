@@ -10,13 +10,10 @@
 extern MainMenu mainMenu;
 void serialLoop();
 
-bool quitSerialOnNextButtonRelease  = false;
+bool quitSerialOnNextButtonRelease = false;
 
 void loop()
 {
-  delay(20);
-  //LOGV1(DEBUG_ANY, "main loop start");
-
   Mount::instance()->loop();
 
 #if SUPPORT_SERIAL_CONTROL == 1
@@ -42,6 +39,4 @@ void loop()
   {
     runMenuSystem(mainMenu);
   }
-
-  //LOGV1(DEBUG_ANY, "main loop end");
 }

@@ -32,7 +32,7 @@ public:
 		_count = 0;
 	}
 
-	T operator[](int i);
+	//T operator[](int i) { return getItem(i); }
 
 	T getItem(int i)
 	{

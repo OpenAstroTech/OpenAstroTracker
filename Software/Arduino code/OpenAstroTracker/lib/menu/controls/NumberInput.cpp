@@ -39,7 +39,7 @@ void NumberInput::onDisplay(bool modal = false)
     {
         _incr->getNumbers(_tag, _numbers);
     }
-    for (int i = 0; i < _mask.length(); i++)
+    for (unsigned int i = 0; i < _mask.length(); i++)
     {
         if (_mask[i] == '^')
         {

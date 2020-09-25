@@ -1,4 +1,5 @@
 #include <EEPROM.h>
+#include "lib/util/debug.hpp"
 #include "EPROMStore.hpp"
 #include "Utility.hpp"
 

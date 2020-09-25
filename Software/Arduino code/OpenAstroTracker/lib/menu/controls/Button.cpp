@@ -35,7 +35,6 @@ void Button::closeMenuItem(MenuItem *closeMe)
 
 bool Button::onKeypressed(int key)
 {
-	Serial.println("Button::onKeypressed");
 	if (_subMenuActivated)
 	{
 		return _subMenu->onKeypressed(key);
@@ -45,7 +44,6 @@ bool Button::onKeypressed(int key)
 
 bool Button::onPreviewKey(int keyState)
 {
-	Serial.println("Button::onPreviewKey");
 	if (_subMenuActivated)
 	{
 		return _subMenu->onPreviewKey(keyState);
@@ -76,7 +74,6 @@ void Button::onDisplay(bool modal)
 
 void Button::onSelect()
 {
-	Serial.println("Button::onSelect");
 	if (_subMenu != nullptr)
 	{
 		if (_subMenuActivated)

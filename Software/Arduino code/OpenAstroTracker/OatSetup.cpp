@@ -2,6 +2,7 @@
 #include "lib/menu/controls/MainMenu.hpp"
 #include "lib/menu/controls/Button.hpp"
 #include "lib/input/LcdButtons.hpp"
+#include "lib/util/debug.hpp"
 #include "Configuration.hpp"
 #include "Mount.hpp"
 #include "MeadeCommandProcessor.hpp"
@@ -83,6 +84,7 @@ void IRAM_ATTR mainLoopTask(void* payload)
 //
 /////////////////////////////////
 void setup() {
+  setDebugLevel(DEBUG_LEVEL);
 
   #if USE_GPS == 1
   GPS_SERIAL_PORT.begin(GPS_BAUD_RATE);

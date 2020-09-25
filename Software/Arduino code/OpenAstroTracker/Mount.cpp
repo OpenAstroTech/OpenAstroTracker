@@ -1863,7 +1863,6 @@ void Mount::loop() {
     }
 
     if ((_bootComplete) && (now - _lastTrackingPrint > 200)) {
-      _lcdDisplay->printAt(14,0, ' ');
       _lcdDisplay->printAt(15,0, isSlewingTRK() ? 'T' : '.');
       _lastTrackingPrint = now;
     }

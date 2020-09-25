@@ -1,7 +1,34 @@
+#include "../util/debug.hpp"
 #include "LcdButtons.hpp"
 
 LcdButtons *LcdButtons::_instance = nullptr;
 LcdButtons *LcdButtons::instance() { return _instance; };
+
+// const char* keyNames[] = {
+//       "RIGHT ",
+//       "UP    ",
+//       "DOWN  ",
+//       "LEFT  ",
+//       "SELECT",
+//       "NONE  "
+// };
+
+// const char *keyNames(int key)
+// {
+//     if (key == 0)
+//         return "RIGHT ";
+//     if (key == 1)
+//         return "UP    ";
+//     if (key == 2)
+//         return "DOWN  ";
+//     if (key == 3)
+//         return "LEFT  ";
+//     if (key == 4)
+//         return "SELECT";
+//     if (key == 5)
+//         return "NONE  ";
+//     return "WTF  ";
+// };
 
 LcdButtons::LcdButtons(byte pin)
 {
@@ -39,6 +66,7 @@ bool LcdButtons::keyChanged(byte *pNewKey)
     checkKey();
     if (_newKey != _lastNewKey)
     {
+        // LOGV2(255, "BTN: KeyChanged returning true. New key %s", keyNames(_newKey));
         *pNewKey = _newKey;
         _lastNewKey = _newKey;
         return true;
@@ -64,6 +92,7 @@ void LcdButtons::checkKey()
 
     if (_currentKey != _lastKey)
     {
+        //LOGV3(255, "BTN: Key state changed from %s to %s", keyNames(_lastKey), keyNames(_currentKey));
         _lastKey = _currentKey;
         _lastKeyChange = millis();
     }
@@ -72,6 +101,10 @@ void LcdButtons::checkKey()
         // If the keys haven't changed in 5ms, commit the change to the new keys.
         if (millis() - _lastKeyChange > 5)
         {
+            // if (_newKey != _currentKey)
+            // {
+            //     LOGV2(255, "BTN: Committing %s as new key, 5ms passed", keyNames(_currentKey));
+            // }
             _newKey = _currentKey;
         }
     }

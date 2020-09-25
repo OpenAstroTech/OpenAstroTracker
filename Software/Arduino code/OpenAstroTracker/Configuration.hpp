@@ -1,4 +1,5 @@
 #pragma once
+#include "lib/util/debug.hpp"
 #include "Configuration_adv.hpp"   // <-- 
 #include "Configuration_pins.hpp"  // <-- ignore these
 /*
@@ -18,7 +19,7 @@
   =======================================================================================================================================
 */
 
-#define Version "V2.0.00"
+#define Version "V2.0.00c"
 
 ///////////////////////////////////////////////////////////////////////////
 // Also use Configuration_adv for further adjustments!

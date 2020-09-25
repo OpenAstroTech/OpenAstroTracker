@@ -1,10 +1,8 @@
 ﻿#include <Arduino.h>
+#include "../../input/LcdButtons.hpp"
 #include "MenuItem.hpp"
 
-#define btnRIGHT  0
-#define btnSELECT 4
-
-MenuItem::MenuItem(const char *displayName, const char *tag = "") : _tag(tag), _displayName(displayName)
+MenuItem::MenuItem(const char *displayName, const char *tag) : _tag(tag), _displayName(displayName)
 {
 	_subMenuList = new List<MenuItem*>();
 	_activeSubMenu = 0;
@@ -73,7 +71,6 @@ bool MenuItem::onKeypressed(int key)
 	{
 		if (key == btnSELECT)
 		{
-			Serial.println("MenuItem::onKeypressed SELECT, calling active onSelect!");
 			_subMenuList->getItem(_activeSubMenu)->onSelect();
 			return true;
 		}

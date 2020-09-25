@@ -2,7 +2,7 @@
 #include "MenuItem.hpp"
 #include "MainMenu.hpp"
 #include "MainMenu.hpp"
-#include "../../../Utility.hpp"
+#include "../../util/debug.hpp"
 #include "../../input/LcdButtons.hpp"
 
 MainMenu::MainMenu(LcdDisplay *lcdDisplay) : _lcdDisplay(lcdDisplay)
@@ -24,7 +24,7 @@ void MainMenu::activateDialog(const char *tag)
 	{
 		if (_dialogs.getItem(i)->getTag() == tag)
 		{
-			_activeDialog = _dialogs[i];
+			_activeDialog = _dialogs.getItem(i);
 			break;
 		}
 	}
@@ -66,7 +66,10 @@ bool MainMenu::processKeys(int key)
 
 	if (key == btnRIGHT)
 	{
+		int last = _activeItem;
 		_activeItem = (_activeItem + 1) % _topMenuList.count();
+		//LOGV3(255, "MMN: Moving to next menu from %s to %s", _topMenuList.getItem(last)->getTag(), _topMenuList.getItem(_activeItem)->getTag());
+		// LOGV3(255, "MMN: Moving to next menu from %d to %d", last, _activeItem);
 		return true;
 	}
 
@@ -78,24 +81,28 @@ void MainMenu::updateDisplay()
 	String menu = "    ";
 	if (_activeDialog != nullptr)
 	{
-    	// LOGV1(DEBUG_ANY, "MMUD: ActiveMenu!!");
 		_activeDialog->onDisplay(true);
 		return;
 	}
 
 	for (int i = 0; i < _topMenuList.count(); i++)
 	{
-		// TODO: Main menu display on LCD
 		menu += _activeItem == i ? '>' : ' ';
 		menu += _topMenuList.getItem(i)->getDisplayName();
 		menu += _activeItem == i ? '<' : ' ';
 	}
 
 	int activeItemPos = menu.indexOf('>');
-
+	menu = menu.substring(activeItemPos - 4);
+	for (int i = menu.length(); i < 14; i++)
+	{
+		menu += ' ';
+	}
+	menu[0] = '|';
+	menu[14] = '|';
 	_lcdDisplay->setCursor(0, 0);
 	// LOGV2(DEBUG_INFO, "MMUD: Menu  is [%s]", menu.substring(activeItemPos - 4).c_str());
-	_lcdDisplay->printLine(menu.substring(activeItemPos - 4));
+	_lcdDisplay->printLine(menu.substring(0,14));
 
 	_topMenuList.getItem(_activeItem)->onDisplay();
 }
