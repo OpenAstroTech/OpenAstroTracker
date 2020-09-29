@@ -225,7 +225,7 @@ public:
   float getSpeed(int direction);
 
   // Displays the current location of the mount every n ms, where n is defined in Globals.h as DISPLAY_UPDATE_TIME
-  void displayStepperPositionThrottled();
+  //void displayStepperPositionThrottled();
 
   // Runs a phase of the drift alignment procedure
   void runDriftAlignmentPhase(int direction, int durationSecs);
@@ -261,6 +261,9 @@ public:
   // Get Mount configuration data
   String getMountHardwareInfo();
 
+  // Get the slewing progress state
+  void getMovementState(int& axes, float &raDist, float& decDist);
+
   // Let the mount know that the system has finished booting
   void bootComplete();
 private:
@@ -272,7 +275,7 @@ private:
   void writePersistentData(int which, int val);
 
   void calculateRAandDECSteppers(float& targetRA, float& targetDEC);
-  void displayStepperPosition();
+//  void displayStepperPosition();
   void moveSteppersTo(float targetRA, float targetDEC);
 
   // Returns NOT_SLEWING, SLEWING_DEC, SLEWING_RA, or SLEWING_BOTH. SLEWING_TRACKING is an overlaid bit.
@@ -285,7 +288,6 @@ private:
   #if DEBUG_LEVEL&(DEBUG_MOUNT|DEBUG_MOUNT_VERBOSE)
     String mountStatusString();
   #endif
-
 
 private:
   LcdDisplay* _lcdDisplay;

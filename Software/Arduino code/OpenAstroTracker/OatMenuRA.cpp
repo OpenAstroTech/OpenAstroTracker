@@ -4,7 +4,6 @@
 #include "raDecIncrementer.hpp"
 #include "Mount.hpp"
 
-
 void raConfirmed(EventArgs *args)
 {
     auto mount = Mount::instance();
@@ -13,14 +12,16 @@ void raConfirmed(EventArgs *args)
         mount->stopSlewing(ALL_DIRECTIONS);
         mount->waitUntilStopped(ALL_DIRECTIONS);
     }
-
+    args->getSource()->getMainMenu()->activateDialog("SlewDisplay");
     mount->startSlewingToTarget();
 }
 
+RaDecIncrementer raIncr("RA");
+MenuItem raMenu("RA", "RA");
+NumberInput raNumber("TRA", 4, "^%02dh^%02dm^%02ds ^@", raConfirmed, &raIncr);
+
 void createRAMenu(MainMenu &mainMenu)
 {
-    auto raIncr = new RaDecIncrementer("RA");
-    auto raMenu = new MenuItem("RA");
-    raMenu->addMenuItem(new NumberInput("TRA", 4, "^%02dh^%02dm^%02ds ^@", raConfirmed, raIncr));
-    mainMenu.addMenuItem(raMenu);
+    raMenu.addMenuItem(&raNumber);
+    mainMenu.addMenuItem(&raMenu);
 }

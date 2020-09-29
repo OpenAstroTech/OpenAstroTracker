@@ -7,22 +7,22 @@
 
 MainMenu::MainMenu(LcdDisplay *lcdDisplay) : _lcdDisplay(lcdDisplay)
 {
-	// _topMenuList = new List<MenuItem*>();
-	// _dialogs = new List<MenuItem*>();
 	_activeItem = 0;
 	_activeDialog = nullptr;
 }
 
 void MainMenu::closeDialog()
 {
+	LOGV1(255, "MMN: Modal closed");
 	_activeDialog = nullptr;
 }
 
-void MainMenu::activateDialog(const char *tag)
+void MainMenu::activateDialog(String tag)
 {
+	LOGV2(255, "MMN: Activate modal %s", tag.c_str());
 	for (int i = 0; i < _dialogs.count(); i++)
 	{
-		if (_dialogs.getItem(i)->getTag() == tag)
+		if (_dialogs.getItem(i)->getTag().equals(tag))
 		{
 			_activeDialog = _dialogs.getItem(i);
 			break;
@@ -31,7 +31,11 @@ void MainMenu::activateDialog(const char *tag)
 
 	if (_activeDialog == nullptr)
 	{
-		//throw new ArgumentException("No dialog named [" + tag + "] was found");
+		LOGV2(255, "MMN: CAN'T FIND MODAL [%s]. Available:", tag.c_str());
+		for (int i = 0; i < _dialogs.count(); i++)
+		{
+			LOGV3(255, "  %d -> [%s]", i, _dialogs.getItem(i)->getTag().c_str());
+		}
 	}
 }
 
@@ -43,8 +47,10 @@ void MainMenu::addMenuItem(MenuItem *item)
 
 void MainMenu::addModalDialog(MenuItem *dialog)
 {
+	LOGV2(255, "MMN: Add modal %s",dialog->getTag().c_str());
 	dialog->setMainMenu(this);
 	_dialogs.add(dialog);
+	LOGV3(255, "MMN: Modal %s added. %d modals.",dialog->getTag().c_str(), _dialogs.count());
 }
 
 bool MainMenu::onPreviewKey(int keyState)
@@ -66,9 +72,9 @@ bool MainMenu::processKeys(int key)
 
 	if (key == btnRIGHT)
 	{
-		int last = _activeItem;
+		// int last = _activeItem;
 		_activeItem = (_activeItem + 1) % _topMenuList.count();
-		//LOGV3(255, "MMN: Moving to next menu from %s to %s", _topMenuList.getItem(last)->getTag(), _topMenuList.getItem(_activeItem)->getTag());
+		//LOGV3(255, "MMN: Moving to next menu from %s to %s", _topMenuList.getItem(last)->getTag().c_str(), _topMenuList.getItem(_activeItem)->getTag().c_str());
 		// LOGV3(255, "MMN: Moving to next menu from %d to %d", last, _activeItem);
 		return true;
 	}
@@ -94,15 +100,14 @@ void MainMenu::updateDisplay()
 
 	int activeItemPos = menu.indexOf('>');
 	menu = menu.substring(activeItemPos - 4);
-	for (int i = menu.length(); i < 14; i++)
+	for (int i = menu.length(); i < 15; i++)
 	{
 		menu += ' ';
 	}
 	menu[0] = '|';
 	menu[14] = '|';
-	_lcdDisplay->setCursor(0, 0);
+	writeToLCD(0, 0, menu.substring(0, 15));
 	// LOGV2(DEBUG_INFO, "MMUD: Menu  is [%s]", menu.substring(activeItemPos - 4).c_str());
-	_lcdDisplay->printLine(menu.substring(0,14));
 
 	_topMenuList.getItem(_activeItem)->onDisplay();
 }

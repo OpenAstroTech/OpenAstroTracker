@@ -4,6 +4,7 @@
 #define DEBUG_ENABLED 1
 
 String getLogBuffer();
+int freeMemory();
 
 #if DEBUG_ENABLED == 1
 

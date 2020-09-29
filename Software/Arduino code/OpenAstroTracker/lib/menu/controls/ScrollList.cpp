@@ -3,7 +3,7 @@
 #include "../../util/utils.hpp"
 #include "ScrollList.hpp"
 
-ScrollList::ScrollList() : MenuItem("")
+ScrollList::ScrollList() : MenuItem("S","SCRL")
 {
 }
 

@@ -782,7 +782,7 @@ const DayTime Mount::HA() const {
   DayTime ha = _LST;
   // LOGV2(DEBUG_MOUNT_VERBOSE,"Mount: LST: %s", _LST.ToString());
   ha.subtractTime(DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond));
-  LOGV2(DEBUG_MOUNT,"Mount: GetHA: LST-Polaris is HA %s", ha.ToString());
+  // LOGV2(DEBUG_MOUNT,"Mount: GetHA: LST-Polaris is HA %s", ha.ToString());
   return ha;
 }
 
@@ -803,7 +803,7 @@ const DayTime& Mount::LST() const {
 void Mount::setLST(const DayTime& lst) {
   _LST = lst;
   _zeroPosRA = lst;
-  LOGV2(DEBUG_MOUNT,"Mount: Set LST and ZeroPosRA to: %s", _LST.ToString());
+  //LOGV2(DEBUG_MOUNT,"Mount: Set LST and ZeroPosRA to: %s", _LST.ToString());
 }
 
 /////////////////////////////////
@@ -877,9 +877,9 @@ const DayTime Mount::currentRA() const {
   #else
   float hourPos =  -_stepperRA->currentPosition() / stepsPerSiderealHour;
   #endif
-  LOGV4(DEBUG_MOUNT_VERBOSE,"CurrentRA: Steps/h    : %s (%d x %s)", String(stepsPerSiderealHour, 2).c_str(), _stepsPerRADegree, String(siderealDegreesInHour, 5).c_str());
-  LOGV2(DEBUG_MOUNT_VERBOSE,"CurrentRA: RA Steps   : %d", _stepperRA->currentPosition());
-  LOGV2(DEBUG_MOUNT_VERBOSE,"CurrentRA: POS        : %s", String(hourPos).c_str());
+  //LOGV4(DEBUG_MOUNT_VERBOSE,"CurrentRA: Steps/h    : %s (%d x %s)", String(stepsPerSiderealHour, 2).c_str(), _stepsPerRADegree, String(siderealDegreesInHour, 5).c_str());
+  //LOGV2(DEBUG_MOUNT_VERBOSE,"CurrentRA: RA Steps   : %d", _stepperRA->currentPosition());
+  //LOGV2(DEBUG_MOUNT_VERBOSE,"CurrentRA: POS        : %s", String(hourPos).c_str());
   hourPos += _zeroPosRA.getTotalHours();
   // LOGV2(DEBUG_MOUNT_VERBOSE,"CurrentRA: ZeroPos    : %s", _zeroPosRA.ToString());
   // LOGV2(DEBUG_MOUNT_VERBOSE,"CurrentRA: POS (+zp)  : %s", DayTime(hourPos).ToString());
@@ -1792,7 +1792,7 @@ void Mount::loop() {
   }
 
   if (raStillRunning || decStillRunning) {
-    displayStepperPositionThrottled();
+    // displayStepperPositionThrottled();
   }
   else {
 
@@ -1854,7 +1854,7 @@ void Mount::loop() {
         _totalDECMove = _totalRAMove = 0;
 
         // Make sure we do one last update when the steppers have stopped.
-        displayStepperPosition();
+        // displayStepperPosition();
         if (!inSerialControl) {
           // TODO: menu display
           // _lcdDisplay->updateDisplay();
@@ -2078,7 +2078,38 @@ void Mount::moveSteppersTo(float targetRA, float targetDEC) {
   _stepperDEC->moveTo(targetDEC);
 }
 
+/////////////////////////////////
+//
+// getMovementState
+//
+/////////////////////////////////
+void Mount::getMovementState(int& axes, float &raDist, float& decDist) {
 
+  if ((abs(_totalDECMove) > 0.001) && (abs(_totalRAMove) > 0.001)) {
+    // Both axes moving to target
+    decDist = 100.0 - 100.0 * _stepperDEC->distanceToGo() / _totalDECMove;
+    raDist = 100.0 - 100.0 * _stepperRA->distanceToGo() / _totalRAMove;
+    axes = RA_STEPS | DEC_STEPS;
+  }
+  else if (abs(_totalDECMove) > 0.001) {
+    // Only DEC moving to target
+    raDist = 100.0;
+    decDist = 100.0 - 100.0 * _stepperDEC->distanceToGo() / _totalDECMove;
+    axes = DEC_STEPS;
+  }
+  else if (abs(_totalRAMove) > 0.001) {
+    // Only RA moving to target
+    decDist = 100.0;
+    raDist = 100.0 - 100.0 * _stepperRA->distanceToGo() / _totalRAMove;
+    axes = RA_STEPS;
+  }
+  else {
+    // Nothing moving
+    axes = 0;
+  }
+}
+
+/*
 /////////////////////////////////
 //
 // displayStepperPosition
@@ -2157,6 +2188,7 @@ void Mount::displayStepperPositionThrottled() {
   }
 #endif
 }
+*/
 
 /////////////////////////////////
 //

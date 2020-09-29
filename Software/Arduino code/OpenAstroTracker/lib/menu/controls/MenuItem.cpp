@@ -1,19 +1,22 @@
 ﻿#include <Arduino.h>
 #include "../../input/LcdButtons.hpp"
 #include "MenuItem.hpp"
+#include "MainMenu.hpp"
 
-MenuItem::MenuItem(const char *displayName, const char *tag) : _tag(tag), _displayName(displayName)
+MenuItem::MenuItem(String displayName, String tag)
 {
-	_subMenuList = new List<MenuItem*>();
+	_tag = tag;
+	_displayName = displayName;
+	_subMenuList = new List<MenuItem *>();
 	_activeSubMenu = 0;
 }
 
-void MenuItem::addMenuItem(MenuItem* item)
+void MenuItem::addMenuItem(MenuItem *item)
 {
 	_subMenuList->add(item);
 }
 
-void MenuItem::closeMenuItem(MenuItem* closeMe)
+void MenuItem::closeMenuItem(MenuItem *closeMe)
 {
 	if (_subMenuList->count() > 0)
 	{
@@ -21,12 +24,12 @@ void MenuItem::closeMenuItem(MenuItem* closeMe)
 	}
 }
 
-MainMenu* MenuItem::getMainMenu()
+MainMenu *MenuItem::getMainMenu()
 {
 	return _mainMenu;
 }
 
-void MenuItem::setMainMenu(MainMenu* mainMenu)
+void MenuItem::setMainMenu(MainMenu *mainMenu)
 {
 	_mainMenu = mainMenu;
 	for (int i = 0; i < _subMenuList->count(); i++)
@@ -39,7 +42,7 @@ void MenuItem::onDisplay(bool modal)
 {
 	if (modal)
 	{
-		//Console.WriteLine(_displayName);
+		getMainMenu()->writeToLCD(0,0, _displayName);
 	}
 	if (_subMenuList->count() > 0)
 	{
@@ -58,7 +61,7 @@ bool MenuItem::onPreviewKey(int keyState)
 	return false;
 }
 
- // True if should wait for release
+// True if should wait for release
 bool MenuItem::onKeypressed(int key)
 {
 	if ((key == btnRIGHT) && (_subMenuList->count() > 0))

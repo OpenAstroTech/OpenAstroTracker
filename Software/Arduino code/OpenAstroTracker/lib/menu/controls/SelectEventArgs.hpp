@@ -8,12 +8,12 @@ class MenuItem;
 class SelectEventArgs : public EventArgs
 {
 private:
-	const char *_selected;
+	String _selected;
 
 public:
 	SelectEventArgs(MenuItem *source);
-	SelectEventArgs(MenuItem *source, const char *selected);
-	const char *getSelected();
+	SelectEventArgs(MenuItem *source, String selected);
+	String getSelected();
 };
 
 #endif

@@ -14,13 +14,16 @@ void decConfirmed(EventArgs *args)
         mount->waitUntilStopped(ALL_DIRECTIONS);
     }
 
+    args->getSource()->getMainMenu()->activateDialog("SlewDisplay");
     mount->startSlewingToTarget();
 }
 
+RaDecIncrementer decIncr ("DEC");
+MenuItem decMenu ("DEC","DEC");
+NumberInput decNumber("TDEC", 4, "^%+02d*^%02d\"^%02d'^@", decConfirmed, &decIncr);
+
 void createDECMenu(MainMenu &mainMenu)
 {
-    auto decIncr = new RaDecIncrementer("DEC");
-    auto decMenu = new MenuItem("DEC");
-    decMenu->addMenuItem(new NumberInput("TDEC", 4, "^%+02d*^%02d\"^%02d'^@", decConfirmed, decIncr));
-    mainMenu.addMenuItem(decMenu);
+    decMenu.addMenuItem(&decNumber);
+    mainMenu.addMenuItem(&decMenu);
 }

@@ -1,6 +1,26 @@
 #include <Arduino.h>
 #include "debug.hpp"
 
+
+#ifdef __arm__
+// should use uinstd.h to define sbrk but Due causes a conflict
+extern "C" char* sbrk(int incr);
+#else  // __ARM__
+extern char *__brkval;
+#endif  // __arm__
+
+int freeMemory() {
+  char top;
+#ifdef __arm__
+  return &top - reinterpret_cast<char*>(sbrk(0));
+#elif defined(CORE_TEENSY) || (ARDUINO > 103 && ARDUINO != 151)
+  return &top - __brkval;
+#else  // __arm__
+  return __brkval ? &top - __brkval : &top - __malloc_heap_start;
+#endif  // __arm__
+}
+
+
 #if BUFFER_LOGS
 #define LOG_BUFFER_SIZE 512
 char logBuffer[LOG_BUFFER_SIZE];
@@ -96,6 +116,12 @@ String getLogBuffer()
 }
 #endif
 
+int currentDebugLevel = 0;
+void setDebugLevel(int level)
+{
+    currentDebugLevel = level;
+}
+
 
 #if DEBUG_ENABLED == 1
 
@@ -103,13 +129,6 @@ unsigned long RealTime::_pausedTime = 0;
 unsigned long RealTime::_startTime = micros();
 unsigned long RealTime::_suspendStart = 0;
 int RealTime::_suspended = 0;
-
-int currentDebugLevel = 0;
-
-void setDebugLevel(int level)
-{
-    currentDebugLevel = level;
-}
 
 String formatArg(const char *input, va_list args)
 {
@@ -222,6 +241,8 @@ void logv(int levelFlags, const char *input, ...)
 #if BUFFER_LOGS
         addToLogBuffer(formatArg(input, argp));
 #else
+        Serial.print(String(freeMemory()));
+        Serial.print(":");
         Serial.println(formatArg(input, argp));
         Serial.flush();
 #endif

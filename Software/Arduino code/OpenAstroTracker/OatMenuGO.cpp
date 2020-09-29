@@ -60,15 +60,15 @@ void goPointChosen(EventArgs *args)
     auto mount = Mount::instance();
     mount->stopSlewing(ALL_DIRECTIONS);
 
-    if (strcmp(selectArg->getSelected(), "Home") == 0)
+    if (selectArg->getSelected().equals("Home"))
     {
         mount->goHome();
     }
-    if (strcmp(selectArg->getSelected(), "Park") == 0)
+    if (selectArg->getSelected().equals("Park"))
     {
         mount->park();
     }
-    if (strcmp(selectArg->getSelected(), "Unpark") == 0)
+    if (selectArg->getSelected().equals("Unpark"))
     {
         mount->startSlewing(TRACKING);
     }
@@ -77,10 +77,11 @@ void goPointChosen(EventArgs *args)
         for (unsigned int i = 0; i < sizeof(pointOfInterest) / sizeof(pointOfInterest[0]); i++)
         {
             auto poi = &pointOfInterest[i];
-            if (strcmp(selectArg->getSelected(), poi->pDisplay) == 0)
+            if (selectArg->getSelected().equals(poi->pDisplay))
             {
                 mount->targetRA().set(poi->hourRA, poi->minRA, poi->secRA);
                 mount->targetDEC().set(poi->degreeDEC - (NORTHERN_HEMISPHERE ? 90 : -90), poi->minDEC, poi->secDEC); // internal DEC degree is 0 at celestial poles
+                args->getSource()->getMainMenu()->activateDialog("SlewDisplay");
                 mount->startSlewingToTarget();
                 break;
             }
@@ -90,7 +91,7 @@ void goPointChosen(EventArgs *args)
 
 void createGOMenu(MainMenu &mainMenu)
 {
-    auto goMenu = new MenuItem("GO");
+    auto goMenu = new MenuItem("GO", "GO");
     auto goList = new ScrollList();
     for (unsigned int i = 0; i < sizeof(pointOfInterest) / sizeof(pointOfInterest[0]); i++)
     {

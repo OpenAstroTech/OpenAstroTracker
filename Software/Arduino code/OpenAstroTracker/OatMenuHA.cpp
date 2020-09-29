@@ -29,7 +29,7 @@ void haConfirmed(EventArgs *args)
 void createHAMenu(MainMenu &mainMenu)
 {
     auto mount = Mount::instance();
-    auto haMenu = new MenuItem("HA");
+    auto haMenu = new MenuItem("HA","HA");
     auto hourIncr = new Incrementer(INCREMENT_WRAP, hourLimits, nullptr, haChanged);
     int *haVal = new int[2];
     haVal[0] = mount->HA().getHours();

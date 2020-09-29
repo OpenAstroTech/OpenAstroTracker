@@ -12,6 +12,14 @@
 #include "OatMenuDEC.hpp"
 #include "OatMenuGO.hpp"
 #include "OatMenuHA.hpp"
+#include "OatSlewDisplay.hpp"
+
+//RAM:   [=======   ]  67.6% (used 5537 bytes from 8192 bytes)
+//Flash: [==        ]  21.0% (used 54850 bytes from 261120 bytes)
+
+//RAM:   [=======   ]  67.9% (used 5561 bytes from 8192 bytes)
+//Flash: [==        ]  21.0% (used 54876 bytes from 261120 bytes)
+SlewDisplay slewModal(String("SLD"),String("SlewDisplay"));
 
 void createMenuSystem(MainMenu &mainMenu)
 {
@@ -19,6 +27,8 @@ void createMenuSystem(MainMenu &mainMenu)
     createDECMenu(mainMenu);
     createGOMenu(mainMenu);
     createHAMenu(mainMenu);
+    mainMenu.addModalDialog(&slewModal);
+    LOGV1(DEBUG_INFO, "CMS: Menu system created");
 }
 
 long lastUpdate = 0;
@@ -40,7 +50,7 @@ void runMenuSystem(MainMenu &mainMenu)
     }
     else
     {
-        //LOGV1(DEBUG_ANY, "RMS: Preview key processed!");
+        // LOGV1(DEBUG_ANY, "RMS: Preview key processed!");
     }
 
     if (millis() - lastUpdate > 200)

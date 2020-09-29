@@ -15,7 +15,7 @@ bool inSerialControl = false;
 void serialLoop()
 {
     Mount::instance()->loop();
-    Mount::instance()->displayStepperPositionThrottled();
+    // Mount::instance()->displayStepperPositionThrottled();
 
 #ifdef ESPBOARD
     processSerialData();

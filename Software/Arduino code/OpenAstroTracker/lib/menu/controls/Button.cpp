@@ -4,14 +4,14 @@
 #include "MainMenu.hpp"
 #include "Button.hpp"
 
-Button::Button(const char *choice, MenuItem *subMenu) : MenuItem(choice)
+Button::Button(String choice, MenuItem *subMenu) : MenuItem(choice, "BTN")
 {
 	_chosenFunc = nullptr;
 	_subMenu = subMenu;
 	_subMenuActivated = false;
 }
 
-Button::Button(const char *choice, eventAction chosenFunc) : MenuItem(choice)
+Button::Button(String choice, eventAction chosenFunc) : MenuItem(choice, "BTN")
 {
 	_chosenFunc = chosenFunc;
 	_subMenu = nullptr;

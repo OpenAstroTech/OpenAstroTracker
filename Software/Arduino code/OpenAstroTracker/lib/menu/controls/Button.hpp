@@ -13,8 +13,8 @@ private:
 	bool _subMenuActivated;
 
 public:
-	Button(const char *choice, MenuItem *subMenu);
-	Button(const char *choice, eventAction chosenFunc);
+	Button(String choice, MenuItem *subMenu);
+	Button(String choice, eventAction chosenFunc);
 
 	virtual void closeMenuItem(MenuItem *closeMe);
 	virtual void setMainMenu(MainMenu *mainMenu);

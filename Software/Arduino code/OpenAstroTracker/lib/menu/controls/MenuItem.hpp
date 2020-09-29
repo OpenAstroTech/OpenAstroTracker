@@ -1,6 +1,6 @@
-﻿#ifndef _MENUITEM_HPP_
-#define _MENUITEM_HPP_
+﻿#pragma once
 
+#include <Arduino.h>
 #include "../list.hpp"
 
 class MainMenu;
@@ -10,17 +10,17 @@ class MenuItem
 {
 protected:
 	int _activeSubMenu;
-	const char *_displayName;
-	const char *_tag;
+	String _displayName;
+	String _tag;
 	List<MenuItem*>* _subMenuList;
 	MainMenu *_mainMenu;
 
 public:
-	MenuItem(const char *displayName, const char *tag = "");
+	MenuItem(String displayName, String tag);
 	void addMenuItem(MenuItem* item);
-	const char *getTag() { return _tag; }
-	void setTag(const char *tag) { _tag = tag; }
-	const char *getDisplayName() { return _displayName; }
+	String getTag() { return _tag; }
+	void setTag(String tag) { _tag = tag; }
+	String getDisplayName() { return _displayName; }
 
 	virtual void closeMenuItem(MenuItem* closeMe);
 	virtual MainMenu* getMainMenu();
@@ -31,4 +31,3 @@ public:
 	virtual bool onKeypressed(int key);
 };
 
-#endif

@@ -23,7 +23,7 @@ public:
 	void addMenuItem(MenuItem *item);
 
 	void closeDialog();
-	void activateDialog(const char *tag);
+	void activateDialog(String tag);
 	void addModalDialog(MenuItem *dialog);
 
 	bool onPreviewKey(int keyState);
