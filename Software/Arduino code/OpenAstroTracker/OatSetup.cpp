@@ -230,10 +230,10 @@ void finishSetup()
 
   LOGV1(DEBUG_ANY, "Configure DEC stepper...");
   #if DEC_STEPPER_TYPE == STEP_28BYJ48
-    LOGV1(DEBUG_ANY, "Configure DEC stepper 28BYJ-48...");
+    // LOGV1(DEBUG_ANY, "Configure DEC stepper 28BYJ-48...");
     mount.configureDECStepper(HALFSTEP_MODE, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
   #elif DEC_STEPPER_TYPE == STEP_NEMA17
-    LOGV1(DEBUG_ANY, "Configure DEC stepper NEMA...");
+    // LOGV1(DEBUG_ANY, "Configure DEC stepper NEMA...");
     mount.configureDECStepper(DRIVER_MODE, DECmotorPin1, DECmotorPin2, DECspeed, DECacceleration);
   #else
     #error New stepper type? Configure it here.
@@ -263,8 +263,8 @@ void finishSetup()
   // Read other persisted values and set in mount
   DayTime haTime = DayTime(EPROMStore::Storage()->read(1), EPROMStore::Storage()->read(2), 0);
 
-  LOGV2(DEBUG_INFO, "SpeedCal: %s", String(mount.getSpeedCalibration(), 5).c_str());
-  LOGV2(DEBUG_INFO, "TRKSpeed: %s", String(mount.getSpeed(TRACKING), 5).c_str());
+  // LOGV2(DEBUG_INFO, "SpeedCal: %s", String(mount.getSpeedCalibration(), 5).c_str());
+  // LOGV2(DEBUG_INFO, "TRKSpeed: %s", String(mount.getSpeed(TRACKING), 5).c_str());
 
   mount.setHA(haTime);
 
@@ -313,7 +313,7 @@ void finishSetup()
       mount.loop();
     }
 
-    LOGV1(DEBUG_ANY, "Update display...");
+    // LOGV1(DEBUG_ANY, "Update display...");
     // lcdDisplay.updateDisplay();
   #else
     createMenuSystem(mainMenu);

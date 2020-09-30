@@ -13,9 +13,12 @@ bool SlewDisplay::isComplete()
     int slewingAxes;
     float raProgress, decProgress;
     Mount::instance()->getMovementState(slewingAxes, raProgress, decProgress);
-    if (slewingAxes == 0){
-        LOGV1(255,"SLD: Slew complete!");
+    LOGV4(255, "SLD: Slew axis: %d, RA: %f%%, DEC %f%%", slewingAxes, raProgress, decProgress);
+    if (slewingAxes == 0)
+    {
+        LOGV1(255, "SLD: Slew complete!");
     }
+
     return slewingAxes == 0;
 }
 
@@ -68,4 +71,6 @@ void SlewDisplay::onDisplay(bool modal)
             getMainMenu()->writeToLCD(0, 1, String(scratchBuffer));
         }
     }
+
+    ActionRunnerModal::onDisplay(modal);
 }

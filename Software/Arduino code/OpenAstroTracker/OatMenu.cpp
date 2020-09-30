@@ -12,6 +12,7 @@
 #include "OatMenuDEC.hpp"
 #include "OatMenuGO.hpp"
 #include "OatMenuHA.hpp"
+#include "OatMenuCTRL.hpp"
 #include "OatSlewDisplay.hpp"
 
 //RAM:   [=======   ]  67.6% (used 5537 bytes from 8192 bytes)
@@ -19,7 +20,7 @@
 
 //RAM:   [=======   ]  67.9% (used 5561 bytes from 8192 bytes)
 //Flash: [==        ]  21.0% (used 54876 bytes from 261120 bytes)
-SlewDisplay slewModal(String("SLD"),String("SlewDisplay"));
+SlewDisplay slewModal("SLD","SlewDisplay");
 
 void createMenuSystem(MainMenu &mainMenu)
 {
@@ -27,6 +28,7 @@ void createMenuSystem(MainMenu &mainMenu)
     createDECMenu(mainMenu);
     createGOMenu(mainMenu);
     createHAMenu(mainMenu);
+    createCTRLMenu(mainMenu);
     mainMenu.addModalDialog(&slewModal);
     LOGV1(DEBUG_INFO, "CMS: Menu system created");
 }

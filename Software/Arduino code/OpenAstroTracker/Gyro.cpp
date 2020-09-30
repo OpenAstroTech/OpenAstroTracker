@@ -14,7 +14,7 @@ int16_t Gyro::AcXOffset, Gyro::AcYOffset, Gyro::AcZOffset;
 static void Gyro::startup()
 {
     // Initialize interface to the MPU6050
-    LOGV1(DEBUG_INFO, "GYRO:: Starting");
+    // LOGV1(DEBUG_INFO, "GYRO:: Starting");
     Wire.begin();
     Wire.beginTransmission(MPU);
     Wire.write(0x6B);
@@ -32,12 +32,12 @@ static void Gyro::startup()
         AcY = Wire.read() << 8 | Wire.read(); // Y-axis value
         AcZ = Wire.read() << 8 | Wire.read(); // Z-axis value
     }
-    LOGV1(DEBUG_INFO, "GYRO:: Started");
+    // LOGV1(DEBUG_INFO, "GYRO:: Started");
 }
 
 static void Gyro::shutdown()
 {
-    LOGV1(DEBUG_INFO, "GYRO: Shutdown");
+    // LOGV1(DEBUG_INFO, "GYRO: Shutdown");
     Wire.end();
 }
 

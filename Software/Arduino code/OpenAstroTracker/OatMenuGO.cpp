@@ -11,6 +11,9 @@
 #include "configuration.hpp"
 #include "Mount.hpp"
 
+ScrollList goList;
+MenuItem goMenu("GO", "GO");
+
 struct PointOfInterest
 {
     const char *pDisplay;
@@ -91,12 +94,10 @@ void goPointChosen(EventArgs *args)
 
 void createGOMenu(MainMenu &mainMenu)
 {
-    auto goMenu = new MenuItem("GO", "GO");
-    auto goList = new ScrollList();
     for (unsigned int i = 0; i < sizeof(pointOfInterest) / sizeof(pointOfInterest[0]); i++)
     {
-        goList->addMenuItem(new Button(pointOfInterest[i].pDisplay, goPointChosen));
+        goList.addMenuItem(new Button(pointOfInterest[i].pDisplay, goPointChosen));
     }
-    goMenu->addMenuItem(goList);
-    mainMenu.addMenuItem(goMenu);
+    goMenu.addMenuItem(&goList);
+    mainMenu.addMenuItem(&goMenu);
 }

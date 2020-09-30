@@ -5,7 +5,9 @@
 #include "Mount.hpp"
 #include "EPROMStore.hpp"
 
+
 int hourLimits[] = {23, 59, 59};
+int haVal[] = {0, 0};
 
 void haChanged(EventArgs *args)
 {
@@ -26,15 +28,15 @@ void haConfirmed(EventArgs *args)
     mount->delay(500);
 }
 
+MenuItem haMenu("HA", "HA");
+Incrementer hourIncr(INCREMENT_WRAP, hourLimits, nullptr, haChanged);
+NumberInput haInput("HA", haVal, 2, "^%02dh^%02dm", haConfirmed, &hourIncr);
+
 void createHAMenu(MainMenu &mainMenu)
 {
     auto mount = Mount::instance();
-    auto haMenu = new MenuItem("HA","HA");
-    auto hourIncr = new Incrementer(INCREMENT_WRAP, hourLimits, nullptr, haChanged);
-    int *haVal = new int[2];
     haVal[0] = mount->HA().getHours();
     haVal[1] = mount->HA().getMinutes();
-    haMenu->addMenuItem(new NumberInput("HA", haVal, 2, "^%02dh^%02dm", haConfirmed, hourIncr));
-
-    mainMenu.addMenuItem(haMenu);
+    haMenu.addMenuItem(&haInput);
+    mainMenu.addMenuItem(&haMenu);
 }

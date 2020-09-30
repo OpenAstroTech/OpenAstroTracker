@@ -26,16 +26,16 @@ EPROMStore *EPROMStore::Storage()
 // Construct the EEPROM object for ESP boards, settign aside 32 bytes for storage
 EPROMStore::EPROMStore()
 {
-  LOGV1(DEBUG_VERBOSE, "EEPROM[ESP]: Startup with 32 bytes");
+  // LOGV1(DEBUG_VERBOSE, "EEPROM[ESP]: Startup with 32 bytes");
   EEPROM.begin(32);
 }
 
 // Update the given location with the given value
 void EPROMStore::update(int location, uint8_t value)
 {
-  LOGV3(DEBUG_VERBOSE, "EEPROM[ESP]: Writing %x to %d", value, location);
+  // LOGV3(DEBUG_VERBOSE, "EEPROM[ESP]: Writing %x to %d", value, location);
   EEPROM.write(location, value);
-  LOGV1(DEBUG_VERBOSE, "EEPROM[ESP]: Committing");
+  // LOGV1(DEBUG_VERBOSE, "EEPROM[ESP]: Committing");
   EEPROM.commit();
 }
 
@@ -44,7 +44,7 @@ uint8_t EPROMStore::read(int location)
 {
   uint8_t value;
   value = EEPROM.read(location);
-  LOGV3(DEBUG_VERBOSE, "EEPROM[ESP]: Read %x from %d", value, location);
+  // LOGV3(DEBUG_VERBOSE, "EEPROM[ESP]: Read %x from %d", value, location);
   return value;
 }
 
@@ -53,7 +53,7 @@ uint8_t EPROMStore::read(int location)
 // Construct the EEPROM  object for non-ESP boards
 EPROMStore::EPROMStore()
 {
-  LOGV1(DEBUG_VERBOSE, "EEPROM[UNO]: Startup ");
+  // LOGV1(DEBUG_VERBOSE, "EEPROM[UNO]: Startup ");
 }
 
 // Update the given location with the given value
