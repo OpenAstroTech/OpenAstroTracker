@@ -232,18 +232,18 @@ String format(const char *input, ...)
     return ret;
 }
 
-void logv(int levelFlags, const char *input, ...)
+void logv(int levelFlags, String input, ...)
 {
     if ((levelFlags & currentDebugLevel) != 0)
     {
         va_list argp;
-        va_start(argp, input);
+        va_start(argp, input.c_str());
 #if BUFFER_LOGS
         addToLogBuffer(formatArg(input, argp));
 #else
         Serial.print(String(freeMemory()));
         Serial.print(":");
-        Serial.println(formatArg(input, argp));
+        Serial.println(formatArg(input.c_str(), argp));
         Serial.flush();
 #endif
         va_end(argp);

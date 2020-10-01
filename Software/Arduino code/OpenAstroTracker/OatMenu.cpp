@@ -25,14 +25,22 @@ SlewDisplay slewModal("SLD","SlewDisplay");
 
 void createMenuSystem(MainMenu &mainMenu)
 {
+    LOGV1(DEBUG_INFO, F("CMS: Create RA"));
     createRAMenu(mainMenu);
+    LOGV1(DEBUG_INFO, F("CMS: Create DEC"));
     createDECMenu(mainMenu);
+    LOGV1(DEBUG_INFO, F("CMS: Create GO"));
     createGOMenu(mainMenu);
+    LOGV1(DEBUG_INFO, F("CMS: Create HA"));
     createHAMenu(mainMenu);
+    LOGV1(DEBUG_INFO, F("CMS: Create CTRL"));
     createCTRLMenu(mainMenu);
+    LOGV1(DEBUG_INFO, F("CMS: Create CAL"));
     createCALMenu(mainMenu);
+
+    LOGV1(DEBUG_INFO, F("CMS: Add Slew modal"));
     mainMenu.addModalDialog(&slewModal);
-    LOGV1(DEBUG_INFO, "CMS: Menu system created");
+    LOGV1(DEBUG_INFO, F("CMS: Menu system created"));
 }
 
 long lastUpdate = 0;

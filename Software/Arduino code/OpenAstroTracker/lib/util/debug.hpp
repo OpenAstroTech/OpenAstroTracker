@@ -1,7 +1,7 @@
 #pragma once
 #include <Arduino.h>
 
-#define DEBUG_ENABLED 0
+#define DEBUG_ENABLED 1
 
 String getLogBuffer();
 int freeMemory();
@@ -12,7 +12,7 @@ int freeMemory();
 // String format(const char* input, ...);
 // // void log(const char* input);
 // // void log(String input);
-void logv(int levelFlags, const char* input, ...);
+void logv(int levelFlags, String input, ...);
 
 #define LOGV1(level,a) logv((level),(a))
 #define LOGV2(level,a,b) logv((level),(a),(b))

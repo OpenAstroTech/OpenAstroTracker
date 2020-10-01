@@ -1,6 +1,7 @@
 // Create the LCD menu variable and initialize the LCD (16x2 characters)
 #include "lib/menu/controls/MainMenu.hpp"
 #include "lib/menu/controls/Button.hpp"
+#include "lib/menu/controls/NumberInput.hpp"
 #include "lib/input/LcdButtons.hpp"
 #include "lib/util/debug.hpp"
 #include "Configuration.hpp"
@@ -146,7 +147,7 @@ void setup() {
   Serial.begin(57600);
   //BT.begin(9600);
 
-  LOGV2(DEBUG_ANY, "Hello, universe, this is OAT %s!", Version);
+  LOGV2(DEBUG_ANY, F("Hello, universe, this is OAT %s!"), Version);
 
   EPROMStore::initialize();
 
@@ -186,7 +187,7 @@ void setup() {
 
 void finishSetup()
 {
-  LOGV1(DEBUG_ANY, "Finishing setup...");
+  LOGV1(DEBUG_ANY, F("Finishing setup..."));
 
   // Show a splash screen
   lcdDisplay.setCursor(0, 0);
@@ -195,7 +196,7 @@ void finishSetup()
   lcdDisplay.printLine("     " + String(Version));
 
   if (LcdButtons::instance()->currentState() == btnDOWN){
-    LOGV1(DEBUG_ANY, "Erasing configuration in EEPROM!");
+    LOGV1(DEBUG_ANY, F("Erasing configuration in EEPROM!"));
     mount.clearConfiguration();
     while (LcdButtons::instance()->currentState() != btnNONE) {
       delay(10);
@@ -206,7 +207,7 @@ void finishSetup()
     unsigned long now = millis();
   #endif
   // Create the command processor singleton
-  LOGV1(DEBUG_ANY, "Initialize LX200 handler...");
+  LOGV1(DEBUG_ANY, F("Initialize LX200 handler..."));
   MeadeCommandProcessor::createProcessor(&mount, &lcdDisplay);
 
   #ifdef WIFI_ENABLED
@@ -215,10 +216,10 @@ void finishSetup()
   #endif
 
   // Configure the mount
-  LOGV1(DEBUG_ANY, "Delay for a while to get UARTs booted...");
+  LOGV1(DEBUG_ANY, F("Delay for a while to get UARTs booted..."));
   delay(1000);
 
-  LOGV1(DEBUG_ANY, "Configure RA stepper...");
+  LOGV1(DEBUG_ANY, F("Configure RA stepper..."));
   // Set the stepper motor parameters
   #if RA_STEPPER_TYPE == STEP_28BYJ48 
     mount.configureRAStepper(FULLSTEP_MODE, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);
@@ -228,7 +229,7 @@ void finishSetup()
     #error New stepper type? Configure it here.
   #endif
 
-  LOGV1(DEBUG_ANY, "Configure DEC stepper...");
+  LOGV1(DEBUG_ANY, F("Configure DEC stepper..."));
   #if DEC_STEPPER_TYPE == STEP_28BYJ48
     // LOGV1(DEBUG_ANY, "Configure DEC stepper 28BYJ-48...");
     mount.configureDECStepper(HALFSTEP_MODE, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
@@ -257,11 +258,11 @@ void finishSetup()
 
   // The mount uses EEPROM storage locations 0-10 that it reads during construction
   // The LCD uses EEPROM storage location 11
-  LOGV1(DEBUG_ANY, "Read configuration...");
+  LOGV1(DEBUG_ANY, F("Read configuration..."));
   mount.readConfiguration();
   
   // Read other persisted values and set in mount
-  DayTime haTime = DayTime(EPROMStore::Storage()->read(1), EPROMStore::Storage()->read(2), 0);
+  DayTime haTime = DayTime(EPROMStore::read(1), EPROMStore::read(2), 0);
 
   // LOGV2(DEBUG_INFO, "SpeedCal: %s", String(mount.getSpeedCalibration(), 5).c_str());
   // LOGV2(DEBUG_INFO, "TRKSpeed: %s", String(mount.getSpeed(TRACKING), 5).c_str());
@@ -275,7 +276,7 @@ void finishSetup()
   mount.startTimerInterrupts();
 
   // Start the tracker.
-  LOGV1(DEBUG_ANY, "Start Tracking...");
+  LOGV1(DEBUG_ANY, F("Start Tracking..."));
   mount.startSlewing(TRACKING);
 
   #if HEADLESS_CLIENT == 0
@@ -319,10 +320,13 @@ void finishSetup()
     createMenuSystem(mainMenu);
   #endif // HEADLESS_CLIENT
 
-  LOGV2(DEBUG_ANY, "Size of menu item %d", sizeof(MenuItem));
-  LOGV1(DEBUG_ANY, "Creating main menu...");
+  LOGV2(DEBUG_ANY, F("Size of Button is %d"), sizeof(Button));
+  LOGV2(DEBUG_ANY, F("Size of NumberInput is %d"), sizeof(NumberInput));
+  LOGV2(DEBUG_ANY, F("Size of Moubnt is %d"), sizeof(Mount));
+  LOGV2(DEBUG_ANY, F("Size of MeadeCP is %d"), sizeof(MeadeCommandProcessor));
+  LOGV1(DEBUG_ANY, F("Creating main menu..."));
   createMenuSystem(mainMenu);
 
   mount.bootComplete();
-  LOGV1(DEBUG_ANY, "Setup done!");
+  LOGV1(DEBUG_ANY, F("Setup done!"));
 }

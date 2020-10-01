@@ -130,7 +130,7 @@ void Mount::startTimerInterrupts()
   // 2 kHz updates
   if (!InterruptCallback::setInterval(1.0f, mountLoop, this))
   {
-    LOGV1(DEBUG_MOUNT, "Mount:: CANNOT setup interrupt timer!");
+    LOGV1(DEBUG_MOUNT, F("Mount:: CANNOT setup interrupt timer!"));
   }
 #endif // !ESPBOARD
 
@@ -138,8 +138,8 @@ void Mount::startTimerInterrupts()
 
 void Mount::clearConfiguration()
 {
-  EPROMStore::Storage()->update(4, 0);
-  EPROMStore::Storage()->update(5, 0);
+  EPROMStore::update(4, 0);
+  EPROMStore::update(5, 0);
 }
 
 /////////////////////////////////
@@ -149,9 +149,9 @@ void Mount::clearConfiguration()
 /////////////////////////////////
 void Mount::readConfiguration()
 {
-  LOGV1(DEBUG_INFO, "Mount: Reading configuration data from EEPROM");
+  LOGV1(DEBUG_INFO, F("Mount: Reading configuration data from EEPROM"));
   readPersistentData();
-  LOGV1(DEBUG_INFO, "Mount: Done reading configuration data from EEPROM");
+  LOGV1(DEBUG_INFO, F("Mount: Done reading configuration data from EEPROM"));
 }
   
 /////////////////////////////////
@@ -176,12 +176,12 @@ void Mount::readConfiguration()
 void Mount::readPersistentData()
 {
   // Read the magic marker byte and state
-  uint16_t marker = EPROMStore::Storage()->readInt16(4, 5);
+  uint16_t marker = EPROMStore::readInt16(4, 5);
 
   // LOGV2(DEBUG_INFO, "Mount: EEPROM: Marker: %x ", marker);
 
   if ((marker & 0xFF01) == 0xBE01) {
-    _stepsPerRADegree = EPROMStore::Storage()->read(6) + EPROMStore::Storage()->read(7) * 256;
+    _stepsPerRADegree = EPROMStore::read(6) + EPROMStore::read(7) * 256;
     // LOGV2(DEBUG_INFO,"Mount: EEPROM: RA Marker OK! RA steps/deg is %d", _stepsPerRADegree);
   }
   else{
@@ -189,7 +189,7 @@ void Mount::readPersistentData()
   }
 
   if ((marker & 0xFF02) == 0xBE02) {
-    _stepsPerDECDegree = EPROMStore::Storage()->read(8) + EPROMStore::Storage()->read(9) * 256;
+    _stepsPerDECDegree = EPROMStore::read(8) + EPROMStore::read(9) * 256;
     // LOGV2(DEBUG_INFO,"Mount: EEPROM: DEC Marker OK! DEC steps/deg is %d", _stepsPerDECDegree);
   }
   else{
@@ -198,7 +198,7 @@ void Mount::readPersistentData()
 
   float speed = 1.0;
   if ((marker & 0xFF04) == 0xBE04) {
-    int adjust = EPROMStore::Storage()->read(0) + EPROMStore::Storage()->read(3) * 256;
+    int adjust = EPROMStore::read(0) + EPROMStore::read(3) * 256;
     speed = 1.0 + 1.0 * adjust / 10000.0;
     // LOGV3(DEBUG_INFO,"Mount: EEPROM: Speed Marker OK! Speed adjust is %d, speedFactor is %f", adjust, speed);
   }
@@ -207,7 +207,7 @@ void Mount::readPersistentData()
   }
 
   if ((marker & 0xFF08) == 0xBE08) {
-    _backlashCorrectionSteps = EPROMStore::Storage()->read(10) + EPROMStore::Storage()->read(11) * 256;
+    _backlashCorrectionSteps = EPROMStore::read(10) + EPROMStore::read(11) * 256;
     // LOGV2(DEBUG_INFO,"Mount: EEPROM: Backlash Steps Marker OK! Backlash correction is %d", _backlashCorrectionSteps);
   }
   else {
@@ -215,7 +215,7 @@ void Mount::readPersistentData()
   }
 
   if ((marker & 0xFF10) == 0xBE10) {
-    _latitude = 1.0f * EPROMStore::Storage()->readInt16(12, 13) / 100.0f;
+    _latitude = 1.0f * EPROMStore::readInt16(12, 13) / 100.0f;
     // LOGV2(DEBUG_INFO,"Mount: EEPROM: Latitude Marker OK! Latitude is %f", _latitude);
   } 
   else {
@@ -223,7 +223,7 @@ void Mount::readPersistentData()
   }
 
   if ((marker & 0xFF20) == 0xBE20) {
-    _longitude = 1.0f * EPROMStore::Storage()->readInt16(14, 15) / 100.0f;
+    _longitude = 1.0f * EPROMStore::readInt16(14, 15) / 100.0f;
     // LOGV2(DEBUG_INFO,"Mount: EEPROM: Longitude Marker OK! Longitude is %f", _longitude);
   } 
   else {
@@ -232,7 +232,7 @@ void Mount::readPersistentData()
 
 #if GYRO_LEVEL == 1
   if ((marker & 0xFF40) == 0xBE40) {
-    uint16_t angleValue = EPROMStore::Storage()->readInt16(17, 18);
+    uint16_t angleValue = EPROMStore::readInt16(17, 18);
     _pitchCalibrationAngle = (((long)angleValue) - 16384) / 100.0;
     // LOGV3(DEBUG_INFO,"Mount: EEPROM: Pitch Offset Marker OK! Pitch Offset is %x (%f)", angleValue, _pitchCalibrationAngle);
   }
@@ -241,7 +241,7 @@ void Mount::readPersistentData()
   }
 
   if ((marker & 0xFF80) == 0xBE80) {
-    uint16_t angleValue = EPROMStore::Storage()->readInt16(19,20);
+    uint16_t angleValue = EPROMStore::readInt16(19,20);
     _rollCalibrationAngle = (((long)angleValue) - 16384) / 100.0;
     // LOGV3(DEBUG_INFO,"Mount: EEPROM: Roll Offset Marker OK! Roll Offset is %x (%f)", angleValue, _rollCalibrationAngle);
   }
@@ -265,11 +265,11 @@ void Mount::writePersistentData(int which, int val)
   int hiByteLocation = 0;
 
   // If we're written something before...
-  uint8_t magicMarker = EPROMStore::Storage()->read(5);
+  uint8_t magicMarker = EPROMStore::read(5);
   // LOGV4(DEBUG_INFO,"Mount: EEPROM Write: Marker is %x, flag is %x (%d)", magicMarker, flag, flag);
   if (magicMarker == 0xBE) {
     // ... read the current state ...
-    flag = EPROMStore::Storage()->read(4);
+    flag = EPROMStore::read(4);
     // LOGV3(DEBUG_INFO,"Mount: EEPROM Write: Marker is 0xBE, flag is %x (%d)", flag, flag);
   }
   switch (which) {
@@ -357,11 +357,11 @@ void Mount::writePersistentData(int which, int val)
 
   // LOGV3(DEBUG_INFO,"Mount: EEPROM Write: New Marker is 0xBE, flag is %x (%d)", flag, flag);
 
-  EPROMStore::Storage()->update(4, flag);
-  EPROMStore::Storage()->update(5, 0xBE);
+  EPROMStore::update(4, flag);
+  EPROMStore::update(5, 0xBE);
 
-  EPROMStore::Storage()->update(loByteLocation, val & 0x00FF);
-  EPROMStore::Storage()->update(hiByteLocation, (val >> 8) & 0x00FF);
+  EPROMStore::update(loByteLocation, val & 0x00FF);
+  EPROMStore::update(hiByteLocation, (val >> 8) & 0x00FF);
 
   // LOGV5(DEBUG_INFO,"Mount: EEPROM Write: Wrote %x to %d and %x to %d", val & 0x00FF, loByteLocation, (val >> 8) & 0x00FF, hiByteLocation);
 }
@@ -934,9 +934,9 @@ void Mount::syncPosition(int raHour, int raMinute, int raSecond, int decDegree, 
   _targetDEC.set(decDegree,decMinute,decSecond);
 
   float targetRA, targetDEC;
-  LOGV7(DEBUG_MOUNT, "Mount: Sync Position to RA: %d:%d:%d and DEC: %d*%d:%d", raHour, raMinute, raSecond, decDegree, decMinute, decSecond);
+  LOGV7(DEBUG_MOUNT, F("Mount: Sync Position to RA: %d:%d:%d and DEC: %d*%d:%d"), raHour, raMinute, raSecond, decDegree, decMinute, decSecond);
   calculateRAandDECSteppers(targetRA, targetDEC);
-  LOGV3(DEBUG_MOUNT, "Mount: Sync Stepper Position is RA: %d and DEC: %d", targetRA, targetDEC);
+  LOGV3(DEBUG_MOUNT, F("Mount: Sync Stepper Position is RA: %d and DEC: %d"), targetRA, targetDEC);
   _stepperRA->setCurrentPosition(targetRA);
   _stepperDEC->setCurrentPosition(targetDEC);
 }

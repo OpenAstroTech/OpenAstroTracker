@@ -13,10 +13,10 @@ bool SlewDisplay::isComplete()
     int slewingAxes;
     float raProgress, decProgress;
     Mount::instance()->getMovementState(slewingAxes, raProgress, decProgress);
-    LOGV4(255, "SLD: Slew axis: %d, RA: %f%%, DEC %f%%", slewingAxes, raProgress, decProgress);
+    LOGV4(255, F("SLD: Slew axis: %d, RA: %f%%, DEC %f%%"), slewingAxes, raProgress, decProgress);
     if (slewingAxes == 0)
     {
-        LOGV1(255, "SLD: Slew complete!");
+        LOGV1(255, F("SLD: Slew complete!"));
     }
 
     return slewingAxes == 0;

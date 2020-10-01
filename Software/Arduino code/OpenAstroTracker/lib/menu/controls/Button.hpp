@@ -8,13 +8,13 @@ class Button : public MenuItem
 {
 private:
 	eventAction _chosenFunc;
-
 	MenuItem *_subMenu;
 	bool _subMenuActivated;
+	byte _index;
 
 public:
 	Button(String choice, MenuItem *subMenu);
-	Button(String choice, eventAction chosenFunc);
+	Button(String choice, eventAction chosenFunc, byte index = 0);
 
 	virtual void closeMenuItem(MenuItem *closeMe);
 	virtual void setMainMenu(MainMenu *mainMenu);
@@ -24,6 +24,8 @@ public:
 
 	virtual bool onPreviewKey(int keyState);
 	virtual bool onKeypressed(int key);
+
+	byte getIndex();
 };
 
 #endif

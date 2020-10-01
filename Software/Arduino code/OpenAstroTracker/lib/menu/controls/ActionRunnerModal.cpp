@@ -21,12 +21,12 @@ void ActionRunnerModal::onDisplay(bool modal)
     {
         if (_followModal != nullptr)
         {
-            LOGV2(255, "ARM: Modal action is complete, activating next dialog %s ", _followModal->getTag().c_str());
+            LOGV2(255, F("ARM: Modal action is complete, activating next dialog %s "), _followModal->getTag().c_str());
             getMainMenu()->activateDialog(_followModal->getTag());
         }
         else
         {
-            LOGV1(255, "ARM: Modal action is complete, closing dialog.");
+            LOGV1(255, F("ARM: Modal action is complete, closing dialog."));
             getMainMenu()->closeDialog();
         }
     }

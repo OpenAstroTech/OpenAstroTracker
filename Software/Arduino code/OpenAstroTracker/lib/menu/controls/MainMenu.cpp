@@ -13,13 +13,13 @@ MainMenu::MainMenu(LcdDisplay *lcdDisplay) : _lcdDisplay(lcdDisplay)
 
 void MainMenu::closeDialog()
 {
-	LOGV1(255, "MMN: Modal closed");
+	LOGV1(255, F("MMN: Modal closed"));
 	_activeDialog = nullptr;
 }
 
 void MainMenu::activateDialog(String tag)
 {
-	LOGV2(255, "MMN: Activate modal %s", tag.c_str());
+	LOGV2(255, F("MMN: Activate modal %s"), tag.c_str());
 	for (int i = 0; i < _dialogs.count(); i++)
 	{
 		if (_dialogs.getItem(i)->getTag().equals(tag))
@@ -31,10 +31,10 @@ void MainMenu::activateDialog(String tag)
 
 	if (_activeDialog == nullptr)
 	{
-		LOGV2(255, "MMN: CAN'T FIND MODAL [%s]. Available:", tag.c_str());
+		LOGV2(255, F("MMN: CAN'T FIND MODAL [%s]. Available:"), tag.c_str());
 		for (int i = 0; i < _dialogs.count(); i++)
 		{
-			LOGV3(255, "  %d -> [%s]", i, _dialogs.getItem(i)->getTag().c_str());
+			LOGV3(255, F("  %d -> [%s]"), i, _dialogs.getItem(i)->getTag().c_str());
 		}
 	}
 }
@@ -47,10 +47,10 @@ void MainMenu::addMenuItem(MenuItem *item)
 
 void MainMenu::addModalDialog(MenuItem *dialog)
 {
-	LOGV2(255, "MMN: Add modal %s",dialog->getTag().c_str());
+	LOGV2(255, F("MMN: Add modal %s"), dialog->getTag().c_str());
 	dialog->setMainMenu(this);
 	_dialogs.add(dialog);
-	LOGV3(255, "MMN: Modal %s added. %d modals.",dialog->getTag().c_str(), _dialogs.count());
+	LOGV3(255, F("MMN: Modal %s added. %d modals."), dialog->getTag().c_str(), _dialogs.count());
 }
 
 bool MainMenu::onPreviewKey(int keyState)

@@ -34,7 +34,8 @@ void Incrementer::onChange(String tag, int *numbers, int index, int val)
 
     if (_changed != nullptr)
     {
-        _changed(new ChangedEventArgs(_menuItem, index, numbers[index], oldVal, numbers));
+        ChangedEventArgs args(_menuItem, index, numbers[index], oldVal, numbers);
+        _changed(&args);
     }
 }
 

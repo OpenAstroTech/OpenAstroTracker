@@ -21,8 +21,8 @@ void haChanged(EventArgs *args)
 void haConfirmed(EventArgs *args)
 {
     auto mount = Mount::instance();
-    EPROMStore::Storage()->update(1, mount->HA().getHours());
-    EPROMStore::Storage()->update(2, mount->HA().getMinutes());
+    EPROMStore::update(1, mount->HA().getHours());
+    EPROMStore::update(2, mount->HA().getMinutes());
     LcdDisplay::instance()->setCursor(0, 1);
     LcdDisplay::instance()->printLine("Stored.");
     mount->delay(500);

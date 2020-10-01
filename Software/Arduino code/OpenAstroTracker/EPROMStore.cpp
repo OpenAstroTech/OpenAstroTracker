@@ -3,31 +3,15 @@
 #include "EPROMStore.hpp"
 #include "Utility.hpp"
 
-// The global instance of the platform-independant EEPROM class
-EPROMStore *EPROMStore::_eepromStore = NULL;
+// The platform-independant EEPROM class
 
 // Initialize the EEPROM storage in a platform-independent abstraction
-void EPROMStore::initialize()
-{
-  if (_eepromStore == NULL)
-  {
-    _eepromStore = new EPROMStore();
-  }
-}
-
-// Get the instance of the EEPROM storage
-EPROMStore *EPROMStore::Storage()
-{
-  return _eepromStore;
-}
-
 #ifdef ESPBOARD
 
-// Construct the EEPROM object for ESP boards, settign aside 32 bytes for storage
-EPROMStore::EPROMStore()
+// Initialize the EEPROM object for ESP boards, settign aside 32 bytes for storage
+void EPROMStore::initialize()
 {
-  // LOGV1(DEBUG_VERBOSE, "EEPROM[ESP]: Startup with 32 bytes");
-  EEPROM.begin(32);
+    EEPROM.begin(32);
 }
 
 // Update the given location with the given value
@@ -50,10 +34,8 @@ uint8_t EPROMStore::read(int location)
 
 #else
 
-// Construct the EEPROM  object for non-ESP boards
-EPROMStore::EPROMStore()
+void EPROMStore::initialize()
 {
-  // LOGV1(DEBUG_VERBOSE, "EEPROM[UNO]: Startup ");
 }
 
 // Update the given location with the given value
@@ -82,8 +64,8 @@ void EPROMStore::updateInt16(int loByteAddr, int hiByteAddr, int16_t value)
 
 int16_t EPROMStore::readInt16(int loByteAddr, int hiByteAddr)
 {
-  uint8_t valLo=EPROMStore::Storage()->read(loByteAddr);
-  uint8_t valHi=EPROMStore::Storage()->read(hiByteAddr);
+  uint8_t valLo=EPROMStore::read(loByteAddr);
+  uint8_t valHi=EPROMStore::read(hiByteAddr);
   uint16_t uValue = (uint16_t)valLo + (uint16_t)valHi * 256;
   int16_t value = static_cast<int16_t>(uValue);
   //LOGV4(DEBUG_VERBOSE, "EEPROM: Read16 %d from %d, %d", value, loByteAddr, hiByteAddr);

@@ -6,13 +6,15 @@
 
 Button::Button(String choice, MenuItem *subMenu) : MenuItem(choice, "BTN")
 {
+	_index = 0;
 	_chosenFunc = nullptr;
 	_subMenu = subMenu;
 	_subMenuActivated = false;
 }
 
-Button::Button(String choice, eventAction chosenFunc) : MenuItem(choice, "BTN")
+Button::Button(String choice, eventAction chosenFunc, byte index) : MenuItem(choice, "BTN")
 {
+	_index = index;
 	_chosenFunc = chosenFunc;
 	_subMenu = nullptr;
 	_subMenuActivated = false;
@@ -88,6 +90,12 @@ void Button::onSelect()
 	}
 	else
 	{
-		_chosenFunc(new SelectEventArgs(this, _displayName));
+		SelectEventArgs args(this, _displayName);
+		_chosenFunc(&args);
 	}
+}
+
+byte Button::getIndex()
+{
+	return _index;
 }

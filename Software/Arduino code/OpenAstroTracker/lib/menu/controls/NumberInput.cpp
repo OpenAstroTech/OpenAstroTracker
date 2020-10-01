@@ -73,13 +73,14 @@ void NumberInput::onDisplay(bool modal = false)
 
 void NumberInput::onSelect()
 {
+    SelectEventArgs args(this);
     if (_selectCallback != nullptr)
     {
-        _selectCallback(new SelectEventArgs(this));
+        _selectCallback(&args);
     }
     else
     {
-        _incr->onSelect(new SelectEventArgs(this));
+        _incr->onSelect(&args);
     }
 }
 
