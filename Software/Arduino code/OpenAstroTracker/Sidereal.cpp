@@ -9,6 +9,8 @@
 #define C4              -0.5125
 #define J2000           2000
 
+TinyGPSPlus gps;
+
 static DayTime Sidereal::calculateByGPS(TinyGPSPlus* gps){
     DayTime timeUTC = DayTime(gps->time.hour(), gps->time.minute(), gps->time.second());
     //DayTime timeUTC = DayTime(14, 24, 11);

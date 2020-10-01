@@ -1,7 +1,7 @@
 #pragma once
 #include <Arduino.h>
 
-#define DEBUG_ENABLED 1
+#define DEBUG_ENABLED 0
 
 String getLogBuffer();
 int freeMemory();

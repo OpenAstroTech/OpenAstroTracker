@@ -9,7 +9,7 @@ int maxRa[] = {23, 59, 59, 1};
 
 RaDecIncrementer::RaDecIncrementer(String which) : Incrementer(INCREMENT_WRAP, maxDec, minDec)
 {
-    showingTarget = 0;
+    _showingTarget = 0;
     _isRA = which == "RA";
     if (_isRA)
     {
@@ -36,15 +36,15 @@ void RaDecIncrementer::onChange(String tag, int *numbers, int index, int changeB
         //LOGV4(DEBUG_INFO, "RADEC: OnChange2, idx %d. Cur: %d, changeBy: %d", index, numbers[index], changeBy);
     }
 
-    //LOGV2(DEBUG_INFO, "RADEC: OnChange, Pre  Ta/Cu: %d", showingTarget);
-    showingTarget = numbers[3];
-    //LOGV2(DEBUG_INFO, "RADEC: OnChange, Post Ta/Cu: %d", showingTarget);
+    //LOGV2(DEBUG_INFO, "RADEC: OnChange, Pre  Ta/Cu: %d", _showingTarget );
+    _showingTarget  = numbers[3];
+    //LOGV2(DEBUG_INFO, "RADEC: OnChange, Post Ta/Cu: %d", _showingTarget );
 
     if (index != 3)
     {
         if (_isRA)
         {
-            if (showingTarget)
+            if (_showingTarget )
             {
                 Mount::instance()->targetRA().set(numbers[0], numbers[1], numbers[2]);
             }
@@ -52,23 +52,23 @@ void RaDecIncrementer::onChange(String tag, int *numbers, int index, int changeB
             {
                 // We don't allow editing of current, so switch back to target
                 Mount::instance()->targetRA().set(numbers[0], numbers[1], numbers[2]);
-                showingTarget = 1;
+                _showingTarget  = 1;
             }
         }
         else
         {
-            if (showingTarget)
+            if (_showingTarget )
             {
                 Mount::instance()->targetDEC().set(numbers[0], numbers[1], numbers[2]);
             }
             else
             {
                 Mount::instance()->targetDEC().set(numbers[0], numbers[1], numbers[2]);
-                showingTarget = 1;
+                _showingTarget  = 1;
             }
         }
     }
-    //LOGV2(DEBUG_INFO, "RADEC: OnChange, Post2Ta/Cu: %d", showingTarget);
+    //LOGV2(DEBUG_INFO, "RADEC: OnChange, Post2Ta/Cu: %d", _showingTarget );
 }
 
 String RaDecIncrementer::getDisplay(String tag, int index, int val, String formatString)
@@ -98,7 +98,7 @@ void RaDecIncrementer::getNumbers(String tag, int *numbers)
 {
     if (_isRA)
     {
-        if (showingTarget)
+        if (_showingTarget )
         {
             DayTime ra = Mount::instance()->targetRA();
             numbers[0] = ra.getHours();   
@@ -117,7 +117,7 @@ void RaDecIncrementer::getNumbers(String tag, int *numbers)
     }
     else
     {
-        if (showingTarget)
+        if (_showingTarget )
         {
             DayTime dec = Mount::instance()->targetDEC();
             numbers[0] = dec.getHours();   

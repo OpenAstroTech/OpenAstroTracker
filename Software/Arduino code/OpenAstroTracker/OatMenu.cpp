@@ -13,6 +13,7 @@
 #include "OatMenuGO.hpp"
 #include "OatMenuHA.hpp"
 #include "OatMenuCTRL.hpp"
+#include "OatMenuCAL.hpp"
 #include "OatSlewDisplay.hpp"
 
 //RAM:   [=======   ]  67.6% (used 5537 bytes from 8192 bytes)
@@ -29,6 +30,7 @@ void createMenuSystem(MainMenu &mainMenu)
     createGOMenu(mainMenu);
     createHAMenu(mainMenu);
     createCTRLMenu(mainMenu);
+    createCALMenu(mainMenu);
     mainMenu.addModalDialog(&slewModal);
     LOGV1(DEBUG_INFO, "CMS: Menu system created");
 }

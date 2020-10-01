@@ -23,6 +23,17 @@ OptionChooser::OptionChooser(String choice1, String choice2, String choice3, int
     _numChoices = 3;
 }
 
+OptionChooser::OptionChooser(String choice1, String choice2, String choice3, String choice4, int activeItemIndex, eventAction chosenFunc) : MenuItem("", "OPT")
+{
+    _activeOption = activeItemIndex;
+    _chosenFunc = chosenFunc;
+    _choices[0] = choice1;
+    _choices[1] = choice2;
+    _choices[2] = choice3;
+    _choices[3] = choice4;
+    _numChoices = 4;
+}
+
 void OptionChooser::onDisplay(bool modal)
 {
     String line = "";
@@ -30,7 +41,7 @@ void OptionChooser::onDisplay(bool modal)
     {
         line += ((i == _activeOption) ? '>' : ' ') + _choices[i] + ((i == _activeOption) ? '<' : ' ') + ' ';
     }
-    
+
     getMainMenu()->writeToLCD(0, 1, line);
 }
 
@@ -43,6 +54,11 @@ void OptionChooser::onSelect()
 String OptionChooser::getSelected()
 {
     return _choices[_activeOption];
+}
+
+int OptionChooser::getSelectedIndex()
+{
+    return _activeOption;
 }
 
 bool OptionChooser::onKeypressed(int key)

@@ -9,17 +9,18 @@ class OptionChooser : public MenuItem
 {
 private:
     int _activeOption;
-    String _choices[3];
+    String _choices[4];
     int _numChoices;
     eventAction _chosenFunc;
 
 public:
     OptionChooser(String choice1, String choice2, int activeItemIndex, eventAction chosenFunc);
     OptionChooser(String choice1, String choice2, String choice3, int activeItemIndex, eventAction chosenFunc);
+    OptionChooser(String choice1, String choice2, String choice3, String choice4, int activeItemIndex, eventAction chosenFunc);
 
     void onDisplay(bool modal = false) override;
     void onSelect() override;
     bool onKeypressed(int key) override;
     String getSelected();
+    int getSelectedIndex();
 };
-

@@ -319,6 +319,7 @@ void finishSetup()
     createMenuSystem(mainMenu);
   #endif // HEADLESS_CLIENT
 
+  LOGV2(DEBUG_ANY, "Size of menu item %d", sizeof(MenuItem));
   LOGV1(DEBUG_ANY, "Creating main menu...");
   createMenuSystem(mainMenu);
 

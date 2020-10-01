@@ -19,7 +19,7 @@
   =======================================================================================================================================
 */
 
-#define Version "V2.0.00e"
+#define Version "V2.0.00f"
 
 ///////////////////////////////////////////////////////////////////////////
 // Also use Configuration_adv for further adjustments!
@@ -114,7 +114,7 @@
 
 #if USE_GPS == 1
   #include <TinyGPS++.h>
-  TinyGPSPlus gps;
+  extern TinyGPSPlus gps;
 #endif
 
 #define HALFSTEP_MODE 8

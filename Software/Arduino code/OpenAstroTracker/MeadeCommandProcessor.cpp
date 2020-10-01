@@ -2,6 +2,7 @@
 #include "Configuration.hpp"
 #include "Utility.hpp"
 #include "WifiControl.hpp"
+#include "Strings.hpp"
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -718,22 +719,22 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
     _lcdDisplay->setCursor(0, 0);
     _lcdDisplay->printLine(">Drift Alignment");
     _lcdDisplay->setCursor(0, 1);
-    _lcdDisplay->printLine("Pause 1.5s....");
+    _lcdDisplay->printLine(oatString(UI_PAUSE_15SEC));
     _mount->stopSlewing(ALL_DIRECTIONS | TRACKING);
     _mount->waitUntilStopped(ALL_DIRECTIONS);
     _mount->delay(1500);
     _lcdDisplay->setCursor(0, 1);
-    _lcdDisplay->printLine("Eastward pass...");
+    _lcdDisplay->printLine(oatString(UI_EASTWARD_PASS));
     _mount->runDriftAlignmentPhase(EAST, duration);
     _lcdDisplay->setCursor(0, 1);
-    _lcdDisplay->printLine("Pause 1.5s....");
+    _lcdDisplay->printLine(oatString(UI_PAUSE_15SEC));
     _mount->delay(1500);
-    _lcdDisplay->printLine("Westward pass...");
+    _lcdDisplay->printLine(oatString(UI_WESTWARD_PASS));
     _mount->runDriftAlignmentPhase(WEST, duration);
     _lcdDisplay->setCursor(0, 1);
-    _lcdDisplay->printLine("Pause 1.5s....");
+    _lcdDisplay->printLine(oatString(UI_PAUSE_15SEC));
     _mount->delay(1500);
-    _lcdDisplay->printLine("Reset _mount->..");
+    _lcdDisplay->printLine(oatString(UI_RESET_MOUNT));
     _mount->runDriftAlignmentPhase(0, duration);
     _lcdDisplay->setCursor(0, 1);
     _mount->startSlewing(TRACKING);
