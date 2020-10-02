@@ -22,19 +22,19 @@ void SpeedAndStepIncrementer::readValues()
 void SpeedAndStepIncrementer::onChange(String tag, int *numbers, int index, int val)
 {
     Incrementer::onChange(tag, numbers, index, val);
-    if (tag == "SPD")
+    if (tag.equals("SPD"))
     {
         _speed = numbers[0];
     }
-    else if (tag == "RA")
+    else if (tag.equals("RA"))
     {
         _raSteps = numbers[0];
     }
-    else if (tag == "DEC")
+    else if (tag.equals("DEC"))
     {
         _decSteps = numbers[0];
     }
-    else if (tag == "BACK")
+    else if (tag.equals("BACK"))
     {
         _backlashSteps = numbers[0];
     }
@@ -42,7 +42,7 @@ void SpeedAndStepIncrementer::onChange(String tag, int *numbers, int index, int 
 
 String SpeedAndStepIncrementer::getDisplay(String tag, int index, int val, String formatString)
 {
-    if (tag == "SPD")
+    if (tag.equals("SPD"))
     {
         String(1.0 + 1.0 * val / 10000.0, 4);
     }
@@ -52,19 +52,19 @@ String SpeedAndStepIncrementer::getDisplay(String tag, int index, int val, Strin
 
 void SpeedAndStepIncrementer::getNumbers(String tag, int *numbers)
 {
-    if (tag == "SPD")
+    if (tag.equals("SPD"))
     {
         numbers[0] = _speed;
     }
-    else if (tag == "RA")
+    else if (tag.equals("RA"))
     {
         numbers[0] = _raSteps;
     }
-    else if (tag == "DEC")
+    else if (tag.equals("DEC"))
     {
         numbers[0] = _decSteps;
     }
-    else if (tag == "BACK")
+    else if (tag.equals("BACK"))
     {
         numbers[0] = _backlashSteps;
     }

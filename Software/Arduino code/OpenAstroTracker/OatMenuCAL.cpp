@@ -161,7 +161,7 @@ NumberInput raStepNum("RA", 1, "RA Steps: @", nullptr, &speedIncr, NumberInput::
 Button calRaSteps("RA Step Adjust", &raStepNum);
 NumberInput decStepNum("DEC", 1, "DEC Steps: @", nullptr, &speedIncr, NumberInput::BehaviorFlags::AcceleratingRepetition);
 Button calDecSteps("DEC Step Adjust", &decStepNum);
-NumberInput backlashNum("DEC", 1, "DEC Steps: @", nullptr, &speedIncr, NumberInput::BehaviorFlags::AcceleratingRepetition);
+NumberInput backlashNum("BACK", 1, "Backlash: @", nullptr, &speedIncr, NumberInput::BehaviorFlags::AcceleratingRepetition);
 Button calBacklash("Backlash Adjust", &backlashNum);
 PitchRollDisplay calRoll("ROLL");
 Button calRollOffset("Roll Offset", &calRoll);
