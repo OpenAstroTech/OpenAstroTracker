@@ -46,6 +46,11 @@ namespace MenuPrototype
 				return _choices[_activeOption];
 			}
 
+			public int getSelectedIndex()
+			{
+				return _activeOption;
+			}
+
 			public override bool onKeypressed(int key)
 			{
 				if (base.onKeypressed(key)) { return true; }
