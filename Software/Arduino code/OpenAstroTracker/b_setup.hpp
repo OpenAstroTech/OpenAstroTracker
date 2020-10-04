@@ -215,7 +215,7 @@ void finishSetup()
   #if RA_STEPPER_TYPE == STEP_28BYJ48 
     mount.configureRAStepper(FULLSTEP_MODE, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RAspeed, RAacceleration);
   #elif RA_STEPPER_TYPE == STEP_NEMA17
-    mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
+    mount.configureRAStepper(DRIVER_MODE, RAmotorPin1, RAmotorPin2, RAspeed, RAacceleration);
   #else
     #error New stepper type? Configure it here.
   #endif

@@ -18,7 +18,7 @@
   =======================================================================================================================================
 */
 
-String version = "V1.8.26";
+String version = "V1.8.27";
 
 ///////////////////////////////////////////////////////////////////////////
 // Also use Configuration_adv for further adjustments!
@@ -77,8 +77,8 @@ float DEC_Circumference = 565.5;
 // This value is from 13.Aug.2020, next adjustment suggested at end 2020
 // The same could be done for the DEC coordinates but they dont change significantly for the next 5 years
 byte PolarisRAHour = 2;
-byte PolarisRAMinute = 57;
-byte PolarisRASecond = 27;
+byte PolarisRAMinute = 58;
+byte PolarisRASecond = 34;
 
 // Some explanations:
 
