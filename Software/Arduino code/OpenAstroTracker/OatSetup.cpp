@@ -4,6 +4,7 @@
 #include "lib/menu/controls/NumberInput.hpp"
 #include "lib/input/LcdButtons.hpp"
 #include "lib/util/debug.hpp"
+#include "StringTable.hpp"
 #include "Configuration.hpp"
 #include "Mount.hpp"
 #include "MeadeCommandProcessor.hpp"
@@ -191,7 +192,7 @@ void finishSetup()
 
   // Show a splash screen
   lcdDisplay.setCursor(0, 0);
-  lcdDisplay.printLine("OpenAstroTracker");
+  lcdDisplay.printLine(oatString(UI_OAT));
   lcdDisplay.setCursor(0, 1);
   lcdDisplay.printLine("     " + String(Version));
 
@@ -231,28 +232,28 @@ void finishSetup()
 
   LOGV1(DEBUG_ANY, F("Configure DEC stepper..."));
   #if DEC_STEPPER_TYPE == STEP_28BYJ48
-    // LOGV1(DEBUG_ANY, "Configure DEC stepper 28BYJ-48...");
+    // LOGV1(DEBUG_ANY, F("Configure DEC stepper 28BYJ-48..."));
     mount.configureDECStepper(HALFSTEP_MODE, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, DECspeed, DECacceleration);
   #elif DEC_STEPPER_TYPE == STEP_NEMA17
-    // LOGV1(DEBUG_ANY, "Configure DEC stepper NEMA...");
+    // LOGV1(DEBUG_ANY, F("Configure DEC stepper NEMA..."));
     mount.configureDECStepper(DRIVER_MODE, DECmotorPin1, DECmotorPin2, DECspeed, DECacceleration);
   #else
     #error New stepper type? Configure it here.
   #endif
 
   #if RA_DRIVER_TYPE == TMC2209_UART
-    LOGV1(DEBUG_ANY, "Configure RA driver...");
+    LOGV1(DEBUG_ANY, F("Configure RA driver..."));
     mount.configureRAdriver(&RA_SERIAL_PORT, R_SENSE, RA_DRIVER_ADDRESS, RA_RMSCURRENT, RA_STALL_VALUE);
   #endif
   #if DEC_DRIVER_TYPE == TMC2209_UART
-    LOGV1(DEBUG_ANY, "Configure DEC driver TMC2009 UART...");
+    LOGV1(DEBUG_ANY, F("Configure DEC driver TMC2009 UART..."));
     mount.configureDECdriver(&DEC_SERIAL_PORT, R_SENSE, DEC_DRIVER_ADDRESS, DEC_RMSCURRENT, DEC_STALL_VALUE);
   #endif
 
   #if AZIMUTH_ALTITUDE_MOTORS == 1
-    LOGV1(DEBUG_ANY, "Configure AZ stepper...");
+    LOGV1(DEBUG_ANY, F("Configure AZ stepper..."));
     mount.configureAzStepper(HALFSTEP_MODE, AZmotorPin1, AZmotorPin2, AZmotorPin3, AZmotorPin4, AZIMUTH_MAX_SPEED, AZIMUTH_MAX_ACCEL);
-    LOGV1(DEBUG_ANY, "Configure Alt stepper...");
+    LOGV1(DEBUG_ANY, F("Configure Alt stepper..."));
     mount.configureAltStepper(FULLSTEP_MODE, ALTmotorPin1, ALTmotorPin2, ALTmotorPin3, ALTmotorPin4, ALTITUDE_MAX_SPEED, ALTITUDE_MAX_ACCEL);
   #endif
 
@@ -263,9 +264,6 @@ void finishSetup()
   
   // Read other persisted values and set in mount
   DayTime haTime = DayTime(EPROMStore::read(1), EPROMStore::read(2), 0);
-
-  // LOGV2(DEBUG_INFO, "SpeedCal: %s", String(mount.getSpeedCalibration(), 5).c_str());
-  // LOGV2(DEBUG_INFO, "TRKSpeed: %s", String(mount.getSpeed(TRACKING), 5).c_str());
 
   mount.setHA(haTime);
 

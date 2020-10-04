@@ -84,7 +84,7 @@ bool MainMenu::processKeys(int key)
 
 void MainMenu::updateDisplay()
 {
-	String menu = "    ";
+	String menu = "   ";
 	if (_activeDialog != nullptr)
 	{
 		_activeDialog->onDisplay(true);
@@ -99,13 +99,13 @@ void MainMenu::updateDisplay()
 	}
 
 	int activeItemPos = menu.indexOf('>');
-	menu = menu.substring(activeItemPos - 4);
+	menu = menu.substring(activeItemPos - 3);
 	for (int i = menu.length(); i < 15; i++)
 	{
 		menu += ' ';
 	}
-	menu[0] = '|';
-	menu[14] = '|';
+	//menu[0] = '|';
+	menu[14] = ' ';
 	writeToLCD(0, 0, menu.substring(0, 15));
 	// LOGV2(DEBUG_INFO, "MMUD: Menu  is [%s]", menu.substring(activeItemPos - 4).c_str());
 

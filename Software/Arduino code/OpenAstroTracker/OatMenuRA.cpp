@@ -1,6 +1,7 @@
 #include "lib/menu/controls/MainMenu.hpp"
 #include "lib/menu/controls/MenuItem.hpp"
 #include "lib/menu/controls/NumberInput.hpp"
+#include "StringTable.hpp"
 #include "raDecIncrementer.hpp"
 #include "Mount.hpp"
 
@@ -12,7 +13,7 @@ void raConfirmed(EventArgs *args)
         mount->stopSlewing(ALL_DIRECTIONS);
         mount->waitUntilStopped(ALL_DIRECTIONS);
     }
-    args->getSource()->getMainMenu()->activateDialog("SlewDisplay");
+    args->getSource()->getMainMenu()->activateDialog(oatString(DLG_SLEW_DISPLAY));
     mount->startSlewingToTarget();
 }
 

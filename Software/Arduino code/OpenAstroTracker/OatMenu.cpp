@@ -4,6 +4,7 @@
 #include "lib/menu/controls/NumberInput.hpp"
 #include "lib/input/LcdButtons.hpp"
 #include "configuration.hpp"
+#include "StringTable.hpp"
 #include "raDecIncrementer.hpp"
 #include "Mount.hpp"
 #include "EPROMStore.hpp"
@@ -17,12 +18,7 @@
 #include "OatMenuINFO.hpp"
 #include "OatSlewDisplay.hpp"
 
-//RAM:   [=======   ]  67.6% (used 5537 bytes from 8192 bytes)
-//Flash: [==        ]  21.0% (used 54850 bytes from 261120 bytes)
-
-//RAM:   [=======   ]  67.9% (used 5561 bytes from 8192 bytes)
-//Flash: [==        ]  21.0% (used 54876 bytes from 261120 bytes)
-SlewDisplay slewModal("SLD","SlewDisplay");
+SlewDisplay slewModal("SLD",oatString(DLG_SLEW_DISPLAY));
 
 void createMenuSystem(MainMenu &mainMenu)
 {
@@ -30,16 +26,27 @@ void createMenuSystem(MainMenu &mainMenu)
     createRAMenu(mainMenu);
     LOGV1(DEBUG_INFO, F("CMS: Create DEC"));
     createDECMenu(mainMenu);
+    
     LOGV1(DEBUG_INFO, F("CMS: Create GO"));
     createGOMenu(mainMenu);
+    
     LOGV1(DEBUG_INFO, F("CMS: Create HA"));
     createHAMenu(mainMenu);
+
+    #if SUPPORT_MANUAL_CONTROL == 1
     LOGV1(DEBUG_INFO, F("CMS: Create CTRL"));
     createCTRLMenu(mainMenu);
+    #endif
+
+    #if SUPPORT_CALIBRATION == 1
     LOGV1(DEBUG_INFO, F("CMS: Create CAL"));
     createCALMenu(mainMenu);
+    #endif
+
+    #if SUPPORT_INFO_DISPLAY == 1
     LOGV1(DEBUG_INFO, F("CMS: Create INFO"));
     createINFOMenu(mainMenu);
+    #endif
 
     LOGV1(DEBUG_INFO, F("CMS: Add Slew modal"));
     mainMenu.addModalDialog(&slewModal);
@@ -74,6 +81,5 @@ void runMenuSystem(MainMenu &mainMenu)
         mainMenu.updateDisplay();
         lastUpdate = millis();
     }
-
-    //LOGV1(DEBUG_ANY, "RMS: done");
+   
 }

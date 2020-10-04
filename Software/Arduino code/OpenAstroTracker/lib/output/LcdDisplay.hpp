@@ -41,12 +41,15 @@ private:
   String _lastDisplay[2]; // The last string that was displayed on each row
   int _brightness;
 
+  //byte _degrees = 1;
   byte _degrees = 1;
   byte _minutes = 2;
   byte _leftArrow = 3;
   byte _rightArrow = 4;
   byte _upArrow = 5;
   byte _downArrow = 6;
+  byte _tracking = 7;
+  byte _noTracking = 0;
 
   // The special character bitmaps
   static byte RightArrowBitmap[8];
@@ -55,6 +58,8 @@ private:
   static byte DownArrowBitmap[8];
   static byte DegreesBitmap[8];
   static byte MinutesBitmap[8];
+  static byte TrackingBitmap[8];
+  static byte NoTrackingBitmap[8];
 
   static LcdDisplay* _instance;
 #endif

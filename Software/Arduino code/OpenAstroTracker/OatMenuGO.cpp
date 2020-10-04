@@ -7,6 +7,7 @@
 #include "lib/menu/controls/ScrollList.hpp"
 #include "lib/menu/controls/Button.hpp"
 #include "lib/menu/controls/SelectEventArgs.hpp"
+#include "StringTable.hpp"
 #include "raDecIncrementer.hpp"
 #include "configuration.hpp"
 #include "Mount.hpp"
@@ -53,12 +54,12 @@ void goPointChosen(EventArgs *args)
     mount->stopSlewing(ALL_DIRECTIONS);
     int hemisphereOffset = -(NORTHERN_HEMISPHERE ? 90 : -90); // internal DEC degree is 0 at celestial poles
     bool startSlew = true;
-    
+
     switch (((Button *)args->getSource())->getIndex())
     {
     case POI_Polaris:
         mount->targetRA().set(PolarisRAHour, PolarisRAMinute, PolarisRASecond);
-        mount->targetDEC().set(89 + hemisphereOffset, 21, 6); 
+        mount->targetDEC().set(89 + hemisphereOffset, 21, 6);
         break;
     case POI_VeilNebula:
         mount->targetRA().set(20, 51, 28);
@@ -151,13 +152,15 @@ void goPointChosen(EventArgs *args)
 
     if (startSlew)
     {
-        args->getSource()->getMainMenu()->activateDialog("SlewDisplay");
+        args->getSource()->getMainMenu()->activateDialog(oatString(DLG_SLEW_DISPLAY));
         mount->startSlewingToTarget();
     }
 }
 
 void createGOMenu(MainMenu &mainMenu)
 {
+#if SUPPORT_POINTS_OF_INTEREST == 1
+
     goList.addMenuItem(new Button(F("Polaris"), goPointChosen, POI_Polaris));
     goList.addMenuItem(new Button(F("Veil Nebula"), goPointChosen, POI_VeilNebula));
     goList.addMenuItem(new Button(F("M81 Bodes Galxy"), goPointChosen, POI_M81BodesGalxy));
@@ -177,6 +180,8 @@ void createGOMenu(MainMenu &mainMenu)
     goList.addMenuItem(new Button(F("Altair"), goPointChosen, POI_Altair));
     goList.addMenuItem(new Button(F("M42 Orion Nbula"), goPointChosen, POI_M42_Orion_Nbula));
     goList.addMenuItem(new Button(F("Lagoon Nebula"), goPointChosen, POI_Lagoon_Nebula));
+#endif
+
     goList.addMenuItem(new Button(F("Home"), goPointChosen, POI_Home));
     goList.addMenuItem(new Button(F("Unpark"), goPointChosen, POI_Unpark));
     goList.addMenuItem(new Button(F("Park"), goPointChosen, POI_Park));

@@ -25,6 +25,8 @@ LcdDisplay::LcdDisplay(byte cols, byte rows) : _lcd(8, 9, 4, 5, 6, 7) {
   _lcd.createChar(_rightArrow, RightArrowBitmap);
   _lcd.createChar(_upArrow, UpArrowBitmap);
   _lcd.createChar(_downArrow, DownArrowBitmap);
+  _lcd.createChar(_tracking, TrackingBitmap);
+  _lcd.createChar(_noTracking, NoTrackingBitmap);
 }
 
 // Pass thru utility function
@@ -57,6 +59,12 @@ void LcdDisplay::printChar(char ch) {
   }
   else if (ch == '\'') {
     _lcd.write(_minutes);
+  }
+  else if (ch == '&') {
+    _lcd.write(_tracking);
+  }
+  else if (ch == '`') {
+    _lcd.write(_noTracking);
   }
   else {
     _lcd.print(ch);
@@ -156,3 +164,49 @@ byte LcdDisplay::MinutesBitmap[8] = {
   B00000,
   B00000
 };
+
+
+byte LcdDisplay::TrackingBitmap[8] = {
+  B10111,
+  B00010,
+  B10010,
+  B00010,
+  B10111,
+  B00101,
+  B10110,
+  B00101
+};
+
+
+byte LcdDisplay::NoTrackingBitmap[8] = {
+  B10000,
+  B00000,
+  B10000,
+  B00010,
+  B10000,
+  B00000,
+  B10000,
+  B00000
+};
+
+// byte LcdDisplay::TrackingBitmap[8] = {
+//   B10000,
+//   B00000,
+//   B10111,
+//   B00010,
+//   B10010,
+//   B00010,
+//   B10000,
+//   B00000
+// };
+
+// byte LcdDisplay::TrackingBitmap[8] = {
+//   B11100,
+//   B01000,
+//   B01000,
+//   B01000,
+//   B00111,
+//   B00101,
+//   B00110,
+//   B00101
+// };

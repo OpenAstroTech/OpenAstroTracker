@@ -6,7 +6,8 @@
 #include "lib/menu/controls/OptionChooser.hpp"
 #include "lib/menu/controls/MultiStepActionRunnerModal.hpp"
 
-#include "Strings.hpp"
+#include "configuration.hpp"
+#include "StringTable.hpp"
 #include "speedIncrementer.hpp"
 #include "OatPitchRollDisplay.hpp"
 #include "Mount.hpp"
@@ -34,66 +35,70 @@ void driftAlignPhaseFunction(ActionRunnerEventArgs *arg)
     case ActionRunnerEventArgs::StepState::Starting:
     {
         driftStart = millis();
+        LOGV2(DEBUG_ANY, F("DA: Starting at %d"), driftStart);
+        mount->stopSlewing(TRACKING);
+        arg->setDisplay(oatString(UI_PAUSE_15SEC));
     }
     break;
 
     case ActionRunnerEventArgs::StepState::Running:
     {
+        LOGV2(DEBUG_ANY, F("DA: Running. Step %d"), arg->getStep());
         switch (arg->getStep())
         {
         case 0:
         {
-            arg->setDisplay(oatString(UI_PAUSE_15SEC));
             if (millis() - driftStart > 1500)
             {
+                LOGV1(DEBUG_ANY, F("DA: Wait over"));
                 arg->setResult(ActionRunnerEventArgs::StepStateChange::Proceed);
                 driftStart = millis();
+                arg->setDisplay(oatString(UI_EASTWARD_PASS));
             }
         }
         break;
         case 1:
         {
-            arg->setDisplay(oatString(UI_EASTWARD_PASS));
-            if (millis() - driftStart > driftDuration)
-            {
-                arg->setResult(ActionRunnerEventArgs::StepStateChange::Proceed);
-                driftStart = millis();
-            }
+            mount->runDriftAlignmentPhase(EAST, driftDuration);
+            LOGV1(DEBUG_ANY, F("DA: East pass done"));
+            arg->setResult(ActionRunnerEventArgs::StepStateChange::Proceed);
+            driftStart = millis();
+            arg->setDisplay(oatString(UI_PAUSE_15SEC));
         }
         break;
         case 2:
         {
-            arg->setDisplay(oatString(UI_PAUSE_15SEC));
             if (millis() - driftStart > 1500)
             {
+                LOGV1(DEBUG_ANY, F("DA: Wait2 over"));
                 arg->setResult(ActionRunnerEventArgs::StepStateChange::Proceed);
                 driftStart = millis();
+                arg->setDisplay(oatString(UI_WESTWARD_PASS));
             }
         }
         break;
         case 3:
         {
-            arg->setDisplay(oatString(UI_WESTWARD_PASS));
-            if (millis() - driftStart > driftDuration)
-            {
-                arg->setResult(ActionRunnerEventArgs::StepStateChange::Proceed);
-                driftStart = millis();
-            }
+            mount->runDriftAlignmentPhase(WEST, driftDuration);
+            LOGV1(DEBUG_ANY, F("DA: West pass done"));
+            arg->setResult(ActionRunnerEventArgs::StepStateChange::Proceed);
+            driftStart = millis();
+            arg->setDisplay(oatString(UI_PAUSE_15SEC));
         }
         break;
         case 4:
         {
-            arg->setDisplay(oatString(UI_PAUSE_15SEC));
             if (millis() - driftStart > 1500)
             {
+                arg->setDisplay(oatString(UI_RESET_MOUNT));
+                mount->runDriftAlignmentPhase(0, 0);
                 arg->setResult(ActionRunnerEventArgs::StepStateChange::Proceed);
-                driftStart = millis();
             }
         }
         break;
         case 5:
         {
-            arg->setDisplay(oatString(UI_RESET_MOUNT));
+            mount->startSlewing(TRACKING);
             arg->setResult(ActionRunnerEventArgs::StepStateChange::Completed);
         }
         break;
@@ -107,7 +112,7 @@ void paStoreAndSync(EventArgs *args)
 {
     auto mount = Mount::instance();
 
-    args->getSource()->getMainMenu()->writeToLCD(0, 1, "Aligned, homing...");
+    args->getSource()->getMainMenu()->writeToLCD(0, 1, F("Aligned, homing..."));
     mount->delay(750);
 
     // Sync the mount to Polaris, since that's where it's pointing
@@ -124,12 +129,25 @@ void paStoreAndSync(EventArgs *args)
 void paSlewingProgress(ActionRunnerEventArgs *arg)
 {
     auto mount = Mount::instance();
+    if (arg->getState() == ActionRunnerEventArgs::StepState::Starting)
+    {
+        // Move the RA to that of Polaris. Moving to this RA aligns the DEC axis such that
+        // it swings along the line between Polaris and the Celestial Pole.
+        mount->targetRA() = DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond);
+
+        // Set DEC to move the same distance past Polaris as
+        // it is from the Celestial Pole. That equates to 88deg 42' 11.2".
+        mount->targetDEC() = DegreeTime(88 - (NORTHERN_HEMISPHERE ? 90 : -90), 42, 11);
+        mount->startSlewingToTarget();
+        arg->getSource()->getMainMenu()->activateDialog(oatString(DLG_SLEW_DISPLAY));
+    }
+
     if (arg->getState() == ActionRunnerEventArgs::StepState::Running)
     {
-        arg->setDisplay(oatString(UI_SLEWING));
         if (!mount->isSlewingRAorDEC())
         {
             arg->setResult(ActionRunnerEventArgs::StepStateChange::Completed);
+            arg->getSource()->getMainMenu()->writeToLCD(0, 1, oatString(UI_ADJUST_MOUNT));
         }
     }
 }
@@ -146,27 +164,27 @@ SpeedAndStepIncrementer speedIncr;
 MenuItem calMenu("CAL", "CAL");
 ScrollList calList;
 
-MenuItem dlgPaStoreSync("Adjust mount", "StoreAndSync");
-Button calPaStoreBtn("Centered", &paStoreAndSync);
+MenuItem dlgPaStoreSync(oatString(UI_ADJUST_MOUNT), oatString(STORE_AND_SYNC));
+Button calPaStoreBtn(oatString(UI_CENTERED), &paStoreAndSync);
 MultiStepActionRunnerModal dlgPaSlewToPolaris(oatString(UI_SLEWING), oatString(SLEW_TO_POLARIS), &paSlewingProgress, &dlgPaStoreSync);
-Button calStartPaBtn("Polar Alignmnt", &paActivateSlewToPolaris);
+Button calStartPaBtn(oatString(UI_POLAR_ALIGNMENT), &paActivateSlewToPolaris);
 
 OptionChooser driftLenOption("1m", "2m", "3m", "5m", 0, &setDriftLength);
 Button driftAlignBtn(oatString(DRIFT_ALIGNMENT), &driftLenOption);
 MultiStepActionRunnerModal dlgDriftAlign(oatString(DRIFT_ALIGNMENT), oatString(DRIFT_ALIGNMENT), &driftAlignPhaseFunction, nullptr);
 
-NumberInput speedCalNum("SPD", 1, "SpdFctr: @", nullptr, &speedIncr, NumberInput::BehaviorFlags::AcceleratingRepetition);
-Button calSpeedCal("Speed Calibratn", &speedCalNum);
-NumberInput raStepNum("RA", 1, "RA Steps: @", nullptr, &speedIncr, NumberInput::BehaviorFlags::AcceleratingRepetition);
-Button calRaSteps("RA Step Adjust", &raStepNum);
-NumberInput decStepNum("DEC", 1, "DEC Steps: @", nullptr, &speedIncr, NumberInput::BehaviorFlags::AcceleratingRepetition);
-Button calDecSteps("DEC Step Adjust", &decStepNum);
-NumberInput backlashNum("BACK", 1, "Backlash: @", nullptr, &speedIncr, NumberInput::BehaviorFlags::AcceleratingRepetition);
-Button calBacklash("Backlash Adjust", &backlashNum);
+NumberInput speedCalNum("SPD", 1, oatString(UI_SPEED_FACTOR), nullptr, &speedIncr, NumberInput::BehaviorFlags::AcceleratingRepetition);
+Button calSpeedCal(oatString(UI_SPEED_CALIBRATION), &speedCalNum);
+NumberInput raStepNum("RA", 1, oatString(UI_RA_STEPS), nullptr, &speedIncr, NumberInput::BehaviorFlags::AcceleratingRepetition);
+Button calRaSteps(oatString(UI_RA_STEP_ADJUST), &raStepNum);
+NumberInput decStepNum("DEC", 1, oatString(UI_DEC_STEPS), nullptr, &speedIncr, NumberInput::BehaviorFlags::AcceleratingRepetition);
+Button calDecSteps(oatString(UI_DEC_STEP_ADJUST), &decStepNum);
+NumberInput backlashNum("BACK", 1, oatString(UI_BACKLASH), nullptr, &speedIncr, NumberInput::BehaviorFlags::AcceleratingRepetition);
+Button calBacklash(oatString(UI_BACKLASH_ADJUST), &backlashNum);
 PitchRollDisplay calRoll("ROLL");
-Button calRollOffset("Roll Offset", &calRoll);
+Button calRollOffset(oatString(UI_ROLL_OFFSET), &calRoll);
 PitchRollDisplay calPitch("PITCH");
-Button calPitchOffset("Pitch Offset", &calPitch);
+Button calPitchOffset(oatString(UI_PITCH_OFFSET), &calPitch);
 
 void createCALMenu(MainMenu &mainMenu)
 {
@@ -188,4 +206,5 @@ void createCALMenu(MainMenu &mainMenu)
 
     mainMenu.addModalDialog(&dlgPaSlewToPolaris);
     mainMenu.addModalDialog(&dlgPaStoreSync);
+    mainMenu.addModalDialog(&dlgDriftAlign);
 }

@@ -2,7 +2,7 @@
 #include "Configuration.hpp"
 #include "Utility.hpp"
 #include "WifiControl.hpp"
-#include "Strings.hpp"
+#include "StringTable.hpp"
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //

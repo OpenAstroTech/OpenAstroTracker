@@ -1,8 +1,9 @@
 #include "lib/util/debug.hpp"
 #include "lib/util/utils.hpp"
-
 #include "lib/input/LcdButtons.hpp"
 #include "lib/menu/controls/MainMenu.hpp"
+
+#include "StringTable.hpp"
 #include "OatPitchRollDisplay.hpp"
 #include "Gyro.hpp"
 #include "Mount.hpp"
@@ -53,12 +54,12 @@ void PitchRollDisplay::onDisplay(bool modal)
     auto angles = Gyro::getCurrentAngles();
     if (_tag.equalsIgnoreCase("ROLL"))
     {
-        sprintf(scratchBuffer, "R: -------------");
+        sprintf(scratchBuffer, oatString(UI_ROLL_DISPLAY).c_str());
         makeIndicator(scratchBuffer, angles.rollAngle - _rollCalibrationAngle);
     }
     else
     {
-        sprintf(scratchBuffer, "P: -------------");
+        sprintf(scratchBuffer, oatString(UI_PITCH_DISPLAY).c_str());
         makeIndicator(scratchBuffer, angles.pitchAngle - _pitchCalibrationAngle);
     }
 

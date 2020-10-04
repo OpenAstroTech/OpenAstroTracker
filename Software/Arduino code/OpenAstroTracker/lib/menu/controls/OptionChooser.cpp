@@ -41,6 +41,14 @@ void OptionChooser::onDisplay(bool modal)
     {
         line += ((i == _activeOption) ? '>' : ' ') + _choices[i] + ((i == _activeOption) ? '<' : ' ') + ' ';
     }
+    if (line.length() > 16)
+    {
+        line = "";
+        for (int i = 0; i < _numChoices; i++)
+        {
+            line += ((i == _activeOption) ? '>' : ' ') + _choices[i] + ((i == _activeOption) ? '<' : ' ');
+        }
+    }
 
     getMainMenu()->writeToLCD(0, 1, line);
 }

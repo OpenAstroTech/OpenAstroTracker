@@ -6,6 +6,7 @@
 #include "lib/menu/controls/NumberInput.hpp"
 #include "lib/input/LcdButtons.hpp"
 
+#include "StringTable.hpp"
 #include "ManualControlModal.hpp"
 #include "Mount.hpp"
 
@@ -24,7 +25,7 @@ void setHomePosition(EventArgs *args)
 
 void startManualControl(EventArgs *arg)
 {
-    arg->getSource()->getMainMenu()->activateDialog("RADECControl");
+    arg->getSource()->getMainMenu()->activateDialog(oatString(RA_DEC_CONTROL));
 }
 
 void manualControlEvent(ManualControlEventArgs *args)
@@ -70,10 +71,10 @@ void manualControlEvent(ManualControlEventArgs *args)
 }
 
 MenuItem ctrlMenu("CTRL", "CTRL");
-Button ctrlStart("Manual Control", &startManualControl);
-ManualControlModal dlgManualControl(&manualControlEvent, "RADECControl");
+Button ctrlStart(oatString(UI_MANUAL_CONTROL), &startManualControl);
+ManualControlModal dlgManualControl(&manualControlEvent, oatString(RA_DEC_CONTROL));
 OptionChooser yesNoChoice("Yes", "No", 0, &setHomePosition);
-MenuItem dlgSetHome("Set home pos?", "ConfirmHome");
+MenuItem dlgSetHome("Set home pos?", oatString(CONFIRM_HOME));
 
 void createCTRLMenu(MainMenu &mainMenu)
 {

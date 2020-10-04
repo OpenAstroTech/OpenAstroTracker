@@ -8,8 +8,7 @@ public:
     typedef enum
     {
         Starting,
-        Running,
-        Ending
+        Running
     } StepState;
     typedef enum
     {
