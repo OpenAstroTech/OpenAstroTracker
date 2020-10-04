@@ -7,7 +7,6 @@
 #include "LcdMenu.hpp"
 #include "Utility.hpp"
 #include "EPROMStore.hpp"
-//#include "Sidereal.hpp"
 
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(0);
@@ -136,7 +135,7 @@ void setup() {
   Serial.begin(57600);
   //BT.begin(9600);
 
-  LOGV2(DEBUG_ANY, "Hello, universe, this is OAT %s!", VERSION.c_str());
+  LOGV2(DEBUG_ANY, F("Hello, universe, this is OAT %s!"), version.c_str());
 
   EPROMStore::initialize();
 
@@ -176,27 +175,42 @@ void setup() {
 
 void finishSetup()
 {
-  LOGV1(DEBUG_ANY, "Finishing setup...");
+  LOGV1(DEBUG_ANY, F("Finishing setup..."));
   // Show a splash screen
   lcdMenu.setCursor(0, 0);
   lcdMenu.printMenu("OpenAstroTracker");
-  lcdMenu.setCursor(5, 1);
-  lcdMenu.printMenu(VERSION);
+  lcdMenu.setCursor(0, 1);
+  lcdMenu.printMenu("     " + version);
+
   #if HEADLESS_CLIENT == 0
+    // Check for EEPROM reset (Button down during boot)
+    if (lcdButtons.currentState() == btnDOWN){
+      LOGV1(DEBUG_INFO, F("Erasing configuration in EEPROM!"));
+      mount.clearConfiguration();
+      // Wait for button release
+      lcdMenu.setCursor(13, 1);
+      lcdMenu.printMenu("CLR");
+      while (lcdButtons.currentState() != btnNONE) {
+        delay(10);
+      }
+    }
+
     unsigned long now = millis();
   #endif
   // Create the command processor singleton
-  LOGV1(DEBUG_ANY, "Initialize LX200 handler...");
+  LOGV1(DEBUG_ANY, F("Initialize LX200 handler..."));
   MeadeCommandProcessor::createProcessor(&mount, &lcdMenu);
 
   #ifdef WIFI_ENABLED
-    LOGV1(DEBUG_ANY, "Setup Wifi...");
+    LOGV1(DEBUG_ANY, F("Setup Wifi..."));
     wifiControl.setup();
   #endif
 
   // Configure the mount
-  
-  LOGV1(DEBUG_ANY, "Configure RA stepper...");
+  // Delay for a while to get UARTs booted...
+  delay(1000);  
+
+  LOGV1(DEBUG_ANY, F("Configure RA stepper..."));
   // Set the stepper motor parameters
   #if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48 
     mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RA_STEPPER_SPEED, RA_STEPPER_ACCELERATION);
@@ -206,40 +220,39 @@ void finishSetup()
     #error New stepper type? Configure it here.
   #endif
 
-  LOGV1(DEBUG_ANY, "Configure DEC stepper...");
+  LOGV1(DEBUG_ANY, F("Configure DEC stepper..."));
   #if DEC_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
     LOGV1(DEBUG_ANY, "Configure DEC stepper 28BYJ-48...");
     mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, RA_STEPPER_SPEED, DEC_STEPPER_ACCELERATION);
   #elif DEC_STEPPER_TYPE == STEPPER_TYPE_NEMA17
-    LOGV1(DEBUG_ANY, "Configure DEC stepper NEMA...");
+    LOGV1(DEBUG_ANY, F("Configure DEC stepper NEMA..."));
     mount.configureDECStepper(DRIVER, DECmotorPin1, DECmotorPin2, RA_STEPPER_SPEED, DEC_STEPPER_ACCELERATION);
   #else
     #error New stepper type? Configure it here.
   #endif
 
-  #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-    LOGV1(DEBUG_ANY, "Configure DEC driver TMC2009 UART...");
-    mount.configureRAdriver(&RA_SERIAL_PORT, R_SENSE, RA_DRIVER_ADDRESS, RA_RMSCURRENT, RA_STALL_VALUE);
-  #endif
+    LOGV1(DEBUG_ANY, F("Configure RA driver..."));
+    LOGV1(DEBUG_ANY, F("Configure DEC driver TMC2009 UART..."));
   #if DEC_STEPPER_TYPE == DRIVER_TYPE_TMC2209_UART
-    LOGV1(DEBUG_ANY, "Configure DEC driver...");
+  #endif
+  #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+    mount.configureRAdriver(&RA_SERIAL_PORT, R_SENSE, RA_DRIVER_ADDRESS, RA_RMSCURRENT, RA_STALL_VALUE);
     mount.configureDECdriver(&DEC_SERIAL_PORT, R_SENSE, DEC_DRIVER_ADDRESS, DEC_RMSCURRENT, DEC_STALL_VALUE);
   #endif
 
   #if AZIMUTH_ALTITUDE_MOTORS == 1
-    LOGV1(DEBUG_ANY, "Configure AZ stepper...");
-    mount.configureAzStepper(HALFSTEP, AZmotorPin1, AZmotorPin2, AZmotorPin3, AZmotorPin4, AZIMUTH_MAX_SPEED, AZIMUTH_MAX_ACCEL);
-    LOGV1(DEBUG_ANY, "Configure Alt stepper...");
-    mount.configureAltStepper(FULLSTEP, ALTmotorPin1, ALTmotorPin2, ALTmotorPin3, ALTmotorPin4, ALTITUDE_MAX_SPEED, ALTITUDE_MAX_ACCEL);
+    LOGV1(DEBUG_ANY, F("Configure AZ stepper..."));
+    mount.configureAzStepper(HALFSTEP_MODE, AZmotorPin1, AZmotorPin2, AZmotorPin3, AZmotorPin4, AZIMUTH_MAX_SPEED, AZIMUTH_MAX_ACCEL);
+    LOGV1(DEBUG_ANY, F("Configure Alt stepper..."));
+    mount.configureAltStepper(FULLSTEP_MODE, ALTmotorPin1, ALTmotorPin2, ALTmotorPin3, ALTmotorPin4, ALTITUDE_MAX_SPEED, ALTITUDE_MAX_ACCEL);
   #endif
 
   // The mount uses EEPROM storage locations 0-10 that it reads during construction
   // The LCD uses EEPROM storage location 11
-  LOGV1(DEBUG_ANY, "Read configuration...");
   mount.readConfiguration();
   
   // Read other persisted values and set in mount
-  DayTime haTime = DayTime(EPROMStore::Storage()->read(1), EPROMStore::Storage()->read(2), 0);
+  DayTime haTime = DayTime(EPROMStore::read(1), EPROMStore::read(2), 0);
 
   LOGV2(DEBUG_INFO, "SpeedCal: %s", String(mount.getSpeedCalibration(), 5).c_str());
   LOGV2(DEBUG_INFO, "TRKSpeed: %s", String(mount.getSpeed(TRACKING), 5).c_str());
@@ -253,11 +266,11 @@ void finishSetup()
   mount.startTimerInterrupts();
 
   // Start the tracker.
-  LOGV1(DEBUG_ANY, "Start Tracking...");
+  LOGV1(DEBUG_ANY, F("Start Tracking..."));
   mount.startSlewing(TRACKING);
 
   #if HEADLESS_CLIENT == 0
-    LOGV1(DEBUG_ANY, "Setup menu system...");
+    LOGV1(DEBUG_ANY, F("Setup menu system..."));
 
     // Create the LCD top-level menu items
     lcdMenu.addItem("RA", RA_Menu);
@@ -291,10 +304,10 @@ void finishSetup()
       mount.loop();
     }
 
-    LOGV1(DEBUG_ANY, "Update display...");
+    LOGV1(DEBUG_ANY, F("Update display..."));
     lcdMenu.updateDisplay();
-  #endif // HEADLESS_CLIENT
+  #endif // not HEADLESS_CLIENT
 
   mount.bootComplete();
-  LOGV1(DEBUG_ANY, "Setup done!");
+  LOGV1(DEBUG_ANY, F("Setup done!"));
 }

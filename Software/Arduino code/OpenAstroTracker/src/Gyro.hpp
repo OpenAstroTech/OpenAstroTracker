@@ -2,7 +2,7 @@
 
 #include "../Configuration_adv.hpp"
 
-#if USE_GYRO == 1
+#if USE_GYRO_LEVEL == 1
 struct angle_t { float pitchAngle; float rollAngle; };
 
 class Gyro 

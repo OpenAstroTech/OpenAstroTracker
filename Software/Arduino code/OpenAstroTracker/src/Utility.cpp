@@ -1,4 +1,6 @@
 #include <Arduino.h>
+//#include "Configuration.hpp"
+
 #if DEBUG_LEVEL > 0
 #include <stdarg.h>
 #endif
@@ -150,6 +152,11 @@ float clamp(float current, float minVal, float maxVal)
   return current;
 }
 
+#if defined(ESP8266) || defined(ESP32) // <-- ignore this line
+int freeMemory() {
+  return ESP.getFreeHeap();
+}
+#else
 #ifdef __arm__
 // should use uinstd.h to define sbrk but Due causes a conflict
 extern "C" char* sbrk(int incr);
@@ -167,6 +174,7 @@ int freeMemory() {
   return __brkval ? &top - __brkval : &top - __malloc_heap_start;
 #endif  // __arm__
 }
+#endif
 
 #if DEBUG_LEVEL > 0
 
@@ -272,16 +280,18 @@ String format(const char *input, ...)
   return ret;
 }
 
-void logv(int levelFlags, const char *input, ...)
+void logv(int levelFlags, String input, ...)
 {
   if ((levelFlags & DEBUG_LEVEL) != 0)
   {
     va_list argp;
     va_start(argp, input);
     #if BUFFER_LOGS
-      addToLogBuffer(formatArg(input, argp));
+      addToLogBuffer(formatArg(input.c_str(), argp));
     #else
-      Serial.println(formatArg(input, argp));
+      Serial.print(String(freeMemory()));
+      Serial.print(":");    
+      Serial.println(formatArg(input.c_str(), argp));
       Serial.flush();
     #endif
     va_end(argp);

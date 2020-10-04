@@ -29,9 +29,9 @@
 #define TARGET_STRING      B01000
 #define CURRENT_STRING     B10000
 
-#define HALFSTEP 8
-#define FULLSTEP 4
-#define DRIVER 1
+#define HALFSTEP_MODE 8
+#define FULLSTEP_MODE 4
+#define DRIVER_MODE 1
 
 #define RA_STEPS  1
 #define DEC_STEPS 2
@@ -58,6 +58,8 @@
 class Mount {
 public:
   Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu);
+
+  static Mount instance();
 
   // Configure the RA stepper motor. This also sets up the TRK stepper on the same pins.
 #if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
@@ -95,7 +97,7 @@ public:
   // Set the current RA tracking speed factor
   void setSpeedCalibration(float val, bool saveToStorage);
 
-#if USE_GYRO == 1
+#if USE_GYRO_LEVEL == 1
   // Get the current pitch angle calibraton
   float getPitchCalibrationAngle();
 
@@ -256,6 +258,9 @@ public:
 
   // Read the saved configuration from persistent storage
   void readConfiguration();
+
+  // Clear all saved configuration data from persistent storage
+  void clearConfiguration();
   
   // Get Mount configuration data
   String getMountHardwareInfo();
@@ -296,7 +301,7 @@ private:
   int _maxDECAcceleration;
   int _backlashCorrectionSteps;
   int _moveRate;
-#if USE_GYRO == 1
+#if USE_GYRO_LEVEL == 1
   float _pitchCalibrationAngle;
   float _rollCalibrationAngle;
 #endif
@@ -344,6 +349,8 @@ private:
   bool _correctForBacklash;
   bool _slewingToHome;
   bool _bootComplete;
+  
+  static Mount* _instance;
 };
 
 #endif

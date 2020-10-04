@@ -5,8 +5,8 @@
 * more advanced adjustments! 
 */
 
-// Set to 1 for the northern hemisphere, 0 otherwise
 #define NORTHERN_HEMISPHERE 1
+// Set to 1 for the northern hemisphere, 0 otherwise
 
 // Used RA wheel version
 #define RA_WHEEL_VERSION 4

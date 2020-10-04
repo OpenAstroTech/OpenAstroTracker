@@ -1,13 +1,12 @@
 #pragma once
-#include "../Configuration_adv.hpp"
-#include "inc/Globals.hpp"
+#include "Configuration.hpp"
 #include "b_setup.hpp"
 
 #if HEADLESS_CLIENT == 0
 
 #if SUPPORT_CALIBRATION == 1
 
-#if USE_GYRO == 1
+#if USE_GYRO_LEVEL == 1
 #include "Gyro.hpp"
 #endif
 // HIGHLIGHT states allow you to pick one of the three sub functions.
@@ -22,7 +21,7 @@
 #if AZIMUTH_ALTITUDE_MOTORS == 1
 #define HIGHLIGHT_AZIMUTH_ADJUSTMENT 7
 #define HIGHLIGHT_ALTITUDE_ADJUSTMENT 8
-#if USE_GYRO == 1
+#if USE_GYRO_LEVEL == 1
 #define HIGHLIGHT_ROLL_LEVEL 9
 #define HIGHLIGHT_PITCH_LEVEL 10
 #define HIGHLIGHT_LAST 10
@@ -30,7 +29,7 @@
 #define HIGHLIGHT_LAST 8
 #endif
 #else
-#if USE_GYRO == 1
+#if USE_GYRO_LEVEL == 1
 #define HIGHLIGHT_ROLL_LEVEL 7
 #define HIGHLIGHT_PITCH_LEVEL 8
 #define HIGHLIGHT_LAST 8
@@ -75,9 +74,12 @@
 
 // Roll Offset Calibration only has one state, allowing you to set the current roll angle as level
 #define ROLL_OFFSET_CALIBRATION 22
+#define ROLL_OFFSET_CONFIRM 23
+
 
 // Pitch Offset Calibration only has one state, allowing you to set the current pitch angle as level
-#define PITCH_OFFSET_CALIBRATION 23
+#define PITCH_OFFSET_CALIBRATION 24
+#define PITCH_OFFSET_CONFIRM 25
 
 // Start off with Polar Alignment higlighted.
 byte calState = HIGHLIGHT_FIRST;
@@ -102,7 +104,9 @@ int AzimuthMinutes = 0;
 int AltitudeMinutes = 0;
 
 // Pitch and roll offset
-#if USE_GYRO == 1
+#if USE_GYRO_LEVEL == 1
+int setRollZeroPoint = false;
+int setPitchZeroPoint = false;
 float PitchCalibrationAngle = 0.0;
 float RollCalibrationAngle = 0.0;
 bool gyroStarted = false;
@@ -116,7 +120,7 @@ void gotoNextMenu()
 {
   lcdMenu.setNextActive();
 
-#if USE_GYRO == 1
+#if USE_GYRO_LEVEL == 1
   Gyro::shutdown();
   gyroStarted = false;
 #endif
@@ -171,7 +175,7 @@ void gotoNextHighlightState(int dir)
   {
     SpeedCalibration = (mount.getSpeedCalibration() - 1.0) * 10000.0 + 0.5;
   }
-#if USE_GYRO == 1
+#if USE_GYRO_LEVEL == 1
   else if (calState == HIGHLIGHT_PITCH_LEVEL)
   {
     PitchCalibrationAngle = mount.getPitchCalibrationAngle();
@@ -192,7 +196,7 @@ bool processCalibrationKeys()
   bool waitForRelease = false;
   bool checkForKeyChange = true;
 
-#if USE_GYRO == 1
+#if USE_GYRO_LEVEL == 1
   if (!gyroStarted)
   {
     Gyro::startup();
@@ -259,11 +263,11 @@ bool processCalibrationKeys()
   // else if (calState == BACKLIGHT_CALIBRATION) {
   //   checkForKeyChange = checkProgressiveUpDown(&Brightness);
   //   if (!checkForKeyChange) {
-  //     LOGV2(DEBUG_INFO,"CAL: Brightness changed to %d", Brightness);
+  //     LOGV2(DEBUG_INFO,F("CAL: Brightness changed to %d"), Brightness);
   //     Brightness = clamp(Brightness, 0, 255);
-  //     LOGV2(DEBUG_INFO,"CAL: Brightness clamped to %d", Brightness);
+  //     LOGV2(DEBUG_INFO,F("CAL: Brightness clamped to %d"), Brightness);
   //     lcdMenu.setBacklightBrightness(Brightness, false);
-  //     LOGV2(DEBUG_INFO,"CAL: Brightness set %d", (int)lcdMenu.getBacklightBrightness());
+  //     LOGV2(DEBUG_INFO,F("CAL: Brightness set %d"), (int)lcdMenu.getBacklightBrightness());
   //   }
   // }
   else if (calState == POLAR_CALIBRATION_WAIT_HOME)
@@ -470,15 +474,14 @@ bool processCalibrationKeys()
     break;
 #endif
 
-#if USE_GYRO == 1
+#if USE_GYRO_LEVEL == 1
     case ROLL_OFFSET_CALIBRATION:
     {
       if (key == btnSELECT)
       {
-        auto angles = Gyro::getCurrentAngles();
-        mount.setRollCalibrationAngle(angles.rollAngle);
-        RollCalibrationAngle = angles.rollAngle;
-        calState = HIGHLIGHT_ROLL_LEVEL;
+        calState = ROLL_OFFSET_CONFIRM;
+        lcdMenu.setCursor(0, 0);
+        lcdMenu.printMenu("Set level?");
       }
       else if (key == btnLEFT)
       {
@@ -492,14 +495,33 @@ bool processCalibrationKeys()
     }
     break;
 
+    case ROLL_OFFSET_CONFIRM:
+    {
+      if (key == btnSELECT)
+      {
+        if (setRollZeroPoint)
+        {
+          auto angles = Gyro::getCurrentAngles();
+          mount.setRollCalibrationAngle(angles.rollAngle);
+          RollCalibrationAngle = angles.rollAngle;
+        }
+        calState = HIGHLIGHT_ROLL_LEVEL;
+        lcdMenu.updateDisplay();
+      }     
+      else if (key == btnLEFT) 
+      {
+        setRollZeroPoint = !setRollZeroPoint;
+      }
+    }
+    break;
+
     case PITCH_OFFSET_CALIBRATION:
     {
       if (key == btnSELECT)
       {
-        auto angles = Gyro::getCurrentAngles();
-        mount.setPitchCalibrationAngle(angles.pitchAngle);
-        PitchCalibrationAngle = angles.pitchAngle;
-        calState = HIGHLIGHT_PITCH_LEVEL;
+        calState = PITCH_OFFSET_CONFIRM;
+        lcdMenu.setCursor(0, 0);
+        lcdMenu.printMenu("Set level?");
       }
       else if (key == btnLEFT)
       {
@@ -512,12 +534,33 @@ bool processCalibrationKeys()
       }
     }
     break;
+
+    case PITCH_OFFSET_CONFIRM:
+    {
+      if (key == btnSELECT)
+      {
+        if (setPitchZeroPoint)
+        {
+          auto angles = Gyro::getCurrentAngles();
+          mount.setPitchCalibrationAngle(angles.pitchAngle);
+          PitchCalibrationAngle = angles.pitchAngle;
+        }
+        calState = HIGHLIGHT_PITCH_LEVEL;
+        lcdMenu.updateDisplay();
+      }     
+      else if (key == btnLEFT) 
+      {
+        setPitchZeroPoint = !setPitchZeroPoint;
+      }
+    }
+    break;
+
 #endif
       // case BACKLIGHT_CALIBRATION:
       // {
       //   // UP and DOWN are handled above
       //   if (key == btnSELECT) {
-      //     LOGV2(DEBUG_GENERAL, "CAL Menu: Set brightness to %d", Brightness);
+      //     LOGV2(DEBUG_GENERAL, F("CAL Menu: Set brightness to %d"), Brightness);
       //     lcdMenu.setBacklightBrightness(Brightness);
       //     lcdMenu.printMenu("Level stored.");
       //     mount.delay(500);
@@ -716,7 +759,7 @@ bool processCalibrationKeys()
     break;
 #endif
 
-#if USE_GYRO == 1
+#if USE_GYRO_LEVEL == 1
     case HIGHLIGHT_ROLL_LEVEL:
     {
       if (key == btnDOWN)
@@ -821,7 +864,7 @@ void printCalibrationSubmenu()
   }
 #endif
 
-#if USE_GYRO == 1
+#if USE_GYRO_LEVEL == 1
   else if (calState == HIGHLIGHT_ROLL_LEVEL)
   {
     lcdMenu.printMenu(">Roll Offset");
@@ -839,7 +882,7 @@ void printCalibrationSubmenu()
     if (!mount.isSlewingRAorDEC())
     {
       lcdMenu.setCursor(0, 0);
-      lcdMenu.printMenu("Centr on Polaris");
+      lcdMenu.printMenu("Center Polaris");
       lcdMenu.setCursor(0, 1);
       lcdMenu.printMenu(">Centered");
     }
@@ -883,7 +926,7 @@ void printCalibrationSubmenu()
     lcdMenu.printMenu(scratchBuffer);
   }
 #endif
-#if USE_GYRO == 1
+#if USE_GYRO_LEVEL == 1
   else if (calState == ROLL_OFFSET_CALIBRATION)
   {
     auto angles = Gyro::getCurrentAngles();
@@ -891,12 +934,26 @@ void printCalibrationSubmenu()
     makeIndicator(scratchBuffer, angles.rollAngle - RollCalibrationAngle);
     lcdMenu.printMenu(scratchBuffer);
   }
+  else if (calState == ROLL_OFFSET_CONFIRM)
+  {
+    String disp = " Yes  No  ";
+    disp.setCharAt(setRollZeroPoint ? 0 : 5, '>');
+    disp.setCharAt(setRollZeroPoint ? 4 : 8, '<');
+    lcdMenu.printMenu(disp);
+  }
   else if (calState == PITCH_OFFSET_CALIBRATION)
   {
     auto angles = Gyro::getCurrentAngles();
     sprintf(scratchBuffer, "P: -------------");
     makeIndicator(scratchBuffer, angles.pitchAngle - PitchCalibrationAngle);
     lcdMenu.printMenu(scratchBuffer);
+  }
+  else if (calState == PITCH_OFFSET_CONFIRM)
+  {
+    String disp = " Yes  No  ";
+    disp.setCharAt(setPitchZeroPoint ? 0 : 5, '>');
+    disp.setCharAt(setPitchZeroPoint  ? 4 : 8, '<');
+    lcdMenu.printMenu(disp);
   }
 #endif
   // else if (calState == BACKLIGHT_CALIBRATION) {

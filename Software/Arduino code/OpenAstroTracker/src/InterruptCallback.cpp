@@ -87,20 +87,20 @@ bool InterruptCallback::setInterval(float intervalMs, interrupt_callback_p callb
     timerAlarmWrite(_timer, (uint64_t)(intervalMs * 1000.0f), true);
     timerAlarmEnable(_timer);
 
-    LOGV1(DEBUG_INFO, "Setup ESP32 Timer");
+    LOGV1(DEBUG_INFO, F("Setup ESP32 Timer"));
 
   return true;
 }
 
 void InterruptCallback::stop(){
-    LOGV1(DEBUG_INFO, "Stop ESP32 Timer");
+    LOGV1(DEBUG_INFO, F("Stop ESP32 Timer"));
     if (timerAlarmEnabled(_timer)) {
         timerAlarmDisable(_timer);
     }
 }
 
 void InterruptCallback::start(){
-    LOGV1(DEBUG_INFO, "Start ESP32 Timer");
+    LOGV1(DEBUG_INFO, F("Start ESP32 Timer"));
     if (!timerAlarmEnabled(_timer)){
         timerAlarmEnable(_timer);
     }

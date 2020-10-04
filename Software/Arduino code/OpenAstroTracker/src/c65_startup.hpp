@@ -25,7 +25,7 @@ int startupState = StartupIsInHomePosition;
 int isInHomePosition = NO;
 
 void startupIsCompleted() {
-  LOGV1(DEBUG_INFO, "STARTUP: Completed!");
+  LOGV1(DEBUG_INFO, F("STARTUP: Completed!"));
 
   startupState = StartupCompleted;
   inStartup = false;
@@ -90,7 +90,7 @@ bool processStartupKeys() {
 
     case StartupSetHATime: {
       inStartup = false;
-      LOGV1(DEBUG_INFO, "STARTUP: Switching to HA menu!");
+      LOGV1(DEBUG_INFO, F("STARTUP: Switching to HA menu!"));
 
       #if USE_GPS == 0
         // Jump to the HA menu

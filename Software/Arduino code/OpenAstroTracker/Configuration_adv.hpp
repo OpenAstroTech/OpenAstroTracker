@@ -153,6 +153,16 @@
 #define ALTITUDE_STEPS_PER_ARC_MINUTE (60.0f/ALTITUDE_ARC_SECONDS_PER_STEP)
 
 
+// Set this to 1 if you are using a NEO6m GPS module for HA/LST and location automatic determination.
+// GPS uses Serial1 by default, which is pins 18/19 on Mega. Change in configuration_adv.hpp
+#define USE_GPS 0
+// If supported, download the library https://github.com/mikalhart/TinyGPSPlus/releases and extract it to C:\Users\*you*\Documents\Arduino\libraries
+
+
+// Set this to 1 if you are using a MPU6050 electronic level
+// Wire the board to 20/21 on Mega. 
+#define USE_GYRO_LEVEL 0
+
 // Set this to 1 if your gyro is mounted such that roll and pitch are in the wrong direction
 #define GYRO_AXIS_SWAP 1
 

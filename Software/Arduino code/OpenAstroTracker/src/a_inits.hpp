@@ -21,9 +21,9 @@
   TinyGPSPlus gps;
 #endif
 
-#define HALFSTEP 8
-#define FULLSTEP 4
-#define DRIVER 1
+#define HALFSTEP_MODE 8
+#define FULLSTEP_MODE 4
+#define DRIVER_MODE 1
 
 ////////////////////////////////////
 // Stepper definitions /////////////

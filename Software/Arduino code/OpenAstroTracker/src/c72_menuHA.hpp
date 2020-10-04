@@ -35,8 +35,8 @@ bool processHAKeys() {
       break;
 
       case btnSELECT: {
-        EPROMStore::Storage()->update(1, mount.HA().getHours());
-        EPROMStore::Storage()->update(2, mount.HA().getMinutes());
+        EPROMStore::update(1, mount.HA().getHours());
+        EPROMStore::update(2, mount.HA().getMinutes());
         lcdMenu.printMenu("Stored.");
         mount.delay(500);
 
