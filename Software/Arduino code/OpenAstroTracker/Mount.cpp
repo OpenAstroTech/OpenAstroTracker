@@ -1689,14 +1689,12 @@ void Mount::delay(int ms) {
 void Mount::interruptLoop()
 {
   if (_mountStatus & STATUS_GUIDE_PULSE) {
-    if (_mountStatus & STATUS_GUIDE_PULSE_RA) {
-      _stepperTRK->runSpeed();    
-    }
-    if (_mountStatus & STATUS_GUIDE_PULSE_DEC) {
+    _stepperTRK->runSpeed();    
+      if (_mountStatus & STATUS_GUIDE_PULSE_DEC) {
       _stepperDEC->runSpeed();
+      }
+      return;
     }
-    return;
-  }
 
   if (_mountStatus & STATUS_TRACKING ) {
     //if ~(_mountStatus & STATUS_SLEWING) {
