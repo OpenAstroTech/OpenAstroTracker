@@ -513,7 +513,7 @@ void Mount::configureRAdriver(HardwareSerial *serial, float rsense, byte drivera
 // configureDECdriver
 // TMC2209 UART only
 /////////////////////////////////
-#if DEC_STEPPER_TYPE == DRIVER_TYPE_TMC2209_UART
+#if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
 void Mount::configureDECdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue)
 {
   _driverDEC = new TMC2209Stepper(serial, rsense, driveraddress);
@@ -1690,14 +1690,12 @@ void Mount::delay(int ms) {
 void Mount::interruptLoop()
 {
   if (_mountStatus & STATUS_GUIDE_PULSE) {
-    if (_mountStatus & STATUS_GUIDE_PULSE_RA) {
-      _stepperTRK->runSpeed();    
-    }
-    if (_mountStatus & STATUS_GUIDE_PULSE_DEC) {
+    _stepperTRK->runSpeed();    
+      if (_mountStatus & STATUS_GUIDE_PULSE_DEC) {
       _stepperDEC->runSpeed();
+      }
+      return;
     }
-    return;
-  }
 
   if (_mountStatus & STATUS_TRACKING ) {
     //if ~(_mountStatus & STATUS_SLEWING) {

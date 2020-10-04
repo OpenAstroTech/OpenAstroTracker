@@ -39,5 +39,5 @@
 // This value is from 13.Aug.2020, next adjustment suggested at end 2020
 // The same could be done for the DEC coordinates but they dont change significantly for the next 5 years
 #define POLARIS_RA_HOUR     2
-#define POLARIS_RA_MINUTE   57
-#define POLARIS_RA_SECOND   27
+#define POLARIS_RA_MINUTE   58
+#define POLARIS_RA_SECOND   34

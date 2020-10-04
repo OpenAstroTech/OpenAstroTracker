@@ -87,7 +87,7 @@ public:
   void configureRAdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
 #endif
   // Configure the DEC Driver (TMC2209 UART only)
-#if DEC_STEPPER_TYPE == DRIVER_TYPE_TMC2209_UART
+#if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
   void configureDECdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
 #endif
 

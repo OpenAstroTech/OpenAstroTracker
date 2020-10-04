@@ -216,7 +216,7 @@ void finishSetup()
   #if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48 
     mount.configureRAStepper(FULLSTEP_MODE, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RA_STEPPER_SPEED, RA_STEPPER_ACCELERATION);
   #elif RA_STEPPER_TYPE == STEPPER_TYPE_NEMA17
-    mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RA_STEPPER_SPEED, RA_STEPPER_ACCELERATION);
+    mount.configureRAStepper(DRIVER_MODE, RAmotorPin1, RAmotorPin2, RA_STEPPER_SPEED, RA_STEPPER_ACCELERATION);
   #else
     #error New stepper type? Configure it here.
   #endif
@@ -227,17 +227,17 @@ void finishSetup()
     mount.configureDECStepper(HALFSTEP_MODE, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, RA_STEPPER_SPEED, DEC_STEPPER_ACCELERATION);
   #elif DEC_STEPPER_TYPE == STEPPER_TYPE_NEMA17
     LOGV1(DEBUG_ANY, F("Configure DEC stepper NEMA..."));
-    mount.configureDECStepper(DRIVER, DECmotorPin1, DECmotorPin2, RA_STEPPER_SPEED, DEC_STEPPER_ACCELERATION);
+    mount.configureDECStepper(DRIVER_MODE, DECmotorPin1, DECmotorPin2, RA_STEPPER_SPEED, DEC_STEPPER_ACCELERATION);
   #else
     #error New stepper type? Configure it here.
   #endif
 
-    LOGV1(DEBUG_ANY, F("Configure RA driver..."));
-    LOGV1(DEBUG_ANY, F("Configure DEC driver TMC2009 UART..."));
-  #if DEC_STEPPER_TYPE == DRIVER_TYPE_TMC2209_UART
-  #endif
   #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+    LOGV1(DEBUG_ANY, F("Configure RA driver..."));
     mount.configureRAdriver(&RA_SERIAL_PORT, R_SENSE, RA_DRIVER_ADDRESS, RA_RMSCURRENT, RA_STALL_VALUE);
+  #endif
+  #if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+    LOGV1(DEBUG_ANY, F("Configure DEC driver TMC2009 UART..."));
     mount.configureDECdriver(&DEC_SERIAL_PORT, R_SENSE, DEC_DRIVER_ADDRESS, DEC_RMSCURRENT, DEC_STALL_VALUE);
   #endif
 
