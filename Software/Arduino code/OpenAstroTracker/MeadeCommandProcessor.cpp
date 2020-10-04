@@ -509,7 +509,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
         deg = -90 - deg;
       }
       _mount->targetDEC().set(deg, inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
-      LOGV2(DEBUG_MEADE, "MEADE: SetInfo: Received Target DEC: %s", _mount->targetDEC().ToString());
+      LOGV2(DEBUG_MEADE, F("MEADE: SetInfo: Received Target DEC: %s"), _mount->targetDEC().ToString());
       return "1";
     }
     else {
@@ -525,7 +525,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     if ((inCmd[3] == ':') && (inCmd[6] == ':'))
     {
       _mount->targetRA().set(inCmd.substring(1, 3).toInt(), inCmd.substring(4, 6).toInt(), inCmd.substring(7, 9).toInt());
-      LOGV2(DEBUG_MEADE, "MEADE: SetInfo: Received Target RA: %s", _mount->targetRA().ToString());
+      LOGV2(DEBUG_MEADE, F("MEADE: SetInfo: Received Target RA: %s"), _mount->targetRA().ToString());
       return "1";
     }
     else {
@@ -544,7 +544,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
       }
 
       DayTime lst(hLST, minLST, secLST);
-      LOGV4(DEBUG_MEADE, "MEADE: SetInfo: Received LST: %d:%d:%d", hLST, minLST, secLST);
+      LOGV4(DEBUG_MEADE, F("MEADE: SetInfo: Received LST: %d:%d:%d"), hLST, minLST, secLST);
       _mount->setLST(lst);
     }
     else if (inCmd[1] == 'P') {
@@ -556,7 +556,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
       // Set HA
       int hHA = inCmd.substring(1, 3).toInt();
       int minHA = inCmd.substring(4, 6).toInt();
-      LOGV4(DEBUG_MEADE, "MEADE: SetInfo: Received HA: %d:%d:%d", hHA, minHA, 0);
+      LOGV4(DEBUG_MEADE, F("MEADE: SetInfo: Received HA: %d:%d:%d"), hHA, minHA, 0);
       _mount->setHA(DayTime(hHA, minHA, 0));
     }
 
@@ -865,7 +865,7 @@ String MeadeCommandProcessor::handleMeadeSetSlewRate(String inCmd) {
 String MeadeCommandProcessor::processCommand(String inCmd) {
   if (inCmd[0] == ':') {
 
-    LOGV2(DEBUG_MEADE, "MEADE: Received command '%s'", inCmd.c_str());
+    LOGV2(DEBUG_MEADE, F("MEADE: Received command '%s'"), inCmd.c_str());
 
     // Apparently some LX200 implementations put spaces in their commands..... remove them with impunity.
     int spacePos;
@@ -873,7 +873,7 @@ String MeadeCommandProcessor::processCommand(String inCmd) {
       inCmd.remove(spacePos, 1);
     }
 
-    LOGV2(DEBUG_MEADE, "MEADE: Processing command '%s'", inCmd.c_str());
+    LOGV2(DEBUG_MEADE, F("MEADE: Processing command '%s'"), inCmd.c_str());
     char command = inCmd[1];
     inCmd = inCmd.substring(2);
     switch (command) {
@@ -888,7 +888,7 @@ String MeadeCommandProcessor::processCommand(String inCmd) {
       case 'D': return handleMeadeDistance(inCmd);
       case 'X': return handleMeadeExtraCommands(inCmd);
       default:
-        LOGV2(DEBUG_MEADE, "MEADE: Received unknown command '%s'", inCmd.c_str());
+        LOGV2(DEBUG_MEADE, F("MEADE: Received unknown command '%s'"), inCmd.c_str());
       break;
     }
   }

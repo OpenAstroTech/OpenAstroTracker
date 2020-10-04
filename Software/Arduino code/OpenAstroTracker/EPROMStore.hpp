@@ -6,17 +6,15 @@
 //  1) It wants to know how many bytes you want to use (at most)
 //  2) It wants you to call a commit() function after a write() to actual persist the data.
 class EPROMStore {
-  static EPROMStore *_eepromStore;
+
 public:
-  EPROMStore();
+
   static void initialize();
 
-  void update(int location, uint8_t value);
-  uint8_t read(int location);
+  static void update(int location, uint8_t value);
+  static uint8_t read(int location);
 
-  void updateInt16(int loByteAddr, int hiByteAddr, int16_t value);
-  int16_t readInt16(int loByteAddr, int hiByteAddr);
-
-  static EPROMStore* Storage();
+  static void updateInt16(int loByteAddr, int hiByteAddr, int16_t value);
+  static int16_t readInt16(int loByteAddr, int hiByteAddr);
 };
 

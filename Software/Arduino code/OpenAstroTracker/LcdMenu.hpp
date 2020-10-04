@@ -95,6 +95,9 @@ private:
   byte _rightArrow = 4;
   byte _upArrow = 5;
   byte _downArrow = 6;
+  byte _tracking = 7;
+  byte _noTracking = 0;
+
 
   // The special character bitmaps
   static byte RightArrowBitmap[8];
@@ -103,6 +106,9 @@ private:
   static byte DownArrowBitmap[8];
   static byte DegreesBitmap[8];
   static byte MinutesBitmap[8];
+  static byte TrackingBitmap[8];
+  static byte NoTrackingBitmap[8];
+
 #endif
 };
 

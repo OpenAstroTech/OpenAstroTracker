@@ -19,8 +19,8 @@ LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(8, 9, 4, 5, 6, 7) {
   _lastDisplay[1] = "";
   _menuItems = new MenuItem * [maxItems];  
 
-  _brightness = EPROMStore::Storage()->read(16);
-  LOGV2(DEBUG_INFO, "LCD: Brightness from EEPROM is %d", _brightness);
+  _brightness = EPROMStore::read(16);
+  LOGV2(DEBUG_INFO, F("LCD: Brightness from EEPROM is %d"), _brightness);
   // pinMode(10, OUTPUT);
   // analogWrite(10, _brightness);
 
@@ -31,6 +31,8 @@ LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(8, 9, 4, 5, 6, 7) {
   _lcd.createChar(_rightArrow, RightArrowBitmap);
   _lcd.createChar(_upArrow, UpArrowBitmap);
   _lcd.createChar(_downArrow, DownArrowBitmap);
+  _lcd.createChar(_tracking, TrackingBitmap);
+  _lcd.createChar(_noTracking, NoTrackingBitmap);
 }
 
 // Find a menu item by its ID
@@ -80,14 +82,13 @@ void LcdMenu::clear() {
 void LcdMenu::setBacklightBrightness(int level, bool persist) {
   _brightness = level;
 
-  LOGV2(DEBUG_INFO, "LCD: Writing %d as brightness", _brightness  );
-
+  //LOGV2(DEBUG_INFO, F("LCD: Writing %d as brightness"), _brightness  );
   // analogWrite(10, _brightness);
+  //LOGV2(DEBUG_INFO, F("LCD: Wrote %d as brightness"), _brightness  );
 
-  LOGV2(DEBUG_INFO, "LCD: Wrote %d as brightness", _brightness  );
   if (persist) {
-    LOGV2(DEBUG_INFO, "LCD: Saving %d as brightness", (_brightness & 0x00FF));
-    EPROMStore::Storage()->update(16, (byte)(_brightness & 0x00FF));
+    // LOGV2(DEBUG_INFO, F("LCD: Saving %d as brightness"), (_brightness & 0x00FF));
+    EPROMStore::update(16, (byte)(_brightness & 0x00FF));
   }
 }
 
@@ -139,7 +140,7 @@ void LcdMenu::updateDisplay() {
   _lcd.setCursor(0, 0);
   _activeRow = 0;
   _activeCol = 0;
-  int usableColumns = _columns - 4; // Leave off last four to have distance to tracking indicator
+  int usableColumns = _columns - 1; // Leave off last one to have distance to tracking indicator
 
   // Determine where to place the active menu item. (empty space around longest item divided by two).
   int margin = (usableColumns - (_longestDisplay)) / 2;
@@ -187,6 +188,12 @@ void LcdMenu::printChar(char ch) {
   else if (ch == '\'') {
     _lcd.write(_minutes);
   }
+  else if (ch == '&') {
+    _lcd.write(_tracking);
+  }
+  else if (ch == '`') {
+    _lcd.write(_noTracking);
+  }  
   else {
     _lcd.print(ch);
   }
@@ -285,6 +292,30 @@ byte LcdMenu::MinutesBitmap[8] = {
   B00000,
   B00000
 };
+
+byte LcdMenu::TrackingBitmap[8] = {
+  B10111,
+  B00010,
+  B10010,
+  B00010,
+  B10111,
+  B00101,
+  B10110,
+  B00101
+};
+
+
+byte LcdMenu::NoTrackingBitmap[8] = {
+  B10000,
+  B00000,
+  B10000,
+  B00010,
+  B10000,
+  B00000,
+  B10000,
+  B00000
+};
+
 #else
 
 LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) {

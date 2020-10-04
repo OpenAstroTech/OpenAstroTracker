@@ -1,6 +1,6 @@
 #include "Configuration_adv.hpp"
 
-#if GYRO_LEVEL == 1
+#if USE_GYRO_LEVEL == 1
 #include <Wire.h> // I2C communication library
 
 #include "Utility.hpp"
@@ -11,10 +11,10 @@ const int MPU = 0x68; // I2C address of the MPU6050 accelerometer
 int16_t Gyro::AcX, Gyro::AcY, Gyro::AcZ;
 int16_t Gyro::AcXOffset, Gyro::AcYOffset, Gyro::AcZOffset;
 
-static void Gyro::startup()
+void Gyro::startup()
 {
     // Initialize interface to the MPU6050
-    LOGV1(DEBUG_INFO, "GYRO:: Starting");
+    LOGV1(DEBUG_INFO, F("GYRO:: Starting"));
     Wire.begin();
     Wire.beginTransmission(MPU);
     Wire.write(0x6B);
@@ -32,16 +32,16 @@ static void Gyro::startup()
         AcY = Wire.read() << 8 | Wire.read(); // Y-axis value
         AcZ = Wire.read() << 8 | Wire.read(); // Z-axis value
     }
-    LOGV1(DEBUG_INFO, "GYRO:: Started");
+    LOGV1(DEBUG_INFO, F("GYRO:: Started"));
 }
 
-static void Gyro::shutdown()
+void Gyro::shutdown()
 {
-    LOGV1(DEBUG_INFO, "GYRO: Shutdown");
+    LOGV1(DEBUG_INFO, F("GYRO: Shutdown"));
     Wire.end();
 }
 
-static angle_t Gyro::getCurrentAngles()
+angle_t Gyro::getCurrentAngles()
 {
     const int windowSize = 16;
     // Read the accelerometer data
@@ -74,7 +74,7 @@ static angle_t Gyro::getCurrentAngles()
     return result;
 }
 
-static float Gyro::getCurrentTemperature()
+float Gyro::getCurrentTemperature()
 {
     // Read the temperature data
     float result = 0.0;

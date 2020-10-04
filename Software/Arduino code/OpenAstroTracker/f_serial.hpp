@@ -37,15 +37,15 @@ void processSerialData() {
     while (Serial.available() > 0) {
         if (Serial.readBytes(buffer, 1) == 1) {
             if (buffer[0] == 0x06) {
-                LOGV1(DEBUG_SERIAL, "Serial: Received: ACK request, replying");
+                LOGV1(DEBUG_SERIAL, F("Serial: Received: ACK request, replying"));
                 Serial.print('1');
             } else {
                 String inCmd = String(buffer[0]) + Serial.readStringUntil('#');
-                LOGV2(DEBUG_SERIAL, "Serial: Received: %s", inCmd.c_str());
+                LOGV2(DEBUG_SERIAL, F("Serial: Received: %s"), inCmd.c_str());
 
                 String retVal = MeadeCommandProcessor::instance()->processCommand(inCmd);
                 if (retVal != "") {
-                    LOGV2(DEBUG_SERIAL,"Serial: Replied:  %s", inCmd.c_str());
+                    LOGV2(DEBUG_SERIAL, F("Serial: Replied:  %s"), inCmd.c_str());
                     Serial.print(retVal);
                 }
             }

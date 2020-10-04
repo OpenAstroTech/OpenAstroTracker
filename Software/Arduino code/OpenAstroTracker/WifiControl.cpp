@@ -13,7 +13,7 @@ WifiControl::WifiControl(Mount* mount, LcdMenu* lcdMenu)
 
 void WifiControl::setup() {
 
-    LOGV2(DEBUG_WIFI,"Wifi: Starting up Wifi As Mode %d\n", WIFI_MODE);
+    LOGV2(DEBUG_WIFI,F("Wifi: Starting up Wifi As Mode %d\n"), WIFI_MODE);
 
   _cmdProcessor = MeadeCommandProcessor::instance();
 
@@ -37,10 +37,10 @@ void WifiControl::setup() {
 
 void WifiControl::startInfrastructureMode()
 {
-    LOGV1(DEBUG_WIFI,"Wifi: Starting Infrastructure Mode Wifi");
-    LOGV2(DEBUG_WIFI,"Wifi:    with host name: %s", String(HOSTNAME).c_str());
-    LOGV2(DEBUG_WIFI,"Wifi:          for SSID: %s", String(INFRA_SSID).c_str());
-    LOGV2(DEBUG_WIFI,"Wifi:       and WPA key: %s", String(INFRA_WPAKEY).c_str());
+    LOGV1(DEBUG_WIFI,F("Wifi: Starting Infrastructure Mode Wifi"));
+    LOGV2(DEBUG_WIFI,F("Wifi:    with host name: %s"), String(HOSTNAME).c_str());
+    LOGV2(DEBUG_WIFI,F("Wifi:          for SSID: %s"), String(INFRA_SSID).c_str());
+    LOGV2(DEBUG_WIFI,F("Wifi:       and WPA key: %s"), String(INFRA_WPAKEY).c_str());
 
 #if defined(ESP8266)
     WiFi.hostname(HOSTNAME);
@@ -52,7 +52,7 @@ void WifiControl::startInfrastructureMode()
 
 void WifiControl::startAccessPointMode()
 {
-    LOGV1(DEBUG_WIFI,"Wifi: Starting AP Mode Wifi");
+    LOGV1(DEBUG_WIFI,F("Wifi: Starting AP Mode Wifi"));
     IPAddress local_ip(192, 168, 1, 1);
     IPAddress gateway(192, 168, 1, 1);
     IPAddress subnet(255, 255, 255, 0);
@@ -104,18 +104,18 @@ void WifiControl::loop()
     }
     if (_status != WiFi.status()) {
         _status = WiFi.status();
-        LOGV2(DEBUG_WIFI,"Wifi: Connected status changed to %s", wifiStatus(_status).c_str());
+        LOGV2(DEBUG_WIFI,F("Wifi: Connected status changed to %s"), wifiStatus(_status).c_str());
         if (_status == WL_CONNECTED) {
             _tcpServer = new WiFiServer(PORT);
             _tcpServer->begin();
             _tcpServer->setNoDelay(true);
 #if defined(ESP8266)
-            LOGV2(DEBUG_WIFI,"Wifi: Server status is %s", wifiStatus( _tcpServer->status()).c_str());
+            LOGV2(DEBUG_WIFI,F("Wifi: Server status is %s"), wifiStatus( _tcpServer->status()).c_str());
 #endif
             _udp = new WiFiUDP();
             _udp->begin(4031);
 
-            LOGV4(DEBUG_WIFI,"Wifi: Connecting to SSID %s at %s:%d", INFRA_SSID, WiFi.localIP().toString().c_str(), PORT);
+            LOGV4(DEBUG_WIFI,F("Wifi: Connecting to SSID %s at %s:%d"), INFRA_SSID, WiFi.localIP().toString().c_str(), PORT);
         }
     }
 
@@ -139,34 +139,34 @@ void WifiControl::infraToAPFailover() {
         startAccessPointMode();
         _infraStart = 0;
 
-        LOGV1(DEBUG_WIFI,"Wifi: Could not connect to Infra, Starting AP.");
+        LOGV1(DEBUG_WIFI,F("Wifi: Could not connect to Infra, Starting AP."));
     }
 }
 
 void WifiControl::tcpLoop() {
     if (client && client.connected()) {
         while (client.available()) {
-            LOGV2(DEBUG_WIFI,"WifiTCP: Available bytes %d. Peeking.", client.available());
+            LOGV2(DEBUG_WIFI,F("WifiTCP: Available bytes %d. Peeking."), client.available());
 
             // Peek first byte and check for ACK (0x06) handshake
-            LOGV2(DEBUG_WIFI,"WifiTCP: First byte is %x", client.peek());
+            LOGV2(DEBUG_WIFI,F("WifiTCP: First byte is %x"), client.peek());
             if (client.peek() == 0x06) {
                 client.read();
-                LOGV1(DEBUG_WIFI,"WifiTCP: Query <-- Handshake request");
+                LOGV1(DEBUG_WIFI,F("WifiTCP: Query <-- Handshake request"));
                 client.write("1");
-                LOGV1(DEBUG_WIFI,"WifiTCP: Reply --> 1");
+                LOGV1(DEBUG_WIFI,F("WifiTCP: Reply --> 1"));
             }
             else {
                 String cmd = client.readStringUntil('#');
-                LOGV2(DEBUG_WIFI,"WifiTCP: Query <-- %s#", cmd.c_str());
+                LOGV2(DEBUG_WIFI,F("WifiTCP: Query <-- %s#"), cmd.c_str());
                 String retVal = _cmdProcessor->processCommand(cmd);
 
                 if (retVal != "") {
                     client.write(retVal.c_str());
-                    LOGV2(DEBUG_WIFI,"WifiTCP: Reply --> %s", retVal.c_str());
+                    LOGV2(DEBUG_WIFI,F("WifiTCP: Reply --> %s"), retVal.c_str());
                 }
                 else{
-                    LOGV1(DEBUG_WIFI,"WifiTCP: No Reply");
+                    LOGV1(DEBUG_WIFI,F("WifiTCP: No Reply"));
                 }
             }
 
@@ -189,11 +189,11 @@ void WifiControl::udpLoop()
         reply += HOSTNAME;
         reply += "@";
         reply += WiFi.localIP().toString();
-        LOGV4(DEBUG_WIFI,"WifiUDP: Received %d bytes from %s, port %d", packetSize, _udp->remoteIP().toString().c_str(), _udp->remotePort());
+        LOGV4(DEBUG_WIFI,F("WifiUDP: Received %d bytes from %s, port %d"), packetSize, _udp->remoteIP().toString().c_str(), _udp->remotePort());
         char incomingPacket[255];
         int len = _udp->read(incomingPacket, 255);
         incomingPacket[len] = 0;
-        LOGV2(DEBUG_WIFI,"WifiUDP: Received: %s", incomingPacket);
+        LOGV2(DEBUG_WIFI,F("WifiUDP: Received: %s"), incomingPacket);
 
         incomingPacket[lookingFor.length()] = 0;
         if (lookingFor.equalsIgnoreCase(incomingPacket)) {
@@ -209,7 +209,7 @@ void WifiControl::udpLoop()
 #endif
             
             _udp->endPacket();
-            LOGV2(DEBUG_WIFI,"WifiUDP: Replied: %s", reply.c_str());
+            LOGV2(DEBUG_WIFI,F("WifiUDP: Replied: %s"), reply.c_str());
         }
     }
 }

@@ -147,8 +147,8 @@
 
 
 // Set this to 1 if you are using a MPU6050 electronic level
-// Wire the board to 20/21 on Mega. Change in configuration_adv.hpp
-#define GYRO_LEVEL 0
+// Wire the board to 20/21 on Mega. 
+#define USE_GYRO_LEVEL 0
 
 // Set this to 1 if your gyro is mounted such that roll and pitch are in the wrong direction
 #define GYRO_AXIS_SWAP 1
