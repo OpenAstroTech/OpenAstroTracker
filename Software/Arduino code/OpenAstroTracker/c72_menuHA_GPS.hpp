@@ -62,14 +62,14 @@ bool processHAKeys()
     if (haState == STARTING_GPS)
     {
         if (gpsAqcuisitionComplete())
-        {0
-            LOGV1(DEBUG_INFO, F("HA: GPS acquired");
+        {
+            LOGV1(DEBUG_INFO, F("HA: GPS acquired"));
             GPS_SERIAL_PORT.end();
             haState = SHOWING_HA_SYNC;
             if (startupState == StartupWaitForHACompletion)
-            {0
-                LOGV1(DEBUG_INFO, F("HA: We were in startup, so confirm HA");
-                startupState = StartupHAConfirmed;0
+            {
+                LOGV1(DEBUG_INFO, F("HA: We were in startup, so confirm HA"));
+                startupState = StartupHAConfirmed;
                 inStartup = true;
             }
         }
@@ -78,7 +78,7 @@ bool processHAKeys()
     if (lcdButtons.keyChanged(&key))
     {
         waitForRelease = true;
-        LOGV3(DEBUG_INFO, F("HA: Key %d was pressed in state %d", key, haState);
+        LOGV3(DEBUG_INFO, F("HA: Key %d was pressed in state %d"), key, haState);
         if (haState == SHOWING_HA_SYNC)
         {
             if (key == btnSELECT)
