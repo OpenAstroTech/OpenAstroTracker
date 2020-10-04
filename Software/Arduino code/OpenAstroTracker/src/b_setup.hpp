@@ -7,6 +7,7 @@
 #include "LcdMenu.hpp"
 #include "Utility.hpp"
 #include "EPROMStore.hpp"
+#include "inc/Config.hpp"
 
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(0);
@@ -179,8 +180,8 @@ void finishSetup()
   // Show a splash screen
   lcdMenu.setCursor(0, 0);
   lcdMenu.printMenu("OpenAstroTracker");
-  lcdMenu.setCursor(0, 1);
-  lcdMenu.printMenu("     " + version);
+  lcdMenu.setCursor(5, 1);
+  lcdMenu.printMenu(VERSION);
 
   #if HEADLESS_CLIENT == 0
     // Check for EEPROM reset (Button down during boot)
@@ -213,7 +214,7 @@ void finishSetup()
   LOGV1(DEBUG_ANY, F("Configure RA stepper..."));
   // Set the stepper motor parameters
   #if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48 
-    mount.configureRAStepper(FULLSTEP, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RA_STEPPER_SPEED, RA_STEPPER_ACCELERATION);
+    mount.configureRAStepper(FULLSTEP_MODE, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RA_STEPPER_SPEED, RA_STEPPER_ACCELERATION);
   #elif RA_STEPPER_TYPE == STEPPER_TYPE_NEMA17
     mount.configureRAStepper(DRIVER, RAmotorPin1, RAmotorPin2, RA_STEPPER_SPEED, RA_STEPPER_ACCELERATION);
   #else
@@ -223,7 +224,7 @@ void finishSetup()
   LOGV1(DEBUG_ANY, F("Configure DEC stepper..."));
   #if DEC_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
     LOGV1(DEBUG_ANY, "Configure DEC stepper 28BYJ-48...");
-    mount.configureDECStepper(HALFSTEP, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, RA_STEPPER_SPEED, DEC_STEPPER_ACCELERATION);
+    mount.configureDECStepper(HALFSTEP_MODE, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, RA_STEPPER_SPEED, DEC_STEPPER_ACCELERATION);
   #elif DEC_STEPPER_TYPE == STEPPER_TYPE_NEMA17
     LOGV1(DEBUG_ANY, F("Configure DEC stepper NEMA..."));
     mount.configureDECStepper(DRIVER, DECmotorPin1, DECmotorPin2, RA_STEPPER_SPEED, DEC_STEPPER_ACCELERATION);

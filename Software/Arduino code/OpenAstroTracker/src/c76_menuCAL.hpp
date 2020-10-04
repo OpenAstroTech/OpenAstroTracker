@@ -1,5 +1,5 @@
 #pragma once
-#include "Configuration.hpp"
+#include "inc/Config.hpp"
 #include "b_setup.hpp"
 
 #if HEADLESS_CLIENT == 0
