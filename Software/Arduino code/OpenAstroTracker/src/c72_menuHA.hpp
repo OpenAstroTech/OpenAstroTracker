@@ -1,6 +1,6 @@
 #pragma once
 #include "EPROMStore.hpp"
-#include "Configuration_adv.hpp"
+#include "../Configuration_adv.hpp"
 
 #if HEADLESS_CLIENT == 0
 #if USE_GPS == 0

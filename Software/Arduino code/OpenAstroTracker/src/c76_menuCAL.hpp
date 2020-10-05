@@ -1,5 +1,5 @@
 #pragma once
-#include "Configuration.hpp"
+#include "inc/Config.hpp"
 #include "b_setup.hpp"
 
 #if HEADLESS_CLIENT == 0
@@ -585,7 +585,7 @@ bool processCalibrationKeys()
 
         // Move the RA to that of Polaris. Moving to this RA aligns the DEC axis such that
         // it swings along the line between Polaris and the Celestial Pole.
-        mount.targetRA() = DayTime(PolarisRAHour, PolarisRAMinute, PolarisRASecond);
+        mount.targetRA() = DayTime(POLARIS_RA_HOUR, POLARIS_RA_MINUTE, POLARIS_RA_SECOND);
 
         // Set DEC to move the same distance past Polaris as
         // it is from the Celestial Pole. That equates to 88deg 42' 11.2".

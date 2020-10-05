@@ -1,5 +1,5 @@
 #pragma once
-#include "Configuration_adv.hpp"
+#include "../Configuration_adv.hpp"
 
 #if HEADLESS_CLIENT == 0
 #if SUPPORT_GUIDED_STARTUP == 1
@@ -53,7 +53,7 @@ bool processStartupKeys() {
             startupState = StartupSetHATime;
           }
           else if (isInHomePosition == NO) {
-            #if RA_DRIVER_TYPE == TMC2209_UART && USE_AUTOHOME == 1
+            #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART && USE_AUTOHOME == 1
             mount.startFindingHomeDEC();
             if (mount.isFindingHome()) {
               startupState = StartupWaitForPoleCompletion;            
