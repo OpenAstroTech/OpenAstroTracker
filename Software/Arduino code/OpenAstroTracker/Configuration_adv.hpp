@@ -139,9 +139,7 @@
 //                                     ///
 //////////////////////////////////////////
 //
-// Set this to 1 if the mount has motorized Azimuth and Altitude adjustment. Set pins in configuration_pins.hpp
-#define AZIMUTH_ALTITUDE_MOTORS  0
-
+// Enable Azimuth and Altitude motor functionality in Configuration.hpp
 #define AZIMUTH_MAX_SPEED 500
 #define AZIMUTH_MAX_ACCEL 200
 #define AZIMUTH_ARC_SECONDS_PER_STEP (7.9997f)
@@ -151,21 +149,6 @@
 #define ALTITUDE_MAX_ACCEL 200
 #define ALTITUDE_ARC_SECONDS_PER_STEP (0.61761f)
 #define ALTITUDE_STEPS_PER_ARC_MINUTE (60.0f/ALTITUDE_ARC_SECONDS_PER_STEP)
-
-
-// Set this to 1 if you are using a NEO6m GPS module for HA/LST and location automatic determination.
-// GPS uses Serial1 by default, which is pins 18/19 on Mega. Change in configuration_adv.hpp
-#define USE_GPS 0
-// If supported, download the library https://github.com/mikalhart/TinyGPSPlus/releases and extract it to C:\Users\*you*\Documents\Arduino\libraries
-
-
-// Set this to 1 if you are using a MPU6050 electronic level
-// Wire the board to 20/21 on Mega. 
-#define USE_GYRO_LEVEL 0
-
-// Set this to 1 if your gyro is mounted such that roll and pitch are in the wrong direction
-#define GYRO_AXIS_SWAP 1
-
 
 #if HEADLESS_CLIENT == 0 // <-- Ignore this line
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

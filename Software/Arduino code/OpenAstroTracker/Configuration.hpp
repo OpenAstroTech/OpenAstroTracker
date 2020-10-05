@@ -8,7 +8,8 @@
 #define NORTHERN_HEMISPHERE 1
 // Set to 1 for the northern hemisphere, 0 otherwise
 
-// Used RA wheel version
+// Used RA wheel version. Unless you printed your OAT before March 2020, you're using 
+// a version 2 or higher (software only differentiates between 1 and more than 1)
 #define RA_WHEEL_VERSION 4
 
 // Stepper types/models. See supported stepper values. Change according to the steppers you are using
@@ -30,8 +31,12 @@
 // If supported, download the library https://github.com/mikalhart/TinyGPSPlus/releases and extract it to C:\Users\*you*\Documents\Arduino\libraries
 
 // Set this to 1 if you are using a MPU6050 electronic level
-// Wire the board to 20/21 on Mega. Change in configuration_adv.hpp
-#define USE_GYRO 0
+// Wire the board to 20/21 on Mega. Change pins in configuration_pins.hpp if you use other pins
+#define USE_GYRO_LEVEL 0
+#define GYRO_AXIS_SWAP 1  // Set this to 1 if your gyro is mounted such that roll and pitch are in the wrong direction
+
+// Set this to 1 if the mount has motorized Azimuth and Altitude adjustment. Set pins in configuration_pins.hpp. Change motor speeds in Configuration_adv.hpp
+#define AZIMUTH_ALTITUDE_MOTORS  0
 
 // These values are needed to calculate the current position during initial alignment.
 // Use something like Stellarium to look up the RA of Polaris in JNow (on date) variant.
