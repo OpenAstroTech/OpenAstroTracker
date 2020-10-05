@@ -53,7 +53,7 @@ namespace OATControl.ViewModels
 		string _driftAlignStatus = "Drift Alignment";
 		float _driftPhase = 0;
 
-		private float _maxMotorSpeed = 600;
+		private float _maxMotorSpeed = 500;
 		double _speed = 1.0;
 		string _scopeName = string.Empty;
 		string _scopeHardware = string.Empty;
@@ -62,6 +62,8 @@ namespace OATControl.ViewModels
 		CultureInfo _oatCulture = new CultureInfo("en-US");
 		Util _util;
 		ASCOM.Astrometry.Transform.Transform _transform;
+		bool _raIsNEMA;
+		bool _decIsNEMA;
 
 		DelegateCommand _arrowCommand;
 		DelegateCommand _chooseScopeCommand;
@@ -236,6 +238,7 @@ namespace OATControl.ViewModels
 			_timerStatus.Start();
 		}
 
+		long gxRequest = 1;
 		private async Task UpdateStatus()
 		{
 			if (MountConnected)
@@ -475,6 +478,8 @@ namespace OATControl.ViewModels
 						var raParts = hwParts[1].Split('|');
 						var decParts = hwParts[2].Split('|');
 						ScopeHardware = $"{hwParts[0]} board    RA {raParts[0]}, {raParts[1]}T    DEC {decParts[0]}, {decParts[1]}T";
+						_raIsNEMA = raParts[0] == "NEMA";
+						_decIsNEMA = decParts[0] == "NEMA";
 
 						_transform.SiteElevation = 0; //  _oatMount.SiteElevation;
 						Log.WriteLine("Mount: Getting OAT Latitude");
@@ -1135,7 +1140,8 @@ namespace OATControl.ViewModels
 		{
 			float[] speeds = { 0, 0.05f, 0.15f, 0.5f, 1.0f };
 			string slewRateComdChar = "_GCMS";
-			MaxMotorSpeed = speeds[newRate] * 400;
+
+			MaxMotorSpeed = speeds[newRate] * ((_raIsNEMA|| _decIsNEMA) ? 1000 : 500);
 
 			if (MountConnected)
 			{
