@@ -2,7 +2,7 @@
 
 #include <AccelStepper.h>
 #include <LiquidCrystal.h>
-#include "Configuration_pins.hpp"
+#include "inc/Globals.hpp"
 
 #include "Utility.hpp"
 #include "DayTime.hpp"
@@ -27,9 +27,9 @@
 
 ////////////////////////////////////
 // Stepper definitions /////////////
-#if RA_STEPPER_TYPE == STEP_28BYJ48
+#if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
   // RA Motor pins
-  #if INVERT_RA_DIR == 1
+  #if RA_INVERT_DIR == 1
     #define RAmotorPin1  RA_IN1_PIN    // IN1 auf ULN2003 driver 1
     #define RAmotorPin3  RA_IN2_PIN    // IN2 auf ULN2003 driver 1
     #define RAmotorPin2  RA_IN3_PIN    // IN3 auf ULN2003 driver 1
@@ -40,14 +40,14 @@
     #define RAmotorPin2  RA_IN2_PIN    // IN3 auf ULN2003 driver 1
     #define RAmotorPin4  RA_IN1_PIN    // IN4 auf ULN2003 driver 1
   #endif
-#elif RA_STEPPER_TYPE == STEP_NEMA17
+#elif RA_STEPPER_TYPE == STEPPER_TYPE_NEMA17
     #define RAmotorPin1  RA_STEP_PIN
     #define RAmotorPin2  RA_DIR_PIN
 #endif
 
 // DEC Motor pins
-#if DEC_STEPPER_TYPE == STEP_28BYJ48
-  #if INVERT_DEC_DIR == 1
+#if DEC_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
+  #if DEC_INVERT_DIR == 1
     #define DECmotorPin1  DEC_IN4_PIN    // IN1 auf ULN2003 driver 2
     #define DECmotorPin3  DEC_IN3_PIN    // IN2 auf ULN2003 driver 2
     #define DECmotorPin2  DEC_IN2_PIN    // IN3 auf ULN2003 driver 2
@@ -58,7 +58,7 @@
     #define DECmotorPin2  DEC_IN3_PIN    // IN3 auf ULN2003 driver 2
     #define DECmotorPin4  DEC_IN4_PIN    // IN4 auf ULN2003 driver 2
   #endif
-#elif DEC_STEPPER_TYPE == STEP_NEMA17
+#elif DEC_STEPPER_TYPE == STEPPER_TYPE_NEMA17
     #define DECmotorPin1  DEC_STEP_PIN
     #define DECmotorPin2  DEC_DIR_PIN
 #endif
@@ -79,10 +79,10 @@
 
 /////////////////////////////////////////
 // Driver definitions ///////////////////
-#if RA_DRIVER_TYPE == TMC2209_STANDALONE
+#if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE
   //#define RA_EN_PIN 40  // Enable Pin
 #endif
-#if (RA_DRIVER_TYPE == TMC2209_UART) || (DEC_DRIVER_TYPE == TMC2209_UART)
+#if (RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART)
   #define R_SENSE 0.11f           // 0.11 for StepStick
 #endif
 // End Driver Definitions ///////////////

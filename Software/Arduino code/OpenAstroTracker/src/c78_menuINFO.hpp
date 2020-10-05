@@ -125,7 +125,7 @@ void printStatusSubmenu() {
       break;
 
       case 7: {
-        lcdMenu.printMenu("Firmw.: " + version);
+        lcdMenu.printMenu("Firmw.: " + String(VERSION));
       }
       break;
     }

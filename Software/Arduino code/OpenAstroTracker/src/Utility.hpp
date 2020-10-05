@@ -2,7 +2,7 @@
 #define UTILITY_HPP_
 
 #include <Arduino.h>
-#include "Configuration_adv.hpp"
+#include "../Configuration_adv.hpp"
 
 // LCD shield buttons
 #define btnRIGHT  0

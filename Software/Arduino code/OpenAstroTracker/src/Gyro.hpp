@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Configuration_adv.hpp"
+#include "../Configuration_adv.hpp"
 
 #if USE_GYRO_LEVEL == 1
 struct angle_t { float pitchAngle; float rollAngle; };
