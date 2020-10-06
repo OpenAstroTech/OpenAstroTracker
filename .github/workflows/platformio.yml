@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   build:
-    name: ${{ matrix.board }} STEPPER=${{ matrix.stepper }} DRIVER=${{ matrix.driver }} GPS=${{ matrix.gps }} GYRO=${{ matrix.gyro }} ALTAZ=${{ matrix.azalt }}
+    name: ${{ matrix.board }} STEPPER=${{ matrix.stepper }} DRIVER=${{ matrix.driver }} GPS=${{ matrix.gps }} GYRO=${{ matrix.gyro }} ALTAZ=${{ matrix.azalt }} HEADLESS=${{ matrix.headless }}
     runs-on: ubuntu-latest
     continue-on-error: ${{ matrix.board == 'uno' }}
     strategy:
