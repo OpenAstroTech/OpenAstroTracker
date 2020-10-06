@@ -129,7 +129,7 @@
 
 #ifdef __AVR_ATmega328P__
 #undef HEADLESS_CLIENT
-#define HEADLESS_CLIENT 0
+#define HEADLESS_CLIENT 1
 #endif
 
 ////////////////////////////
