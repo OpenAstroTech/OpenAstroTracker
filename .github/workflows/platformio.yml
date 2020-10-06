@@ -51,3 +51,4 @@ jobs:
         -D USE_GPS=${{ matrix.gps }}
         -D USE_GYRO_LEVEL=${{ matrix.gyro }}
         -D AZIMUTH_ALTITUDE_MOTORS=${{ matrix.azalt }}
+        -D HEADLESS_CLIENT=${{ matrix.headless }}
