@@ -4,7 +4,7 @@
 #include "Mount.hpp"
 #include "Utility.hpp"
 #include "EPROMStore.hpp"
-#include "Sidereal.cpp"
+#include "Sidereal.hpp"
 #include "../Configuration_adv.hpp"
 #include "../Configuration_pins.hpp"
 #include "inc/Globals.hpp"
