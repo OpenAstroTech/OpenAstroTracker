@@ -6,7 +6,7 @@
 #include "LcdMenu.hpp"
 #include "MeadeCommandProcessor.hpp"
 #include "WiFiServer.h"
-#include "WiFiUDP.h"
+#include "WiFiUdp.h"
 #include "WiFiClient.h"
 
 #ifdef ESP8266

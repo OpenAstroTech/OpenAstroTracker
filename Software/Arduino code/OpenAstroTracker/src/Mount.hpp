@@ -1,7 +1,10 @@
 #ifndef _MOUNT_HPP_
 #define _MOUNT_HPP_
 
+#if HEADLESS_CLIENT == 0
 #include <LiquidCrystal.h>
+#endif
+
 #include <AccelStepper.h>
 #include "inc/Config.hpp"
 #include "DayTime.hpp"
