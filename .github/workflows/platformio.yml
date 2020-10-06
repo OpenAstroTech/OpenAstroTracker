@@ -16,9 +16,9 @@ jobs:
         azalt:    [0, 1]
         exclude:
           - { stepper: 1, driver: 0 } # NEMA17 & ULN2003
-          - { stepper: 0, driver: 1 } # 28BYJ48 & ULN2003
-          - { stepper: 0, driver: 2 } # 28BYJ48 & ULN2003
-          - { stepper: 0, driver: 3 } # 28BYJ48 & ULN2003
+          - { stepper: 0, driver: 1 } # 28BYJ48 & GENERIC
+          - { stepper: 0, driver: 2 } # 28BYJ48 & TMC2209_STANDALONE
+          - { stepper: 0, driver: 3 } # 28BYJ48 & TMC2209_UART
           - { board: esp32, stepper: 1 } # ESP32 & NEMA17
           - { board: esp32, gps: 1 } # ESP32 & GPS
           - { board: esp32, gyro: 1 } # ESP32 & GYRO
