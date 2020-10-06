@@ -1,6 +1,10 @@
 name: PlatformIO CI
 
-on: [push]
+on:  
+  push:
+  pull_request:
+    branches:
+      - develop
 
 jobs:
   build:
