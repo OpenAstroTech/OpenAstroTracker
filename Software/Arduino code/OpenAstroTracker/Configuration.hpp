@@ -5,26 +5,51 @@
 
 #pragma once
 
+#include "Constants.hpp"
+
 /**
- * This allows us to use a local config file which wont be tracked by Git and thus will
- * remain after branch changes or code updates. Just copy Configuration.hpp file and name it 
- * "Configuration_local.hpp". Everything in the local configuration file will override the default
- * settings defined in this file. You can remove definitions which you dont care about from the
- * local configuration file. In this case definitions from Configuration.hpp (this file) will
- * be used.
+ * We support local configurations so that you can setup it up once with your hardware and pinout
+ * and not need to worry about a new version from Git overwriting your setup. 
+ * There are multiple ways to define a local config file:
+ *  - For all boards/hardware configs
+ *    Create a file called configuration_local.hpp (best to copy configuration_sample_local.hpp and 
+ *    change it as needed)
+ *  - Specific to a board
+ *    Create a file called configuration_local_<board>.hpp, where <board> is either 'mega' or 
+ *    'esp32' or (here, too, best to copy Configuration_sample_local.hpp and change it as needed). 
+ *    The code automatically picks the right one at compile time. This is useful if you are 
+ *    developer or just have multiple OATs. 
+ *  - Specific to a hardware config
+ *    Create a file called configuration_local_<foo>.hpp, where <foo> is whatever you want to use
+ *    to identify that setup. Then uncomment the lines 45 and 46 below. This is useful if have 
+ *    multiple OATs. 
  * 
- * You can have multiple local config files. Name them starting with "Configuration_local" so they 
- * are ignored by Git. This allows you to have configs like "Configuration_local_28by.hpp" or 
- * "Configuration_local_esp32.hpp" in case you are developer or just have multiple OATs. Finally
- * just change the LOCAL_CONFIG definition to the local config file name you want to use.
- **/
-#define LOCAL_CONFIG "Configuration_local.hpp"
+ * These files won't be tracked by Git and thus will remain after branch changes or code updates. 
+  **/
+
+#if defined(ESP32)                  // ESP32
+    #define LOCAL_CONFIG "Configuration_local_esp32.hpp"
+    #if !__has_include(LOCAL_CONFIG)
+        #undef LOCAL_CONFIG 
+        #define LOCAL_CONFIG "Configuration_local.hpp"
+    #endif
+#elif defined(__AVR_ATmega2560__)   // Arduino Mega
+    #define LOCAL_CONFIG "Configuration_local_mega.hpp"
+    #if !__has_include(LOCAL_CONFIG)
+        #undef LOCAL_CONFIG 
+        #define LOCAL_CONFIG "Configuration_local.hpp"
+    #endif
+#else                               // Other board?
+    #define LOCAL_CONFIG "Configuration_local.hpp"
+#endif
+
+// Uncomment these two lines to override the automatic local config with yours.
+// #undef LOCAL_CONFIG 
+// #define LOCAL_CONFIG "Configuration_local_foo.hpp"
 
 #if __has_include(LOCAL_CONFIG)
 #include LOCAL_CONFIG
 #endif
-
-#include "Constants.hpp"
 
 // Set to 1 for the northern hemisphere, 0 otherwise
 #ifndef NORTHERN_HEMISPHERE
