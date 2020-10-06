@@ -124,7 +124,7 @@
 // If you do not have a LCD shield on your Arduino Uno/Mega, set this to 1 on the line below. This is
 // useful if you are always going to run the mount from a laptop anyway.
 #ifndef HEADLESS_CLIENT
-#define HEADLESS_CLIENT 1
+#define HEADLESS_CLIENT 0
 #endif
 
 #ifdef __AVR_ATmega328P__
