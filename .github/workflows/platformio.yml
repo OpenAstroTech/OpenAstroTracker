@@ -42,4 +42,4 @@ jobs:
         -D DEC_DRIVER_TYPE=${{ matrix.driver }}
         -D USE_GPS=${{ matrix.gps }}
         -D USE_GYRO_LEVEL=${{ matrix.gyro }}
-        -D AZIMUTH_ALTITUDE_MOTORS=${{ matrix.altaz }}
+        -D AZIMUTH_ALTITUDE_MOTORS=${{ matrix.azalt }}
