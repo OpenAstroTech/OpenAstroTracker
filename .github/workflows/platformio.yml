@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        board:    [mega2560, esp32]
+        board:    [mega2560, esp32, uno]
         stepper:  [0, 1]
         driver:   [0, 1, 2, 3]
         gps:      [0, 1]
@@ -23,6 +23,10 @@ jobs:
           - { board: esp32, gps: 1 } # ESP32 & GPS
           - { board: esp32, gyro: 1 } # ESP32 & GYRO
           - { board: esp32, azalt: 1 } # ESP32 & ALTAZ
+          - { board: uno, stepper: 1 } # UNO & NEMA17
+          - { board: uno, gps: 1 } # UNO & GPS
+          - { board: uno, gyro: 1 } # UNO & GYRO
+          - { board: uno, azalt: 1 } # UNO & ALTAZ
 
     steps:
     - uses: actions/checkout@v1
