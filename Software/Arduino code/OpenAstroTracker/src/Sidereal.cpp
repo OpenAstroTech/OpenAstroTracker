@@ -1,5 +1,6 @@
-#if USE_GPS == 1
 #include "Sidereal.hpp"
+
+#if USE_GPS == 1
 
 // Constants for sidereal calculation       
 // Source: http://www.stargazing.net/kepler/altaz.html
