@@ -346,7 +346,7 @@
 //
 // :XGM#
 //      Get Mount configuration settings 
-//      Returns: <board>>,<RA Stepper Info>,<DEC Stepper Info>,<GPS info>,<AzAlt info>,<Gyro info>#
+//      Returns: <board>,<RA Stepper Info>,<DEC Stepper Info>,<GPS info>,<AzAlt info>,<Gyro info>#
 //      Where <board> is one of the supported boards (currently Uno, Mega, ESP8266, ESP32)
 //            <Stepper Info> is a pipe-delimited string of Motor type (NEMA or 28BYJ), Pulley Teeth, Steps per revolution)
 //            <GPS info> is either NO_GPS or GPS, depending on whether a GPS module is present
@@ -848,11 +848,12 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
     else if (inCmd[1] == 'S') { // set values
       if (inCmd[2] == 'P') { // get Calibration/Reference values
         _mount->setPitchCalibrationAngle(inCmd.substring(3).toFloat());
+        return String("1#");
       }
       else if (inCmd[2] == 'R') { 
         _mount->setRollCalibrationAngle(inCmd.substring(3).toFloat());
+        return String("1#");
       }
-      return String("1#");
     }
     else if (inCmd[1] == '1') { // Turn on Gyro
       Gyro::startup();
@@ -862,9 +863,8 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
       Gyro::shutdown();
       return String("1#");
     }
-    #else
-    return String("0#");
     #endif
+    return String("0#");
   }
   
   return "";
