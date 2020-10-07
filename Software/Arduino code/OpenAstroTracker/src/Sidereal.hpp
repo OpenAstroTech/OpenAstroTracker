@@ -1,10 +1,10 @@
-#if USE_GPS == 1
-
 #pragma once
+#include "inc/Config.hpp"
 
+#if USE_GPS == 1
 #include <math.h>
-#include <TinyGPS++.h>
 
+#include <TinyGPS++.h>
 #include "DayTime.hpp"
 
 

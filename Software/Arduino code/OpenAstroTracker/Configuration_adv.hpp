@@ -103,8 +103,12 @@
 //
 // INVERT AXIS
 // Set to 1 or 0 to invert motor directions
+#ifndef RA_INVERT_DIR 
 #define RA_INVERT_DIR 0 
+#endif
+#ifndef DEC_INVERT_DIR 
 #define DEC_INVERT_DIR 0
+#endif
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -121,13 +125,13 @@
 ////////////////////////////
 //
 // HEADLESS CLIENT
-// If you do not have a LCD shield on your Arduino Uno/Mega, set this to 1 on the line below. This is
+// If you do not have a LCD shield on your Arduino Mega, set this to 1 on the line below. This is
 // useful if you are always going to run the mount from a laptop anyway.
 #ifndef HEADLESS_CLIENT
 #define HEADLESS_CLIENT 0
 #endif
 
-#ifdef __AVR_ATmega328P__
+#ifdef __AVR_ATmega328P__   // UNO must use headless
 #undef HEADLESS_CLIENT
 #define HEADLESS_CLIENT 1
 #endif
