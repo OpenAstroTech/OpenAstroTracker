@@ -84,7 +84,7 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
   #else
   _stepsPerRADegree = stepsPerRADegree;
   #endif
-  #if DEC_STEPPER_TYPE != DRIVER_TYPE_ULN2003
+  #if DEC_DRIVER_TYPE != DRIVER_TYPE_ULN2003
   _stepsPerDECDegree = stepsPerDECDegree * DEC_SLEW_MICROSTEPPING;
   #else
   _stepsPerDECDegree = stepsPerDECDegree;
@@ -995,9 +995,9 @@ void Mount::startSlewingToTarget() {
 /////////////////////////////////
 void Mount::stopGuiding() {
   _stepperDEC->stop();
-  while (_stepperDEC->isRunning()) {
+  /*while (_stepperDEC->isRunning()) {
     _stepperDEC->run();
-  }
+  }*/
 
   _stepperDEC->setMaxSpeed(_maxDECSpeed);
   _stepperDEC->setAcceleration(_maxDECAcceleration);
@@ -1005,6 +1005,9 @@ void Mount::stopGuiding() {
   _stepperTRK->setMaxSpeed(10);
   #else
   _stepperTRK->setMaxSpeed(500);
+  #endif
+  #if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+    _driverDEC->microsteps(DEC_SLEW_MICROSTEPPING);
   #endif
   _stepperTRK->setAcceleration(2500);
   _stepperTRK->setSpeed(_trackingSpeed);
@@ -1036,7 +1039,7 @@ void Mount::guidePulse(byte direction, int duration) {
 
   switch (direction) {
     case NORTH:
-    #if DEC_STEPPER_TYPE == DRIVER_TYPE_TMC2209_UART
+    #if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
     _driverDEC->microsteps(DEC_GUIDE_MICROSTEPPING);
     #endif
     _stepperDEC->setAcceleration(2500);
@@ -1051,7 +1054,7 @@ void Mount::guidePulse(byte direction, int duration) {
     break;
 
     case SOUTH:
-    #if DEC_STEPPER_TYPE == DRIVER_TYPE_TMC2209_UART
+    #if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
     _driverDEC->microsteps(DEC_GUIDE_MICROSTEPPING);
     #endif
     _stepperDEC->setAcceleration(2500);
@@ -1763,7 +1766,7 @@ void Mount::loop() {
   }
   #endif
 
-  #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART && DEC_STEPPER_TYPE == DRIVER_TYPE_TMC2209_UART && USE_AUTOHOME == 1
+  #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART && DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART && USE_AUTOHOME == 1
   if (isFindingHome()) {
     if (digitalRead(DEC_DIAG_PIN) == HIGH) {
       finishFindingHomeDEC();
@@ -1780,7 +1783,7 @@ void Mount::loop() {
   if (isGuiding()) {
     if (millis() > _guideEndTime) {
       stopGuiding();
-	  #if DEC_STEPPER_TYPE == DRIVER_TYPE_TMC2209_UART
+	  #if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
       _driverDEC->microsteps(DEC_SLEW_MICROSTEPPING);
     #endif					
     }
@@ -2217,7 +2220,7 @@ String Mount::RAString(byte type, byte active) {
 //
 /////////////////////////////////
 // Automatically home the mount. Only with TMC2209 in UART mode
-#if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART && DEC_STEPPER_TYPE == DRIVER_TYPE_TMC2209_UART && USE_AUTOHOME == 1
+#if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART && DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART && USE_AUTOHOME == 1
 
 void Mount::startFindingHomeDEC()  {
   _driverDEC->SGTHRS(10);
