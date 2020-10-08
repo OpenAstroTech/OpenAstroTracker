@@ -136,7 +136,7 @@ void setup() {
   Serial.begin(57600);
   //BT.begin(9600);
 
-  LOGV2(DEBUG_ANY, F("Hello, universe, this is OAT %s!"), version.c_str());
+  LOGV2(DEBUG_ANY, F("Hello, universe, this is OAT %s!"), VERSION);
 
   EPROMStore::initialize();
 
