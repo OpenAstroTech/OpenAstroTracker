@@ -17,6 +17,7 @@
 #define STATUS_SLEWING_MANUAL      0B0000000100000000
 #define STATUS_TRACKING            0B0000000000001000
 #define STATUS_PARKING             0B0000000000010000
+#define STATUS_PARKING_POS         0B0001000000000000
 #define STATUS_GUIDE_PULSE         0B0000000010000000
 #define STATUS_GUIDE_PULSE_DIR     0B0000000001100000
 #define STATUS_GUIDE_PULSE_RA      0B0000000001000000
@@ -110,6 +111,9 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
 #endif
   _correctForBacklash = false;
   _slewingToHome = false;
+  _slewingToPark = false;
+  _raParkingPos  = 0;
+  _decParkingPos = 0;
     
   #if USE_GYRO_LEVEL == 1
   _pitchCalibrationAngle = 0;
@@ -165,95 +169,116 @@ void Mount::readConfiguration()
 //
 /////////////////////////////////
 //
-// EEPROM storage location 5 must be 0xBE for the mount to read any data
-// Location 4 indicates what has been stored so far: 00000000
-//                                                   ^^^^^^^^
-//                                                   ||||||||
-//                    Roll angle offset (19/20) -----+|||||||
-//                   Pitch angle offset (17/18) ------+||||||
-//                            Longitude (14/15) -------+|||||
-//                             Latitude (12/13) --------+||||
-//                       Backlash steps (10/11) ---------+|||
-//                           Speed factor (0/3) ----------+||
-//     DEC stepper motor steps per degree (8/9) -----------+|
-//      RA stepper motor steps per degree (6/7) ------------+
+// EEPROM storage location 5 must be 0xBE or 0xBF for the mount to read any data
+// Location 4 indicates what has been stored so far: 0000 0000
+//                                                   ^^^^ ^^^^
+//                                                   |||| ||||
+//                    Roll angle offset (19/20) -----+||| ||||
+//                   Pitch angle offset (17/18) ------+|| ||||
+//                            Longitude (14/15) -------+| ||||
+//                             Latitude (12/13) --------+ ||||
+//                       Backlash steps (10/11) ----------+|||
+//                           Speed factor (0/3) -----------+||
+//     DEC stepper motor steps per degree (8/9) ------------+|
+//      RA stepper motor steps per degree (6/7) -------------+
 //
+// If Location 5 is 0xBF, then an extended 16-bit flag is stored in 21/22 and 
+// indicates the additional fields that have been stored: 0000 0000 0000 0000
+//                                                        ^^^^ ^^^^ ^^^^ ^^^^
+//                                                                          |
+//     RA (23-26) and DEC (27-30) Parking offsets --------------------------+
+//
+/////////////////////////////////
 void Mount::readPersistentData()
 {
   // Read the magic marker byte and state
   uint16_t marker = EPROMStore::readInt16(4, 5);
 
-  // LOGV2(DEBUG_INFO, F("Mount: EEPROM: Marker: %x "), marker);
+  LOGV2(DEBUG_INFO, F("Mount: EEPROM: Magic Marker: %x "), marker);
 
-  if ((marker & 0xFF01) == 0xBE01) {
+  if ((marker & 0xFE01) == 0xBE01) {
     _stepsPerRADegree = EPROMStore::read(6) + EPROMStore::read(7) * 256;
-    // LOGV2(DEBUG_INFO,F("Mount: EEPROM: RA Marker OK! RA steps/deg is %d"), _stepsPerRADegree);
+    LOGV2(DEBUG_INFO,F("Mount: EEPROM: RA Marker OK! RA steps/deg is %d"), _stepsPerRADegree);
   }
   else{
-    // LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for RA steps"));
+    LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for RA steps"));
   }
 
-  if ((marker & 0xFF02) == 0xBE02) {
+  if ((marker & 0xFE02) == 0xBE02) {
     _stepsPerDECDegree = EPROMStore::read(8) + EPROMStore::read(9) * 256;
-    // LOGV2(DEBUG_INFO,F("Mount: EEPROM: DEC Marker OK! DEC steps/deg is %d"), _stepsPerDECDegree);
+    LOGV2(DEBUG_INFO,F("Mount: EEPROM: DEC Marker OK! DEC steps/deg is %d"), _stepsPerDECDegree);
   }
   else{
-    // LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for DEC steps"));
+    LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for DEC steps"));
   }
 
   float speed = 1.0;
-  if ((marker & 0xFF04) == 0xBE04) {
+  if ((marker & 0xFE04) == 0xBE04) {
     int adjust = EPROMStore::read(0) + EPROMStore::read(3) * 256;
     speed = 1.0 + 1.0 * adjust / 10000.0;
-    // LOGV3(DEBUG_INFO,F("Mount: EEPROM: Speed Marker OK! Speed adjust is %d, speedFactor is %f"), adjust, speed);
+    LOGV3(DEBUG_INFO,F("Mount: EEPROM: Speed Marker OK! Speed adjust is %d, speedFactor is %f"), adjust, speed);
   }
   else{
-    // LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for speed factor"));
+    LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for speed factor"));
   }
 
-  if ((marker & 0xFF08) == 0xBE08) {
+  if ((marker & 0xFE08) == 0xBE08) {
     _backlashCorrectionSteps = EPROMStore::read(10) + EPROMStore::read(11) * 256;
-    // LOGV2(DEBUG_INFO,F("Mount: EEPROM: Backlash Steps Marker OK! Backlash correction is %d"), _backlashCorrectionSteps);
+    LOGV2(DEBUG_INFO,F("Mount: EEPROM: Backlash Steps Marker OK! Backlash correction is %d"), _backlashCorrectionSteps);
   }
   else {
-    // LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for backlash correction"));
+    LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for backlash correction"));
   }
 
-  if ((marker & 0xFF10) == 0xBE10) {
+  if ((marker & 0xFE10) == 0xBE10) {
     _latitude = 1.0f * EPROMStore::readInt16(12, 13) / 100.0f;
-    // LOGV2(DEBUG_INFO,F("Mount: EEPROM: Latitude Marker OK! Latitude is %f"), _latitude);
+    LOGV2(DEBUG_INFO,F("Mount: EEPROM: Latitude Marker OK! Latitude is %f"), _latitude);
   } 
   else {
-    // LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for latitude"));
+    LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for latitude"));
   }
 
-  if ((marker & 0xFF20) == 0xBE20) {
+  if ((marker & 0xFE20) == 0xBE20) {
     _longitude = 1.0f * EPROMStore::readInt16(14, 15) / 100.0f;
-    // LOGV2(DEBUG_INFO,F("Mount: EEPROM: Longitude Marker OK! Longitude is %f"), _longitude);
+    LOGV2(DEBUG_INFO,F("Mount: EEPROM: Longitude Marker OK! Longitude is %f"), _longitude);
   } 
   else {
-    // LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for longitude"));
+    LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for longitude"));
   }
 
 #if USE_GYRO_LEVEL == 1
-  if ((marker & 0xFF40) == 0xBE40) {
+  if ((marker & 0xFE40) == 0xBE40) {
     uint16_t angleValue = EPROMStore::readInt16(17, 18);
     _pitchCalibrationAngle = (((long)angleValue) - 16384) / 100.0;
-    // LOGV3(DEBUG_INFO,F("Mount: EEPROM: Pitch Offset Marker OK! Pitch Offset is %x (%f)"), angleValue, _pitchCalibrationAngle);
+    LOGV3(DEBUG_INFO,F("Mount: EEPROM: Pitch Offset Marker OK! Pitch Offset is %x (%f)"), angleValue, _pitchCalibrationAngle);
   }
     else{
-    // LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for Pitch Offset"));
+    LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for Pitch Offset"));
   }
 
-  if ((marker & 0xFF80) == 0xBE80) {
+  if ((marker & 0xFE80) == 0xBE80) {
     uint16_t angleValue = EPROMStore::readInt16(19,20);
     _rollCalibrationAngle = (((long)angleValue) - 16384) / 100.0;
-    // LOGV3(DEBUG_INFO,F("Mount: EEPROM: Roll Offset Marker OK! Roll Offset is %x (%f)"), angleValue, _rollCalibrationAngle);
+    LOGV3(DEBUG_INFO,F("Mount: EEPROM: Roll Offset Marker OK! Roll Offset is %x (%f)"), angleValue, _rollCalibrationAngle);
   }
   else {
-    // LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for Roll Offset"));
+    LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for Roll Offset"));
   }
 #endif
+
+  if ((marker & 0xFF00) == 0xBF00) {
+    LOGV2(DEBUG_INFO,F("Mount: EEPROM: Magic Marker is %x, reading extended"), marker);
+    int16_t nextMarker = EPROMStore::readInt16(21,22);
+    LOGV2(DEBUG_INFO,F("Mount: EEPROM: ExtendedMarker is %x"), nextMarker);
+    if (nextMarker & 0x0001){
+      _raParkingPos = EPROMStore::readInt32(23); // 23-26
+      _decParkingPos = EPROMStore::readInt32(27); // 27-30
+      LOGV3(DEBUG_INFO,F("Mount: EEPROM: Parking position read as R:%l, D:%l"), _raParkingPos, _decParkingPos);
+    }
+  } 
+  else {
+    LOGV1(DEBUG_INFO,F("Mount: EEPROM: No ExtendedMarker present"), nextMarker);
+  }
 
   setSpeedCalibration(speed, false);
 }
@@ -263,19 +288,27 @@ void Mount::readPersistentData()
 // writePersistentData
 //
 /////////////////////////////////
-void Mount::writePersistentData(int which, int val)
+void Mount::writePersistentData(int which, long val)
 {
   uint8_t flag = 0x00;
+  int16_t extendedFlag  = 0x0000;
   int loByteLocation = 0;
   int hiByteLocation = 0;
+  bool writeExtended = false;
 
   // If we're written something before...
   uint8_t magicMarker = EPROMStore::read(5);
-  // LOGV4(DEBUG_INFO,F("Mount: EEPROM Write: Marker is %x, flag is %x (%d)"), magicMarker, flag, flag);
-  if (magicMarker == 0xBE) {
+  LOGV5(DEBUG_INFO,F("Mount: EEPROM Write(%d): Marker is %x, flag is %x (%d)"), which, magicMarker, flag, flag);
+  if ((magicMarker & 0xFE) == 0xBE) {
     // ... read the current state ...
     flag = EPROMStore::read(4);
-    // LOGV3(DEBUG_INFO,F("Mount: EEPROM Write: Marker is 0xBE, flag is %x (%d)"), flag, flag);
+    if ((magicMarker & 0xFF) == 0xBF) {
+      extendedFlag = EPROMStore::readInt16(21, 22);
+      LOGV3(DEBUG_INFO,F("Mount: EEPROM Write: Marker is 0xBF, extended flag is %x (%d)"), extendedFlag, extendedFlag);
+    }
+    else{
+     LOGV3(DEBUG_INFO,F("Mount: EEPROM Write: Marker is 0xBE, flag is %x (%d)"), flag, flag);
+    }
   }
   switch (which) {
     case EEPROM_RA:
@@ -358,17 +391,39 @@ void Mount::writePersistentData(int which, int val)
     }
     break;
 
+    case EEPROM_RA_PARKING_POS:
+    case EEPROM_DEC_PARKING_POS:
+    {
+      // ... set bit 8 to indicate pitch offset angle value has been written to 19/20
+      writeExtended = true;
+      extendedFlag |= 0x0001;
+      if (which == EEPROM_RA_PARKING_POS ){
+        EPROMStore::updateInt32(23, val);
+        LOGV2(DEBUG_INFO,F("Mount: EEPROM Write: Updating RA Parking Pos to %l at 23-26"), val);
+      }
+      else{
+        EPROMStore::updateInt32(27, val);
+        LOGV2(DEBUG_INFO,F("Mount: EEPROM Write: Updating DEC Parking Pos to %l at 27-30"), val);
+      }
+    }
+    break;
   }
 
-  LOGV3(DEBUG_INFO,F("Mount: EEPROM Write: New Marker is 0xBE, flag is %x (%d)"), flag, flag);
 
-  EPROMStore::update(4, flag);
-  EPROMStore::update(5, 0xBE);
+  if (writeExtended) {
+    LOGV3(DEBUG_INFO,F("Mount: EEPROM Write: New Marker is 0xBF, extended flag is %x (%d)"), extendedFlag, extendedFlag);
+    EPROMStore::update(5, 0xBF);
+    EPROMStore::updateInt16(21, 22, extendedFlag);
+  }
+  else {
+    LOGV4(DEBUG_INFO,F("Mount: EEPROM Write: New Marker is %d, flag is %x (%d)"), magicMarker, flag, flag);
+    EPROMStore::update(4, flag);
+    EPROMStore::update(5, magicMarker);
 
-  EPROMStore::update(loByteLocation, val & 0x00FF);
-  EPROMStore::update(hiByteLocation, (val >> 8) & 0x00FF);
-
-  LOGV5(DEBUG_INFO,F("Mount: EEPROM Write: Wrote %x to %d and %x to %d"), val & 0x00FF, loByteLocation, (val >> 8) & 0x00FF, hiByteLocation);
+    EPROMStore::update(loByteLocation, val & 0x00FF);
+    EPROMStore::update(hiByteLocation, (val >> 8) & 0x00FF);
+    LOGV5(DEBUG_INFO,F("Mount: EEPROM Write: Wrote %x to %d and %x to %d"), val & 0x00FF, loByteLocation, (val >> 8) & 0x00FF, hiByteLocation);
+  }
 }
 
 /////////////////////////////////
@@ -978,7 +1033,7 @@ void Mount::startSlewingToTarget() {
   _mountStatus |= STATUS_SLEWING | STATUS_SLEWING_TO_TARGET;
   _totalDECMove = 1.0f * _stepperDEC->distanceToGo();
   _totalRAMove = 1.0f * _stepperRA->distanceToGo();
-  LOGV3(DEBUG_MOUNT, "Mount: RA Dist: %d,   DEC Dist: %d", _stepperRA->distanceToGo(), _stepperDEC->distanceToGo())
+  LOGV3(DEBUG_MOUNT, "Mount: RA Dist: %d,   DEC Dist: %d", _stepperRA->distanceToGo(), _stepperDEC->distanceToGo());
   #if RA_STEPPER_TYPE == STEPPER_TYPE_NEMA17  // tracking while slewing causes audible lagging
   if (_stepperRA->distanceToGo() > 0) {
     // Only stop tracking if we're actually going to slew somewhere else, otherwise the 
@@ -1407,7 +1462,7 @@ String Mount::getStatusString() {
   if (_mountStatus == STATUS_PARKED) {
     status = "Parked,";
   }
-  else if (_mountStatus & STATUS_PARKING) {
+  else if ((_mountStatus & STATUS_PARKING) || (_mountStatus & STATUS_PARKING_POS)) {
     status = "Parking,";
   }
   else if (isGuiding()) {
@@ -1555,7 +1610,7 @@ bool Mount::isParked() const {
 //
 /////////////////////////////////
 bool Mount::isParking() const {
-  return _mountStatus & STATUS_PARKING;
+  return _mountStatus & (STATUS_PARKING | STATUS_PARKING_POS);
 }
 
 /////////////////////////////////
@@ -1817,9 +1872,15 @@ void Mount::loop() {
         // Mount is at Target!
         // If we we're parking, we just reached home. Clear the flag, reset the motors and stop tracking.
         if (isParking()) {
-          LOGV1(DEBUG_MOUNT,F("Mount::Loop:   Was Parking, stop tracking and set home."));
           stopSlewing(TRACKING);
-          setHome(false);
+          // If we're on the second part of the slew to parking, don't set home here
+          if (!_slewingToPark) {
+            LOGV1(DEBUG_MOUNT,F("Mount::Loop:   Was Parking, stop tracking and set home."));
+            setHome(false);
+          }
+          else{
+            LOGV1(DEBUG_MOUNT,F("Mount::Loop:   Was Parking, stop tracking."));
+          }
         }
 
         _currentDECStepperPosition = _stepperDEC->currentPosition();
@@ -1849,14 +1910,29 @@ void Mount::loop() {
           _stepperTRK->setCurrentPosition(0);
           _targetRA = currentRA();
           if (isParking()) {
-            LOGV1(DEBUG_MOUNT,F("Mount::Loop:   Was parking, so no tracking."));
+            LOGV1(DEBUG_MOUNT,F("Mount::Loop:   Was parking, so no tracking. Proceeding to park position..."));
             _mountStatus &= ~STATUS_PARKING;
+            _slewingToPark = true;
+            _stepperRA->moveTo(_raParkingPos);
+            _stepperDEC->moveTo(_decParkingPos);
+            _totalDECMove = 1.0f * _stepperDEC->distanceToGo();
+            _totalRAMove = 1.0f * _stepperRA->distanceToGo();
+            LOGV5(DEBUG_MOUNT,F("Mount::Loop:   Park Position is R:%l  D:%l, TotalMove is R:%f, D:%f"), _raParkingPos,_decParkingPos,_totalRAMove, _totalDECMove);
+            if ((_stepperDEC->distanceToGo() != 0) || (_stepperRA->distanceToGo() != 0)) {
+              _mountStatus |= STATUS_PARKING_POS | STATUS_SLEWING;
+            }
           }
           else {
             LOGV1(DEBUG_MOUNT,F("Mount::Loop:   Restart tracking."));
             startSlewing(TRACKING);
           }
           _slewingToHome = false;
+        }
+        else if (_slewingToPark)
+        {
+            LOGV1(DEBUG_MOUNT,F("Mount::Loop:   Arrived at park position..."));
+            _mountStatus &= ~(STATUS_PARKING_POS | STATUS_SLEWING_TO_TARGET);
+            _slewingToPark = false;
         }
         _totalDECMove = _totalRAMove = 0;
 
@@ -1885,6 +1961,21 @@ void Mount::loop() {
 /////////////////////////////////
 void Mount::bootComplete() {
     _bootComplete = true;
+}
+
+/////////////////////////////////
+//
+// setParkingPosition
+//
+/////////////////////////////////
+void Mount::setParkingPosition(){
+  _raParkingPos = _stepperRA->currentPosition() - _stepperTRK->currentPosition();
+  _decParkingPos = _stepperDEC->currentPosition();
+
+  LOGV3(DEBUG_MOUNT,F("Mount::setParkingPos: parking RA: %l  DEC:%l"), _raParkingPos, _decParkingPos);
+
+  writePersistentData(EEPROM_RA_PARKING_POS, _raParkingPos);
+  writePersistentData(EEPROM_DEC_PARKING_POS, _decParkingPos);
 }
 
 /////////////////////////////////

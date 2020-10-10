@@ -12,74 +12,76 @@
 // HIGHLIGHT states allow you to pick one of the three sub functions.
 #define HIGHLIGHT_FIRST 1
 #define HIGHLIGHT_POLAR 1
-#define HIGHLIGHT_SPEED 2
-#define HIGHLIGHT_DRIFT 3
+#define HIGHLIGHT_DRIFT 2
+#define HIGHLIGHT_SPEED 3
 #define HIGHLIGHT_RA_STEPS 4
 #define HIGHLIGHT_DEC_STEPS 5
 #define HIGHLIGHT_BACKLASH_STEPS 6
+#define HIGHLIGHT_PARKING_POS 7
 
 #if AZIMUTH_ALTITUDE_MOTORS == 1
-#define HIGHLIGHT_AZIMUTH_ADJUSTMENT 7
-#define HIGHLIGHT_ALTITUDE_ADJUSTMENT 8
-#if USE_GYRO_LEVEL == 1
-#define HIGHLIGHT_ROLL_LEVEL 9
-#define HIGHLIGHT_PITCH_LEVEL 10
-#define HIGHLIGHT_LAST 10
+  #define HIGHLIGHT_AZIMUTH_ADJUSTMENT 8
+  #define HIGHLIGHT_ALTITUDE_ADJUSTMENT 9
+  #if USE_GYRO_LEVEL == 1
+    #define HIGHLIGHT_ROLL_LEVEL 10
+    #define HIGHLIGHT_PITCH_LEVEL 11
+    #define HIGHLIGHT_LAST 11
+  #else
+    #define HIGHLIGHT_LAST 9
+  #endif
 #else
-#define HIGHLIGHT_LAST 8
-#endif
-#else
-#if USE_GYRO_LEVEL == 1
-#define HIGHLIGHT_ROLL_LEVEL 7
-#define HIGHLIGHT_PITCH_LEVEL 8
-#define HIGHLIGHT_LAST 8
-#else
-#define HIGHLIGHT_LAST 6
-#endif
+  #if USE_GYRO_LEVEL == 1
+    #define HIGHLIGHT_ROLL_LEVEL 8
+    #define HIGHLIGHT_PITCH_LEVEL 9
+    #define HIGHLIGHT_LAST 9
+  #else
+    #define HIGHLIGHT_LAST 7
+  #endif
 #endif
 
 // Polar calibration goes through these three states:
 //  11- moving to RA and DEC beyond Polaris and waiting on confirmation that Polaris is centered
 //  13- moving back to home position
-#define POLAR_CALIBRATION_WAIT_CENTER_POLARIS 11
-#define POLAR_CALIBRATION_WAIT_HOME 12
-
-// Speed calibration only has one state, allowing you to adjust the speed with UP and DOWN
-#define SPEED_CALIBRATION 14
+#define POLAR_CALIBRATION_WAIT_CENTER_POLARIS 20
+#define POLAR_CALIBRATION_WAIT_HOME 21
 
 // Drift calibration goes through 2 states
 // 15- Display four durations and wait for the user to select one
 // 16- Start the calibration run after user presses SELECT. This state waits 1.5s, takes duration time
 //     to slew east in half the time selected, then waits 1.5s and slews west in the same duration, and waits 1.5s.
-#define DRIFT_CALIBRATION_WAIT 15
-#define DRIFT_CALIBRATION_RUNNING 16
+#define DRIFT_CALIBRATION_WAIT 30
+#define DRIFT_CALIBRATION_RUNNING 31
+
+// Speed calibration only has one state, allowing you to adjust the speed with UP and DOWN
+#define SPEED_CALIBRATION 40
 
 // RA step calibration only has one state, allowing you to adjust the number of steps with UP and DOWN
-#define RA_STEP_CALIBRATION 17
+#define RA_STEP_CALIBRATION 50
 
 // DEC step calibration only has one state, allowing you to adjust the number of steps with UP and DOWN
-#define DEC_STEP_CALIBRATION 18
+#define DEC_STEP_CALIBRATION 60
 
 // Backlash calibration only has one state, allowing you to adjust the number of steps with UP and DOWN
-#define BACKLASH_CALIBRATION 19
+#define BACKLASH_CALIBRATION 70
 
+#define PARKING_POS_CONFIRM 80
 // Brightness setting only has one state, allowing you to adjust the brightness with UP and DOWN
-// #define BACKLIGHT_CALIBRATION 20
+// #define BACKLIGHT_CALIBRATION 90
 
 // Azimuth adjustment has one state, allowing you to move azimuth a number of minutes
-#define AZIMUTH_ADJUSTMENT 20
+#define AZIMUTH_ADJUSTMENT 100
 
 // Azimuth adjustment has one state, allowing you to move azimuth a number of minutes
-#define ALTITUDE_ADJUSTMENT 21
+#define ALTITUDE_ADJUSTMENT 110
 
 // Roll Offset Calibration only has one state, allowing you to set the current roll angle as level
-#define ROLL_OFFSET_CALIBRATION 22
-#define ROLL_OFFSET_CONFIRM 23
+#define ROLL_OFFSET_CALIBRATION 120
+#define ROLL_OFFSET_CONFIRM 121
 
 
 // Pitch Offset Calibration only has one state, allowing you to set the current pitch angle as level
-#define PITCH_OFFSET_CALIBRATION 24
-#define PITCH_OFFSET_CONFIRM 25
+#define PITCH_OFFSET_CALIBRATION 130
+#define PITCH_OFFSET_CONFIRM 131
 
 // Start off with Polar Alignment higlighted.
 byte calState = HIGHLIGHT_FIRST;
@@ -92,6 +94,9 @@ int calDelay = 150;
 
 // The index of durations that the user has selected.
 byte driftSubIndex = 1;
+
+// The index of Yes or No to confirm parking pos
+byte parkYesNoIndex = 0;
 
 // The requested total duration of the drift alignment run.
 byte driftDuration = 0;
@@ -677,6 +682,44 @@ bool processCalibrationKeys()
     }
     break;
 
+    case PARKING_POS_CONFIRM:
+    {
+      if (key == btnDOWN || key == btnLEFT)
+      {
+        parkYesNoIndex= adjustWrap(parkYesNoIndex, 1, 0, 1);
+      }
+      if (key == btnUP)
+      {
+        parkYesNoIndex= adjustWrap(parkYesNoIndex, -1, 0, 3);
+      }
+      if (key == btnSELECT)
+      {
+        if (parkYesNoIndex == 0) { // Yes
+          mount.setParkingPosition();
+          lcdMenu.printMenu("Position stored.");
+          mount.delay(800);
+        }
+        else{
+          lcdMenu.printMenu("Use CTRL to move");
+          mount.delay(750);
+          lcdMenu.setCursor(0,1);
+          lcdMenu.printMenu("OAT to park pos,");
+          mount.delay(750);
+          lcdMenu.setCursor(0,1);
+          lcdMenu.printMenu("then come back.");
+          mount.delay(700);
+        }
+        calState = HIGHLIGHT_PARKING_POS;
+      }
+      else if (key == btnRIGHT)
+      {
+        // RIGHT cancels duration selection and returns to menu
+        calState = HIGHLIGHT_PARKING_POS;
+        driftSubIndex = 1;
+      }
+    }
+    break;
+
     case HIGHLIGHT_RA_STEPS:
     {
       if (key == btnDOWN)
@@ -717,6 +760,22 @@ bool processCalibrationKeys()
         gotoNextHighlightState(-1);
       else if (key == btnSELECT)
         calState = BACKLASH_CALIBRATION;
+      else if (key == btnRIGHT)
+      {
+        gotoNextMenu();
+        calState = HIGHLIGHT_FIRST;
+      }
+    }
+    break;
+
+    case HIGHLIGHT_PARKING_POS:
+    {
+      if (key == btnDOWN)
+        gotoNextHighlightState(1);
+      if (key == btnUP)
+        gotoNextHighlightState(-1);
+      else if (key == btnSELECT)
+        calState = PARKING_POS_CONFIRM;
       else if (key == btnRIGHT)
       {
         gotoNextMenu();
@@ -853,6 +912,10 @@ void printCalibrationSubmenu()
   {
     lcdMenu.printMenu(">Backlash Adjust");
   }
+  else if (calState == HIGHLIGHT_PARKING_POS)
+  {
+    lcdMenu.printMenu(">Set Parking Pos");
+  }
 #if AZIMUTH_ALTITUDE_MOTORS == 1
   else if (calState == HIGHLIGHT_AZIMUTH_ADJUSTMENT)
   {
@@ -912,6 +975,12 @@ void printCalibrationSubmenu()
   else if (calState == BACKLASH_CALIBRATION)
   {
     sprintf(scratchBuffer, "Backlash: %d", BacklashSteps);
+    lcdMenu.printMenu(scratchBuffer);
+  }
+  else if (calState == PARKING_POS_CONFIRM)
+  {
+    sprintf(scratchBuffer, "Parked?  Yes  No");
+    scratchBuffer[8+parkYesNoIndex * 5] = '>';
     lcdMenu.printMenu(scratchBuffer);
   }
 #if AZIMUTH_ALTITUDE_MOTORS == 1
