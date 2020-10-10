@@ -183,7 +183,7 @@ void printHASubmenu()
     }
     else if (haState == STARTING_GPS)
     {
-        sprintf(satBuffer, "  Found %u sats", gps.satellites.value());
+        sprintf(satBuffer, "  Found %lu sats", gps.satellites.value());
         satBuffer[0] = ind[indicator];
     }
     else if (haState == ENTER_HA_MANUALLY)

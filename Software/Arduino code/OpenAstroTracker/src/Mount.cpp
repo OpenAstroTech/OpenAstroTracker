@@ -41,6 +41,45 @@
 #define SLEW_MASK_WEST    B1000
 #define SLEW_MASK_ANY     B1111
 
+// EPROM constants
+#define EEPROM_MAGIC_MASK                  0xFE00    // If these bits are set to 0xBE00, something has been written to the EEPROM
+#define EEPROM_MAGIC_EXTENDED_MASK         0xFE00    // If these bits are set to 0xBF00, an extended value has been written to the EEPROM
+#define EEPROM_MAGIC_MARKER                0xBE00
+#define EEPROM_MAGIC_EXTENDED_MARKER       0xBF00
+
+// The markjer bits for the first 8 values stored in EEPROM.
+#define EEPROM_RA_STEPS_BIT                0x0001
+#define EEPROM_DEC_STEPS_BIT               0x0002
+#define EEPROM_SPEED_FACTOR_BIT            0x0004
+#define EEPROM_BACKLASH_STEPS_BIT          0x0008
+#define EEPROM_LATITUDE_BIT                0x0010
+#define EEPROM_LONGITUDE_BIT               0x0020
+#define EEPROM_PITCH_OFFSET_BIT            0x0040
+#define EEPROM_ROLL_OFFSET_BIT             0x0080
+
+// The mask bits to test what is stored
+#define EEPROM_MAGIC_MASK_RA_STEPS         (EEPROM_MAGIC_MASK | EEPROM_RA_STEPS_BIT) 
+#define EEPROM_MAGIC_MASK_DEC_STEPS        (EEPROM_MAGIC_MASK | EEPROM_DEC_STEPS_BIT) 
+#define EEPROM_MAGIC_MASK_SPEED_FACTOR     (EEPROM_MAGIC_MASK | EEPROM_SPEED_FACTOR_BIT) 
+#define EEPROM_MAGIC_MASK_BACKLASH_STEPS   (EEPROM_MAGIC_MASK | EEPROM_BACKLASH_STEPS_BIT) 
+#define EEPROM_MAGIC_MASK_LATITUDE         (EEPROM_MAGIC_MASK | EEPROM_LATITUDE_BIT) 
+#define EEPROM_MAGIC_MASK_LONGITUDE        (EEPROM_MAGIC_MASK | EEPROM_LONGITUDE_BIT) 
+#define EEPROM_MAGIC_MASK_PITCH_OFFSET     (EEPROM_MAGIC_MASK | EEPROM_PITCH_OFFSET_BIT) 
+#define EEPROM_MAGIC_MASK_ROLL_OFFSET      (EEPROM_MAGIC_MASK | EEPROM_ROLL_OFFSET_BIT) 
+
+// The result bits (after masking with above mask) to indicate what is stored
+#define EEPROM_RA_STEPS_MARKER_BIT         (EEPROM_MAGIC_MARKER | EEPROM_RA_STEPS_BIT) 
+#define EEPROM_DEC_STEPS_MARKER_BIT        (EEPROM_MAGIC_MARKER | EEPROM_DEC_STEPS_BIT)
+#define EEPROM_SPEED_FACTOR_MARKER_BIT     (EEPROM_MAGIC_MARKER | EEPROM_SPEED_FACTOR_BIT) 
+#define EEPROM_BACKLASH_STEPS_MARKER_BIT   (EEPROM_MAGIC_MARKER | EEPROM_BACKLASH_STEPS_BIT) 
+#define EEPROM_LATITUDE_MARKER_BIT         (EEPROM_MAGIC_MARKER | EEPROM_LATITUDE_BIT) 
+#define EEPROM_LONGITUDE_MARKER_BIT        (EEPROM_MAGIC_MARKER | EEPROM_LONGITUDE_BIT) 
+#define EEPROM_PITCH_OFFSET_MARKER_BIT     (EEPROM_MAGIC_MARKER | EEPROM_PITCH_OFFSET_BIT) 
+#define EEPROM_ROLL_OFFSET_MARKER_BIT      (EEPROM_MAGIC_MARKER | EEPROM_ROLL_OFFSET_BIT) 
+
+// Extended bits
+#define EEPROM_PARKING_POS_MARKER_BIT         0x0001
+
 const char* formatStringsDEC[] = {
   "",
   " %c%02d@ %02d' %02d\"",  // LCD Menu w/ cursor
@@ -196,7 +235,7 @@ void Mount::readPersistentData()
 
   LOGV2(DEBUG_INFO, F("Mount: EEPROM: Magic Marker: %x "), marker);
 
-  if ((marker & 0xFE01) == 0xBE01) {
+  if ((marker & EEPROM_MAGIC_MASK_RA_STEPS) == EEPROM_RA_STEPS_MARKER_BIT) {
     _stepsPerRADegree = EPROMStore::read(6) + EPROMStore::read(7) * 256;
     LOGV2(DEBUG_INFO,F("Mount: EEPROM: RA Marker OK! RA steps/deg is %d"), _stepsPerRADegree);
   }
@@ -204,7 +243,7 @@ void Mount::readPersistentData()
     LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for RA steps"));
   }
 
-  if ((marker & 0xFE02) == 0xBE02) {
+  if ((marker & EEPROM_MAGIC_MASK_DEC_STEPS) == EEPROM_DEC_STEPS_MARKER_BIT) {
     _stepsPerDECDegree = EPROMStore::read(8) + EPROMStore::read(9) * 256;
     LOGV2(DEBUG_INFO,F("Mount: EEPROM: DEC Marker OK! DEC steps/deg is %d"), _stepsPerDECDegree);
   }
@@ -213,7 +252,7 @@ void Mount::readPersistentData()
   }
 
   float speed = 1.0;
-  if ((marker & 0xFE04) == 0xBE04) {
+  if ((marker & EEPROM_MAGIC_MASK_SPEED_FACTOR) == EEPROM_SPEED_FACTOR_MARKER_BIT) {
     int adjust = EPROMStore::read(0) + EPROMStore::read(3) * 256;
     speed = 1.0 + 1.0 * adjust / 10000.0;
     LOGV3(DEBUG_INFO,F("Mount: EEPROM: Speed Marker OK! Speed adjust is %d, speedFactor is %f"), adjust, speed);
@@ -222,7 +261,7 @@ void Mount::readPersistentData()
     LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for speed factor"));
   }
 
-  if ((marker & 0xFE08) == 0xBE08) {
+  if ((marker & EEPROM_MAGIC_MASK_BACKLASH_STEPS) == EEPROM_BACKLASH_STEPS_MARKER_BIT) {
     _backlashCorrectionSteps = EPROMStore::read(10) + EPROMStore::read(11) * 256;
     LOGV2(DEBUG_INFO,F("Mount: EEPROM: Backlash Steps Marker OK! Backlash correction is %d"), _backlashCorrectionSteps);
   }
@@ -230,7 +269,7 @@ void Mount::readPersistentData()
     LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for backlash correction"));
   }
 
-  if ((marker & 0xFE10) == 0xBE10) {
+  if ((marker & EEPROM_MAGIC_MASK_LATITUDE) == EEPROM_LATITUDE_MARKER_BIT) {
     _latitude = 1.0f * EPROMStore::readInt16(12, 13) / 100.0f;
     LOGV2(DEBUG_INFO,F("Mount: EEPROM: Latitude Marker OK! Latitude is %f"), _latitude);
   } 
@@ -238,7 +277,7 @@ void Mount::readPersistentData()
     LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for latitude"));
   }
 
-  if ((marker & 0xFE20) == 0xBE20) {
+  if ((marker & EEPROM_MAGIC_MASK_LONGITUDE) == EEPROM_LONGITUDE_MARKER_BIT) {
     _longitude = 1.0f * EPROMStore::readInt16(14, 15) / 100.0f;
     LOGV2(DEBUG_INFO,F("Mount: EEPROM: Longitude Marker OK! Longitude is %f"), _longitude);
   } 
@@ -247,7 +286,7 @@ void Mount::readPersistentData()
   }
 
 #if USE_GYRO_LEVEL == 1
-  if ((marker & 0xFE40) == 0xBE40) {
+  if ((marker & EEPROM_MAGIC_MASK_PITCH_OFFSET) == EEPROM_PITCH_OFFSET_MARKER_BIT) {
     uint16_t angleValue = EPROMStore::readInt16(17, 18);
     _pitchCalibrationAngle = (((long)angleValue) - 16384) / 100.0;
     LOGV3(DEBUG_INFO,F("Mount: EEPROM: Pitch Offset Marker OK! Pitch Offset is %x (%f)"), angleValue, _pitchCalibrationAngle);
@@ -256,7 +295,7 @@ void Mount::readPersistentData()
     LOGV1(DEBUG_INFO,F("Mount: EEPROM: No stored value for Pitch Offset"));
   }
 
-  if ((marker & 0xFE80) == 0xBE80) {
+  if ((marker & EEPROM_MAGIC_MASK_ROLL_OFFSET) == EEPROM_ROLL_OFFSET_MARKER_BIT) {
     uint16_t angleValue = EPROMStore::readInt16(19,20);
     _rollCalibrationAngle = (((long)angleValue) - 16384) / 100.0;
     LOGV3(DEBUG_INFO,F("Mount: EEPROM: Roll Offset Marker OK! Roll Offset is %x (%f)"), angleValue, _rollCalibrationAngle);
@@ -266,11 +305,11 @@ void Mount::readPersistentData()
   }
 #endif
 
-  if ((marker & 0xFF00) == 0xBF00) {
+  if ((marker & EEPROM_MAGIC_EXTENDED_MASK) == EEPROM_MAGIC_EXTENDED_MARKER) {
     LOGV2(DEBUG_INFO,F("Mount: EEPROM: Magic Marker is %x, reading extended"), marker);
     int16_t nextMarker = EPROMStore::readInt16(21,22);
     LOGV2(DEBUG_INFO,F("Mount: EEPROM: ExtendedMarker is %x"), nextMarker);
-    if (nextMarker & 0x0001){
+    if (nextMarker & EEPROM_PARKING_POS_MARKER_BIT){
       _raParkingPos = EPROMStore::readInt32(23); // 23-26
       _decParkingPos = EPROMStore::readInt32(27); // 27-30
       LOGV3(DEBUG_INFO,F("Mount: EEPROM: Parking position read as R:%l, D:%l"), _raParkingPos, _decParkingPos);
@@ -297,12 +336,12 @@ void Mount::writePersistentData(int which, long val)
   bool writeExtended = false;
 
   // If we're written something before...
-  uint8_t magicMarker = EPROMStore::read(5);
-  LOGV5(DEBUG_INFO,F("Mount: EEPROM Write(%d): Marker is %x, flag is %x (%d)"), which, magicMarker, flag, flag);
-  if ((magicMarker & 0xFE) == 0xBE) {
+  uint16_t magicMarker = EPROMStore::read(5) * 256 + EPROMStore::read(4);
+  LOGV3(DEBUG_INFO,F("Mount: EEPROM Write(%d): Marker is %x"), which, magicMarker);
+  if ((magicMarker & EEPROM_MAGIC_MASK) == EEPROM_MAGIC_MARKER) {
     // ... read the current state ...
     flag = EPROMStore::read(4);
-    if ((magicMarker & 0xFF) == 0xBF) {
+    if ((magicMarker & EEPROM_MAGIC_EXTENDED_MASK) == EEPROM_MAGIC_EXTENDED_MARKER) {
       extendedFlag = EPROMStore::readInt16(21, 22);
       LOGV3(DEBUG_INFO,F("Mount: EEPROM Write: Marker is 0xBF, extended flag is %x (%d)"), extendedFlag, extendedFlag);
     }
@@ -314,7 +353,7 @@ void Mount::writePersistentData(int which, long val)
     case EEPROM_RA:
     {
       // ... set bit 0 to indicate RA value has been written to 6/7
-      flag |= 0x01;
+      flag |= EEPROM_RA_STEPS_BIT;
       loByteLocation = 6;
       hiByteLocation = 7;
       LOGV2(DEBUG_INFO,F("Mount: EEPROM Write: Updating RA steps to %d"), val);
@@ -324,7 +363,7 @@ void Mount::writePersistentData(int which, long val)
     case EEPROM_DEC:
     {
       // ... set bit 1 to indicate DEC value has been written to 8/9
-      flag |= 0x02;
+      flag |= EEPROM_DEC_STEPS_BIT;
       loByteLocation = 8;
       hiByteLocation = 9;
       LOGV2(DEBUG_INFO,F("Mount: EEPROM Write: Updating DEC steps to %d"), val);
@@ -334,7 +373,7 @@ void Mount::writePersistentData(int which, long val)
     case EEPROM_SPEED:
     {
       // ... set bit 3 to indicate speed factor value has been written to 0/3
-      flag |= 0x04;
+      flag |= EEPROM_SPEED_FACTOR_BIT;
       loByteLocation = 0;
       hiByteLocation = 3;
       LOGV2(DEBUG_INFO,F("Mount: EEPROM Write: Updating Speed factor to %d"), val);
@@ -344,7 +383,7 @@ void Mount::writePersistentData(int which, long val)
     case EEPROM_BACKLASH:
     {
       // ... set bit 4 to indicate backlash has been written to 10/11
-      flag |= 0x08;
+      flag |= EEPROM_BACKLASH_STEPS_BIT;
       loByteLocation = 10;
       hiByteLocation = 11;
       LOGV2(DEBUG_INFO,F("Mount: EEPROM Write: Updating Backlash to %d"), val);
@@ -354,7 +393,7 @@ void Mount::writePersistentData(int which, long val)
     case EEPROM_LATITUDE:
     {
       // ... set bit 5 to indicate Latitude x100  has been written to 12/13
-      flag |= 0x10;
+      flag |= EEPROM_LATITUDE_BIT;
       loByteLocation = 12;
       hiByteLocation = 13;
       LOGV2(DEBUG_INFO,F("Mount: EEPROM Write: Updating Latitude to %d"), val);
@@ -364,7 +403,7 @@ void Mount::writePersistentData(int which, long val)
     case EEPROM_LONGITUDE:
     {
       // ... set bit 6 to indicate Longitude x100  has been written to 14/15
-      flag |= 0x20;
+      flag |= EEPROM_LONGITUDE_BIT;
       loByteLocation = 14;
       hiByteLocation = 15;
       LOGV2(DEBUG_INFO,F("Mount: EEPROM Write: Updating Longitude to %d"), val);
@@ -374,7 +413,7 @@ void Mount::writePersistentData(int which, long val)
     case EEPROM_PITCH_OFFSET:
     {
       // ... set bit 7 to indicate pitch offset angle value has been written to 17/18
-      flag |= 0x40;
+      flag |= EEPROM_PITCH_OFFSET_BIT;
       loByteLocation = 17;
       hiByteLocation = 18;
       LOGV2(DEBUG_INFO,F("Mount: EEPROM Write: Updating Pitch Offset to %d"), val);
@@ -384,7 +423,7 @@ void Mount::writePersistentData(int which, long val)
     case EEPROM_ROLL_OFFSET:
     {
       // ... set bit 8 to indicate pitch offset angle value has been written to 19/20
-      flag |= 0x80;
+      flag |= EEPROM_ROLL_OFFSET_BIT;
       loByteLocation = 19;
       hiByteLocation = 20;
       LOGV2(DEBUG_INFO,F("Mount: EEPROM Write: Updating Roll Offset to %d"), val);
@@ -396,7 +435,7 @@ void Mount::writePersistentData(int which, long val)
     {
       // ... set bit 8 to indicate pitch offset angle value has been written to 19/20
       writeExtended = true;
-      extendedFlag |= 0x0001;
+      extendedFlag |= EEPROM_PARKING_POS_MARKER_BIT;
       if (which == EEPROM_RA_PARKING_POS ){
         EPROMStore::updateInt32(23, val);
         LOGV2(DEBUG_INFO,F("Mount: EEPROM Write: Updating RA Parking Pos to %l at 23-26"), val);
@@ -412,13 +451,13 @@ void Mount::writePersistentData(int which, long val)
 
   if (writeExtended) {
     LOGV3(DEBUG_INFO,F("Mount: EEPROM Write: New Marker is 0xBF, extended flag is %x (%d)"), extendedFlag, extendedFlag);
-    EPROMStore::update(5, 0xBF);
+    EPROMStore::update(5, EEPROM_MAGIC_EXTENDED_MARKER >> 8);
     EPROMStore::updateInt16(21, 22, extendedFlag);
   }
   else {
     LOGV4(DEBUG_INFO,F("Mount: EEPROM Write: New Marker is %d, flag is %x (%d)"), magicMarker, flag, flag);
     EPROMStore::update(4, flag);
-    EPROMStore::update(5, magicMarker);
+    EPROMStore::update(5, magicMarker >> 8);
 
     EPROMStore::update(loByteLocation, val & 0x00FF);
     EPROMStore::update(hiByteLocation, (val >> 8) & 0x00FF);
