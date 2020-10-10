@@ -277,7 +277,7 @@ void Mount::readPersistentData()
     }
   } 
   else {
-    LOGV1(DEBUG_INFO,F("Mount: EEPROM: No ExtendedMarker present"), nextMarker);
+    LOGV1(DEBUG_INFO,F("Mount: EEPROM: No ExtendedMarker present"));
   }
 
   setSpeedCalibration(speed, false);
