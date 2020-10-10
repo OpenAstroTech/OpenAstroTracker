@@ -16,5 +16,8 @@ public:
 
   static void updateInt16(int loByteAddr, int hiByteAddr, int16_t value);
   static int16_t readInt16(int loByteAddr, int hiByteAddr);
+
+  static void updateInt32(int lowestByteAddr, int32_t value);
+  static int32_t readInt32(int lowestByteAddr);
 };
 
