@@ -15,6 +15,7 @@ private:
   String handleMeadeSetInfo(String inCmd);
   String handleMeadeMovement(String inCmd);
   String handleMeadeGetInfo(String inCmd);
+  String handleMeadeGPSCommands(String inCmd);
   String handleMeadeSyncControl(String inCmd);
   String handleMeadeHome(String inCmd);
   String handleMeadeInit(String inCmd);

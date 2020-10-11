@@ -5,6 +5,9 @@
 #include "WifiControl.hpp"
 #include "Gyro.hpp"
 
+#if USE_GPS == 1
+bool gpsAqcuisitionComplete(); // defined in c72_menuHA_GPS.hpp
+#endif
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 // Serial support
@@ -41,6 +44,21 @@
 //      Returns: '|#' if slewing, ' #' if not
 //
 //------------------------------------------------------------------
+// GPS FAMILY
+//
+// :gT#
+//      Attempts to set the mount time and location from the GPS for 2 minutes. This is essentially a
+//      blocking call, no other activities take place (except tracking, but only if interrupt-driven).
+//      Use :Gt# and :Gg# to retrieve Lat and Long,
+//      Returns: 1 if the data was set, 0 if not (timedout)
+//
+// :gTnnn#
+//      Attempts to set the mount time and location from the GPS with a custom timeout. This is also blocking
+//      but by using a low timeout, you can avoid long pauses and let the user know that it's not ready yet.
+//      Where nnn is an integer defining the number of milliseconds to wait for the GPS to get a bearing.
+//      Returns: 1 if the data was set, 0 if not (timedout)
+//
+//------------------------------------------------------------------
 // GET FAMILY
 //
 // :GVP#
@@ -70,6 +88,17 @@
 //      Get Current Right Ascension
 //      Returns: HH:MM:SS
 //               Where HH is hour, MM is minutes, SS is seconds.
+//
+// :Gt#
+//      Get Site Latitude
+//      Returns: sDD*MM
+//               Where s is + or - and DD is the latitude in degrees and MM the minutes.
+//       
+// :Gg#
+//      Get Site Longitude
+//      Returns: DDD*MM
+//               Where DDD is the longitude in degrees and MM the minutes. Negative (W) longitudes have had 360 added to them.
+//       
 //
 // -- GET Extensions --
 // :GIS#
@@ -106,17 +135,6 @@
 //
 //       * Az and Alt are optional. The string may only be 3 characters long
 //
-//
-// : Gt#
-//      Get Site Latitude
-//      Returns: sDD*MM
-//               Where s is + or - and DD is the latitude in degrees and MM the minutes.
-//       
-// : Gg#
-//      Get Site Latitude
-//      Returns: DDD*MM
-//               Where DDD is the longitude in degrees and MM the minutes. Negative (W) longitudes have had 360 added to them.
-//       
 //------------------------------------------------------------------
 // SET FAMILY
 //
@@ -505,6 +523,30 @@ String MeadeCommandProcessor::handleMeadeGetInfo(String inCmd) {
   }
 
   return "0#";
+}
+
+/////////////////////////////
+// GPS CONTROL
+/////////////////////////////
+String MeadeCommandProcessor::handleMeadeGPSCommands(String inCmd) {
+  #if USE_GPS == 1
+  if (inCmd[0] == 'T') {
+    unsigned long timeoutLen = 2UL * 60UL * 1000UL;
+    if (inCmd.length() > 1) {
+      timeoutLen = inCmd.substring(1).toInt();
+    }
+    // Wait at most 2 minutes
+    unsigned long timeoutTime = millis() + timeoutLen;
+    while (millis() < timeoutTime) {
+      if (gpsAqcuisitionComplete()) {
+        LOGV1(DEBUG_MEADE, F("MEADE: GPS startup, GPS acquired"));
+        return "1";
+      }
+    }
+  }
+  #endif
+  LOGV1(DEBUG_MEADE, F("MEADE: GPS startup, no GPS signal"));
+  return "0";
 }
 
 /////////////////////////////
@@ -941,6 +983,7 @@ String MeadeCommandProcessor::processCommand(String inCmd) {
       case 'S': return handleMeadeSetInfo(inCmd);
       case 'M': return handleMeadeMovement(inCmd);
       case 'G': return handleMeadeGetInfo(inCmd);
+      case 'g': return handleMeadeGPSCommands(inCmd);
       case 'C': return handleMeadeSyncControl(inCmd);
       case 'h': return handleMeadeHome(inCmd);
       case 'I': return handleMeadeInit(inCmd);
