@@ -43,7 +43,7 @@
 
 // EPROM constants
 #define EEPROM_MAGIC_MASK                  0xFE00    // If these bits are set to 0xBE00, something has been written to the EEPROM
-#define EEPROM_MAGIC_EXTENDED_MASK         0xFE00    // If these bits are set to 0xBF00, an extended value has been written to the EEPROM
+#define EEPROM_MAGIC_EXTENDED_MASK         0xFF00    // If these bits are set to 0xBF00, an extended value has been written to the EEPROM
 #define EEPROM_MAGIC_MARKER                0xBE00
 #define EEPROM_MAGIC_EXTENDED_MARKER       0xBF00
 
@@ -186,8 +186,10 @@ void Mount::startTimerInterrupts()
 /////////////////////////////////
 void Mount::clearConfiguration()
 {
-  EPROMStore::update(4, 0);
-  EPROMStore::update(5, 0);
+  EPROMStore::update(5, 0);  // CLear the magic marker
+  EPROMStore::update(4, 0);  // Clear the flags
+  EPROMStore::update(21, 0); // Clear the extendede flags
+  EPROMStore::update(22, 0);
 }
 
 /////////////////////////////////
