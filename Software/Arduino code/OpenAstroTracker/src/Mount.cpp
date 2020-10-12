@@ -4,7 +4,6 @@
 #include "Mount.hpp"
 #include "Utility.hpp"
 #include "EPROMStore.hpp"
-#include "Sidereal.hpp"
 #include "../Configuration_adv.hpp"
 #include "../Configuration_pins.hpp"
 #include "inc/Globals.hpp"
@@ -652,7 +651,7 @@ void Mount::setSpeedCalibration(float val, bool saveToStorage) {
   // The tracker simply needs to rotate at 15degrees/hour, adjusted for sidereal
   // time (i.e. the 15degrees is per 23h56m04s. 86164s/86400 = 0.99726852. 3590/3600 is the same ratio) So we only go 15 x 0.99726852 in an hour.
   #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-  _trackingSpeed = _trackingSpeedCalibration * ((_stepsPerRADegree / SET_MICROSTEPPING) * TRACKING_MICROSTEPPING) * siderealDegreesInHour / 3600.0f;
+  _trackingSpeed = _trackingSpeedCalibration * _stepsPerRADegree * TRACKING_MICROSTEPPING * siderealDegreesInHour / (3600.0f * SET_MICROSTEPPING);
   #else
   _trackingSpeed = _trackingSpeedCalibration * _stepsPerRADegree * siderealDegreesInHour / 3600.0f;
   #endif
@@ -1123,9 +1122,8 @@ void Mount::guidePulse(byte direction, int duration) {
   #if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
   float raTrackingSpeed = _stepsPerRADegree * siderealDegreesInHour / 3600.0f;
   #else
-  float raTrackingSpeed = ((_stepsPerRADegree / SET_MICROSTEPPING) * TRACKING_MICROSTEPPING) * siderealDegreesInHour / 3600.0f;
+  float raTrackingSpeed = 1.0 * _stepsPerRADegree * TRACKING_MICROSTEPPING * siderealDegreesInHour / (3600.0f * SET_MICROSTEPPING);
   #endif
-
 
   // TODO: Do we need to track how many steps the steppers took and add them to the GoHome calculation?
   // If so, we need to remember where we were when we started the guide pulse. Then at the end,
