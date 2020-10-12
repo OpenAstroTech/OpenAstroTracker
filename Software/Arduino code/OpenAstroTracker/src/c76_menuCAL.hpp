@@ -486,7 +486,7 @@ bool processCalibrationKeys()
       {
         calState = ROLL_OFFSET_CONFIRM;
         lcdMenu.setCursor(0, 0);
-        lcdMenu.printMenu("Set level?");
+        lcdMenu.printMenu(F("Set as level?"));
       }
       else if (key == btnLEFT)
       {
@@ -526,7 +526,7 @@ bool processCalibrationKeys()
       {
         calState = PITCH_OFFSET_CONFIRM;
         lcdMenu.setCursor(0, 0);
-        lcdMenu.printMenu("Set level?");
+        lcdMenu.printMenu(F("Set as level?"));
       }
       else if (key == btnLEFT)
       {

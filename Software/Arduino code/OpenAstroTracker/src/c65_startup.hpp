@@ -1,10 +1,12 @@
 #pragma once
 #include "../Configuration_adv.hpp"
 
+#if USE_GPS == 1
+#include "Sidereal.hpp"
+#endif
+
 #if HEADLESS_CLIENT == 0
 #if SUPPORT_GUIDED_STARTUP == 1
-
-#include "Sidereal.hpp"
 
 //////////////////////////////////////////////////////////////
 // This file contains the Starup 'wizard' that guides you through initial setup

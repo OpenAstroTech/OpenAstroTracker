@@ -74,7 +74,7 @@ void printStatusSubmenu() {
       
       case 2: {
         if (subIndex == 0) {
-          lcdMenu.printMenu("TRK Stepr:" + String(mount.getCurrentStepperPosition(TRACKING)));
+          lcdMenu.printMenu("TRK Stpr:" + String(mount.getCurrentStepperPosition(TRACKING)));
         }
         else {
           sprintf(scratchBuffer, "TRK Spd:");

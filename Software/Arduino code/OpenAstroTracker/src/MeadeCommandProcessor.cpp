@@ -6,7 +6,7 @@
 #include "Gyro.hpp"
 
 #if USE_GPS == 1
-bool gpsAqcuisitionComplete(); // defined in c72_menuHA_GPS.hpp
+bool gpsAqcuisitionComplete(int & indicator); // defined in c72_menuHA_GPS.hpp
 #endif
 /////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -537,8 +537,9 @@ String MeadeCommandProcessor::handleMeadeGPSCommands(String inCmd) {
     }
     // Wait at most 2 minutes
     unsigned long timeoutTime = millis() + timeoutLen;
+    int indicator = 0;
     while (millis() < timeoutTime) {
-      if (gpsAqcuisitionComplete()) {
+      if (gpsAqcuisitionComplete(indicator)) {
         LOGV1(DEBUG_MEADE, F("MEADE: GPS startup, GPS acquired"));
         return "1";
       }
