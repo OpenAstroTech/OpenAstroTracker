@@ -27,19 +27,11 @@
  * These files won't be tracked by Git and thus will remain after branch changes or code updates. 
   **/
 
-#if defined(ESP32)                  // ESP32
+#if defined(ESP32) && __has_include("Configuration_local_esp32.hpp")                // ESP32
     #define LOCAL_CONFIG "Configuration_local_esp32.hpp"
-    #if !__has_include(LOCAL_CONFIG)
-        #undef LOCAL_CONFIG 
-        #define LOCAL_CONFIG "Configuration_local.hpp"
-    #endif
-#elif defined(__AVR_ATmega2560__)   // Arduino Mega
+#elif defined(__AVR_ATmega2560__) && __has_include("Configuration_local_mega.hpp")  // Mega2560
     #define LOCAL_CONFIG "Configuration_local_mega.hpp"
-    #if !__has_include(LOCAL_CONFIG)
-        #undef LOCAL_CONFIG 
-        #define LOCAL_CONFIG "Configuration_local.hpp"
-    #endif
-#else                               // Other board?
+#else                                                                               // Custom config
     #define LOCAL_CONFIG "Configuration_local.hpp"
 #endif
 
