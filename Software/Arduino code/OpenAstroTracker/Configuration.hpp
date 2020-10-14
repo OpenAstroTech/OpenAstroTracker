@@ -27,28 +27,12 @@
  * These files won't be tracked by Git and thus will remain after branch changes or code updates. 
   **/
 
-#if defined(ESP32)                  // ESP32
-    #define LOCAL_CONFIG "Configuration_local_esp32.hpp"
-    #if !__has_include(LOCAL_CONFIG)
-        #undef LOCAL_CONFIG 
-        #define LOCAL_CONFIG "Configuration_local.hpp"
-    #endif
-#elif defined(__AVR_ATmega2560__)   // Arduino Mega
-    #define LOCAL_CONFIG "Configuration_local_mega.hpp"
-    #if !__has_include(LOCAL_CONFIG)
-        #undef LOCAL_CONFIG 
-        #define LOCAL_CONFIG "Configuration_local.hpp"
-    #endif
-#else                               // Other board?
-    #define LOCAL_CONFIG "Configuration_local.hpp"
-#endif
-
-// Uncomment these two lines to override the automatic local config with yours.
-// #undef LOCAL_CONFIG 
-// #define LOCAL_CONFIG "Configuration_local_foo.hpp"
-
-#if __has_include(LOCAL_CONFIG)
-#include LOCAL_CONFIG
+#if defined(ESP32) && __has_include("Configuration_local_esp32.hpp")                // ESP32
+    #include "Configuration_local_esp32.hpp"
+#elif defined(__AVR_ATmega2560__) && __has_include("Configuration_local_mega.hpp")  // Mega2560
+    #include "Configuration_local_mega.hpp"
+#elif __has_include("Configuration_local.hpp")                                      // Custom config
+    #include "Configuration_local.hpp"
 #endif
 
 // Set to 1 for the northern hemisphere, 0 otherwise
