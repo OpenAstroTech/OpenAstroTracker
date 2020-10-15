@@ -1083,7 +1083,7 @@ void Mount::startSlewingToTarget() {
   _totalRAMove = 1.0f * _stepperRA->distanceToGo();
   LOGV3(DEBUG_MOUNT, "Mount: RA Dist: %d,   DEC Dist: %d", _stepperRA->distanceToGo(), _stepperDEC->distanceToGo());
   #if RA_STEPPER_TYPE == STEPPER_TYPE_NEMA17  // tracking while slewing causes audible lagging
-  if ((_stepperRA->distanceToGo() > 0) || (_stepperDEC->distanceToGo() > 0)) {
+  if ((_stepperRA->distanceToGo() != 0) || (_stepperDEC->distanceToGo() != 0)) {
     // Only stop tracking if we're actually going to slew somewhere else, otherwise the 
     // mount::loop() code won't detect the end of the slewing operation...
     LOGV1(DEBUG_MOUNT, "Mount: Stop tracking (NEMA steppers)");
