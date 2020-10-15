@@ -353,6 +353,8 @@ private:
   float _trackingSpeed;
   float _trackingSpeedCalibration;
   unsigned long _lastDisplayUpdate;
+  unsigned long _trackerStoppedAt;
+  bool _compensateForTrackerOff;
   volatile int _mountStatus;
   char scratchBuffer[24];
   bool _stepperWasRunning;
