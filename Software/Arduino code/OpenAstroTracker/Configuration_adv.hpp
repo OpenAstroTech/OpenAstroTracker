@@ -249,22 +249,25 @@
 ////////////////////////////
 // Debugging output control
 // Each bit in the debug level specifies a kind of debug to enable. Do not change.
-#define DEBUG_NONE           0x00
-#define DEBUG_INFO           0x01
-#define DEBUG_SERIAL         0x02
-#define DEBUG_WIFI           0x04
-#define DEBUG_MOUNT          0x08
-#define DEBUG_MOUNT_VERBOSE  0x10
-#define DEBUG_GENERAL        0x20
-#define DEBUG_MEADE          0x40
-#define DEBUG_VERBOSE        0x80
-#define DEBUG_ANY            0xFF
+#define DEBUG_NONE           0x0000
+#define DEBUG_INFO           0x0001
+#define DEBUG_SERIAL         0x0002
+#define DEBUG_WIFI           0x0004
+#define DEBUG_MOUNT          0x0008
+#define DEBUG_MOUNT_VERBOSE  0x0010
+#define DEBUG_GENERAL        0x0020
+#define DEBUG_MEADE          0x0040
+#define DEBUG_VERBOSE        0x0080
+#define DEBUG_STEPPERS       0x0100
+#define DEBUG_ANY            0xFFFF
 
 ////////////////////////////
 //
 // DEBUG OUTPUT
 //
 #define DEBUG_LEVEL (DEBUG_NONE)
+// #define DEBUG_LEVEL (DEBUG_STEPPERS|DEBUG_MOUNT)
+// #define DEBUG_LEVEL (DEBUG_INFO|DEBUG_MOUNT|DEBUG_GENERAL)
 // #define DEBUG_LEVEL (DEBUG_SERIAL|DEBUG_WIFI|DEBUG_INFO|DEBUG_MOUNT|DEBUG_GENERAL)
 // #define DEBUG_LEVEL (DEBUG_ANY)
 // #define DEBUG_LEVEL (DEBUG_INFO|DEBUG_MOUNT|DEBUG_GENERAL)

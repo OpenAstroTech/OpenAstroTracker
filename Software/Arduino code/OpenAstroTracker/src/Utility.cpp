@@ -284,13 +284,17 @@ void logv(int levelFlags, String input, ...)
 {
   if ((levelFlags & DEBUG_LEVEL) != 0)
   {
+    unsigned long now = millis();
     va_list argp;
     va_start(argp, input);
     #if BUFFER_LOGS
       addToLogBuffer(formatArg(input.c_str(), argp));
     #else
+      Serial.print("[");    
+      Serial.print(String(now));
+      Serial.print("]:");    
       Serial.print(String(freeMemory()));
-      Serial.print(":");    
+      Serial.print(": ");    
       Serial.println(formatArg(input.c_str(), argp));
       Serial.flush();
     #endif
