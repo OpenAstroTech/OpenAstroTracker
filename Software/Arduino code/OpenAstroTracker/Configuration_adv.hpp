@@ -216,6 +216,7 @@
 #define ESPBOARD
 #undef HEADLESS_CLIENT
 #define HEADLESS_CLIENT 1
+// #define HEADLESS_BLUETOOTH 1
 #define WIFI_ENABLED 
 #if defined(ESP8266) 
   #undef RUN_STEPPERS_IN_MAIN_LOOP

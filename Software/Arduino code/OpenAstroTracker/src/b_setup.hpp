@@ -14,6 +14,10 @@ LcdButtons lcdButtons(0);
 
 #ifdef ESP32
 DRAM_ATTR Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
+#ifdef HEADLESS_BLUETOOTH 
+  #include "BluetoothSerial.h"
+  BluetoothSerial SerialBT;
+#endif
 #else
 Mount mount(RA_STEPS_PER_DEGREE, DEC_STEPS_PER_DEGREE, &lcdMenu);
 #endif
@@ -134,6 +138,9 @@ void setup() {
   // end microstepping -------------------
 
   Serial.begin(57600);
+  #ifdef HEADLESS_BLUETOOTH
+  SerialBT.begin("OpenAstroTracker");
+  #endif
   //BT.begin(9600);
 
   LOGV2(DEBUG_ANY, F("Hello, universe, this is OAT %s!"), VERSION);
