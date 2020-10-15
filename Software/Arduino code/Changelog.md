@@ -1,3 +1,6 @@
+**V1.8.40 - Updates**
+- Fixed RA negative movement, which was not switching to Slew microstepping settings
+
 **V1.8.39 - Updates**
 - Fixed guiding to not jump back and forth on pulses.
 - Fixed tracking during slew. We now turn off tracking for slew and compensate at the end of the slew.
