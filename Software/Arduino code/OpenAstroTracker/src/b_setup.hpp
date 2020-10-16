@@ -9,18 +9,17 @@
 #include "EPROMStore.hpp"
 #include "inc/Config.hpp"
 
+
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(0);
 
 #ifdef ESP32
 DRAM_ATTR Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
-#ifdef HEADLESS_BLUETOOTH 
-  #include "BluetoothSerial.h"
-  BluetoothSerial SerialBT;
-#endif
 #else
 Mount mount(RA_STEPS_PER_DEGREE, DEC_STEPS_PER_DEGREE, &lcdMenu);
 #endif
+
+#include "g_bluetooth.hpp"
 
 #ifdef WIFI_ENABLED
 #include "WifiControl.hpp"
@@ -68,6 +67,9 @@ void IRAM_ATTR mainLoopTask(void* payload)
 
   for (;;) {
     serialLoop();
+    #ifdef BLUETOOTH_ENABLED
+    BTin();
+    #endif
     vTaskDelay(1);
   }
 }
@@ -138,10 +140,9 @@ void setup() {
   // end microstepping -------------------
 
   Serial.begin(57600);
-  #ifdef HEADLESS_BLUETOOTH
-  SerialBT.begin("OpenAstroTracker");
+  #ifdef BLUETOOTH_ENABLED 
+  BLUETOOTH_SERIAL.begin("OpenAstroTracker");
   #endif
-  //BT.begin(9600);
 
   LOGV2(DEBUG_ANY, F("Hello, universe, this is OAT %s!"), VERSION);
 

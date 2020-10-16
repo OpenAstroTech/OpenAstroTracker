@@ -16,8 +16,6 @@
 #include "f_serial.hpp"
 #endif
 
-void BTin();
-
 #if HEADLESS_CLIENT == 0
 
   int loopsOfSameKey = 0;
@@ -217,7 +215,9 @@ void BTin();
     }
 
 
+    #ifdef BLUETOOTH_ENABLED
     BTin();
+    #endif
   }
 
   #else
@@ -225,7 +225,9 @@ void BTin();
   void loop() {
     #ifndef ESP32
       serialLoop();
+    #ifdef BLUETOOTH_ENABLED
       BTin();
+    #endif
     #endif
   }
 
