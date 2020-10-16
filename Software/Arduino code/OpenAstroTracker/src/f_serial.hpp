@@ -7,6 +7,7 @@
 
 void processSerialData();
 
+
 ////////////////////////////////////////////////
 // The main loop when under serial control
 void serialLoop()
@@ -21,6 +22,7 @@ void serialLoop()
 #ifdef WIFI_ENABLED
     wifiControl.loop();
 #endif
+
 }
 
 //////////////////////////////////////////////////
