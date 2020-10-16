@@ -181,6 +181,7 @@ private:
     
     #if I2C_DISPLAY == 1
     uint8_t buttons = _lcdMenu->readButtons();
+    _currentKey = btnNONE;
     if (buttons)
     {
       if (buttons & BUTTON_UP) _currentKey = btnUP;
