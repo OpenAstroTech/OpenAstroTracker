@@ -11,7 +11,7 @@
 
 
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
-LcdButtons lcdButtons(0);
+LcdButtons lcdButtons(0, &lcdMenu);
 
 #ifdef ESP32
 DRAM_ATTR Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
@@ -184,6 +184,9 @@ void setup() {
 
 void finishSetup()
 {
+  // Calling the LCD startup here, I2C can't be found if called earlier
+  lcdMenu.startup();
+  
   LOGV1(DEBUG_ANY, F("Finishing setup..."));
   // Show a splash screen
   lcdMenu.setCursor(0, 0);

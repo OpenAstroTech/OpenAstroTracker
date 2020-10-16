@@ -2,6 +2,7 @@
 #define UTILITY_HPP_
 
 #include <Arduino.h>
+#include "LcdMenu.hpp"
 #include "../Configuration_adv.hpp"
 
 // LCD shield buttons
@@ -138,7 +139,8 @@ void logv(int levelFlags, String input, ...);
 
 class LcdButtons {
 public:
-  LcdButtons(byte pin) {
+  LcdButtons(byte pin, LcdMenu* lcdMenu) {
+    _lcdMenu = lcdMenu;
     _analogPin = pin;
     _lastKeyChange = 0;
 
@@ -176,6 +178,18 @@ public:
 
 private:
   void checkKey() {
+    
+    #if I2C_DISPLAY == 1
+    uint8_t buttons = _lcdMenu->readButtons();
+    if (buttons)
+    {
+      if (buttons & BUTTON_UP) _currentKey = btnUP;
+      if (buttons & BUTTON_DOWN) _currentKey = btnDOWN;  
+      if (buttons & BUTTON_LEFT) _currentKey = btnLEFT;
+      if (buttons & BUTTON_RIGHT) _currentKey = btnRIGHT;
+      if (buttons & BUTTON_SELECT) _currentKey = btnSELECT;
+    }
+    #else
     _analogKeyValue = analogRead(_analogPin);
     if (_analogKeyValue > 1000) _currentKey = btnNONE;
     else if (_analogKeyValue < 50)   _currentKey = btnRIGHT;
@@ -183,6 +197,7 @@ private:
     else if (_analogKeyValue < 400)  _currentKey = btnDOWN;
     else if (_analogKeyValue < 600)  _currentKey = btnLEFT;
     else if (_analogKeyValue < 920)  _currentKey = btnSELECT;
+    #endif
 
     if (_currentKey != _lastKey) {
       _lastKey = _currentKey;
@@ -205,6 +220,7 @@ private:
   byte _newKey;
   byte _lastNewKey;
   byte _currentKey;
+  LcdMenu* _lcdMenu;
 };
 
 
