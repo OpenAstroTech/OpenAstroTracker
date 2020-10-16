@@ -12,10 +12,9 @@ jobs:
   build:
     name: ${{ matrix.board }} STEPPER=${{ matrix.stepper }} DRIVER=${{ matrix.driver }} GPS=${{ matrix.gps }} GYRO=${{ matrix.gyro }} ALTAZ=${{ matrix.azalt }} HEADLESS=${{ matrix.headless }}
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.board == 'uno' }}
     strategy:
       matrix:
-        board:    [mega2560, esp32, uno]
+        board:    [mega2560, esp32]
         stepper:  [0, 1]
         driver:   [0, 1, 2, 3]
         gps:      [0, 1]
@@ -31,12 +30,6 @@ jobs:
           - { board: esp32, gps: 1 }
           - { board: esp32, gyro: 1 }
           - { board: esp32, azalt: 1 }
-          - { board: uno, headless: 0 }
-          - { board: uno, stepper: 1 } # UNO & NEMA17
-          - { board: uno, gps: 1 }
-          - { board: uno, gyro: 1 }
-          - { board: uno, azalt: 1 }
-          - { board: uno, headless: 0 }
 
     steps:
     - uses: actions/checkout@v1
