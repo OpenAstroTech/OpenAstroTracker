@@ -131,6 +131,15 @@
 #define HEADLESS_CLIENT 0
 #endif
 
+////////////////////////////
+//
+// ARDUINO RGB LCD SHIELD I2C
+// There are two different chips supported by the LiquidTWI2 library,
+// check the marking on your shield
+#define I2C_DISPLAY 0
+#define I2C_TYPE_MCP23008 0
+#define I2C_TYPE_MCP23017 1
+
 #ifdef __AVR_ATmega328P__   // UNO must use headless
 #undef HEADLESS_CLIENT
 #define HEADLESS_CLIENT 1
