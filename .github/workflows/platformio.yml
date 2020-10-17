@@ -30,6 +30,7 @@ jobs:
           - { board: esp32, gps: 1 }
           - { board: esp32, gyro: 1 }
           - { board: esp32, azalt: 1 }
+          - { board: esp32, display: 1 }
 
     steps:
     - uses: actions/checkout@v1
