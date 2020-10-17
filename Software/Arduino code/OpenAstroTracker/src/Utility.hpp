@@ -179,6 +179,7 @@ public:
 private:
   void checkKey() {
     
+    #if HEADLESS_CLIENT == 0
     #if I2C_DISPLAY == 1
     uint8_t buttons = _lcdMenu->readButtons();
     _currentKey = btnNONE;
@@ -210,6 +211,7 @@ private:
         _newKey = _currentKey;
       }
     }
+    #endif
   }
 
 private:

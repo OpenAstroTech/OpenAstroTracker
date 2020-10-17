@@ -185,8 +185,10 @@ void setup() {
 void finishSetup()
 {
   // Calling the LCD startup here, I2C can't be found if called earlier
-  lcdMenu.startup();
-  
+  #if HEADLESS_CLIENT == 0
+    lcdMenu.startup();
+  #endif
+
   LOGV1(DEBUG_ANY, F("Finishing setup..."));
   // Show a splash screen
   lcdMenu.setCursor(0, 0);
