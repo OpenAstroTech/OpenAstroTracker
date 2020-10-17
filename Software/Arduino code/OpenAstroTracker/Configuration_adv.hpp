@@ -207,8 +207,6 @@
 //
 // Define some things, dont change: ///
 #define ESPBOARD
-#undef DISPLAY_TYPE
-#define DISPLAY_TYPE DISPLAY_TYPE_NONE
 // #define BLUETOOTH_ENABLED
 #define WIFI_ENABLED 
 #if defined(ESP8266) 
