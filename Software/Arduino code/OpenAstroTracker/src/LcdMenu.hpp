@@ -2,7 +2,7 @@
 #define _LCDMENU_HPP_
 
 #include <Arduino.h>
-#if HEADLESS_CLIENT == 0
+#if DISPLAY_TYPE > 0
 #include <LiquidCrystal.h>
 #endif
 #include "../Configuration_adv.hpp"
@@ -77,7 +77,7 @@ private:
   void printChar(char ch);
 
 private:
-#if HEADLESS_CLIENT == 0
+#if DISPLAY_TYPE > 0
   LiquidCrystal _lcd;   // The LCD screen that we'll display the menu on
   MenuItem** _menuItems;  // The first menu item (linked list)
   byte _numMenuItems;

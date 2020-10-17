@@ -2259,7 +2259,7 @@ void Mount::moveSteppersTo(float targetRA, float targetDEC) {
 //
 /////////////////////////////////
 void Mount::displayStepperPosition() {
-#if HEADLESS_CLIENT == 0
+#if DISPLAY_TYPE > 0
 
   String disp;
 
@@ -2323,7 +2323,7 @@ void Mount::displayStepperPosition() {
 //
 /////////////////////////////////
 void Mount::displayStepperPositionThrottled() {
-#if HEADLESS_CLIENT == 0
+#if DISPLAY_TYPE > 0
   long elapsed = millis() - _lastDisplayUpdate;
   if (elapsed > DISPLAY_UPDATE_TIME) {
     displayStepperPosition();

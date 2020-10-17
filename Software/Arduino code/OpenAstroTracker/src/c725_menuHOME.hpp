@@ -2,7 +2,7 @@
 
 #include "b_setup.hpp"
 
-#if HEADLESS_CLIENT == 0
+#if DISPLAY_TYPE > 0
 byte subGoIndex = 0;
 
 bool processHomeKeys() {

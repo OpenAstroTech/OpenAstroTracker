@@ -44,7 +44,7 @@ bool gpsAqcuisitionComplete(int & indicator)
     return false;
 }
 
-#if HEADLESS_CLIENT == 0
+#if DISPLAY_TYPE > 0
 
 // States that HA menu displays goes through
 #define SHOWING_HA_SYNC 1

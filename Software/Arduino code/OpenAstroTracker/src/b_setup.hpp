@@ -191,7 +191,7 @@ void finishSetup()
   lcdMenu.setCursor(5, 1);
   lcdMenu.printMenu(VERSION);
 
-  #if HEADLESS_CLIENT == 0
+  #if DISPLAY_TYPE > 0
     // Check for EEPROM reset (Button down during boot)
     if (lcdButtons.currentState() == btnDOWN){
       LOGV1(DEBUG_INFO, F("Erasing configuration in EEPROM!"));
@@ -278,7 +278,7 @@ void finishSetup()
   LOGV1(DEBUG_ANY, F("Start Tracking..."));
   mount.startSlewing(TRACKING);
 
-  #if HEADLESS_CLIENT == 0
+  #if DISPLAY_TYPE > 0
     LOGV1(DEBUG_ANY, F("Setup menu system..."));
 
     // Create the LCD top-level menu items

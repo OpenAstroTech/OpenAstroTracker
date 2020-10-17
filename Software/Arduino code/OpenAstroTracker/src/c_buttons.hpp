@@ -16,7 +16,7 @@
 #include "f_serial.hpp"
 #endif
 
-#if HEADLESS_CLIENT == 0
+#if DISPLAY_TYPE > 0
 
   int loopsOfSameKey = 0;
   int lastLoopKey = -1;
