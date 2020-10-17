@@ -1,11 +1,13 @@
 #ifndef _LCDMENU_HPP_
 #define _LCDMENU_HPP_
-
 #include <Arduino.h>
-#if DISPLAY_TYPE > 0
-#include <LiquidCrystal.h>
-#endif
 #include "../Configuration_adv.hpp"
+
+#if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD
+#include <LiquidCrystal.h>
+#elif DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23008 || DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23017
+#include <LiquidTWI2.h>
+#endif
 
 // A single menu item (like RA, HEAT, POL, etc.)
 // The ID is just a number, it has no relevance for the order of the items
@@ -34,6 +36,8 @@ class LcdMenu {
 public:
   // Create a new menu, using the given number of LCD display columns and rows
   LcdMenu(byte cols, byte rows, int maxItems);
+
+  void startup();
 
   // Find a menu item by its ID
   MenuItem* findById(byte id);
@@ -72,13 +76,27 @@ public:
   // Print a character at a specific position
   void printAt(int col, int row, char ch);
 
+  #if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23008 || DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23017
+  uint8_t readButtons();
+  #endif
+
 private:
   // Print a single character at the current cursor location and advance cursor by one. Substitutes special chars.
   void printChar(char ch);
 
 private:
 #if DISPLAY_TYPE > 0
-  LiquidCrystal _lcd;   // The LCD screen that we'll display the menu on
+
+  byte _cols;
+  byte _rows;
+  byte _maxItems;
+
+  #if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD
+    LiquidCrystal _lcd;   // The LCD screen that we'll display the menu on
+  #elif DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23008 || DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23017
+    LiquidTWI2 _lcd;   // The LCD screen that we'll display the menu on
+  #endif
+  
   MenuItem** _menuItems;  // The first menu item (linked list)
   byte _numMenuItems;
   byte _activeMenuIndex;
