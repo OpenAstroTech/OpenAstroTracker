@@ -1,4 +1,10 @@
 **V1.8.40 - Updates**
+- Removed UNO and ESP8266 support. Memory constraints are unsustainable.
+- Removed Heating menu, since it hasn't been supported in months.
+- Added user-submitted support for I2C LCD shield (thanks Christian Kardach)
+- Added user-submitted support for Bluetooth on the ESP32 board (thanks mholeys)
+
+**V1.8.40 - Updates**
 - Fixed RA negative movement, which was not switching to Slew microstepping settings
 
 **V1.8.39 - Updates**
