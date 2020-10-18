@@ -1,7 +1,7 @@
 #ifndef _MOUNT_HPP_
 #define _MOUNT_HPP_
 
-#if HEADLESS_CLIENT == 0
+#if DISPLAY_TYPE > 0
 #include <LiquidCrystal.h>
 #endif
 

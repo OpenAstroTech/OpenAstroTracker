@@ -447,7 +447,7 @@ MeadeCommandProcessor* MeadeCommandProcessor::instance() {
 MeadeCommandProcessor::MeadeCommandProcessor(Mount* mount, LcdMenu* lcdMenu) {
   _mount = mount;
 
-  // In HEADLESS_CLIENT mode, the lcdMenu is just an empty shell class to save having to null check everywhere
+  // In case of DISPLAY_TYPE_NONE mode, the lcdMenu is just an empty shell class to save having to null check everywhere
   _lcdMenu = lcdMenu;
 }
 

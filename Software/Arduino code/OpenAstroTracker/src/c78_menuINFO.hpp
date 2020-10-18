@@ -1,6 +1,6 @@
 #pragma once
 
-#if HEADLESS_CLIENT == 0
+#if DISPLAY_TYPE > 0
 
 #if SUPPORT_INFO_DISPLAY == 1
 byte infoIndex = 0;

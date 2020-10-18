@@ -179,8 +179,8 @@ public:
 private:
   void checkKey() {
     
-    #if HEADLESS_CLIENT == 0
-    #if I2C_DISPLAY == 1
+    #if DISPLAY_TYPE > 0
+    #if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23008 || DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23017
     uint8_t buttons = _lcdMenu->readButtons();
     _currentKey = btnNONE;
     if (buttons)

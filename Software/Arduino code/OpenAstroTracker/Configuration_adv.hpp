@@ -2,6 +2,12 @@
 
 #include "Configuration.hpp"
 
+/**
+ * This file contains advanced configurations. Edit values here only if you know what you are doing. Invalid values
+ * can lead to OAT misbehaving very bad and in worst case could even lead to hardware damage. The default values here
+ * were chosen after many tests and can are currently concidered to work the best.
+ **/
+
 // This is how many steps your stepper needs for a full rotation.
 #if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
   #define RA_STEPPER_SPR            4096  // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
@@ -124,29 +130,6 @@
 
 ////////////////////////////
 //
-// HEADLESS CLIENT
-// If you do not have a LCD shield on your Arduino Mega, set this to 1 on the line below. This is
-// useful if you are always going to run the mount from a laptop anyway.
-#ifndef HEADLESS_CLIENT
-#define HEADLESS_CLIENT 0
-#endif
-
-////////////////////////////
-//
-// ARDUINO RGB LCD SHIELD I2C
-// There are two different chips supported by the LiquidTWI2 library,
-// check the marking on your shield
-#define I2C_DISPLAY 0
-#define I2C_TYPE_MCP23008 0
-#define I2C_TYPE_MCP23017 1
-
-#ifdef __AVR_ATmega328P__   // UNO must use headless
-#undef HEADLESS_CLIENT
-#define HEADLESS_CLIENT 1
-#endif
-
-////////////////////////////
-//
 // LCD BUTTON TEST
 // Set this to 1 to run a key diagnostic. No tracker functions are on at all.
 #define LCD_BUTTON_TEST 0
@@ -169,7 +152,8 @@
 #define ALTITUDE_ARC_SECONDS_PER_STEP (0.61761f)
 #define ALTITUDE_STEPS_PER_ARC_MINUTE (60.0f/ALTITUDE_ARC_SECONDS_PER_STEP)
 
-#if HEADLESS_CLIENT == 0 // <-- Ignore this line
+#if DISPLAY_TYPE > 0
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                         ///
 // FEATURE SUPPORT SECTION ///
@@ -179,9 +163,6 @@
 // stretch the Uno a little too far. So in order to save memory we allow you to enable 
 // and disable features to help manage memory usage.
 // If you run the tracker with an Arduino Mega, you can set all the features to 1.
-//
-// If you would like to drive your OAT mount with only the LCD Shield, or are on a Uno,
-// you should set SUPPORT_SERIAL_CONTROL to 0
 //
 // If you feel comfortable with configuring the OAT at startup manually, you should set
 // SUPPORT_GUIDED_STARTUP to 0 (maybe after you've used it for a while you know what to do).
@@ -206,14 +187,17 @@
 // Set this to 1 to support INFO menu that displays various pieces of information about the mount. 
   #define SUPPORT_INFO_DISPLAY         1
 
-// Set this to 1 to support Serial Meade LX200 protocol support
-  #define SUPPORT_SERIAL_CONTROL       1
+#endif  // DISPLAY_TYPE
 
-#endif  // HEADLESS_CLIENT <-- Ignore this    
+// Enable Meade protocol communication over serial
+#ifdef __AVR_ATmega328P__
+#define SUPPORT_SERIAL_CONTROL 0
+#else 
+#define SUPPORT_SERIAL_CONTROL 1
+#endif
 
 
-
-#if defined(ESP8266) || defined(ESP32) // <-- ignore this line
+#if defined(ESP8266) || defined(ESP32)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                //////////
 // WIFI SETTINGS  //////////
@@ -223,8 +207,6 @@
 //
 // Define some things, dont change: ///
 #define ESPBOARD
-#undef HEADLESS_CLIENT
-#define HEADLESS_CLIENT 1
 // #define BLUETOOTH_ENABLED
 #define WIFI_ENABLED 
 #if defined(ESP8266) 
@@ -313,15 +295,6 @@
 #endif
 #if RA_STEPPER_TYPE != STEPPER_TYPE_28BYJ48 && __AVR_ATmega328P__
 #error "Sorry, Arduino Uno only supports 28BYJ48 steppers."
-#endif
-
-
-
-////////////////////////////
-// Misc stuff, ignore
-
-#if HEADLESS_CLIENT == 1 
-#define SUPPORT_SERIAL_CONTROL 1
 #endif
 
 // Set this to 1 this to enable the heating menu

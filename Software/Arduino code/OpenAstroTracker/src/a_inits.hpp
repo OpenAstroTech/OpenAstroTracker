@@ -1,7 +1,7 @@
 #pragma once
 
 #include <AccelStepper.h>
-#if HEADLESS_CLIENT == 0
+#if DISPLAY_TYPE > 0
 #include <LiquidCrystal.h>
 #endif
 #include "inc/Globals.hpp"

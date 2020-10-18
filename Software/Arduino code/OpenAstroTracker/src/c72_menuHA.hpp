@@ -2,7 +2,7 @@
 #include "EPROMStore.hpp"
 #include "../Configuration_adv.hpp"
 
-#if HEADLESS_CLIENT == 0
+#if DISPLAY_TYPE > 0
 #if USE_GPS == 0
 
 bool processHAKeys() {

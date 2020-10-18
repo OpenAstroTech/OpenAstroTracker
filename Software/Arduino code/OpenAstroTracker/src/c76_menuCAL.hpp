@@ -2,7 +2,7 @@
 #include "inc/Config.hpp"
 #include "b_setup.hpp"
 
-#if HEADLESS_CLIENT == 0
+#if DISPLAY_TYPE > 0
 
 #if SUPPORT_CALIBRATION == 1
 

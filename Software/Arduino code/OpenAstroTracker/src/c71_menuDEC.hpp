@@ -1,6 +1,6 @@
 #pragma once
 
-#if HEADLESS_CLIENT == 0
+#if DISPLAY_TYPE > 0
 bool showTargetDEC = true;
 bool processDECKeys() {
   byte key;

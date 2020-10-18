@@ -40,6 +40,11 @@
 #define NORTHERN_HEMISPHERE 1
 #endif
 
+// Used display
+#ifndef DISPLAY_TYPE
+#define DISPLAY_TYPE DISPLAY_TYPE_LCD_KEYPAD
+#endif
+
 // Used RA wheel version. Unless you printed your OAT before March 2020, you're using 
 // a version 2 or higher (software only differentiates between 1 and more than 1)
 #ifndef RA_WHEEL_VERSION

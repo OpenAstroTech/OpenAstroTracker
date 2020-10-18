@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.board }} STEPPER=${{ matrix.stepper }} DRIVER=${{ matrix.driver }} GPS=${{ matrix.gps }} GYRO=${{ matrix.gyro }} ALTAZ=${{ matrix.azalt }} HEADLESS=${{ matrix.headless }}
+    name: ${{ matrix.board }} STEPPER=${{ matrix.stepper }} DRIVER=${{ matrix.driver }} GPS=${{ matrix.gps }} GYRO=${{ matrix.gyro }} ALTAZ=${{ matrix.azalt }} DISPLAY=${{ matrix.display }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -20,7 +20,7 @@ jobs:
         gps:      [0, 1]
         gyro:     [0, 1]
         azalt:    [0, 1]
-        headless: [0, 1]
+        display:  [0, 1]
         exclude:
           - { stepper: 1, driver: 0 } # NEMA17 & ULN2003
           - { stepper: 0, driver: 1 } # 28BYJ48 & GENERIC
@@ -30,6 +30,7 @@ jobs:
           - { board: esp32, gps: 1 }
           - { board: esp32, gyro: 1 }
           - { board: esp32, azalt: 1 }
+          - { board: esp32, display: 1 }
 
     steps:
     - uses: actions/checkout@v1
@@ -50,4 +51,4 @@ jobs:
         -D USE_GPS=${{ matrix.gps }}
         -D USE_GYRO_LEVEL=${{ matrix.gyro }}
         -D AZIMUTH_ALTITUDE_MOTORS=${{ matrix.azalt }}
-        -D HEADLESS_CLIENT=${{ matrix.headless }}
+        -D DISPLAY_TYPE=${{ matrix.display }}

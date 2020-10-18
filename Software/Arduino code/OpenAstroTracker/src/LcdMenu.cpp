@@ -2,24 +2,24 @@
 #include "EPROMStore.hpp"
 #include "LcdMenu.hpp"
 
-#if HEADLESS_CLIENT == 0
+#if DISPLAY_TYPE > 0
 
 // Class that drives the LCD screen with a menu
 // You add a string and an id item and this class handles the display and navigation
 // Create a new menu, using the given number of LCD display columns and rows
-#if I2C_DISPLAY == 0
+#if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD
 LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(8, 9, 4, 5, 6, 7)
 {
   _cols = cols;
   _rows = rows;
   _maxItems = maxItems;
 }
-#else
+#elif DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23008 || DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23017
 LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(0x20)
 {
-  #if I2C_DISPLAY == 1 && I2C_TYPE_MCP23017 == 1
+  #if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23017
   _lcd.setMCPType(LTI_TYPE_MCP23017);
-  #elif I2C_DISPLAY == 1 && I2C_TYPE_MCP23008 == 1
+  #elif DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23008
   _lcd.setMCPType(LTI_TYPE_MCP23008);
   #endif
 
@@ -44,7 +44,7 @@ void LcdMenu::startup()
   _lastDisplay[1] = "";
   _menuItems = new MenuItem *[_maxItems];
   
-  #if I2C_DISPLAY == 1 // TODO, store custom color
+  #if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23008 || DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23017
   _lcd.setBacklight(RED);
   #endif
 
@@ -264,7 +264,7 @@ void LcdMenu::printAt(int col, int row, char ch)
   printChar(ch);
 }
 
-#if I2C_DISPLAY == 1
+#if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23008 || DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23017
 uint8_t LcdMenu::readButtons()
 {
   return _lcd.readButtons();

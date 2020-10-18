@@ -5,7 +5,7 @@
 #include "Sidereal.hpp"
 #endif
 
-#if HEADLESS_CLIENT == 0
+#if DISPLAY_TYPE > 0
 #if SUPPORT_GUIDED_STARTUP == 1
 
 //////////////////////////////////////////////////////////////
