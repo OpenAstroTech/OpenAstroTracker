@@ -1,7 +1,7 @@
 **V1.8.42 - Updates**
 - Fixed bug that turned of tracking when using NEMA17 with a non-UART driver.
 
-**V1.8.40 - Updates**
+**V1.8.41 - Updates**
 - Removed UNO and ESP8266 support. Memory constraints are unsustainable.
 - Removed Heating menu, since it hasn't been supported in months.
 - Added user-submitted support for I2C LCD shield (thanks Christian Kardach)
