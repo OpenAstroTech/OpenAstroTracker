@@ -1056,9 +1056,8 @@ void Mount::startSlewingToTarget() {
 
   // set Slew microsteps for TMC2209 UART // hier
   #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-  LOGV2(DEBUG_STEPPERS, F("STEP-startSlewingToTarget: Switching RA driver to microsteps(%d)"), SET_MICROSTEPPING);
-  _driverRA->microsteps(SET_MICROSTEPPING);
-  //_driverRA->en_spreadCycle(1);  //only used as audiofeedback for quick debug
+    LOGV2(DEBUG_STEPPERS, F("STEP-startSlewingToTarget: Switching RA driver to microsteps(%d)"), SET_MICROSTEPPING);
+    _driverRA->microsteps(SET_MICROSTEPPING);
   #endif
 
   // Make sure we're slewing at full speed on a GoTo
@@ -1079,21 +1078,21 @@ void Mount::startSlewingToTarget() {
   _totalRAMove = 1.0f * _stepperRA->distanceToGo();
   LOGV3(DEBUG_MOUNT, "Mount: RA Dist: %d,   DEC Dist: %d", _stepperRA->distanceToGo(), _stepperDEC->distanceToGo());
   #if RA_STEPPER_TYPE == STEPPER_TYPE_NEMA17  // tracking while slewing causes audible lagging
-  if ((_stepperRA->distanceToGo() != 0) || (_stepperDEC->distanceToGo() != 0)) {
-    // Only stop tracking if we're actually going to slew somewhere else, otherwise the 
-    // mount::loop() code won't detect the end of the slewing operation...
-    LOGV1(DEBUG_MOUNT, "Mount: Stop tracking (NEMA steppers)");
-    stopSlewing(TRACKING);
-    _trackerStoppedAt = millis();
-    _compensateForTrackerOff = true;
-    LOGV2(DEBUG_STEPPERS, F("STEP-startSlewingToTarget: TRK stopped at %lms"), _trackerStoppedAt);
-  } else {
-    // Since we won't be moving we need to set microstepping back to tracking
-    #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-    LOGV2(DEBUG_STEPPERS, F("STEP-startSlewingToTarget: No slew. Switching RA driver to microsteps(%d)"), TRACKING_MICROSTEPPING);
-    _driverRA->microsteps(TRACKING_MICROSTEPPING);
-    #endif
-  }
+    if ((_stepperRA->distanceToGo() != 0) || (_stepperDEC->distanceToGo() != 0)) {
+      // Only stop tracking if we're actually going to slew somewhere else, otherwise the 
+      // mount::loop() code won't detect the end of the slewing operation...
+      LOGV1(DEBUG_MOUNT, "Mount: Stop tracking (NEMA steppers)");
+      stopSlewing(TRACKING);
+      _trackerStoppedAt = millis();
+      _compensateForTrackerOff = true;
+      LOGV2(DEBUG_STEPPERS, F("STEP-startSlewingToTarget: TRK stopped at %lms"), _trackerStoppedAt);
+    } else {
+      // Since we won't be moving we need to set microstepping back to tracking
+      #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+        LOGV2(DEBUG_STEPPERS, F("STEP-startSlewingToTarget: No slew. Switching RA driver to microsteps(%d)"), TRACKING_MICROSTEPPING);
+        _driverRA->microsteps(TRACKING_MICROSTEPPING);
+      #endif
+    }
   #endif																					  
 }
 
@@ -1700,17 +1699,17 @@ void Mount::startSlewing(int direction) {
 
       // Set move rate to last commanded slew rate
       setSlewRate(_moveRate);
-      #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-      LOGV2(DEBUG_STEPPERS, F("STEP-startSlewing: RA Driver setMicrostep(%d)"), SET_MICROSTEPPING);
-      if (isSlewingTRK()){
-        stopSlewing(TRACKING);
-        _trackerStoppedAt = millis();
-        _compensateForTrackerOff = true;
-        LOGV2(DEBUG_STEPPERS, F("STEP-startSlewing: stopped TRK at %l"), _trackerStoppedAt);
-      }
-      _driverRA->microsteps(SET_MICROSTEPPING);
-      //_driverRA->en_spreadCycle(1);  //only used as audiofeedback for quick debug
-      //hier
+      #if RA_STEPPER_TYPE == STEPPER_TYPE_NEMA17 
+        LOGV2(DEBUG_STEPPERS, F("STEP-startSlewing: RA Driver setMicrostep(%d)"), SET_MICROSTEPPING);
+        if (isSlewingTRK()){
+          stopSlewing(TRACKING);
+          _trackerStoppedAt = millis();
+          _compensateForTrackerOff = true;
+          LOGV2(DEBUG_STEPPERS, F("STEP-startSlewing: stopped TRK at %l"), _trackerStoppedAt);
+        }
+        #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+          _driverRA->microsteps(SET_MICROSTEPPING);
+        #endif
       #endif
       LOGV1(DEBUG_STEPPERS, F("STEP-startSlewing: call moveTo() on stepper"));
       if (direction & NORTH) {
@@ -1948,21 +1947,22 @@ void Mount::loop() {
 
         _currentDECStepperPosition = _stepperDEC->currentPosition();
         _currentRAStepperPosition = _stepperRA->currentPosition();
-        #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-        LOGV2(DEBUG_STEPPERS, F("STEP-loop: RA driver setMicrosteps(%d)"), TRACKING_MICROSTEPPING);
-        _driverRA->microsteps(TRACKING_MICROSTEPPING);
-        if (!isParking()) {
-          if (_compensateForTrackerOff) {
-            unsigned long now = millis();
-            unsigned long elapsed = now - _trackerStoppedAt;
-            unsigned long compensationSteps = _trackingSpeed * elapsed / 1000.0;
-            LOGV4(DEBUG_STEPPERS,F("STEP-loop: Arrived at %lms. Tracking was off for %lms (%l steps), compensating."), now, elapsed, compensationSteps);
-            _stepperTRK->runToNewPosition(_stepperTRK->currentPosition() + compensationSteps);
-            _compensateForTrackerOff = false;
+        #if RA_STEPPER_TYPE == STEPPER_TYPE_NEMA17
+          #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+            LOGV2(DEBUG_STEPPERS, F("STEP-loop: RA driver setMicrosteps(%d)"), TRACKING_MICROSTEPPING);
+            _driverRA->microsteps(TRACKING_MICROSTEPPING);
+          #endif
+          if (!isParking()) {
+            if (_compensateForTrackerOff) {
+              unsigned long now = millis();
+              unsigned long elapsed = now - _trackerStoppedAt;
+              unsigned long compensationSteps = _trackingSpeed * elapsed / 1000.0;
+              LOGV4(DEBUG_STEPPERS,F("STEP-loop: Arrived at %lms. Tracking was off for %lms (%l steps), compensating."), now, elapsed, compensationSteps);
+              _stepperTRK->runToNewPosition(_stepperTRK->currentPosition() + compensationSteps);
+              _compensateForTrackerOff = false;
+            }
+            startSlewing(TRACKING);					   
           }
-		      startSlewing(TRACKING);					   
-        }
-        //_driverRA->en_spreadCycle(0); // only for audio feedback for quick debug
         #endif
         if (_correctForBacklash) {
           LOGV3(DEBUG_MOUNT|DEBUG_STEPPERS,F("Mount::Loop:   Reached target at %d. Compensating by %d"), (int)_currentRAStepperPosition, _backlashCorrectionSteps);
