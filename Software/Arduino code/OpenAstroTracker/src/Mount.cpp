@@ -778,14 +778,10 @@ int Mount::getBacklashCorrection()
 String Mount::getMountHardwareInfo()
 {
   String ret = "Unknown";
-  #if defined(ESP8266) 
-    ret = "ESP8266,";
-  #elif defined(ESP32)
+  #if defined(ESP32)
     ret = "ESP32,";
   #elif defined(__AVR_ATmega2560__)
     ret = "Mega,";
-  #elif defined (__AVR_ATmega328P__)
-    ret = "Uno,";
   #endif
 
   #if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48

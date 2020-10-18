@@ -9,10 +9,6 @@
 #include "WiFiUdp.h"
 #include "WiFiClient.h"
 
-#ifdef ESP8266
-#include "ESP8266Wifi.h"
-#endif
-
 #ifdef ESP32
 #include <WiFi.h>
 #include <WiFiSTA.h>

@@ -99,29 +99,3 @@
         #error GPS module not currently configured/supported in ESP32
     #endif
 #endif
-
-////////////////////////////////////////////////////////////////////
-// Arduino UNO
-////////////////////////////////////////////////////////////////////
-#ifdef __AVR_ATmega328P__ // Arduino Uno
-  #if (RA_STEPPER_TYPE != STEPPER_TYPE_28BYJ48) || (DEC_STEPPER_TYPE != STEPPER_TYPE_28BYJ48)
-    #error Only 28BJY-48 stepper motors are supported on the UNO (for now)
-  #endif
-
-  #define RA_IN1_PIN  12
-  #define RA_IN2_PIN  11
-  #define RA_IN3_PIN  3
-  #define RA_IN4_PIN  2
-
-  #define DEC_IN1_PIN 18
-  #define DEC_IN2_PIN 17
-  #define DEC_IN3_PIN 16
-  #define DEC_IN4_PIN 15
-
-  #if AZIMUTH_ALTITUDE_MOTORS == 1
-    #error Azimuth / Altitude motors not currently configured/supported in ESP32
-  #endif
-  #if USE_GPS == 1
-    #error GPS module not currently configured/supported in ESP32
-  #endif
-#endif

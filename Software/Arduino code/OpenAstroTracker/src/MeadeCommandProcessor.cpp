@@ -365,7 +365,7 @@ bool gpsAqcuisitionComplete(int & indicator); // defined in c72_menuHA_GPS.hpp
 // :XGM#
 //      Get Mount configuration settings 
 //      Returns: <board>,<RA Stepper Info>,<DEC Stepper Info>,<GPS info>,<AzAlt info>,<Gyro info>#
-//      Where <board> is one of the supported boards (currently Uno, Mega, ESP8266, ESP32)
+//      Where <board> is one of the supported boards (currently Mega, ESP32)
 //            <Stepper Info> is a pipe-delimited string of Motor type (NEMA or 28BYJ), Pulley Teeth, Steps per revolution)
 //            <GPS info> is either NO_GPS or GPS, depending on whether a GPS module is present
 //            <AzAlt info> is either NO_AZ_ALT or AUTO_AZ_ALT, depending on whether the AutoPA stepper motors are present
@@ -374,7 +374,7 @@ bool gpsAqcuisitionComplete(int & indicator); // defined in c72_menuHA_GPS.hpp
 //
 // :XGN#
 //      Get network settings
-//      Gets the current status of the Wifi connection. Reply only available when running on ESP8266 boards.
+//      Gets the current status of the Wifi connection. Reply only available when running on ESP boards.
 //      Returns: 1,<stats>,<hostname>,<ip>:<port>,<SSID>,<OATHostname>#     - if Wifi is enabled
 //      Returns: 0,#     - if Wifi is not enabled
 //

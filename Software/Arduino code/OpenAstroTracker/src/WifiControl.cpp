@@ -42,9 +42,7 @@ void WifiControl::startInfrastructureMode()
     LOGV2(DEBUG_WIFI,F("Wifi:          for SSID: %s"), String(INFRA_SSID).c_str());
     LOGV2(DEBUG_WIFI,F("Wifi:       and WPA key: %s"), String(INFRA_WPAKEY).c_str());
 
-#if defined(ESP8266)
-    WiFi.hostname(HOSTNAME);
-#elif defined(ESP32)
+#if defined(ESP32)
     WiFi.setHostname(HOSTNAME);
 #endif
     WiFi.begin(INFRA_SSID, INFRA_WPAKEY);
@@ -57,9 +55,7 @@ void WifiControl::startAccessPointMode()
     IPAddress gateway(192, 168, 1, 1);
     IPAddress subnet(255, 255, 255, 0);
     
-#if defined(ESP8266)
-    WiFi.hostname(HOSTNAME);
-#elif defined(ESP32)
+#if defined(ESP32)
     WiFi.setHostname(HOSTNAME);
 #endif
 
@@ -86,9 +82,7 @@ String WifiControl::getStatus()
   }
 
   String result = "1," + wifiStatus(WiFi.status()) + ",";
-#ifdef ESP8266
-  result += WiFi.hostname();
-#elif defined(ESP32)
+#if defined(ESP32)
   result += WiFi.getHostname();
 #endif
 
@@ -109,9 +103,7 @@ void WifiControl::loop()
             _tcpServer = new WiFiServer(PORT);
             _tcpServer->begin();
             _tcpServer->setNoDelay(true);
-#if defined(ESP8266)
-            LOGV2(DEBUG_WIFI,F("Wifi: Server status is %s"), wifiStatus( _tcpServer->status()).c_str());
-#endif
+
             _udp = new WiFiUDP();
             _udp->begin(4031);
 
@@ -202,9 +194,7 @@ void WifiControl::udpLoop()
             reply.getBytes(bytes, 255);
             _udp->write(bytes, reply.length());*/
 
-#if defined(ESP8266)
-            _udp->write(reply.c_str());
-#elif defined(ESP32)
+#if defined(ESP32)
             _udp->print(reply.c_str());
 #endif
             

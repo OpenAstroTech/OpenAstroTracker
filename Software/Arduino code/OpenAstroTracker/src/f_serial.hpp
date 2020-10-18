@@ -33,7 +33,7 @@ void serialEvent() {
 }
 #endif
 
-// ESP8266 needs to call this in a loop :_(
+// ESP needs to call this in a loop :_(
 void processSerialData() {
     char buffer[2];
     while (Serial.available() > 0) {

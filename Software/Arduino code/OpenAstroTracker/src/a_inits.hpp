@@ -130,14 +130,5 @@ int DECselect;
 // HA variables
 int HAselect;
 
-#if SUPPORT_HEATING == 1
-// HEAT menu variables
-int heatselect;   // Which stepper are we changing?
-int RAheat = 0;   // Are we heating the RA stepper?
-int DECheat = 0;  // Are we heating the DEC stepper?
-#endif
-
-
-
 //debugging
 String inBT;
