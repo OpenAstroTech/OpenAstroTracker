@@ -1,3 +1,6 @@
+**V1.8.42 - Updates**
+- Fixed bug that turned of tracking when using NEMA17 with a non-UART driver.
+
 **V1.8.40 - Updates**
 - Removed UNO and ESP8266 support. Memory constraints are unsustainable.
 - Removed Heating menu, since it hasn't been supported in months.
