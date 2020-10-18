@@ -33,7 +33,7 @@
 #define TIMER_INTERRUPT_DEBUG      0
 #endif
 
-#if !defined(ESP8266) && !defined(ESP32)
+#if !defined(ESP32)
 
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>

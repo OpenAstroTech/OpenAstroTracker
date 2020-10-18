@@ -152,11 +152,12 @@ float clamp(float current, float minVal, float maxVal)
   return current;
 }
 
-#if defined(ESP8266) || defined(ESP32) // <-- ignore this line
+#if defined(ESP32)
 int freeMemory() {
   return ESP.getFreeHeap();
 }
 #else
+
 #ifdef __arm__
 // should use uinstd.h to define sbrk but Due causes a conflict
 extern "C" char* sbrk(int incr);

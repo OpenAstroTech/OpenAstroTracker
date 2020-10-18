@@ -190,29 +190,21 @@
 #endif  // DISPLAY_TYPE
 
 // Enable Meade protocol communication over serial
-#ifdef __AVR_ATmega328P__
-#define SUPPORT_SERIAL_CONTROL 0
-#else 
 #define SUPPORT_SERIAL_CONTROL 1
-#endif
 
 
-#if defined(ESP8266) || defined(ESP32)
+#if defined(ESP32)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                //////////
 // WIFI SETTINGS  //////////
 //                //////////
 ////////////////////////////
-// These settings are valid only for ESP8266 or ESP32
+// These settings are valid only for ESP32
 //
 // Define some things, dont change: ///
 #define ESPBOARD
 // #define BLUETOOTH_ENABLED
 #define WIFI_ENABLED 
-#if defined(ESP8266) 
-  #undef RUN_STEPPERS_IN_MAIN_LOOP
-  #define RUN_STEPPERS_IN_MAIN_LOOP 1
-#endif
 ///////////////////////////////////////
 //
 // SETTINGS
@@ -293,10 +285,3 @@
 #if RA_STEPPER_TYPE != STEPPER_TYPE_28BYJ48 && ESP32
 #error "Sorry, ESP32 only supports 28BYJ48 steppers at this moment"
 #endif
-#if RA_STEPPER_TYPE != STEPPER_TYPE_28BYJ48 && __AVR_ATmega328P__
-#error "Sorry, Arduino Uno only supports 28BYJ48 steppers."
-#endif
-
-// Set this to 1 this to enable the heating menu
-// NOTE: Heating is currently not supported!
-#define SUPPORT_HEATING 0

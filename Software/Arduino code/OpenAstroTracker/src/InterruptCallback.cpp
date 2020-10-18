@@ -6,12 +6,9 @@
 // whatever timer is used for the hardware being run
 //////////////////////////////////////
 
-// NOTE: ESP8266 support is not complete and does not work. This code is never called.
-#ifdef ESP8266
-  #include "ESP8266TimerInterrupt.h"
-#elif defined ESP32
+#if defined ESP32
   // We don't support ESP32 boards in interrupt mode
-#elif defined __AVR_ATmega328P__ || defined __AVR_ATmega2560__   // Arduino Uno or Mega
+#elif defined __AVR_ATmega2560__   // Arduino Mega
   #define USE_TIMER_1     true
   #define USE_TIMER_2     true
   #define USE_TIMER_3     false
@@ -22,43 +19,7 @@
   #error Unrecognized board selected. Either implement interrupt code or define the board here.
 #endif
 
-#ifdef ESP8266
-ESP8266Timer interruptHandler;
-
-void* actualPayload = NULL;
-volatile interrupt_callback_p actualCallback = NULL;
-
-// This timer only supports a callback with no payload
-void ICACHE_RAM_ATTR esp8266callback(void)
-{
-  if (actualCallback != NULL) {
-    (*actualCallback)(actualPayload);
-  }
-}
-
-bool InterruptCallback::setInterval(float intervalMs, interrupt_callback_p callback, void* payload)
-{
-  // Since this timer only supports a callback with no payload, we store the requested callback and payload
-  // in static variables and install an intermediate callback for the interrupt to call. The intermerdiate
-  // The calls the actual requested callback with the payload.
-  actualPayload = payload;
-  actualCallback = callback;
-
-  // This timer library requires microsecond interval definitions
-  interruptHandler.setInterval(1000.0f * intervalMs, esp8266callback);
-
-  return true;
-}
-
-void InterruptCallback::start()
-{
-}
-
-void InterruptCallback::stop()
-{
-}
-
-#elif defined(ESP32)
+#if defined(ESP32)
 
 /*
 volatile bool _lock = false;
@@ -107,7 +68,7 @@ void InterruptCallback::start(){
 }
 */
 
-#elif defined __AVR_ATmega328P__ || defined __AVR_ATmega2560__
+#elif defined __AVR_ATmega2560__
 
 bool InterruptCallback::setInterval(float intervalMs, interrupt_callback_p callback, void* payload)
 {

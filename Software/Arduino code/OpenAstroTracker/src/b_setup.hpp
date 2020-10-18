@@ -298,10 +298,6 @@ void finishSetup()
 
     lcdMenu.addItem("HA", HA_Menu);
 
-    #if SUPPORT_HEATING == 1
-      lcdMenu.addItem("HEA", Heat_Menu);
-    #endif
-
     #if SUPPORT_MANUAL_CONTROL == 1
       lcdMenu.addItem("CTRL", Control_Menu);
     #endif
