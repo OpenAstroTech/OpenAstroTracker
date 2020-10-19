@@ -11,6 +11,8 @@
 //////////////////////////////////////////////////////////////
 // This file contains the Starup 'wizard' that guides you through initial setup
 
+void setControlMode(bool); // In CTRL menu
+
 #define StartupIsInHomePosition 1
 #define StartupSetHATime 4
 #define StartupWaitForHACompletion 6
@@ -79,7 +81,7 @@ bool processStartupKeys() {
             lcdMenu.setActive(Control_Menu);
 
             // Skip the 'Manual control' prompt
-            inControlMode = true;
+            setControlMode(true);
             #endif
           }
           else if (isInHomePosition == CANCEL) {
