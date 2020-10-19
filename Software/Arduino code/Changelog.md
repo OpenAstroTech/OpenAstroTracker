@@ -1,3 +1,6 @@
+**V1.8.43 - Updates**
+- Added ability to switch to the always-on coordinate display (top line RA, bottom line DEC) in CTRL menu. SELECT exits this mode.
+
 **V1.8.42 - Updates**
 - Fixed bug that turned of tracking when using NEMA17 with a non-UART driver.
 
