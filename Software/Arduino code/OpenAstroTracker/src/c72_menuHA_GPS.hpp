@@ -68,12 +68,14 @@ bool processHAKeys()
             LOGV1(DEBUG_INFO, F("HA: GPS acquired"));
             GPS_SERIAL_PORT.end();
             haState = SHOWING_HA_SYNC;
+            #if SUPPORT_GUIDED_STARTUP == 1
             if (startupState == StartupWaitForHACompletion)
             {
                 LOGV1(DEBUG_INFO, F("HA: We were in startup, so confirm HA"));
                 startupState = StartupHAConfirmed;
                 inStartup = true;
             }
+            #endif
         }
     }
 
@@ -114,11 +116,13 @@ bool processHAKeys()
                 lcdMenu.printMenu("Stored.");
                 mount.delay(500);
                 haState = SHOWING_HA_SET;
+                #if SUPPORT_GUIDED_STARTUP == 1
                 if (startupState == StartupWaitForHACompletion)
                 {
                     startupState = StartupHAConfirmed;
                     inStartup = true;
                 }
+                #endif
             }
             else if (key == btnUP)
             {
@@ -153,12 +157,14 @@ bool processHAKeys()
                 GPS_SERIAL_PORT.end();
                 haState = SHOWING_HA_SYNC;
             }
+            #if SUPPORT_GUIDED_STARTUP == 1
             else if (startupState == StartupWaitForHACompletion)
             {
                 LOGV1(DEBUG_INFO, F("HA: In Startup, not in GPS Start mode, leaving"));
                 startupState = StartupHAConfirmed;
                 inStartup = true;
             }
+            #endif
             else
             {
                 LOGV1(DEBUG_INFO, F("HA: leaving HA"));
