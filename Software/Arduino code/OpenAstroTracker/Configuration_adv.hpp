@@ -282,6 +282,3 @@
 #if RA_RMSCURRENT > 2000 || DEC_RMSCURRENT > 2000
 #error "Do you really want to set the RMS motorcurrent above 2 Ampere? Thats almost 3A peak! Delete this error if you know what youre doing" 
 #endif
-#if RA_STEPPER_TYPE != STEPPER_TYPE_28BYJ48 && ESP32
-#error "Sorry, ESP32 only supports 28BYJ48 steppers at this moment"
-#endif
