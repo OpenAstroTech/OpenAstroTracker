@@ -63,9 +63,6 @@
 // ESP32
 ////////////////////////////////////////////////////////////////////
 #ifdef ESP32
-  // #if (RA_STEPPER_TYPE != STEPPER_TYPE_28BYJ48) || (DEC_STEPPER_TYPE != STEPPER_TYPE_28BYJ48)
-  //   #error Only 28BJY-48 stepper motors are supported on the ESP (for now)
-  // #endif
 
   // RA Motor pins
   #define RA_IN1_PIN  19  
