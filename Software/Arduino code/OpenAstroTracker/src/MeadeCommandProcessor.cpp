@@ -63,40 +63,40 @@ bool gpsAqcuisitionComplete(int & indicator); // defined in c72_menuHA_GPS.hpp
 //
 // :GVP#
 //      Get the Product Name
-//      Returns: 'OpenAstroTracker'
+//      Returns: 'OpenAstroTracker#'
 //
 // :GVN#
 //      Get the Firmware Version Number
-//      Returns: 'V1.major.minor' from OpenAstroTracker.ino
+//      Returns: 'V1.major.minor#' from version.h
 //
 // :Gd#
 //      Get Target Declination
-//      Returns: sDD*MM'SS
+//      Returns: sDD*MM'SS#
 //               Where s is + or -, DD is degrees, MM is minutes, SS is seconds.
 //
 // :GD#
 //      Get Current Declination
-//      Returns: sDD*MM'SS
+//      Returns: sDD*MM'SS#
 //               Where s is + or -, DD is degrees, MM is minutes, SS is seconds.
 //
 // :Gr#
 //      Get Target Right Ascension
-//      Returns: HH:MM:SS
+//      Returns: HH:MM:SS#
 //               Where HH is hour, MM is minutes, SS is seconds.
 //
 // :GR#
 //      Get Current Right Ascension
-//      Returns: HH:MM:SS
+//      Returns: HH:MM:SS#
 //               Where HH is hour, MM is minutes, SS is seconds.
 //
 // :Gt#
 //      Get Site Latitude
-//      Returns: sDD*MM
+//      Returns: sDD*MM#
 //               Where s is + or - and DD is the latitude in degrees and MM the minutes.
 //       
 // :Gg#
 //      Get Site Longitude
-//      Returns: DDD*MM
+//      Returns: DDD*MM#
 //               Where DDD is the longitude in degrees and MM the minutes. Negative (W) longitudes have had 360 added to them.
 //       
 //
@@ -181,7 +181,7 @@ bool gpsAqcuisitionComplete(int & indicator); // defined in c72_menuHA_GPS.hpp
 //      This sets the date
 //      Where HHMM is the month, DD is teh day and YY is the year since 2000.
 //      CURRENTLY IGNORED.
-//      Returns: 1Updating Planetary Data 
+//      Returns: 1Updating Planetary Data# 
 //
 // -- SET Extensions --
 // :SHHH:MM#
@@ -305,7 +305,8 @@ bool gpsAqcuisitionComplete(int & indicator); // defined in c72_menuHA_GPS.hpp
 // :XDnnn#
 //      Run drift alignment
 //      This runs a drift alignment procedure where the mounts slews east, pauses, slews west and pauses.
-//      Where nnn is the number of seconds the entire alignment should take.
+//      Where nnn is the number of seconds the entire alignment should take. The call is blocking and will 
+//      only return once the drift alignment is complete.
 //      Returns: nothing
 //
 // :XL0#
@@ -335,32 +336,32 @@ bool gpsAqcuisitionComplete(int & indicator); // defined in c72_menuHA_GPS.hpp
 // :XGB#
 //      Get Backlash correction steps 
 //      Get the number of steps the RA stepper motor needs to overshoot and backtrack when slewing east.
-//      Returns: integer
+//      Returns: integer#
 //
 // :XGR#
 //      Get RA steps 
 //      Get the number of steps the RA stepper motor needs to take to rotate by one degree 
-//      Returns: integer
+//      Returns: integer#
 //
 // :XGD#
 //      Get DEC steps 
 //      Get the number of steps the DEC stepper motor needs to take to rotate by one degree 
-//      Returns: integer
+//      Returns: integer#
 //
 // :XGS#
 //      Get Tracking speed adjustment
 //      Get the adjustment factor used to speed up (>1.0) or slow down (<1.0) the tracking speed of the mount.
-//      Returns: float
+//      Returns: float#
 //
 // :XGT#
 //      Get Tracking speed
 //      Get the absolute tracking speed of the mount.
-//      Returns: float
+//      Returns: float#
 //
 // :XGH#
 //      Get HA
 //      Get the current HA of the mount.
-//      Returns: HHMMSS
+//      Returns: HHMMSS#
 //
 // :XGM#
 //      Get Mount configuration settings 
@@ -480,13 +481,13 @@ String MeadeCommandProcessor::handleMeadeGetInfo(String inCmd) {
     }
     break;
 
-    case 'r': return _mount->RAString(MEADE_STRING | TARGET_STRING);
+    case 'r': return _mount->RAString(MEADE_STRING | TARGET_STRING); // returns trailing #
 
-    case 'd': return _mount->DECString(MEADE_STRING | TARGET_STRING);
+    case 'd': return _mount->DECString(MEADE_STRING | TARGET_STRING); // returns trailing #
 
-    case 'R': return _mount->RAString(MEADE_STRING | CURRENT_STRING);
+    case 'R': return _mount->RAString(MEADE_STRING | CURRENT_STRING); // returns trailing #
 
-    case 'D': return _mount->DECString(MEADE_STRING | CURRENT_STRING);
+    case 'D': return _mount->DECString(MEADE_STRING | CURRENT_STRING); // returns trailing #
 
     case 'X': return _mount->getStatusString() + "#";
 
