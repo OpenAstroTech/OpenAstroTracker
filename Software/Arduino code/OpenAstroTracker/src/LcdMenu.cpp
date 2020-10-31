@@ -81,7 +81,7 @@ MenuItem *LcdMenu::findById(byte id)
 void LcdMenu::addItem(const char *disp, byte id)
 {
   _menuItems[_numMenuItems++] = new MenuItem(disp, id);
-  _longestDisplay = max(_longestDisplay, strlen(disp));
+  _longestDisplay = max((size_t)_longestDisplay, strlen(disp));
 }
 
 // Get the currently active item ID

@@ -139,14 +139,14 @@ bool checkProgressiveUpDown(int *val)
   {
     *val = *val + 1;
     mount.delay(calDelay);
-    calDelay = max(25, 0.94 * calDelay);
+    calDelay = max(25.0, 0.94 * calDelay);
     ret = false;
   }
   else if (lcdButtons.currentState() == btnDOWN)
   {
     *val = *val - 1;
     mount.delay(calDelay);
-    calDelay = max(25, 0.94 * calDelay);
+    calDelay = max(25.0, 0.94 * calDelay);
     ret = false;
   }
   else
@@ -221,7 +221,7 @@ bool processCalibrationKeys()
       }
 
       mount.delay(calDelay);
-      calDelay = max(5, 0.96 * calDelay);
+      calDelay = max(5.0, 0.96 * calDelay);
       checkForKeyChange = false;
     }
     else if (currentButtonState == btnDOWN)
@@ -233,7 +233,7 @@ bool processCalibrationKeys()
       }
 
       mount.delay(calDelay);
-      calDelay = max(5, 0.96 * calDelay);
+      calDelay = max(5.0, 0.96 * calDelay);
       checkForKeyChange = false;
     }
     else

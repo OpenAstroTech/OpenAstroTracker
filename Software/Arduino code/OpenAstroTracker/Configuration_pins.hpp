@@ -101,23 +101,15 @@
   #define DEC_SERIAL_PORT Serial2  // HardwareSerial port, wire to TX2 for write-only
   #define DEC_DRIVER_ADDRESS 0b01  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
 
-#if AZIMUTH_ALTITUDE_MOTORS == 1
-  #define AZ_IN1_PIN 38
-  #define AZ_IN2_PIN 40
-  #define AZ_IN3_PIN 42
-  #define AZ_IN4_PIN 44
-  #define ALT_IN1_PIN 46
-  #define ALT_IN2_PIN 48
-  #define ALT_IN3_PIN 50
-  #define ALT_IN4_PIN 52
-#endif 
+    #if AZIMUTH_ALTITUDE_MOTORS == 1
+        #error Azimuth/Alt motors not currently configured/supported in ESP32
+    #endif 
 
-// ST4 Input Pins - TODO.
-    /*#define st4North      SD0 
-    #define st4South      SD1
-    #define st4West       SD2
-    #define st4East       SD3*/
     #if USE_GPS == 1
         #error GPS module not currently configured/supported in ESP32
+    #endif
+
+    #if USE_GYRO == 1
+        #error Digital Level not currently configured/supported in ESP32
     #endif
 #endif
