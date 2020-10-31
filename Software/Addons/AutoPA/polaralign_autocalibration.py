@@ -22,7 +22,7 @@ def polarcalibrate(axis, indiclient, iteration, observing_location, telescope, c
         calibration_distance = calibration_distance * -1
     
     #Initialize steppers to a known backlash position
-    initSteppers(indiclient, telescope, serialport, backlashCorrection)
+    initSteppers(axis, indiclient, telescope, serialport, backlashCorrection)
     
     p1RA, p1DEC, p1Time = captureSolve(indiclient, RA, DEC, radius, exposure, telescope, ccd, blobEvent, pixel_resolution, "altazCalibration1.fits")
     p1Time = datetime.utcfromtimestamp(p1Time)
@@ -85,21 +85,21 @@ def captureSolve(indiclient, RA, DEC, radius, exposure, telescope, ccd, blobEven
                 print ("Image could not be solved after 5 attempts. Exiting program.")
                 exit()
         solveTimeFinish = time.time()
-    print (f"Image solved in {(solveTimeFinish - solveTimeStart):.2f} seconds. Coordinates are RA {resultRA}, DEC {resultDEC}")
+    print (f"Image solved in {(solveTimeFinish - solveTimeStart):.2f} seconds. Coordinates are RA {Angle(resultRA, unit=u.deg).to_string(unit=u.hour)}, DEC {Angle(resultDEC, unit=u.deg).to_string(unit=u.degree)}")
 
     return (resultRA, resultDEC, captureTime)
     
-def initSteppers(indiclient, telescope, serialport, backlashCorrection):
+def initSteppers(axis, indiclient, telescope, serialport, backlashCorrection):
 
     print ("Initializing steppers")
     #Disconnect telescope mount from INDI to free up serial port for Alt/Az adjustments
     indi.disconnectScope(indiclient, telescope)
     
     #Increase both Az & Alt by approximately 16-steps
-    LX200.sendCommand(f":MAZ{backlashCorrection[0]}#", serialport)
-    time.sleep(0.5)
-    LX200.sendCommand(f":MAL{backlashCorrection[1]}#", serialport)
-
+    if axis == "az":
+        LX200.sendCommand(f":MAZ{backlashCorrection[0]}#", serialport)
+    elif axis == "alt":
+        LX200.sendCommand(f":MAL{backlashCorrection[1]}#", serialport)
     time.sleep(3)
     
     #Re-connect telescope mount to INDI before disconnecting from the INDI server
@@ -188,11 +188,11 @@ if calibration_distance > 0:
 else:
     backlashCorrection = [-4.2665,-0.1647]
 
-iteration = input("How many calibration iterations to perform? (Default is 3) ")
+iteration = input("How many calibration iterations to perform? (Default is 4) ")
 try:
     iteration = int(iteration)
 except:
-    iteration = 3
+    iteration = 4
 
 #Create location object based on lat/long/elev
 observing_location = EarthLocation(lat=mylat*u.deg, lon=mylong*u.deg, height=myelev*u.m)
