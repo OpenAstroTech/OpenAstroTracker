@@ -1,3 +1,12 @@
+**V1.8.45 - Updates**
+- Fixed some ESP32 build errors
+- Checked from some invalid ESP32 configurations
+- Corrected some Meade command comments
+- Sorted GO targets alphabetically (except Polaris)
+
+**V1.8.44 - Updates**
+- Fixed compiler define bug when Startup was disabled.
+
 **V1.8.43 - Updates**
 - Added ability to switch to the always-on coordinate display (top line RA, bottom line DEC) in CTRL menu. SELECT exits this mode.
 
