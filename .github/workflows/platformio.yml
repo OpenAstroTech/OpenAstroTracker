@@ -26,7 +26,6 @@ jobs:
           - { stepper: 0, driver: 1 } # 28BYJ48 & GENERIC
           - { stepper: 0, driver: 2 } # 28BYJ48 & TMC2209_STANDALONE
           - { stepper: 0, driver: 3 } # 28BYJ48 & TMC2209_UART
-          - { board: esp32, stepper: 1 } # ESP32 & NEMA17
           - { board: esp32, gps: 1 }
           - { board: esp32, gyro: 1 }
           - { board: esp32, azalt: 1 }
