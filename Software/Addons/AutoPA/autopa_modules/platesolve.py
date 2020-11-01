@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
 import subprocess
-import re, math, os
+import re, math, os, time
 from pathlib import Path
 from astropy.time import Time
 from astropy.coordinates import SkyCoord, EarthLocation, AltAz, Angle
 from astropy import units as u
+from astropy.wcs import WCS
 from autopa_modules import LX200
 import contextlib
 
@@ -38,17 +39,11 @@ def solve_ASTAP (filename, RA, DEC, radius, pixel_resolution):
     cmd = f"/opt/astap/astap -r 30 -speed auto -o /tmp/solution -f {filename}"    
     try:
         output = str(subprocess.check_output(cmd, shell=True))
+        output = WCS("/tmp/solution.wcs")
+        object = SkyCoord(output.wcs.crval[0], output.wcs.crval[1], frame='fk5', unit='deg')
     except:
-        return ("Failed", "Failed")
-    textfile = open("/tmp/solution.wcs", 'r')
-    filetext = textfile.read()
-    textfile.close()
-    try:
-        RA = re.search("CRVAL1\s*=\s*(\d\.\d+E\+\d+)", filetext).group(1)
-        DEC = re.search("CRVAL2\s*=\s*(\d\.\d+E\+\d+)", filetext).group(1)
-    except:
-        return ("Failed", "Failed")
-    return (Angle(RA, unit=u.deg).to_string(unit=u.hour), Angle(DEC, unit=u.deg).to_string(unit=u.degree))
+        return ("Failed")
+    return (object)
 
 def solve_ASTROMETRY (filename, RA, DEC, radius, pixel_resolution):
     config_file="/home/astroberry/.local/share/kstars/astrometry/astrometry.cfg"
@@ -71,7 +66,7 @@ def solve_ASTROMETRY (filename, RA, DEC, radius, pixel_resolution):
         DEC_S = result.group("DEC_S")
         return (f"{RA_H}h{RA_M}m{RA_S}s", f"{DEC_D}d{DEC_M}m{DEC_S}s")
         
-def polarCalc(mylat, mylong, myelev, observing_time, p1RA, p1DEC, p2RA, p2DEC, p3RA, p3DEC):
+def polarCalc(mylat, mylong, myelev, observing_time, p1, p2, p3):
     #iers.conf.auto_download = False
     #iers.conf.auto_max_age = None
     
@@ -82,9 +77,9 @@ def polarCalc(mylat, mylong, myelev, observing_time, p1RA, p1DEC, p2RA, p2DEC, p
     observing_location = EarthLocation(lat=mylat*u.deg, lon=mylong*u.deg, height=myelev*u.m)
 
     #Create coordinate objects for each point
-    p1 = SkyCoord(p1RA, p1DEC, unit='deg')
-    p2 = SkyCoord(p2RA, p2DEC, unit='deg')
-    p3 = SkyCoord(p3RA, p3DEC, unit='deg')
+    #p1 = SkyCoord(p1RA, p1DEC, unit='deg')
+    #p2 = SkyCoord(p2RA, p2DEC, unit='deg')
+    #p3 = SkyCoord(p3RA, p3DEC, unit='deg')
     p1X = (90 - p1.dec.degree) * math.cos(p1.ra.radian)
     p1Y = (90 - p1.dec.degree) * math.sin(p1.ra.radian)
     p2X = (90 - p2.dec.degree) * math.cos(p2.ra.radian)
@@ -92,7 +87,7 @@ def polarCalc(mylat, mylong, myelev, observing_time, p1RA, p1DEC, p2RA, p2DEC, p
     p3X = (90 - p3.dec.degree) * math.cos(p3.ra.radian)
     p3Y = (90 - p3.dec.degree) * math.sin(p3.ra.radian)
 
-    #Calculate center of circle using three points in the complex plane. DEC is treated as unitless for the purposes of the calculation.
+    #Calculate center of circle using three points in the complex plane. RA/DEC are treated as unitless for the purposes of the calculation.
     x, y, z = complex(p1X,p1Y), complex(p2X,p2Y), complex(p3X,p3Y)
     w = z-x
     w /= y-x
@@ -104,21 +99,16 @@ def polarCalc(mylat, mylong, myelev, observing_time, p1RA, p1DEC, p2RA, p2DEC, p
     resultDEC = (90 - math.sqrt(resultX**2 + resultY**2))
     resultRA = math.atan2(resultY, resultX)*360 / (2*math.pi)
     if resultRA < 0:
-            resultRA = (180-abs(resultRA))+180
+        resultRA = (180-abs(resultRA))+180
 
-    #Create coordinate object for current alignment offset
-    offset = SkyCoord(resultRA, resultDEC, frame='itrs', unit='deg', representation_type='spherical', obstime=observing_time)
     print(f"Current alignment in RA/DEC: {Angle(resultRA*u.deg).to_string(u.hour, precision=2)}/{Angle(resultDEC*u.deg).to_string(u.degree, precision=2)}.")
-
-    #Create coordinate object for pole
-    pole = SkyCoord(0, 90, frame='itrs', unit='deg', representation_type='spherical', obstime=observing_time)
     
-    #Create coordinate object for pole
-    poleAzAlt = pole.transform_to(AltAz(obstime=observing_time,location=observing_location))
-    print(f"True polar alignment in Az./Alt.: 0h00m00s/{poleAzAlt.alt.to_string(u.degree, precision=2)}.")
-
-    #Transform current alignment to Alt/Az coordinate system
-    offsetAzAlt = offset.transform_to(AltAz(obstime=observing_time,location=observing_location))
+    #Create alt/az coordinate object for pole
+    poleAzAlt = RADECtoAltAz(observing_location, observing_time, 0, 90)
+    print(f"True polar alignment in Az./Alt.: 00h00m00s/{poleAzAlt.alt.to_string(u.degree, precision=2)}.")
+    
+    #Create alt/az coordinate object for current alignment
+    offsetAzAlt = RADECtoAltAz(observing_location, observing_time, resultRA, resultDEC)
     print(f"Current alignment in Az./Alt.: {offsetAzAlt.az.to_string(u.hour, precision=2)}/{offsetAzAlt.alt.to_string(u.degree, precision=2)}.")
 
     #Calculate offset deltas from pole
@@ -127,3 +117,12 @@ def polarCalc(mylat, mylong, myelev, observing_time, p1RA, p1DEC, p2RA, p2DEC, p
     errorAlt = (poleAzAlt.alt.deg-offsetAzAlt.alt.deg)*60
     
     return errorAz, errorAlt
+    
+def RADECtoAltAz(observing_location, observing_time, RA, DEC):
+    #Create coordinate object for current alignment offset
+    offset = SkyCoord(RA, DEC, frame='itrs', unit='deg', representation_type='spherical', obstime=observing_time)
+    
+    #Transform current alignment to Alt/Az coordinate system
+    AzAlt = offset.transform_to(AltAz(obstime=observing_time,location=observing_location))
+
+    return AzAlt

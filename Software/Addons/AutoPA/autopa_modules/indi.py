@@ -6,7 +6,7 @@ import threading
 import io
 from astropy.coordinates import Angle
 from astropy import units as u
-
+    
 class IndiClient(PyIndi.BaseClient):
     def __init__(self):
         super(IndiClient, self).__init__()
@@ -34,7 +34,7 @@ class IndiClient(PyIndi.BaseClient):
         pass
     def serverDisconnected(self, code):
         pass
-
+    
 def capture(indiclient, ccd, exposure, outputfile, blobEvent):
     # Let's take some pictures
     device_ccd=indiclient.getDevice(ccd)
