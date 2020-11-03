@@ -52,7 +52,7 @@ namespace OATControl.ViewModels
 		string _driftAlignStatus = "Drift Alignment";
 		float _driftPhase = 0;
 
-		private float _maxMotorSpeed = 500;
+		private float _maxMotorSpeed = 2.5f;
 		double _speed = 1.0;
 		string _scopeName = string.Empty;
 		string _scopeHardware = string.Empty;
@@ -1166,7 +1166,7 @@ namespace OATControl.ViewModels
 			float[] speeds = { 0, 0.05f, 0.15f, 0.5f, 1.0f };
 			string slewRateComdChar = "_GCMS";
 
-			MaxMotorSpeed = speeds[newRate] * ((_raIsNEMA || _decIsNEMA) ? 1000 : 500);
+			MaxMotorSpeed = speeds[newRate] * 2.5f; // Can't go much quicker than 2.5 degs/sec
 
 			if (MountConnected)
 			{

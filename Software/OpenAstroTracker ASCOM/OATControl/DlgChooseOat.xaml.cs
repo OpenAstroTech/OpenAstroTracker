@@ -39,8 +39,8 @@ namespace OATControl
 		};
 		private DelegateCommand _rescanCommand;
 		private DelegateCommand _connectAndNextCommand;
-		private float _latitude = 45;
-		private float _longitude = -75;
+		private float _latitude = 15;
+		private float _longitude = -15;
 		private float _altitude = 100;
 		private string _device;
 		private bool _showGPSStatus = false;
@@ -361,16 +361,19 @@ namespace OATControl
 				case Steps.WaitForLevel:
 					// Get the current digital level angles.
 					string currentAngles = await _sendCommand(":XLGC#,#");
-					float currentRoll = float.Parse(currentAngles.Split(",".ToCharArray())[1]);
-
-					// Keep a rolling average of the last 6 values.
-					if (_rollOffsetHistory.Count > 5)
+					if (!currentAngles.Contains("NAN"))
 					{
-						_rollOffsetHistory.RemoveAt(0);
-					}
+						float currentRoll = float.Parse(currentAngles.Split(",".ToCharArray())[1]);
 
-					_rollOffsetHistory.Add(currentRoll - _rollReference);
-					RollOffset = _rollOffsetHistory.Average();
+						// Keep a rolling average of the last 6 values.
+						if (_rollOffsetHistory.Count > 5)
+						{
+							_rollOffsetHistory.RemoveAt(0);
+						}
+
+						_rollOffsetHistory.Add(currentRoll - _rollReference);
+						RollOffset = _rollOffsetHistory.Average();
+					}
 					break;
 
 				case Steps.WaitForGPS:
