@@ -414,12 +414,12 @@ bool gpsAqcuisitionComplete(int & indicator); // defined in c72_menuHA_GPS.hpp
 //      Returns: nothing
 //
 // :XSXn.nnn#
-//      Set RA manual slewing speed
+//      Set RA manual slewing speed in degrees/sec. Max is around 2.5 degs/s.
 //      Set the speed of the RA motor, immediately. Must be in manual slewing mode.
 //      Returns: nothing
 //
 // :XSYn.nnn#
-//      Set DEC manual slewing speed
+//      Set DEC manual slewing speed in degrees/sec. Max is around 2.5 degs/s.
 //      Set the speed of the DEC motor, immediately. Must be in manual slewing mode.
 //      Returns: nothing
 //

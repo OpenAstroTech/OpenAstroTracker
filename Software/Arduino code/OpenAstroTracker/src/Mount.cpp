@@ -1262,6 +1262,10 @@ void Mount::setManualSlewMode(bool state) {
     stopSlewing(TRACKING);
     waitUntilStopped(ALL_DIRECTIONS);
     _mountStatus |= STATUS_SLEWING | STATUS_SLEWING_MANUAL;
+    #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+      LOGV2(DEBUG_STEPPERS, F("STEP-setManualSlewMode: Switching RA driver to microsteps(%d)"), SET_MICROSTEPPING);
+      _driverRA->microsteps(SET_MICROSTEPPING);
+    #endif
   }
   else {
     _mountStatus &= ~STATUS_SLEWING_MANUAL;
@@ -1282,14 +1286,16 @@ void Mount::setManualSlewMode(bool state) {
 // setSpeed
 //
 /////////////////////////////////
-void Mount::setSpeed(int which, float speed) {
+void Mount::setSpeed(int which, float speedDegsPerSec) {
   if (which == RA_STEPS) {
-    LOGV2(DEBUG_STEPPERS, F("STEP-setSpeed: Set RA speed %f"), speed);
-    _stepperRA->setSpeed(speed);
+    float stepsPerSec = speedDegsPerSec  * _stepsPerRADegree;
+    LOGV3(DEBUG_STEPPERS, F("STEP-setSpeed: Set RA speed %f degs/s, which is %f steps/s"), speedDegsPerSec, stepsPerSec);
+    _stepperRA->setSpeed(stepsPerSec);
   }
   else if (which == DEC_STEPS) {
-    LOGV2(DEBUG_STEPPERS, F("STEP-setSpeed: Set DEC speed %f"), speed);
-    _stepperDEC->setSpeed(speed);
+    float stepsPerSec = speedDegsPerSec * _stepsPerDECDegree;
+    LOGV3(DEBUG_STEPPERS, F("STEP-setSpeed: Set DEC speed %f degs/s, which is %f steps/s"), speedDegsPerSec, stepsPerSec);
+    _stepperDEC->setSpeed(stepsPerSec);
   }
   #if AZIMUTH_ALTITUDE_MOTORS == 1
   else if (which == AZIMUTH_STEPS) {
