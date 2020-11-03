@@ -1302,7 +1302,7 @@ void Mount::setSpeed(int which, float speedDegsPerSec) {
     float curAzSpeed = _stepperAZ->speed();
 
     // If we are changing directions or asking for a stop, do a stop
-    if ((signbit(speed) != signbit(curAzSpeed)) || (speed == 0))
+    if ((signbit(speedDegsPerSec) != signbit(curAzSpeed)) || (speedDegsPerSec == 0))
     {
       _stepperAZ->stop();
       while (_stepperAZ->isRunning()){
@@ -1311,12 +1311,12 @@ void Mount::setSpeed(int which, float speedDegsPerSec) {
     }
 
     // Are we starting a move or changing speeds?
-    if (speed != 0) {
+    if (speedDegsPerSec != 0) {
       _stepperAZ->enableOutputs();
-      _stepperAZ->setSpeed(speed);
-      _stepperAZ->move(speed * 100000);
+      _stepperAZ->setSpeed(speedDegsPerSec);
+      _stepperAZ->move(speedDegsPerSec * 100000);
     } // Are we stopping a move?
-    else if (speed == 0) {
+    else if (speedDegsPerSec == 0) {
       _stepperAZ->disableOutputs();
     }
   }
@@ -1324,7 +1324,7 @@ void Mount::setSpeed(int which, float speedDegsPerSec) {
     float curAltSpeed = _stepperALT->speed();
 
     // If we are changing directions or asking for a stop, do a stop
-    if ((signbit(speed) != signbit(curAltSpeed)) || (speed == 0))
+    if ((signbit(speedDegsPerSec) != signbit(curAltSpeed)) || (speedDegsPerSec == 0))
     {
       _stepperALT->stop();
       while (_stepperALT->isRunning()){
@@ -1333,12 +1333,12 @@ void Mount::setSpeed(int which, float speedDegsPerSec) {
     }
 
     // Are we starting a move or changing speeds?
-    if (speed != 0) {
+    if (speedDegsPerSec != 0) {
       _stepperALT->enableOutputs();
-      _stepperALT->setSpeed(speed);
-      _stepperALT->move(speed * 100000);
+      _stepperALT->setSpeed(speedDegsPerSec);
+      _stepperALT->move(speedDegsPerSec * 100000);
     } // Are we stopping a move?
-    else if (speed == 0) {
+    else if (speedDegsPerSec == 0) {
       _stepperALT->disableOutputs();
     }
   }
