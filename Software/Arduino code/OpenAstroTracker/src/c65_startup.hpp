@@ -4,6 +4,9 @@
 #if USE_GPS == 1
 #include "Sidereal.hpp"
 #endif
+#if USE_GYRO_LEVEL == 1
+#include "Gyro.hpp"
+#endif
 
 #if DISPLAY_TYPE > 0
 #if SUPPORT_GUIDED_STARTUP == 1
@@ -14,12 +17,15 @@
 void setControlMode(bool); // In CTRL menu
 
 #define StartupIsInHomePosition 1
-#define StartupSetHATime 4
-#define StartupWaitForHACompletion 6
-#define StartupHAConfirmed 7
-#define StartupWaitForPoleCompletion 9
-#define StartupPoleConfirmed 10
-#define StartupCompleted 20
+#define StartupSetRoll 2
+#define StartupWaitForRollCompletion 3
+#define StartupRollConfirmed 4
+#define StartupSetHATime 10
+#define StartupWaitForHACompletion 15
+#define StartupHAConfirmed 20
+#define StartupWaitForPoleCompletion 25
+#define StartupPoleConfirmed 30
+#define StartupCompleted 35
 
 #define YES 1
 #define NO 2
@@ -54,7 +60,12 @@ bool processStartupKeys() {
         }
         else if (key == btnSELECT) {
           if (isInHomePosition == YES) {
-            startupState = StartupSetHATime;
+            #if USE_GYRO_LEVEL == 1
+              startupState = StartupSetRoll;
+              LOGV1(DEBUG_INFO, F("STARTUP: State is set roll!"));
+            #else
+              startupState = StartupSetHATime;
+            #endif
           }
           else if (isInHomePosition == NO) {
             #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART && USE_AUTOHOME == 1
@@ -91,6 +102,26 @@ bool processStartupKeys() {
       }
     }
     break;
+
+    #if USE_GYRO_LEVEL == 1
+    case StartupSetRoll : {
+      inStartup = false;
+      LOGV1(DEBUG_INFO, F("STARTUP: Switching to CAL menu!"));
+
+      lcdMenu.setCursor(0, 0);
+      lcdMenu.printMenu("Level front");
+      lcdMenu.setActive(Calibration_Menu);
+
+      startupState = StartupWaitForRollCompletion;
+    }
+    break;
+    
+    case StartupRollConfirmed : {
+      LOGV1(DEBUG_INFO, F("STARTUP: Roll confirmed!"));
+      startupState = StartupSetHATime;
+    }
+    break;
+    #endif
 
     case StartupSetHATime: {
       inStartup = false;

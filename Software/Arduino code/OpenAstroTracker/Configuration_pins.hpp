@@ -109,7 +109,7 @@
         #error GPS module not currently configured/supported in ESP32
     #endif
 
-    #if USE_GYRO == 1
+    #if USE_GYRO_LEVEL == 1
         #error Digital Level not currently configured/supported in ESP32
     #endif
 #endif

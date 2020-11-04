@@ -204,8 +204,14 @@ bool processCalibrationKeys()
 #if USE_GYRO_LEVEL == 1
   if (!gyroStarted)
   {
+    LOGV1(DEBUG_INFO, F("CAL: Starting Gyro!"));
     Gyro::startup();
     gyroStarted = true;
+  }
+  
+  if ((startupState == StartupWaitForRollCompletion) && (calState != ROLL_OFFSET_CALIBRATION)) {
+    LOGV1(DEBUG_INFO, F("CAL: In Startup, so going to Roll confirm!"));
+    calState = ROLL_OFFSET_CALIBRATION;
   }
 #endif
 
@@ -484,18 +490,33 @@ bool processCalibrationKeys()
     {
       if (key == btnSELECT)
       {
-        calState = ROLL_OFFSET_CONFIRM;
-        lcdMenu.setCursor(0, 0);
-        lcdMenu.printMenu(F("Set as level?"));
+         if (startupState == StartupWaitForRollCompletion)
+         {
+           LOGV1(DEBUG_INFO, F("CAL: Confirmed roll. Going back to Startup, Roll confirmed!"));
+           gotoNextMenu(); // Turns of Gyro
+           inStartup = true;
+           startupState = StartupRollConfirmed;
+           calState = HIGHLIGHT_FIRST;
+         }
+         else
+         {
+            calState = ROLL_OFFSET_CONFIRM;
+            lcdMenu.setCursor(0, 0);
+            lcdMenu.printMenu(F("Set as level?"));
+        }
       }
       else if (key == btnLEFT)
       {
-        calState = HIGHLIGHT_ROLL_LEVEL;
+        if (startupState != StartupWaitForRollCompletion) {
+          calState = HIGHLIGHT_ROLL_LEVEL;
+        }
       }
       else if (key == btnRIGHT)
       {
-        gotoNextMenu();
-        calState = HIGHLIGHT_ROLL_LEVEL;
+        if (startupState != StartupWaitForRollCompletion) {
+          gotoNextMenu();
+          calState = HIGHLIGHT_ROLL_LEVEL;
+        }
       }
     }
     break;
