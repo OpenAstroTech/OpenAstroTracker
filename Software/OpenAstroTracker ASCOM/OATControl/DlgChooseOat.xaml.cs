@@ -48,8 +48,11 @@ namespace OATControl
 		private bool _showNextButton = false;
 		private bool _showLevelDisplay = false;
 		private double _rollOffset;
+		private double _pitchOffset;
 		private List<double> _rollOffsetHistory;
+		private List<double> _pitchOffsetHistory;
 		private float _rollReference;
+		private float _pitchReference;
 		private MountVM _mountViewModel;
 		private Steps _currentStep = Steps.Idle;
 		private string _gpsStatus = string.Empty;
@@ -67,6 +70,7 @@ namespace OATControl
 			_sendCommand = sendCommand;
 			_mountViewModel = mountViewModel;
 			_rollOffsetHistory = new List<double>(5);
+			_pitchOffsetHistory = new List<double>(5);
 			_latitude = Settings.Default.SiteLatitude;
 			_longitude = Settings.Default.SiteLongitude;
 
@@ -180,6 +184,19 @@ namespace OATControl
 				{
 					_rollOffset = value;
 					OnPropertyChanged("RollOffset");
+				}
+			}
+		}
+
+		public double PitchOffset
+		{
+			get { return _pitchOffset; }
+			set
+			{
+				if (value != _pitchOffset)
+				{
+					_pitchOffset = value;
+					OnPropertyChanged("PitchOffset");
 				}
 			}
 		}
@@ -342,7 +359,9 @@ namespace OATControl
 
 						// Get the reference angles from the level.
 						string referenceAngles = await _sendCommand(":XLGR#,#");
-						_rollReference = float.Parse(referenceAngles.Split(",".ToCharArray())[1]);
+						var angles = referenceAngles.Split(",".ToCharArray());
+						_pitchReference = float.Parse(angles[0]);
+						_rollReference = float.Parse(angles[1]);
 						ShowLevelDisplay = true;
 					}
 					else if (_mountViewModel.IsAddonSupported("GPS"))
@@ -363,16 +382,24 @@ namespace OATControl
 					string currentAngles = await _sendCommand(":XLGC#,#");
 					if (!currentAngles.Contains("NAN"))
 					{
-						float currentRoll = float.Parse(currentAngles.Split(",".ToCharArray())[1]);
-
+						var angles = currentAngles.Split(",".ToCharArray());
+						float currentPitch = float.Parse(angles[0]);
+						float currentRoll = float.Parse(angles[1]);
+						
 						// Keep a rolling average of the last 6 values.
 						if (_rollOffsetHistory.Count > 5)
 						{
 							_rollOffsetHistory.RemoveAt(0);
 						}
+						if (_pitchOffsetHistory.Count > 5)
+						{
+							_pitchOffsetHistory.RemoveAt(0);
+						}
 
 						_rollOffsetHistory.Add(currentRoll - _rollReference);
 						RollOffset = _rollOffsetHistory.Average();
+						_pitchOffsetHistory.Add(currentPitch- _pitchReference);
+						PitchOffset = _pitchOffsetHistory.Average();
 					}
 					break;
 
