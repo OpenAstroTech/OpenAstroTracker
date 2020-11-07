@@ -346,20 +346,20 @@ void Mount::writePersistentData(int which, long val)
   bool writeExtended = false;
 
   // If we're written something before...
-  uint16_t magicMarker = EPROMStore::read(5) * 256 + EPROMStore::read(4);
+  uint16_t magicMarker = (EPROMStore::read(5) << 8) + EPROMStore::read(4);
   LOGV3(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write(%d): Marker is %x"), which, magicMarker);
   if ((magicMarker & EEPROM_MAGIC_MASK) == EEPROM_MAGIC_MARKER) {
     // ... read the current state ...
     flag = EPROMStore::read(4);
     if ((magicMarker & EEPROM_MAGIC_EXTENDED_MASK) == EEPROM_MAGIC_EXTENDED_MARKER) {
       extendedFlag = EPROMStore::readInt16(21, 22);
-      LOGV3(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: Marker is 0xBF, extended flag is %x (%d)"), extendedFlag, extendedFlag);
+      LOGV4(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: Marker is 0xBF, flag is %x, extended flag is %x (%d)"), flag, extendedFlag, extendedFlag);
     }
     else{
      LOGV3(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: Marker is 0xBE, flag is %x (%d)"), flag, flag);
     }
   }
-  
+
   switch (which) {
     case EEPROM_RA:
     {
