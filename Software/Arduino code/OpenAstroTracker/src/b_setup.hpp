@@ -144,9 +144,11 @@ void setup() {
   BLUETOOTH_SERIAL.begin("OpenAstroTracker");
   #endif
 
+  LOGV1(DEBUG_ANY, F("."));
   LOGV2(DEBUG_ANY, F("Hello, universe, this is OAT %s!"), VERSION);
 
   EPROMStore::initialize();
+  mount.readConfiguration();
 
   /////////////////////////////////
   // ESP32
@@ -189,7 +191,7 @@ void finishSetup()
     lcdMenu.startup();
   #endif
 
-  LOGV1(DEBUG_ANY, F("Finishing setup..."));
+  LOGV1(DEBUG_ANY, F("Finishing boot..."));
   // Show a splash screen
   lcdMenu.setCursor(0, 0);
   lcdMenu.printMenu("OpenAstroTracker");
@@ -209,8 +211,11 @@ void finishSetup()
       }
     }
 
-    unsigned long now = millis();
+  unsigned long now = millis();
   #endif
+  
+  LOGV2(DEBUG_ANY, F("Hardware: %s"), mount.getMountHardwareInfo().c_str());
+
   // Create the command processor singleton
   LOGV1(DEBUG_ANY, F("Initialize LX200 handler..."));
   MeadeCommandProcessor::createProcessor(&mount, &lcdMenu);
@@ -319,5 +324,5 @@ void finishSetup()
   #endif // DISPLAY_TYPE > 0
 
   mount.bootComplete();
-  LOGV1(DEBUG_ANY, F("Setup done!"));
+  LOGV1(DEBUG_ANY, F("Boot complete!"));
 }
