@@ -243,6 +243,7 @@
 #define DEBUG_MEADE          0x0040
 #define DEBUG_VERBOSE        0x0080
 #define DEBUG_STEPPERS       0x0100
+#define DEBUG_EEPROM         0x0200
 #define DEBUG_ANY            0xFFFF
 
 ////////////////////////////
