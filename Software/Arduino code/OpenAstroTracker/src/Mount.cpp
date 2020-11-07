@@ -359,6 +359,7 @@ void Mount::writePersistentData(int which, long val)
      LOGV3(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: Marker is 0xBE, flag is %x (%d)"), flag, flag);
     }
   }
+  
   switch (which) {
     case EEPROM_RA:
     {
@@ -460,12 +461,14 @@ void Mount::writePersistentData(int which, long val)
 
 
   if (writeExtended) {
-    LOGV3(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: New Marker is 0xBF, extended flag is %x (%d)"), extendedFlag, extendedFlag);
-    EPROMStore::update(5, EEPROM_MAGIC_EXTENDED_MARKER >> 8);
+    magicMarker |= EEPROM_MAGIC_EXTENDED_MARKER;
+    LOGV4(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: New Marker is %x, extended flag is %x (%d)"), magicMarker, extendedFlag, extendedFlag);
+    EPROMStore::update(5, magicMarker >> 8);
     EPROMStore::updateInt16(21, 22, extendedFlag);
   }
   else {
-    LOGV4(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: New Marker is %d, flag is %x (%d)"), magicMarker, flag, flag);
+    magicMarker |= EEPROM_MAGIC_MARKER;
+    LOGV4(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: New Marker is %x, flag is %x (%d)"), magicMarker, flag, flag);
     EPROMStore::update(4, flag);
     EPROMStore::update(5, magicMarker >> 8);
 
