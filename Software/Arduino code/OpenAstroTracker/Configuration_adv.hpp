@@ -209,12 +209,12 @@
 //
 // SETTINGS
 //
-  #define INFRA_SSID "YouSSID"
-  #define INFRA_WPAKEY "YourWPAKey"
+  #define INFRA_SSID "FRITZ!Box 7590 RA 2,4 Ghz"
+  #define INFRA_WPAKEY "47239734322966522015"
   #define OAT_WPAKEY "superSecret"
   #define HOSTNAME "OATerScope"
 
-  #define WIFI_MODE 2 
+  #define WIFI_MODE 0 
   // 0 - Infrastructure Only - Connecting to a Router
   // 1 - AP Mode Only        - Acting as a Router
   // 2 - Attempt Infrastructure, Fail over to AP Mode.
@@ -249,10 +249,10 @@
 //
 // DEBUG OUTPUT
 //
-#define DEBUG_LEVEL (DEBUG_NONE)
+// #define DEBUG_LEVEL (DEBUG_NONE)
 // #define DEBUG_LEVEL (DEBUG_STEPPERS|DEBUG_MOUNT)
 // #define DEBUG_LEVEL (DEBUG_INFO|DEBUG_MOUNT|DEBUG_GENERAL)
-// #define DEBUG_LEVEL (DEBUG_SERIAL|DEBUG_WIFI|DEBUG_INFO|DEBUG_MOUNT|DEBUG_GENERAL)
+#define DEBUG_LEVEL (DEBUG_SERIAL|DEBUG_WIFI|DEBUG_INFO|DEBUG_GENERAL)
 // #define DEBUG_LEVEL (DEBUG_ANY)
 // #define DEBUG_LEVEL (DEBUG_INFO|DEBUG_MOUNT|DEBUG_GENERAL)
 //
