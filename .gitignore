@@ -372,3 +372,5 @@ Software/Arduino code/sketch_jun08a
 # gh-pages stuff
 .jekyll-cache
 _site
+
+.DS_STORE

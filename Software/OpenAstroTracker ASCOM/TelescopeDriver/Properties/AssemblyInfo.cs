@@ -10,9 +10,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("ASCOM.OpenAstroTracker.Telescope")]
 [assembly: AssemblyDescription("ASCOM Telescope driver for OpenAstroTracker")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("The ASCOM Initiative")]
+[assembly: AssemblyCompany("OpenAstroTech")]
 [assembly: AssemblyProduct("OpenAstroTracker")]
-[assembly: AssemblyCopyright("Copyright © 2020 The ASCOM Initiative")]
+[assembly: AssemblyCopyright("Copyright © 2020 OpenAstroTech")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -35,5 +35,5 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 //
 // TODO - Set your driver's version here
-[assembly: AssemblyVersion("6.4.0.0")]
-[assembly: AssemblyFileVersion("6.4.0.0")]
+[assembly: AssemblyVersion("6.5.0.0")]
+[assembly: AssemblyFileVersion("6.5.0.0")]

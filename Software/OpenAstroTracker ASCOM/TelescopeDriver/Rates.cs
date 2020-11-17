@@ -97,12 +97,18 @@ namespace ASCOM.OpenAstroTracker
                 case TelescopeAxes.axisPrimary:
                     // Example: m_Rates = new Rate[] { new Rate(10.5, 30.2), new Rate(54.0, 43.6) }
                     rates = new Rate[] {
-                        new Rate(10d, 10d)
+                        new Rate(10d, 10d),
+                        new Rate(20d, 20d),
+                        new Rate(30d, 30d),
+                        new Rate(40d, 40d)
                     };
                     break;
                 case TelescopeAxes.axisSecondary:
                     rates = new Rate[] {
-                        new Rate(10d, 10d)
+                        new Rate(10d, 10d),
+                        new Rate(20d, 20d),
+                        new Rate(30d, 30d),
+                        new Rate(40d, 40d)
                     };
                     break;
                 case TelescopeAxes.axisTertiary:

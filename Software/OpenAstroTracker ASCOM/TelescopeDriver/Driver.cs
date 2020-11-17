@@ -507,6 +507,7 @@ namespace ASCOM.OpenAstroTracker {
 
 
         private bool _trackingPriorToMove;
+        private double _ratePriorToMove;
         public void MoveAxis(TelescopeAxes Axis, double Rate) {
             if (Axis == TelescopeAxes.axisTertiary) {
                 throw new ASCOM.NotImplementedException("MoveAxis Tertiary Not Supported.");
@@ -521,21 +522,41 @@ namespace ASCOM.OpenAstroTracker {
                 throw new ASCOM.InvalidValueException("Invalid speed for Axis");
             }
 
-
             var sAxis = Enum.GetName(typeof(TelescopeAxes), Axis);
             string cmd = "Q";
 
             LogMessage("MoveAxis", $"{sAxis} Rate {Rate}");
 
-
             if (Rate == 0) {
                 // if at some point we support multiple tracking rates this should set
                 // the value back to the previous rate...
                 CommandBlind($":{cmd}");
+                // Restore slewing rate
+                CommandBlind($":RS");
                 Tracking = _trackingPriorToMove;
             }
             else {
                 _trackingPriorToMove = Tracking;
+                //_ratePriorToMove = Rate;
+                if (Math.Abs(Rate) == 10)
+                {
+                    cmd = "G";
+				}
+                else if (Math.Abs(Rate) == 20)
+                {
+                    cmd = "C";
+                }
+                else if (Math.Abs(Rate) == 30)
+                {
+                    cmd = "M";
+                }
+                else 
+                {
+                    cmd = "S";
+                }
+
+                CommandBlind($":R{cmd}");
+
                 switch (Axis)
                 {
                     case TelescopeAxes.axisPrimary:
@@ -545,6 +566,7 @@ namespace ASCOM.OpenAstroTracker {
                         cmd = Rate > 0 ? "Mn" : "Ms";
                         break;
                 }
+
                 CommandBlind($":{cmd}");
             }
         }
