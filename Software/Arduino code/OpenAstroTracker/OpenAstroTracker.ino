@@ -1,18 +1,16 @@
-// Configuration is now done in Configuration.hpp and Configuration_adv.hpp 
-#include "Configuration.hpp"
-#include "a_inits.hpp"
-#include "b_setup.hpp"
-#include "c65_startup.hpp"
-#include "c70_menuRA.hpp"
-#include "c71_menuDEC.hpp"
-#include "c722_menuPOI.hpp"
-#include "c725_menuHOME.hpp"
-#include "c72_menuHA.hpp"
-#include "c72_menuHA_GPS.hpp"
-#include "c74_menuHEAT.hpp"
-#include "c75_menuCTRL.hpp"
-#include "c76_menuCAL.hpp"
-#include "c78_menuINFO.hpp"
-#include "c_buttons.hpp"
-#include "f_serial.hpp"
-#include "g_bluetooth.hpp"
+/*
+  =======================================================================================================================================
+
+    Version 1.8
+
+    1. Connect your Arduino, under tools choose the board you're using (e.g. Arduino Mega), set the right Port and set "Arduino ISP" as the Programmer.
+    2. Hit upload (Ctrl-U)
+
+    You might need to download the "AccelStepper" library by Mike McCauley
+
+    Authors: /u/intercipere
+             /u/clutchplate
+             /u/EorEquis
+
+  =======================================================================================================================================
+*/

@@ -43,18 +43,21 @@ namespace OATCommunications.WPF.CommunicationHandlers
 			return await SendCommand(command, ResponseType.DigitResponse);
 		}
 
+		long requestIndex = 1;
+
 		private async Task<CommandResponse> SendCommand(string command, ResponseType needsResponse)
 		{
 			if (await EnsurePortIsOpen())
 			{
+				requestIndex++;
 				try
 				{
-					Log.WriteLine("SERIAL: [{0}] Sending command", command);
+					Log.WriteLine("[{0:0000}] SERIAL: [{1}] Sending command", requestIndex, command);
 					_port.Write(command);
 				}
 				catch (Exception ex)
 				{
-					Log.WriteLine("SERIAL: [{0}] Failed to send command. {1}", command, ex.Message);
+					Log.WriteLine("[{0:0000}] SERIAL: [{1}] Failed to send command. {2}", requestIndex, command, ex.Message);
 					return new CommandResponse(string.Empty, false, $"Unable to write to {_portName}. " + ex.Message);
 				}
 
@@ -64,30 +67,30 @@ namespace OATCommunications.WPF.CommunicationHandlers
 					{
 						case ResponseType.NoResponse:
 							{
-								Log.WriteLine("SERIAL: [{0}] No response needed for command", command);
+								Log.WriteLine("[{0:0000}] SERIAL: [{1}] No response needed for command", requestIndex, command);
 								return new CommandResponse(string.Empty, true);
 							}
 
 						case ResponseType.DigitResponse:
 							{
-								Log.WriteLine("SERIAL: [{0}] Expecting single digit response for command, waiting...", command);
+								Log.WriteLine("[{0:0000}] SERIAL: [{1}] Expecting single digit response for command, waiting...", requestIndex, command);
 								string response = new string((char)_port.ReadChar(), 1);
-								Log.WriteLine("SERIAL: [{0}] Received single digit response '{1}' for command", command, response);
+								Log.WriteLine("[{0:0000}] SERIAL: [{1}] Received single digit response '{2}' for command", requestIndex, command, response);
 								return new CommandResponse(response, true);
 							}
 
 						case ResponseType.FullResponse:
 							{
-								Log.WriteLine("SERIAL: [{0}] Expecting #-delimited response for Command, waiting...", command);
+								Log.WriteLine("[{0:0000}] SERIAL: [{1}] Expecting #-delimited response for Command, waiting...", requestIndex, command);
 								string response = _port.ReadTo("#");
-								Log.WriteLine("SERIAL: [{0}] Received response '{1}' for command", command, response);
+								Log.WriteLine("[{0:0000}] SERIAL: [{1}] Received response '{2}' for command", requestIndex, command, response);
 								return new CommandResponse(response, true);
 							}
 					}
 				}
 				catch (Exception ex)
 				{
-					Log.WriteLine("SERIAL: [{0}] Failed to receive response to command. {1}", command, ex.Message);
+					Log.WriteLine("[{0:0000}] SERIAL: [{1}] Failed to receive response to command. {2}", requestIndex, command, ex.Message);
 					return new CommandResponse(string.Empty, false, $"Unable to read response to {command} from {_portName}. {ex.Message}");
 				}
 
@@ -95,7 +98,7 @@ namespace OATCommunications.WPF.CommunicationHandlers
 			}
 			else
 			{
-				Log.WriteLine("SERIAL: Failed to open port {0}", _portName);
+				Log.WriteLine("[{0:0000}] SERIAL: Failed to open port {1}", requestIndex, _portName);
 				return new CommandResponse(string.Empty, false, $"Unable to open {_portName}");
 			}
 		}

@@ -97,6 +97,9 @@
     <Compile Include="DlgChooseOat.xaml.cs">
       <DependentUpon>DlgChooseOat.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LevelDisplay.xaml.cs">
+      <DependentUpon>LevelDisplay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\DelegateCommand.cs" />
     <Compile Include="ViewModels\MountVM.cs" />
     <Compile Include="ViewModels\PointOfInterest.cs" />
@@ -115,6 +118,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="DlgChooseOat.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LevelDisplay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
