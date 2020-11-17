@@ -57,6 +57,18 @@
         #define GPS_SERIAL_PORT Serial1
         #define GPS_BAUD_RATE 9600
     #endif
+    
+    //LCD pin definitions (to allow configuration on different boards)
+    #if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD
+        #define LCD_PINA0 0
+        #define LCD_PIN4 4
+        #define LCD_PIN5 5
+        #define LCD_PIN6 6
+        #define LCD_PIN7 7
+        #define LCD_PIN8 8
+        #define LCD_PIN9 9
+    #endif
+    
 #endif //mega
 
 ////////////////////////////////////////////////////////////////////
