@@ -8,14 +8,14 @@
 #ifdef __AVR_ATmega2560__  // Arduino Mega
     //---------------------------------------
     // If using 28BYJ-48 and ULN2003 drivers:
-    #define RA_IN1_PIN  22
-    #define RA_IN2_PIN  24
-    #define RA_IN3_PIN  26
-    #define RA_IN4_PIN  28
-    #define DEC_IN1_PIN 30
-    #define DEC_IN2_PIN 32
-    #define DEC_IN3_PIN 34
-    #define DEC_IN4_PIN 36
+    #define RA_IN1_PIN  63
+    #define RA_IN2_PIN  38
+    #define RA_IN3_PIN  54
+    #define RA_IN4_PIN  55
+    #define DEC_IN1_PIN 64
+    #define DEC_IN2_PIN 56
+    #define DEC_IN3_PIN 60
+    #define DEC_IN4_PIN 61
     //-----------------------
     // If using NEMA steppers
     #define RA_STEP_PIN 54  // STEP
@@ -24,7 +24,7 @@
     #define RA_DIAG_PIN 3  // only needed for autohome function
     #define RA_MS0_PIN  51
     #define RA_MS1_PIN  52
-    #define RA_MS2_PIN  A9
+    #define RA_MS2_PIN  63
     //RA TMC2209 UART specific pins
     #if UART_SOFTWARESERIAL == 0 //Required for some boards - not needed when using Serial1, Serial2, or Serial3
         #define RA_SERIAL_PORT Serial3  // HardwareSerial port, wire to TX3 for write-only
@@ -40,7 +40,7 @@
     #define DEC_DIAG_PIN 14  // only needed for autohome function
     #define DEC_MS0_PIN  51
     #define DEC_MS1_PIN  52
-    #define DEC_MS2_PIN  A10
+    #define DEC_MS2_PIN  64
     //DEC TMC2209 UART specific pins
     #if UART_SOFTWARESERIAL == 0 //Required for some boards - not needed when using Serial1, Serial2, or Serial3
         #define DEC_SERIAL_PORT Serial3  // HardwareSerial port, wire to TX3 for write-only
@@ -52,14 +52,14 @@
     
     #if AZIMUTH_ALTITUDE_MOTORS == 1
         // Azimuth and Altitude pins
-        #define ALT_IN1_PIN 46
-        #define ALT_IN2_PIN 48
-        #define ALT_IN3_PIN 50
-        #define ALT_IN4_PIN 52
-        #define AZ_IN1_PIN 47
-        #define AZ_IN2_PIN 49
-        #define AZ_IN3_PIN 51
-        #define AZ_IN4_PIN 53
+        #define ALT_IN1_PIN 65
+        #define ALT_IN2_PIN 62
+        #define ALT_IN3_PIN 46
+        #define ALT_IN4_PIN 48
+        #define AZ_IN1_PIN 66
+        #define AZ_IN2_PIN 24
+        #define AZ_IN3_PIN 26
+        #define AZ_IN4_PIN 28
     #endif
     //---------------
     // MISC PINS amd SETTINGS
