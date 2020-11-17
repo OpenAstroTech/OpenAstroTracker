@@ -7,8 +7,6 @@
 #include "LcdMenu.hpp"
 #include "Utility.hpp"
 #include "EPROMStore.hpp"
-#include "inc/Config.hpp"
-#include "../Configuration_pins.hpp"
 
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(LCD_PINA0, &lcdMenu);

@@ -1,7 +1,7 @@
 #include "Utility.hpp"
 #include "EPROMStore.hpp"
 #include "LcdMenu.hpp"
-#include "../Configuration_pins.hpp"
+#include "inc/Config.hpp"
 
 #if DISPLAY_TYPE > 0
 
