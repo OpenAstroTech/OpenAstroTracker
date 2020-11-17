@@ -92,6 +92,7 @@
 //                  ^^^ leave at 0 for now, doesnt work properly yet
 #define RA_AUDIO_FEEDBACK  0 // If one of these are set to 1, the respective driver will shut off the stealthchop mode, resulting in a audible whine
 #define DEC_AUDIO_FEEDBACK 0 // of the stepper coils. Use this to verify that UART is working properly. 
+#define UART_SOFTWARESERIAL 0 // If the board requires SoftwareSerial rather than HardwareSerial for UART
 
 
 ////////////////////////////
