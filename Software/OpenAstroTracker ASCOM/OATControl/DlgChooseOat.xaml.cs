@@ -81,6 +81,8 @@ namespace OATControl
 			this.DataContext = this;
 			InitializeComponent();
 
+			this.Result = false;
+
 			stateTimer.Start();
 		}
 
@@ -275,6 +277,9 @@ namespace OATControl
 			base.OnClosed(e);
 		}
 
+		public bool? Result { get; set; }
+
+
 		private void AdvanceStateMachine()
 		{
 			switch (CurrentStep)
@@ -328,7 +333,7 @@ namespace OATControl
 					break;
 
 				case Steps.Completed:
-					this.DialogResult = true;
+					this.Result = true;
 					this.Close();
 					break;
 
@@ -345,10 +350,18 @@ namespace OATControl
 					break;
 
 				case Steps.CheckHardware:
-					await _mountViewModel.ConnectToOat(SelectedDevice);
+					var connectResult = await _mountViewModel.ConnectToOat(SelectedDevice);
 
 					ShowGPSStatus = false;
 					GPSStatus = string.Empty;
+
+					if (!connectResult)
+					{
+						this.Result = null;
+						this.Close();
+						CurrentStep = Steps.WaitForConnect;
+						return;
+					}
 
 					if (_mountViewModel.IsAddonSupported("GYRO"))
 					{
@@ -446,7 +459,7 @@ namespace OATControl
 					break;
 
 				case Steps.Completed:
-					this.DialogResult = true;
+					this.Result = true;
 					this.Close();
 					return;
 
