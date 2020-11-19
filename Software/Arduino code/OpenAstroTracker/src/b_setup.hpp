@@ -89,6 +89,11 @@ void setup() {
   GPS_SERIAL_PORT.begin(GPS_BAUD_RATE);
   #endif
 
+  //Turn on dew heater
+  #if DEW_HEATER == 1
+  digitalWrite(DEW_HEATER_PIN, HIGH);
+  #endif
+
   /////////////////////////////////
   //   Microstepping/driver pins
   /////////////////////////////////

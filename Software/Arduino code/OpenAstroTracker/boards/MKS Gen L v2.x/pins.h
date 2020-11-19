@@ -79,4 +79,9 @@
       #define LCD_PIN9 47
     #endif
     
+    //Pin to turn on dew heater MOSFET
+    #if DEW_HEATER == 1
+        #define DEW_HEATER_PIN 10
+    #endif
+    
 #endif //mega
