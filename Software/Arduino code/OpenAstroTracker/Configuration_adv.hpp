@@ -153,11 +153,11 @@
 #define ALTITUDE_ARC_SECONDS_PER_STEP (0.61761f)
 #define ALTITUDE_STEPS_PER_ARC_MINUTE (60.0f/ALTITUDE_ARC_SECONDS_PER_STEP)
 
-#if DISPLAY_TYPE > 0
-
 // Enable dew heater output (for boards that have MOSFETs)
 #define DEW_HEATER 1
 
+
+#if DISPLAY_TYPE > 0
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                         ///
