@@ -255,12 +255,6 @@ bool gpsAqcuisitionComplete(int & indicator); // defined in c72_menuHA_GPS.hpp
 //      Returns: nothing
 //
 //------------------------------------------------------------------
-// SYNC FAMILY
-//
-// :CM#
-//      Synchronizes the mount to the current target RA and DEC values.
-//
-//------------------------------------------------------------------
 // HOME FAMILY
 //
 // :hP#
@@ -301,6 +295,11 @@ bool gpsAqcuisitionComplete(int & indicator); // defined in c72_menuHA_GPS.hpp
 //
 //------------------------------------------------------------------
 // EXTRA OAT FAMILY - These are meant for the PC control app
+//
+// :XFR#
+//      Perform a Factory Reset
+//      Clears all the EEPROM settings
+//      Returns: 1#
 //
 // :XDnnn#
 //      Run drift alignment
@@ -815,7 +814,7 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
     _lcdMenu->setCursor(0, 1);
     _mount->startSlewing(TRACKING);
   }
-  else if (inCmd[0] == 'G') { // Get RA/DEC steps/deg, speedfactor
+    else if (inCmd[0] == 'G') { // Get RA/DEC steps/deg, speedfactor
     if (inCmd[1] == 'R') {
       return String(_mount->getStepsPerDegree(RA_STEPS)) + "#";
     }
@@ -909,6 +908,11 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
     }
     #endif
     return String("0#");
+  }
+  else if ((inCmd[0]== 'F') && (inCmd[1]== 'R'))
+  {
+    _mount->clearConfiguration();
+    return String("1#");
   }
   
   return "";
