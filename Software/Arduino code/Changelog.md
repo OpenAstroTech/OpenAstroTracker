@@ -1,3 +1,16 @@
+**V1.8.51 - Updates**
+- Added EEPROM clear command to extended LX200 protocol.
+
+**V1.8.50 - Updates**
+- Fixed a bug related to setting EEPROM values.
+- Moved some initialization code to a later stage during boot.
+
+**V1.8.47 - Updates**
+- Incorporated Roll levelling into guided startup (if Digital Level is present).
+
+**V1.8.46 - Updates**
+- Switched units for manual slew speed to degrees/sec.
+
 **V1.8.45 - Updates**
 - Fixed some ESP32 build errors
 - Checked from some invalid ESP32 configurations
