@@ -615,7 +615,8 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
     _driverRA->irun(31);
     
   }
-  #elseif UART_SOFTWARESERIAL == 1
+  #endif
+  #if UART_SOFTWARESERIAL == 1
   void Mount::configureRAdriver(SoftwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue)
   {
     _driverRA = new TMC2209Stepper(serial, rsense, driveraddress);
@@ -664,7 +665,8 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
     _driverDEC->SGTHRS(stallvalue);
     _driverDEC->ihold(DEC_HOLDCURRENT);
   }
-  #elseif UART_SOFTWARESERIAL == 1  
+  #endif
+  #if UART_SOFTWARESERIAL == 1
   void Mount::configureDECdriver(SoftwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue)
   {
     _driverDEC = new TMC2209Stepper(serial, rsense, driveraddress);

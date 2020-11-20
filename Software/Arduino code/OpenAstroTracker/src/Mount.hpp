@@ -90,7 +90,8 @@ public:
 #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
   #if UART_SOFTWARESERIAL == 0
     void configureRAdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
-  #elseif UART_SOFTWARESERIAL == 1
+  #endif
+  #if UART_SOFTWARESERIAL == 1
     void configureRAdriver(SoftwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
   #endif
 #endif
@@ -98,7 +99,8 @@ public:
 #if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
   #if UART_SOFTWARESERIAL == 0
     void configureDECdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
-  #elseif UART_SOFTWARESERIAL == 1
+  #endif
+  #if UART_SOFTWARESERIAL == 1
     void configureDECdriver(SoftwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
   #endif
 #endif
