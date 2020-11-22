@@ -11,7 +11,7 @@
 #include "Mount.hpp"
 #include "MeadeCommandProcessor.hpp"
 
-#if (RA_DRIVER_TYPE == TMC2209_UART) || (DEC_DRIVER_TYPE == TMC2209_UART)
+#if (RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART)
   #include <TMCStepper.h>
 #endif
 
@@ -65,26 +65,35 @@
     #define DECmotorPin2  DEC_DIR_PIN
 #endif
 
+// AZ/ALT Motor pins
 #if AZIMUTH_ALTITUDE_MOTORS == 1
+  // AZ/ALT Pins are defined based on driver type rather than stepper type since the 28BYJ may be used with a TMC2209 or similar driver when modified to bipolar mode
+  #if AZ_DRIVER_TYPE == DRIVER_TYPE_ULN2003
     #define AZmotorPin1  AZ_IN1_PIN    
     #define AZmotorPin3  AZ_IN2_PIN    
     #define AZmotorPin2  AZ_IN3_PIN    
     #define AZmotorPin4  AZ_IN4_PIN    
-
+  #elif AZ_DRIVER_TYPE == DRIVER_TYPE_GENERIC || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+    #define AZmotorPin1  AZ_STEP_PIN
+    #define AZmotorPin2  AZ_DIR_PIN
+  #endif
+  #if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003
     #define ALTmotorPin1  ALT_IN1_PIN 
     #define ALTmotorPin3  ALT_IN2_PIN 
     #define ALTmotorPin2  ALT_IN3_PIN 
-    #define ALTmotorPin4  ALT_IN4_PIN 
+    #define ALTmotorPin4  ALT_IN4_PIN     
+  #elif ALT_DRIVER_TYPE == DRIVER_TYPE_GENERIC || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+    #define ALTmotorPin1  ALT_STEP_PIN
+    #define ALTmotorPin2  ALT_DIR_PIN
+  #endif
+
 #endif
 // End Stepper Definitions //////////////
 /////////////////////////////////////////
 
 /////////////////////////////////////////
 // Driver definitions ///////////////////
-#if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE
-  //#define RA_EN_PIN 40  // Enable Pin
-#endif
-#if (RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART)
+#if (RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART)
   #define R_SENSE 0.11f           // 0.11 for StepStick
 #endif
 // End Driver Definitions ///////////////
