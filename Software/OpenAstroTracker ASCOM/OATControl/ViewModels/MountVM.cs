@@ -77,6 +77,7 @@ namespace OATControl.ViewModels
 		DelegateCommand _parkCommand;
 		DelegateCommand _driftAlignCommand;
 		DelegateCommand _polarAlignCommand;
+		DelegateCommand _showLogFolderCommand;
 
 		DispatcherTimer _timerStatus;
 		DispatcherTimer _timerFineSlew;
@@ -125,6 +126,7 @@ namespace OATControl.ViewModels
 			_parkCommand = new DelegateCommand(async () => await OnPark(), () => MountConnected);
 			_driftAlignCommand = new DelegateCommand(async dur => await OnRunDriftAlignment(int.Parse(dur.ToString())), () => MountConnected);
 			_polarAlignCommand = new DelegateCommand(() => OnRunPolarAlignment(), () => MountConnected);
+			_showLogFolderCommand = new DelegateCommand(() => OnShowLogFolder(), () => true);
 
 			_util = new Util();
 			_transform = new ASCOM.Astrometry.Transform.Transform();
@@ -148,6 +150,12 @@ namespace OATControl.ViewModels
 
 			this.Version = Assembly.GetExecutingAssembly().GetName().Version;
 			Log.WriteLine("Mount: Initialization of OATControl {0} complete...", this.Version);
+		}
+
+		private void OnShowLogFolder()
+		{
+			ProcessStartInfo info = new ProcessStartInfo("explorer.exe", Path.GetDirectoryName(Log.Filename)) { UseShellExecute = true };
+			Process.Start(info);
 		}
 
 		private async Task OnSetHome()
@@ -605,6 +613,7 @@ namespace OATControl.ViewModels
 			_parkCommand.Requery();
 			_driftAlignCommand.Requery();
 			_polarAlignCommand.Requery();
+			_showLogFolderCommand.Requery();
 
 			OnPropertyChanged("ConnectCommandString");
 		}
@@ -749,6 +758,7 @@ namespace OATControl.ViewModels
 		public ICommand ParkCommand { get { return _parkCommand; } }
 		public ICommand DriftAlignCommand { get { return _driftAlignCommand; } }
 		public ICommand PolarAlignCommand { get { return _polarAlignCommand; } }
+		public ICommand ShowLogFolderCommand { get { return _showLogFolderCommand; } }
 
 		/// <summary>
 		/// Gets or sets the RAHour

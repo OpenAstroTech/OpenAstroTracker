@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OATControl" xmlns:converters="clr-namespace:OATControl.Converters"
 					  mc:Ignorable="d"
-        Title="Connect to OpenAstroTracker" Height="500" Width="600" ResizeMode="NoResize" WindowStyle="ToolWindow" FontSize="16" FontWeight="Bold">
+        Title="Connect to OpenAstroTracker" Height="500" Width="700" ResizeMode="NoResize" WindowStyle="ToolWindow" FontSize="16" FontWeight="Bold">
 	<Controls:MetroWindow.Resources>
 		<converters:BoolToVisibilityConverter x:Key="ShowOnTrue"  Collapse="True" />
 		<converters:BoolToVisibilityConverter x:Key="CollapseOnFalse"  Collapse="True" />
