@@ -159,26 +159,26 @@ void setup() {
   #endif
   
   #if AZIMUTH_ALTITUDE_MOTORS == 1  
-    #if AZ_STEPPER_TYPE == STEPPER_TYPE_NEMA17  // DEC driver startup (for A4988)
-      #if AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-        // include TMC2209 UART pins  
-        pinMode(AZ_EN_PIN, OUTPUT);
-        pinMode(AZ_DIAG_PIN, INPUT);
-        digitalWrite(AZ_EN_PIN, HIGH);  // Logic HIGH to disable the driver initally
-        AZ_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
-      #endif
+    #if AZ_DRIVER_TYPE == DRIVER_TYPE_GENERIC || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART  
+      pinMode(AZ_EN_PIN, OUTPUT);
+      digitalWrite(AZ_EN_PIN, HIGH);  // Logic HIGH to disable the driver initally
     #endif
-    #if ALT_STEPPER_TYPE == STEPPER_TYPE_NEMA17  // DEC driver startup (for A4988)
-      #if ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-        // include TMC2209 UART pins  
-        pinMode(ALT_EN_PIN, OUTPUT);
-        pinMode(ALT_DIAG_PIN, INPUT);
-        digitalWrite(ALT_EN_PIN, HIGH);  // Logic HIGH to disable the driver initally
-        ALT_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
-      #endif
+    #if AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+      // include TMC2209 UART pins
+      pinMode(AZ_DIAG_PIN, INPUT);
+      AZ_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
+    #endif
+    #if ALT_DRIVER_TYPE == DRIVER_TYPE_GENERIC || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART  
+      pinMode(ALT_EN_PIN, OUTPUT);
+      digitalWrite(ALT_EN_PIN, HIGH);  // Logic HIGH to disable the driver initally
+    #endif
+    #if ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+      // include TMC2209 UART pins
+      pinMode(ALT_DIAG_PIN, INPUT);
+      ALT_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
     #endif
   #endif
-    // end microstepping -------------------
+// end microstepping -------------------
 
   Serial.begin(57600);
   #ifdef BLUETOOTH_ENABLED 

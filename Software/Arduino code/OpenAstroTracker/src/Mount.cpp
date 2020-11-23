@@ -597,7 +597,7 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
   #if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003
     void Mount::configureALTStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
     {
-      _stepperAZ = new AccelStepper(HALFSTEP_MODE, pin1, pin2, pin3, pin4);
+      _stepperALT = new AccelStepper(stepMode, pin1, pin2, pin3, pin4);
       _stepperALT->setSpeed(0);
       _stepperALT->setMaxSpeed(maxSpeed);
       _stepperALT->setAcceleration(maxAcceleration);
@@ -1639,12 +1639,12 @@ void Mount::enableAzAltMotors() {
   #if AZ_DRIVER_TYPE == DRIVER_TYPE_ULN2003
     _stepperAZ->enableOutputs();
   #else
-    digitalWrite(AZ_EN_PIN, LOW);  // Logic LOW to disable driver
+    digitalWrite(AZ_EN_PIN, LOW);  // Logic LOW to enable driver
   #endif
   #if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003
     _stepperALT->enableOutputs();
   #else
-    digitalWrite(ALT_EN_PIN, LOW);  // Logic LOW to disable driver
+    digitalWrite(ALT_EN_PIN, LOW);  // Logic LOW to enable driver
   #endif
 }
 

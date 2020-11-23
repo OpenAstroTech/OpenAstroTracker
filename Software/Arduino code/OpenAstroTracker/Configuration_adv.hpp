@@ -142,9 +142,8 @@
 //                                     ///
 //////////////////////////////////////////
 //
-
-// AUTOPA CONFIGURATION:
 // Enable Azimuth and Altitude motor functionality in Configuration.hpp
+
 #if AZ_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
   #define AZ_STEPPER_SPR            2048  // 28BYJ-48 in full step mode
   #define AZ_STEPPER_SPEED          600   // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
