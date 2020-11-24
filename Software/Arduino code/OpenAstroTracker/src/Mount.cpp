@@ -78,6 +78,7 @@
 
 // Extended bits
 #define EEPROM_PARKING_POS_MARKER_BIT         0x0001
+#define EEPROM_DEC_LIMIT_MARKER_BIT           0x0002
 
 const char* formatStringsDEC[] = {
   "",
@@ -155,6 +156,8 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
   _slewingToPark = false;
   _raParkingPos  = 0;
   _decParkingPos = 0;
+  _decLowerLimit = 0;
+  _decUpperLimit = 0;
     
   #if USE_GYRO_LEVEL == 1
   _pitchCalibrationAngle = 0;
@@ -324,6 +327,15 @@ void Mount::readPersistentData()
     else{
       LOGV1(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: No stored value for Parking position"));
     }
+    if (nextMarker & EEPROM_DEC_LIMIT_MARKER_BIT){
+      _decLowerLimit = EPROMStore::readInt32(31); // 31-34
+      _decUpperLimit = EPROMStore::readInt32(35); // 35-38
+      LOGV3(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: DEC limitsread as %l -> %l"), _decLowerLimit, _decUpperLimit );
+    }
+    else{
+      LOGV1(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: No stored value for Parking position"));
+    }
+    
   } 
   else {
     LOGV1(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: No ExtendedMarker present"));
@@ -444,7 +456,7 @@ void Mount::writePersistentData(int which, long val)
     case EEPROM_RA_PARKING_POS:
     case EEPROM_DEC_PARKING_POS:
     {
-      // ... set bit 8 to indicate pitch offset angle value has been written to 19/20
+      // ... set bit 0 in extended flag to indicate Parking pos has been written to 23-30
       writeExtended = true;
       extendedFlag |= EEPROM_PARKING_POS_MARKER_BIT;
       if (which == EEPROM_RA_PARKING_POS ){
@@ -454,6 +466,23 @@ void Mount::writePersistentData(int which, long val)
       else{
         EPROMStore::updateInt32(27, val);
         LOGV2(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: Updating DEC Parking Pos to %l at 27-30"), val);
+      }
+    }
+    break;
+
+    case EEPROM_DEC_UPPER_LIMIT:
+    case EEPROM_DEC_LOWER_LIMIT:
+    {
+      // ... set bit 1 in extended flag to indicate Parking pos has been written to 23-30
+      writeExtended = true;
+      extendedFlag |= EEPROM_DEC_LIMIT_MARKER_BIT;
+      if (which == EEPROM_DEC_UPPER_LIMIT ){
+        EPROMStore::updateInt32(31, val);
+        LOGV2(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: Updating DEC Upper limit to %l at 31-34"), val);
+      }
+      else {
+        EPROMStore::updateInt32(35, val);
+        LOGV2(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: Updating DEC Lower limit to %l at 35-38"), val);
       }
     }
     break;
@@ -704,6 +733,7 @@ float Mount::getPitchCalibrationAngle()
 void Mount::setPitchCalibrationAngle(float angle)
 {
     uint16_t angleValue = (angle * 100) + 16384;
+    LOGV3(DEBUG_GYRO, "Mount: Setting Pitch calibration to %d (%f)", angleValue, angle);
     writePersistentData(EEPROM_PITCH_OFFSET, angleValue);
     _pitchCalibrationAngle = angle;
 }
@@ -727,6 +757,7 @@ float Mount::getRollCalibrationAngle()
 void Mount::setRollCalibrationAngle(float angle)
 {
     uint16_t angleValue = (angle * 100) + 16384;
+    LOGV3(DEBUG_GYRO, "Mount: Setting Roll calibration to %d (%f)", angleValue, angle);
     writePersistentData(EEPROM_ROLL_OFFSET, angleValue);
     _rollCalibrationAngle = angle;
 }
@@ -1867,7 +1898,6 @@ void Mount::interruptLoop()
 // Process any stepper changes. 
 /////////////////////////////////
 void Mount::loop() {
-  unsigned long now = millis();
   bool raStillRunning = false;
   bool decStillRunning = false;
   
@@ -2005,7 +2035,7 @@ void Mount::loop() {
             _stepperDEC->moveTo(_decParkingPos);
             _totalDECMove = 1.0f * _stepperDEC->distanceToGo();
             _totalRAMove = 1.0f * _stepperRA->distanceToGo();
-            LOGV5(DEBUG_MOUNT|DEBUG_STEPPERS,F("Mount::Loop:   Park Position is R:%l  D:%l, TotalMove is R:%f, D:%f"), _raParkingPos,_decParkingPos,_totalRAMove, _totalDECMove);
+            LOGV5(DEBUG_MOUNT|DEBUG_STEPPERS,F("Mount::Loop:   Park Position is R:%l  D:%l, TotalMove is R:%f, D:%f"), _raParkingPos, _decParkingPos,_totalRAMove, _totalDECMove);
             if ((_stepperDEC->distanceToGo() != 0) || (_stepperRA->distanceToGo() != 0)) {
               _mountStatus |= STATUS_PARKING_POS | STATUS_SLEWING;
             }
@@ -2026,17 +2056,8 @@ void Mount::loop() {
 
         // Make sure we do one last update when the steppers have stopped.
         displayStepperPosition();
-        if (!inSerialControl) {
-          _lcdMenu->updateDisplay();
-        }
       }
     }
-
-    if ((_bootComplete) && (now - _lastTrackingPrint > 200)) {
-      _lcdMenu->printAt(15,0, isSlewingTRK() ? '&' : '`');
-      _lastTrackingPrint = now;
-    }
-
   }
 
   _stepperWasRunning = raStillRunning || decStillRunning;
@@ -2051,12 +2072,18 @@ void Mount::bootComplete() {
     _bootComplete = true;
 }
 
+bool Mount::isBootComplete(){
+  return _bootComplete;
+}
+
+
+
 /////////////////////////////////
 //
 // setParkingPosition
 //
 /////////////////////////////////
-void Mount::setParkingPosition(){
+void Mount::setParkingPosition() {
   _raParkingPos = _stepperRA->currentPosition() - _stepperTRK->currentPosition();
   _decParkingPos = _stepperDEC->currentPosition();
 
@@ -2064,6 +2091,42 @@ void Mount::setParkingPosition(){
 
   writePersistentData(EEPROM_RA_PARKING_POS, _raParkingPos);
   writePersistentData(EEPROM_DEC_PARKING_POS, _decParkingPos);
+}
+
+/////////////////////////////////
+//
+// setDecLimitPosition
+//
+/////////////////////////////////
+void Mount::setDecLimitPosition(bool upper) {
+  if (upper) {
+    _decUpperLimit = _stepperDEC->currentPosition();
+    writePersistentData(EEPROM_DEC_UPPER_LIMIT, _decUpperLimit);
+    LOGV3(DEBUG_MOUNT,F("Mount::setDecLimitPosition(Upper): limit DEC: %l -> %l"), _decLowerLimit, _decUpperLimit);
+  }
+  else{
+    _decLowerLimit = _stepperDEC->currentPosition();
+    writePersistentData(EEPROM_DEC_LOWER_LIMIT, _decLowerLimit);
+    LOGV3(DEBUG_MOUNT,F("Mount::setDecLimitPosition(Lower): limit DEC: %l -> %l"), _decLowerLimit, _decUpperLimit);
+  }
+}
+
+/////////////////////////////////
+//
+// clearDecLimitPosition
+//
+/////////////////////////////////
+void Mount::clearDecLimitPosition(bool upper) {
+  if (upper) {
+    _decUpperLimit = 0;
+    writePersistentData(EEPROM_DEC_UPPER_LIMIT, _decUpperLimit);
+    LOGV3(DEBUG_MOUNT,F("Mount::clearDecLimitPosition(Upper): limit DEC: %l -> %l"), _decLowerLimit, _decUpperLimit);
+  }
+  else{
+    _decLowerLimit = 0;
+    writePersistentData(EEPROM_DEC_LOWER_LIMIT, _decLowerLimit);
+    LOGV3(DEBUG_MOUNT,F("Mount::clearDecLimitPosition(Lower): limit DEC: %l -> %l"), _decLowerLimit, _decUpperLimit);
+  }
 }
 
 /////////////////////////////////

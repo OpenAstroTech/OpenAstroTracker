@@ -26,6 +26,7 @@
   #endif
 
   byte lcd_key;
+  unsigned long lastTrackingStatusPrint = 0;
 
   void loop() {
 
@@ -65,6 +66,19 @@
 
     // Give the mount a time slice to do its thing...
     mount.loop();
+
+    // Update the LCD display
+    unsigned long now = millis();
+    if (!inSerialControl && okToUpdateMenu && !inStartup && !mount.isSlewingRAorDEC()) {
+      // Main menu display
+      lcdMenu.updateDisplay();
+    }
+
+    // Tracking marker
+    if ((mount.isBootComplete()) && (now - lastTrackingStatusPrint  > 200)) {
+      lcdMenu.printAt(15,0, mount.isSlewingTRK() ? '&' : '`');
+      lastTrackingStatusPrint  = now;
+    }
 
     lcdMenu.setCursor(0, 1);
 
