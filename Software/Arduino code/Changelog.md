@@ -1,3 +1,8 @@
+**V1.8.53 - Updates**
+- Enforced DEC limits on slew movements. There is currently no indication that limiting has occurred.
+- Added display of DEC limits to INFO screen.
+- Changed some logging output.
+
 **V1.8.52 - Updates**
 - Moved LCD updates out of the mount loop.
 - Fixed a bug that did not correctly handle displaying Roll and Pitch offset.
