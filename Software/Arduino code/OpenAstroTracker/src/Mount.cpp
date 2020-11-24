@@ -919,7 +919,7 @@ const DayTime Mount::HA() const {
   DayTime ha = _LST;
   // LOGV2(DEBUG_MOUNT_VERBOSE, F("Mount: LST: %s"), _LST.ToString());
   ha.subtractTime(DayTime(POLARIS_RA_HOUR, POLARIS_RA_MINUTE, POLARIS_RA_SECOND));
-  LOGV2(DEBUG_MOUNT, F("Mount: GetHA: LST-Polaris is HA %s"), ha.ToString());
+  // LOGV2(DEBUG_MOUNT, F("Mount: GetHA: LST-Polaris is HA %s"), ha.ToString());
   return ha;
 }
 
@@ -1757,20 +1757,42 @@ void Mount::startSlewing(int direction) {
           _driverRA->microsteps(SET_MICROSTEPPING);
         #endif
       #endif
-      LOGV1(DEBUG_STEPPERS, F("STEP-startSlewing: call moveTo() on stepper"));
+
       if (direction & NORTH) {
-        _stepperDEC->moveTo(sign * 300000);
+        long targetLocation = sign * 300000;
+        if (_decUpperLimit != 0) {
+          targetLocation = _decUpperLimit;
+          LOGV3(DEBUG_STEPPERS, F("STEP-startSlewing(N): DEC has upper limit of %l. targetMoveTo is now %l"), _decUpperLimit, targetLocation);
+        }
+        else {
+          LOGV2(DEBUG_STEPPERS, F("STEP-startSlewing(N): initial targetMoveTo is %l"), targetLocation);
+        }
+      
+        _stepperDEC->moveTo(targetLocation);
         _mountStatus |= STATUS_SLEWING;
       }
+
       if (direction & SOUTH) {
-        _stepperDEC->moveTo(-sign * 300000);
+        long targetLocation = -sign * 300000;
+        if (_decLowerLimit != 0) {
+          targetLocation = _decLowerLimit;
+          LOGV3(DEBUG_STEPPERS, F("STEP-startSlewing(S): DEC has lower limit of %l. targetMoveTo is now %l"), _decLowerLimit, targetLocation);
+        }
+        else {
+          LOGV2(DEBUG_STEPPERS, F("STEP-startSlewing(S): initial targetMoveTo is %l"), targetLocation);
+        }
+
+        _stepperDEC->moveTo(targetLocation);
         _mountStatus |= STATUS_SLEWING;
       }
+
       if (direction & EAST) {
+          LOGV2(DEBUG_STEPPERS, F("STEP-startSlewing(E): initial targetMoveTo is %l"), -sign * 300000);
         _stepperRA->moveTo(-sign * 300000);
         _mountStatus |= STATUS_SLEWING;
       }
       if (direction & WEST) {
+          LOGV2(DEBUG_STEPPERS, F("STEP-startSlewing(W): initial targetMoveTo is %l"), sign * 300000);
         _stepperRA->moveTo(sign * 300000);
         _mountStatus |= STATUS_SLEWING;
       }
@@ -1907,7 +1929,8 @@ void Mount::loop() {
   interruptLoop();
   #endif
 
-  #if DEBUG_LEVEL&DEBUG_MOUNT 
+  #if DEBUG_LEVEL & (DEBUG_MOUNT && DEBUG_VERBOSE)
+  unsigned long now = millis();
   if (now - _lastMountPrint > 2000) {
     Serial.println(getStatusString());
     _lastMountPrint = now;
@@ -1975,7 +1998,7 @@ void Mount::loop() {
       _mountStatus &= ~(STATUS_SLEWING | STATUS_SLEWING_TO_TARGET);
 
       if (_stepperWasRunning) {
-        LOGV1(DEBUG_MOUNT|DEBUG_STEPPERS,F("Mount::Loop: Reached target."));
+        LOGV3(DEBUG_MOUNT|DEBUG_STEPPERS,F("Mount::Loop: Reached target. RA:%l, DEC:%l"), _stepperRA->currentPosition(), _stepperDEC->currentPosition());
         // Mount is at Target!
         // If we we're parking, we just reached home. Clear the flag, reset the motors and stop tracking.
         if (isParking()) {
@@ -2127,6 +2150,16 @@ void Mount::clearDecLimitPosition(bool upper) {
     writePersistentData(EEPROM_DEC_LOWER_LIMIT, _decLowerLimit);
     LOGV3(DEBUG_MOUNT,F("Mount::clearDecLimitPosition(Lower): limit DEC: %l -> %l"), _decLowerLimit, _decUpperLimit);
   }
+}
+
+/////////////////////////////////
+//
+// getDecLimitPositions
+//
+/////////////////////////////////
+void Mount::getDecLimitPositions(long & lowerLimit, long & upperLimit) {
+  lowerLimit = _decLowerLimit;
+  upperLimit = _decUpperLimit;
 }
 
 /////////////////////////////////
@@ -2323,6 +2356,16 @@ void Mount::moveSteppersTo(float targetRA, float targetDEC) {
   }
 
   _stepperRA->moveTo(targetRA);
+
+  if (_decUpperLimit != 0) {
+    targetDEC = min(targetDEC, _decUpperLimit);
+    LOGV2(DEBUG_MOUNT,F("Mount::MoveSteppersTo: DEC Upper Limit enforced. To: %f"), targetDEC);
+  }
+  if (_decLowerLimit != 0) {
+    targetDEC = max(targetDEC, _decLowerLimit);
+    LOGV2(DEBUG_MOUNT,F("Mount::MoveSteppersTo: DEC Lower Limit enforced. To: %f"), targetDEC);
+  }
+
   _stepperDEC->moveTo(targetDEC);
 }
 

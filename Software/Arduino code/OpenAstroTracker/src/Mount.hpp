@@ -214,6 +214,9 @@ public:
   // Clear the DEC limit position. If upper is true, clears upper limit, else the lower limit.
   void clearDecLimitPosition(bool upper);
 
+  // Get the DEC limit positions
+  void getDecLimitPositions(long & lowerLimit, long & upperLimit);
+
   // Auto Home with TMC2209 UART
   #if (RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART)
     void startFindingHomeRA();
