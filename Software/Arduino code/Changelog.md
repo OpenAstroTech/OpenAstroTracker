@@ -1,3 +1,9 @@
+**V1.8.52 - Updates**
+- Moved LCD updates out of the mount loop.
+- Fixed a bug that did not correctly handle displaying Roll and Pitch offset.
+- Added ability to define DEC limits. Limits are not enforced yet, that code is still in development.
+- Added new debug channel for digital level.
+
 **V1.8.51 - Updates**
 - Added EEPROM clear command to extended LX200 protocol.
 
