@@ -12,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using System.Xml.Linq;
 using ASCOM.Utilities;
-using MahApps.Metro.Controls.Dialogs;
 using OATCommunications;
 using OATCommunications.Model;
 using OATCommunications.WPF.CommunicationHandlers;
@@ -53,7 +52,7 @@ namespace OATControl.ViewModels
 		string _driftAlignStatus = "Drift Alignment";
 		float _driftPhase = 0;
 
-		private float _maxMotorSpeed = 600;
+		private float _maxMotorSpeed = 2.5f;
 		double _speed = 1.0;
 		string _scopeName = string.Empty;
 		string _scopeHardware = string.Empty;
@@ -62,9 +61,11 @@ namespace OATControl.ViewModels
 		CultureInfo _oatCulture = new CultureInfo("en-US");
 		Util _util;
 		ASCOM.Astrometry.Transform.Transform _transform;
+		bool _raIsNEMA;
+		bool _decIsNEMA;
+		List<string> _oatAddonStates = new List<string>();
 
 		DelegateCommand _arrowCommand;
-		DelegateCommand _chooseScopeCommand;
 		DelegateCommand _connectScopeCommand;
 		DelegateCommand _slewToTargetCommand;
 		DelegateCommand _syncToTargetCommand;
@@ -76,6 +77,7 @@ namespace OATControl.ViewModels
 		DelegateCommand _parkCommand;
 		DelegateCommand _driftAlignCommand;
 		DelegateCommand _polarAlignCommand;
+		DelegateCommand _showLogFolderCommand;
 
 		DispatcherTimer _timerStatus;
 		DispatcherTimer _timerFineSlew;
@@ -124,6 +126,7 @@ namespace OATControl.ViewModels
 			_parkCommand = new DelegateCommand(async () => await OnPark(), () => MountConnected);
 			_driftAlignCommand = new DelegateCommand(async dur => await OnRunDriftAlignment(int.Parse(dur.ToString())), () => MountConnected);
 			_polarAlignCommand = new DelegateCommand(() => OnRunPolarAlignment(), () => MountConnected);
+			_showLogFolderCommand = new DelegateCommand(() => OnShowLogFolder(), () => true);
 
 			_util = new Util();
 			_transform = new ASCOM.Astrometry.Transform.Transform();
@@ -134,6 +137,12 @@ namespace OATControl.ViewModels
 			{
 				XDocument doc = XDocument.Load(poiFile);
 				_pointsOfInterest = doc.Element("PointsOfInterest").Elements("Object").Select(e => new PointOfInterest(e)).ToList();
+				_pointsOfInterest.Sort((p1, p2) =>
+				{
+					if (p1.Name.StartsWith("Polaris")) return -1;
+					if (p2.Name.StartsWith("Polaris")) return 1;
+					return p1.Name.CompareTo(p2.Name);
+				});
 				_pointsOfInterest.Insert(0, new PointOfInterest("--- Select Target Object ---"));
 				_selectedPointOfInterest = 0;
 				Log.WriteLine("Mount: Successfully read {0} Points of Interest.", _pointsOfInterest.Count - 1);
@@ -141,6 +150,12 @@ namespace OATControl.ViewModels
 
 			this.Version = Assembly.GetExecutingAssembly().GetName().Version;
 			Log.WriteLine("Mount: Initialization of OATControl {0} complete...", this.Version);
+		}
+
+		private void OnShowLogFolder()
+		{
+			ProcessStartInfo info = new ProcessStartInfo("explorer.exe", Path.GetDirectoryName(Log.Filename)) { UseShellExecute = true };
+			Process.Start(info);
 		}
 
 		private async Task OnSetHome()
@@ -236,6 +251,7 @@ namespace OATControl.ViewModels
 			_timerStatus.Start();
 		}
 
+		long gxRequest = 1;
 		private async Task UpdateStatus()
 		{
 			if (MountConnected)
@@ -323,6 +339,16 @@ namespace OATControl.ViewModels
 					}
 				}
 			}
+		}
+
+		public async Task<string> SetSiteLatitude(float latitude)
+		{
+			return await _oatMount.SetSiteLatitude(latitude);
+		}
+
+		public async Task<string> SetSiteLongitude(float longitude)
+		{
+			return await _oatMount.SetSiteLongitude(longitude);
 		}
 
 		private async Task OnHome()
@@ -451,31 +477,10 @@ namespace OATControl.ViewModels
 
 				Log.WriteLine("Mount: Connect to OAT requested");
 
-				if (await this.ChooseTelescope())
+				if (this.ChooseTelescope())
 				{
 					try
 					{
-						//await +.WaitAsync();
-
-						Log.WriteLine("Mount: Request OAT Firmware version");
-						var result = await _oatMount.SendCommand("GVP#,#");
-						if (!result.Success)
-						{
-							Log.WriteLine("Mount: Unable to communicate with OAT. {0}", result.StatusMessage);
-							throw new AccessViolationException("Cannot connect. " + result.StatusMessage);
-						}
-
-						Log.WriteLine("Mount: Connected to OAT. Requesting firmware version..");
-						var resultNr = await _oatMount.SendCommand("GVN#,#");
-						ScopeName = $"{result.Data} {resultNr.Data}";
-
-						var hardware = await _oatMount.SendCommand("XGM#,#");
-						Log.WriteLine("Mount: Hardware is {0}", hardware);
-						var hwParts = hardware.Data.Split(',');
-						var raParts = hwParts[1].Split('|');
-						var decParts = hwParts[2].Split('|');
-						ScopeHardware = $"{hwParts[0]} board    RA {raParts[0]}, {raParts[1]}T    DEC {decParts[0]}, {decParts[1]}T";
-
 						_transform.SiteElevation = 0; //  _oatMount.SiteElevation;
 						Log.WriteLine("Mount: Getting OAT Latitude");
 						_transform.SiteLatitude = await _oatMount.GetSiteLatitude();
@@ -523,10 +528,19 @@ namespace OATControl.ViewModels
 						MountConnected = true;
 						Log.WriteLine("Mount: Successfully connected and configured!");
 					}
+					catch (FormatException fex)
+					{
+						ScopeName = string.Empty;
+						ScopeHardware = string.Empty;
+						Log.WriteLine("Mount: Failed to connect and configure OAT! {0}", fex.Message);
+						MessageBox.Show("Connected to OpenAstroTracker, but protocol could not be established.\n\nIs the firmware compiled with DEBUG_LEVEL set to DEBUG_NONE?", "Protocol Error", MessageBoxButton.OK, MessageBoxImage.Error);
+					}
 					catch (Exception ex)
 					{
+						ScopeName = string.Empty;
+						ScopeHardware = string.Empty;
 						Log.WriteLine("Mount: Failed to connect and configure OAT! {0}", ex.Message);
-						MessageBox.Show("Error trying to connect to OpenAstroTracker. " + ex.Message, "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+						MessageBox.Show("Error trying to connect to OpenAstroTracker.\n\n" + ex.Message, "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
 					}
 					finally
 					{
@@ -599,44 +613,95 @@ namespace OATControl.ViewModels
 			_parkCommand.Requery();
 			_driftAlignCommand.Requery();
 			_polarAlignCommand.Requery();
+			_showLogFolderCommand.Requery();
 
 			OnPropertyChanged("ConnectCommandString");
 		}
 
-		private async Task<bool> ChooseTelescope()
+		public async Task<bool> ConnectToOat(string device)
 		{
-			var dlg = new DlgChooseOat() { Owner = Application.Current.MainWindow, WindowStartupLocation = WindowStartupLocation.CenterOwner };
+			_commHandler = CommunicationHandlerFactory.ConnectToDevice(device);
+			_oatMount = new OatmealTelescopeCommandHandlers(_commHandler);
 
-			Log.WriteLine("Mount: Showing Chooser");
+			_oatAddonStates.Clear();
 
-			var result = dlg.ShowDialog();
-			if (result == true)
+			Log.WriteLine("Mount: Request OAT Firmware version");
+			var result = await _oatMount.SendCommand("GVP#,#");
+			if (!result.Success)
 			{
-				//var chooser = new Chooser();
-				//chooser.DeviceType = "Telescope";
-				//var name = chooser.Choose("ASCOM.OpenAstroTracker.Telescope");
-				//if (!string.IsNullOrEmpty(name))
-				//{
-				//	ScopeName = name;
-				Log.WriteLine("User selected device: {0}", dlg.SelectedDevice);
-				_commHandler = CommunicationHandlerFactory.ConnectToDevice(dlg.SelectedDevice);
-				//_commHandler = new TcpCommunicationHandler(new IPAddress(new byte[] { 192, 168, 86, 61 }), 4030);
-				_oatMount = new OatmealTelescopeCommandHandlers(_commHandler);
-				Log.WriteLine("Mount: Setting Latitude : {0:0.00}", dlg.Latitude);
-				await _oatMount.SetSiteLatitude((float)dlg.Latitude);
-				Log.WriteLine("Mount: Setting Longitude: {0:0.00}", dlg.Longitude);
-				await _oatMount.SetSiteLongitude((float)dlg.Longitude);
-				Log.WriteLine("Mount: Communication to OAT established");
-				return true;
+				Log.WriteLine("Mount: Unable to communicate with OAT. {0}", result.StatusMessage);
+				return false;
 			}
 
-			//	Settings.Default.Scope = name;
+			Log.WriteLine("Mount: Connected to OAT. Requesting firmware version..");
+			var resultNr = await _oatMount.SendCommand("GVN#,#");
+			ScopeName = $"{result.Data} {resultNr.Data}";
 
-			//	Settings.Default.Save();
-			//}
+			var hardware = await _oatMount.SendCommand("XGM#,#");
+			Log.WriteLine("Mount: Hardware is {0}", hardware);
+			var hwParts = hardware.Data.Split(',');
+			var raParts = hwParts[1].Split('|');
+			var decParts = hwParts[2].Split('|');
+			ScopeHardware = $"{hwParts[0]} board    RA {raParts[0]}, {raParts[1]}T    DEC {decParts[0]}, {decParts[1]}T";
+			_raIsNEMA = raParts[0] == "NEMA";
+			_decIsNEMA = decParts[0] == "NEMA";
+			for (int i = 3; i < hwParts.Length; i++)
+			{
+				_oatAddonStates.Add(hwParts[i]);
+			}
+			return true;
+		}
+
+		public bool IsAddonSupported(string addon)
+		{
+			return _oatAddonStates.Contains(addon);
+		}
+
+		public IList<string> Addons
+		{
+			get
+			{
+				return _oatAddonStates;
+			}
+		}
+
+		private bool ChooseTelescope()
+		{
+			var dlg = new DlgChooseOat(this, this.RunCustomOATCommandAsync) { Owner = Application.Current.MainWindow, WindowStartupLocation = WindowStartupLocation.CenterOwner };
+
+			Log.WriteLine("Mount: Showing OAT comms Chooser Wizard");
+			dlg.ShowDialog();
+
+			if (dlg.Result == true)
+			{
+				Log.WriteLine("OAT Connected!");
+				return true;
+			}
+			else if (dlg.Result == null)
+			{
+				Log.WriteLine("Mount: Unable to connect");
+				string extraMessage = "Is something else connected?";
+				if (Process.GetProcesses().FirstOrDefault(d => d.ProcessName.Contains("ASCOM.OpenAstroTracker")) != null)
+				{
+					extraMessage = "Another process is connected via ASCOM.";
+				}
+				MessageBox.Show("Cannot connect to mount. " + extraMessage, "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				return false;
+			}
 
 			RequeryCommands();
 			Log.WriteLine("Mount: Chooser cancelled");
+			ScopeName = string.Empty;
+			ScopeHardware = string.Empty;
+			_oatAddonStates.Clear();
+			if (_commHandler != null)
+			{
+				_commHandler.Disconnect();
+			}
+
+			_oatMount = null;
+			_commHandler = null;
+
 			return false;
 		}
 
@@ -682,7 +747,6 @@ namespace OATControl.ViewModels
 		}
 
 		public ICommand ArrowCommand { get { return _arrowCommand; } }
-		public ICommand ChooseScopeCommand { get { return _chooseScopeCommand; } }
 		public ICommand ConnectScopeCommand { get { return _connectScopeCommand; } }
 		public ICommand SlewToTargetCommand { get { return _slewToTargetCommand; } }
 		public ICommand SyncToTargetCommand { get { return _syncToTargetCommand; } }
@@ -694,6 +758,7 @@ namespace OATControl.ViewModels
 		public ICommand ParkCommand { get { return _parkCommand; } }
 		public ICommand DriftAlignCommand { get { return _driftAlignCommand; } }
 		public ICommand PolarAlignCommand { get { return _polarAlignCommand; } }
+		public ICommand ShowLogFolderCommand { get { return _showLogFolderCommand; } }
 
 		/// <summary>
 		/// Gets or sets the RAHour
@@ -1135,7 +1200,8 @@ namespace OATControl.ViewModels
 		{
 			float[] speeds = { 0, 0.05f, 0.15f, 0.5f, 1.0f };
 			string slewRateComdChar = "_GCMS";
-			MaxMotorSpeed = speeds[newRate] * 400;
+
+			MaxMotorSpeed = speeds[newRate] * 2.5f; // Can't go much quicker than 2.5 degs/sec
 
 			if (MountConnected)
 			{

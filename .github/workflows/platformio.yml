@@ -1,0 +1,53 @@
+name: PlatformIO CI
+
+on:  
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build:
+    name: ${{ matrix.board }} STEPPER=${{ matrix.stepper }} DRIVER=${{ matrix.driver }} GPS=${{ matrix.gps }} GYRO=${{ matrix.gyro }} ALTAZ=${{ matrix.azalt }} DISPLAY=${{ matrix.display }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        board:    [mega2560, esp32]
+        stepper:  [0, 1]
+        driver:   [0, 1, 2, 3]
+        gps:      [0, 1]
+        gyro:     [0, 1]
+        azalt:    [0, 1]
+        display:  [0, 1]
+        exclude:
+          - { stepper: 1, driver: 0 } # NEMA17 & ULN2003
+          - { stepper: 0, driver: 1 } # 28BYJ48 & GENERIC
+          - { stepper: 0, driver: 2 } # 28BYJ48 & TMC2209_STANDALONE
+          - { stepper: 0, driver: 3 } # 28BYJ48 & TMC2209_UART
+          - { board: esp32, gps: 1 }
+          - { board: esp32, gyro: 1 }
+          - { board: esp32, azalt: 1 }
+          - { board: esp32, display: 1 }
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python
+      uses: actions/setup-python@v1
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install platformio
+    - name: Run PlatformIO
+      run: platformio run -d Software/Arduino\ code/OpenAstroTracker -e ${{ matrix.board }}
+    env:
+      PLATFORMIO_BUILD_FLAGS: |
+        -D RA_STEPPER_TYPE=${{ matrix.stepper }}
+        -D DEC_STEPPER_TYPE=${{ matrix.stepper }}
+        -D RA_DRIVER_TYPE=${{ matrix.driver }}
+        -D DEC_DRIVER_TYPE=${{ matrix.driver }}
+        -D USE_GPS=${{ matrix.gps }}
+        -D USE_GYRO_LEVEL=${{ matrix.gyro }}
+        -D AZIMUTH_ALTITUDE_MOTORS=${{ matrix.azalt }}
+        -D DISPLAY_TYPE=${{ matrix.display }}

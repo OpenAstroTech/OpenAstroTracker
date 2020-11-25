@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("ASCOM OpenAstroTracker server")]
 [assembly: AssemblyDescription("ASCOM multi-interface server for OpenAstroTracker")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("ASCOM Initiative")]
+[assembly: AssemblyCompany("OpenAstroTech")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Copyright © 2020, EorEquis")]
+[assembly: AssemblyCopyright("Copyright © 2020, OpenAstroTech")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("0.2.0.0")]
-[assembly: AssemblyFileVersion("0.2.0.0")]
+[assembly: AssemblyVersion("0.3.0.0")]
+[assembly: AssemblyFileVersion("0.3.0.0")]
 
 [assembly: ComVisibleAttribute(false)]

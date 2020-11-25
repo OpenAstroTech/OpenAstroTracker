@@ -162,6 +162,7 @@
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*"/>
@@ -299,6 +300,7 @@
 				</Border.BorderBrush>
 			</Border>
 
+			<Button Grid.Row="7" Grid.Column="13" Grid.ColumnSpan="2" Content="Logs" Margin="20,10,6,10" Padding="0" Style="{StaticResource AccentedSquareButtonStyle}" Command="{Binding ShowLogFolderCommand}"/>
 		</Grid>
 
 		<Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1">
@@ -596,5 +598,6 @@
 			<Button Grid.Row="7" Grid.Column="3" Style="{StaticResource ArrowStyle}" Content="{StaticResource IconArrowDown}" Command="{Binding ArrowCommand}" CommandParameter="HM-" />-->
 
 		</Grid>
+		
 	</Grid>
 </Controls:MetroWindow>
