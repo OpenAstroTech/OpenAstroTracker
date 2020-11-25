@@ -45,33 +45,33 @@
     // Azimuth and Altitude pins    
     #if AZIMUTH_ALTITUDE_MOTORS == 1
         //---------------------------------------
-        // If using 28BYJ-48 and ULN2003 drivers:
-        #define AZ_IN1_PIN 46
-        #define AZ_IN2_PIN 48
-        #define AZ_IN3_PIN 50
-        #define AZ_IN4_PIN 52
+        // If using 28BYJ-48 and ULN2003 drivers:        
+        #define AZ_IN1_PIN 47
+        #define AZ_IN2_PIN 49
+        #define AZ_IN3_PIN 51
+        #define AZ_IN4_PIN 53
         //-----------------------
         // If using NEMA steppers
-        #define AZ_STEP_PIN 46  // STEP
-        #define AZ_DIR_PIN  48  // DIR
-        #define AZ_EN_PIN   50  // Enable
-        #define AZ_DIAG_PIN 52  // only needed for autohome function
+        #define AZ_STEP_PIN 47  // STEP
+        #define AZ_DIR_PIN  49  // DIR
+        #define AZ_EN_PIN   51  // Enable
+        #define AZ_DIAG_PIN 53  // only needed for autohome function
         //AZ TMC2209 UART specific pins
         #define AZ_SERIAL_PORT_TX 14 // SoftwareSerial TX port
         #define AZ_SERIAL_PORT_RX 15 // SoftwareSerial RX port
         #define AZ_DRIVER_ADDRESS 0b10  // Set by MS1/MS2. LOW/LOW in this case
         //---------------------------------------
-        // If using 28BYJ-48 and ULN2003 drivers:        
-        #define ALT_IN1_PIN 47
-        #define ALT_IN2_PIN 49
-        #define ALT_IN3_PIN 51
-        #define ALT_IN4_PIN 53
+        // If using 28BYJ-48 and ULN2003 drivers:
+        #define ALT_IN1_PIN 46
+        #define ALT_IN2_PIN 48
+        #define ALT_IN3_PIN 50
+        #define ALT_IN4_PIN 52
         //-----------------------
         // If using NEMA steppers
-        #define ALT_STEP_PIN 47  // STEP
-        #define ALT_DIR_PIN  49  // DIR
-        #define ALT_EN_PIN   51  // Enable
-        #define ALT_DIAG_PIN 53  // only needed for autohome function
+        #define ALT_STEP_PIN 46  // STEP
+        #define ALT_DIR_PIN  48  // DIR
+        #define ALT_EN_PIN   50  // Enable
+        #define ALT_DIAG_PIN 52  // only needed for autohome function
         //AZ TMC2209 UART specific pins
         #define ALT_SERIAL_PORT_TX 14 // SoftwareSerial TX port
         #define ALT_SERIAL_PORT_RX 15 // SoftwareSerial RX port
