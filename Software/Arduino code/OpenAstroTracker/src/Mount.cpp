@@ -624,30 +624,6 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
 // TMC2209 UART only
 /////////////////////////////////
 #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-  #if UART_SOFTWARESERIAL == 0
-  void Mount::configureRAdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue)
-  {
-    _driverRA = new TMC2209Stepper(serial, rsense, driveraddress);
-    _driverRA->begin();
-    #if RA_AUDIO_FEEDBACK == 1
-    _driverRA->en_spreadCycle(1);
-    #endif
-    _driverRA->toff(4);
-    _driverRA->blank_time(24);
-    _driverRA->rms_current(rmscurrent);
-    _driverRA->microsteps(TRACKING_MICROSTEPPING);
-    _driverRA->fclktrim(4);
-    _driverRA->TCOOLTHRS(0xFFFFF);  //xFFFFF);
-    _driverRA->ihold(1); // its save to assume that the only time RA stands still is during parking and the current can be limited to a minimum
-    //_driverRA->semin(2);
-    //_driverRA->semax(5);
-    //_driverRA->sedn(0b01);
-    //_driverRA->SGTHRS(10);
-    _driverRA->irun(31);
-    
-  }
-  #endif
-  #if UART_SOFTWARESERIAL == 1
   void Mount::configureRAdriver(SoftwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue)
   {
     _driverRA = new TMC2209Stepper(serial, rsense, driveraddress);
@@ -669,7 +645,6 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
     _driverRA->irun(31);
     
   }
-  #endif
 #endif
 
 /////////////////////////////////
@@ -678,26 +653,6 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
 // TMC2209 UART only
 /////////////////////////////////
 #if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-  #if UART_SOFTWARESERIAL == 0
-  void Mount::configureDECdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue)
-  {
-    _driverDEC = new TMC2209Stepper(serial, rsense, driveraddress);
-    _driverDEC->begin();
-    _driverDEC->blank_time(24);
-    #if DEC_AUDIO_FEEDBACK == 1
-    _driverDEC->en_spreadCycle(1);
-    #endif
-    _driverDEC->rms_current(rmscurrent);
-    _driverDEC->microsteps(DEC_SLEW_MICROSTEPPING);
-    _driverDEC->TCOOLTHRS(0xFFFFF);
-    _driverDEC->semin(5);
-    _driverDEC->semax(2);
-    _driverDEC->sedn(0b01);
-    _driverDEC->SGTHRS(stallvalue);
-    _driverDEC->ihold(DEC_HOLDCURRENT);
-  }
-  #endif
-  #if UART_SOFTWARESERIAL == 1
   void Mount::configureDECdriver(SoftwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue)
   {
     _driverDEC = new TMC2209Stepper(serial, rsense, driveraddress);
@@ -715,7 +670,6 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
     _driverDEC->SGTHRS(stallvalue);
     _driverDEC->ihold(DEC_HOLDCURRENT);
   }
-  #endif
 #endif
 
 /////////////////////////////////
@@ -724,23 +678,6 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
 // TMC2209 UART only
 /////////////////////////////////
 #if AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-  #if UART_SOFTWARESERIAL == 0
-  void Mount::configureAZdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue)
-  {
-    _driverAZ = new TMC2209Stepper(serial, rsense, driveraddress);
-    _driverAZ->begin();
-    #if AZ_AUDIO_FEEDBACK == 1
-      _driverAZ->en_spreadCycle(1);
-    #endif
-    _driverAZ->toff(4);
-    _driverAZ->blank_time(24);
-    _driverAZ->rms_current(rmscurrent);
-    _driverAZ->microsteps(AZ_MICROSTEPPING);
-    _driverAZ->fclktrim(4);
-    _driverAZ->TCOOLTHRS(0xFFFFF);  //xFFFFF);
-  }
-  #endif
-  #if UART_SOFTWARESERIAL == 1
   void Mount::configureAZdriver(SoftwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue)
   {
     _driverAZ = new TMC2209Stepper(serial, rsense, driveraddress);
@@ -755,7 +692,6 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
     _driverAZ->fclktrim(4);
     _driverAZ->TCOOLTHRS(0xFFFFF);  //xFFFFF);
   }
-  #endif
 #endif
 
 /////////////////////////////////
@@ -764,23 +700,6 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
 // TMC2209 UART only
 /////////////////////////////////
 #if ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-  #if UART_SOFTWARESERIAL == 0
-  void Mount::configureALTdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue)
-  {
-    _driverALT = new TMC2209Stepper(serial, rsense, driveraddress);
-    _driverALT->begin();
-    #if ALT_AUDIO_FEEDBACK == 1
-      _driverALT->en_spreadCycle(1);
-    #endif
-    _driverALT->toff(4);
-    _driverALT->blank_time(24);
-    _driverALT->rms_current(rmscurrent);
-    _driverALT->microsteps(ALT_MICROSTEPPING);
-    _driverALT->fclktrim(4);
-    _driverALT->TCOOLTHRS(0xFFFFF);  //xFFFFF);
-  }
-  #endif
-  #if UART_SOFTWARESERIAL == 1
   void Mount::configureALTdriver(SoftwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue)
   {
     _driverALT = new TMC2209Stepper(serial, rsense, driveraddress);
@@ -795,7 +714,6 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
     _driverALT->fclktrim(4);
     _driverALT->TCOOLTHRS(0xFFFFF);  //xFFFFF);
   }
-  #endif
 #endif
 
 /////////////////////////////////

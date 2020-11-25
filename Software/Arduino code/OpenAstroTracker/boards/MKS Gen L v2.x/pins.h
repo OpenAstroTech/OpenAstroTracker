@@ -26,12 +26,8 @@
     #define RA_MS1_PIN  52
     #define RA_MS2_PIN  63
     //RA TMC2209 UART specific pins
-    #if UART_SOFTWARESERIAL == 0 //Required for some boards - not needed when using Serial1, Serial2, or Serial3
-        #define RA_SERIAL_PORT Serial3  // HardwareSerial port, wire to TX3 for write-only
-    #else
-        #define RA_SERIAL_PORT_TX 40 // SoftwareSerial TX port
-        #define RA_SERIAL_PORT_RX 63 // SoftwareSerial RX port
-    #endif
+    #define RA_SERIAL_PORT_TX 40 // SoftwareSerial TX port
+    #define RA_SERIAL_PORT_RX 63 // SoftwareSerial RX port
     #define RA_DRIVER_ADDRESS 0b00  // Set by MS1/MS2. LOW/LOW in this case
 
     #define DEC_STEP_PIN 60  // STEP
@@ -42,12 +38,8 @@
     #define DEC_MS1_PIN  52
     #define DEC_MS2_PIN  64
     //DEC TMC2209 UART specific pins
-    #if UART_SOFTWARESERIAL == 0 //Required for some boards - not needed when using Serial1, Serial2, or Serial3
-        #define DEC_SERIAL_PORT Serial3  // HardwareSerial port, wire to TX3 for write-only
-    #else
-        #define DEC_SERIAL_PORT_TX 59 // SoftwareSerial TX port
-        #define DEC_SERIAL_PORT_RX 64 // SoftwareSerial RX port
-    #endif
+    #define DEC_SERIAL_PORT_TX 59 // SoftwareSerial TX port
+    #define DEC_SERIAL_PORT_RX 64 // SoftwareSerial RX port
     #define DEC_DRIVER_ADDRESS 0b01  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
     
     #if AZIMUTH_ALTITUDE_MOTORS == 1
