@@ -8,8 +8,10 @@
 #include "Utility.hpp"
 #include "EPROMStore.hpp"
 
-LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
-LcdButtons lcdButtons(LCD_PINA0, &lcdMenu);
+#if DISPLAY_TYPE > 0
+  LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
+  LcdButtons lcdButtons(LCD_PINA0, &lcdMenu);
+#endif
 
 #if UART_SOFTWARESERIAL == 1
 SoftwareSerial RA_SERIAL_PORT(RA_SERIAL_PORT_RX, RA_SERIAL_PORT_TX);
