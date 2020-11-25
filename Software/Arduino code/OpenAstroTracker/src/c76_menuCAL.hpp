@@ -294,25 +294,25 @@ bool processCalibrationKeys()
       if (currentButtonState == btnUP)
       {
         if (!mount.isRunningALT()) {
-          mount.setSpeed(ALTITUDE_STEPS, 500) ;
+          mount.setSpeed(ALTITUDE_STEPS, ALT_STEPPER_SPEED) ;
         }
       }
       else if (currentButtonState == btnDOWN)
       {
         if (!mount.isRunningALT()) {
-          mount.setSpeed(ALTITUDE_STEPS, -500) ;
+          mount.setSpeed(ALTITUDE_STEPS, -ALT_STEPPER_SPEED) ;
         }
       }
       else if (currentButtonState == btnRIGHT)
       {
         if (!mount.isRunningAZ()) {
-          mount.setSpeed(AZIMUTH_STEPS, 500) ;
+          mount.setSpeed(AZIMUTH_STEPS, AZ_STEPPER_SPEED) ;
         }
       }
       else if (currentButtonState == btnLEFT)
       {
         if (!mount.isRunningAZ()) {
-          mount.setSpeed(AZIMUTH_STEPS, -500) ;
+          mount.setSpeed(AZIMUTH_STEPS, -AZ_STEPPER_SPEED) ;
         }
       }
       else if (currentButtonState == btnNONE)

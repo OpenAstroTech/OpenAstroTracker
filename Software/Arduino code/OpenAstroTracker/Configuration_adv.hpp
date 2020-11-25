@@ -92,8 +92,9 @@
 //                  ^^^ leave at 0 for now, doesnt work properly yet
 #define RA_AUDIO_FEEDBACK  0 // If one of these are set to 1, the respective driver will shut off the stealthchop mode, resulting in a audible whine
 #define DEC_AUDIO_FEEDBACK 0 // of the stepper coils. Use this to verify that UART is working properly. 
+#ifndef UART_SOFTWARESERIAL
 #define UART_SOFTWARESERIAL 0 // If the board requires SoftwareSerial rather than HardwareSerial for UART
-
+#endif
 
 ////////////////////////////
 //
@@ -144,39 +145,41 @@
 //
 // Enable Azimuth and Altitude motor functionality in Configuration.hpp
 
+#if AZ_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+  #define AZ_MICROSTEPPING        2     // Halfstep mode using ULN2003 driver
+#elif AZ_DRIVER_TYPE == DRIVER_TYPE_GENERIC || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+  #define AZ_MICROSTEPPING        8
+#endif
 #if AZ_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
   #define AZ_STEPPER_SPR            2048  // 28BYJ-48 in full step mode
   #define AZ_STEPPER_SPEED          600   // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
   #define AZ_STEPPER_ACCELERATION   400   // High speeds tend to make these cheap steppers unprecice
 #elif AZ_STEPPER_TYPE == STEPPER_TYPE_NEMA17
   #define AZ_STEPPER_SPR            400   // NEMA 0.9° = 400  |  NEMA 1.8° = 200
-  #define AZ_STEPPER_SPEED          1200  // You can change the speed and acceleration of the steppers here. Max. Speed = 3000. 
+  #define AZ_STEPPER_SPEED          600  // You can change the speed and acceleration of the steppers here. Max. Speed = 3000. 
   #define AZ_STEPPER_ACCELERATION   6000
 #else
   #error New Stepper type? Add it here...
 #endif
-#if AZ_DRIVER_TYPE == DRIVER_TYPE_ULN2003
-  #define AZ_MICROSTEPPING        2     // Halfstep mode using ULN2003 driver
-#elif AZ_DRIVER_TYPE == DRIVER_TYPE_GENERIC || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-  #define AZ_MICROSTEPPING        32    // Only used if 28BYJ-48 is converted to bipolar and used with a TMC2209
-#endif
 
+
+#if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+  #define ALT_MICROSTEPPING        1     // Fullstep mode using ULN2003 driver
+#elif ALT_DRIVER_TYPE == DRIVER_TYPE_GENERIC || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+  #define ALT_MICROSTEPPING        32
+#endif
 #if ALT_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
   #define ALT_STEPPER_SPR            2048  // 28BYJ-48 in full step mode
   #define ALT_STEPPER_SPEED          600   // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
   #define ALT_STEPPER_ACCELERATION   400   // High speeds tend to make these cheap steppers unprecice
 #elif ALT_STEPPER_TYPE == STEPPER_TYPE_NEMA17
   #define ALT_STEPPER_SPR            400   // NEMA 0.9° = 400  |  NEMA 1.8° = 200
-  #define ALT_STEPPER_SPEED          1200  // You can change the speed and acceleration of the steppers here. Max. Speed = 3000. 
+  #define ALT_STEPPER_SPEED          600  // You can change the speed and acceleration of the steppers here. Max. Speed = 3000. 
   #define ALT_STEPPER_ACCELERATION   6000
 #else
   #error New Stepper type? Add it here...
 #endif
-#if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003
-  #define ALT_MICROSTEPPING        1     // Fullstep mode using ULN2003 driver
-#elif ALT_DRIVER_TYPE == DRIVER_TYPE_GENERIC || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-  #define ALT_MICROSTEPPING        32    // Only used if 28BYJ-48 is converted to bipolar and used with a TMC2209
-#endif
+
 
 // the Circumference of the AZ rotation. 808mm dia.
 #define AZ_CIRCUMFERENCE 2538.4
@@ -185,14 +188,10 @@
 // the ratio of the ALT gearbox (40:3)
 #define ALT_WORMGEAR_RATIO (40/3)
 
-// Determine arcseconds per (micro)step of movement based
-#define AZIMUTH_STEPS_PER_REV (AZ_CORRECTION_FACTOR * (AZ_CIRCUMFERENCE / (AZ_PULLEY_TEETH * 2)) * AZ_STEPPER_SPR  * AZ_MICROSTEPPING)
-#define AZIMUTH_ARC_SECONDS_PER_STEP ((360.0f * 3600) / AZIMUTH_STEPS_PER_REV)
-#define AZIMUTH_STEPS_PER_ARC_MINUTE (AZIMUTH_STEPS_PER_REV/(360 * 60.0f))
-
-#define ALTITUDE_STEPS_PER_REV (ALT_CORRECTION_FACTOR * (ALT_CIRCUMFERENCE / (ALT_PULLEY_TEETH * 2)) * ALT_STEPPER_SPR  * ALT_MICROSTEPPING * ALT_WORMGEAR_RATIO)
-#define ALTITUDE_ARC_SECONDS_PER_STEP ((360.0f * 3600) / ALTITUDE_STEPS_PER_REV)
-#define ALTITUDE_STEPS_PER_ARC_MINUTE (ALTITUDE_STEPS_PER_REV/(360 * 60.0f))
+#define AZIMUTH_STEPS_PER_REV           (AZ_CORRECTION_FACTOR * (AZ_CIRCUMFERENCE / (AZ_PULLEY_TEETH * 2)) * AZ_STEPPER_SPR)
+#define ALTITUDE_STEPS_PER_REV          (ALT_CORRECTION_FACTOR * (ALT_CIRCUMFERENCE / (ALT_PULLEY_TEETH * 2)) * ALT_STEPPER_SPR * ALT_WORMGEAR_RATIO)
+#define AZIMUTH_STEPS_PER_ARC_MINUTE    (AZIMUTH_STEPS_PER_REV / (360 * 60.0f)) // Used to determine move distance in steps
+#define ALTITUDE_STEPS_PER_ARC_MINUTE   (ALTITUDE_STEPS_PER_REV / (360 * 60.0f)) // Used to determine move distance in steps
 
 // ALT/AZ TMC2209 UART settings
 // These settings work only with TMC2209 in UART connection (single wire to TX)

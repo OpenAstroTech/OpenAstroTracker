@@ -24,6 +24,9 @@
 // Wire the board to 20/21 on Mega. Change pins in configuration_pins.hpp if you use other pins
 #define USE_GYRO_LEVEL 1
 
+// Set to 0 for regular Arduino boards, set to 1 for boards that use SoftwareSerial for UART comms, like the MKS Gen L v2.0/v2.1
+#define UART_SOFTWARESERIAL 0 // If the board requires SoftwareSerial rather than HardwareSerial for UART
+
 // Set this to 1 if the mount has motorized Azimuth and Altitude adjustment. Set pins in configuration_pins.hpp. Change motor speeds in Configuration_adv.hpp
 #define AZIMUTH_ALTITUDE_MOTORS  1
 #define AZ_STEPPER_TYPE     STEPPER_TYPE_28BYJ48
