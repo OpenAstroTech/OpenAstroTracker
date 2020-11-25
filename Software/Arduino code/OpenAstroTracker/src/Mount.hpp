@@ -88,21 +88,11 @@ public:
 
   // Configure the RA Driver (TMC2209 UART only)
 #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-  #if UART_SOFTWARESERIAL == 0
-    void configureRAdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
-  #endif
-  #if UART_SOFTWARESERIAL == 1
-    void configureRAdriver(SoftwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
-  #endif
+  void configureRAdriver(SoftwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
 #endif
   // Configure the DEC Driver (TMC2209 UART only)
 #if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-  #if UART_SOFTWARESERIAL == 0
-    void configureDECdriver(HardwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
-  #endif
-  #if UART_SOFTWARESERIAL == 1
-    void configureDECdriver(SoftwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
-  #endif
+  void configureDECdriver(SoftwareSerial *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
 #endif
 
   // Get the current RA tracking speed factor
