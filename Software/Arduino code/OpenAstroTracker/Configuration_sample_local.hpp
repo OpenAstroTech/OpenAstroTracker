@@ -25,4 +25,4 @@
 #define USE_GYRO_LEVEL 1
 
 // Set this to 1 if the mount has motorized Azimuth and Altitude adjustment. Set pins in configuration_pins.hpp. Change motor speeds in Configuration_adv.hpp
-#define AZIMUTH_ALTITUDE_MOTORS  1
+#define AZIMUTH_ALTITUDE_MOTORS  0
