@@ -42,16 +42,40 @@
     #define DEC_SERIAL_PORT_RX 64 // SoftwareSerial RX port
     #define DEC_DRIVER_ADDRESS 0b01  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
     
+    // Azimuth and Altitude pins    
     #if AZIMUTH_ALTITUDE_MOTORS == 1
-        // Azimuth and Altitude pins
-        #define ALT_IN1_PIN 65
-        #define ALT_IN2_PIN 62
-        #define ALT_IN3_PIN 46
-        #define ALT_IN4_PIN 48
-        #define AZ_IN1_PIN 66
-        #define AZ_IN2_PIN 24
-        #define AZ_IN3_PIN 26
-        #define AZ_IN4_PIN 28
+        //---------------------------------------
+        // If using 28BYJ-48 and ULN2003 drivers:
+        #define AZ_IN1_PIN 65
+        #define AZ_IN2_PIN 62
+        #define AZ_IN3_PIN 46
+        #define AZ_IN4_PIN 48
+        //-----------------------
+        // If using NEMA steppers
+        #define AZ_STEP_PIN 46  // STEP
+        #define AZ_DIR_PIN  48  // DIR
+        #define AZ_EN_PIN   62  // Enable
+        #define AZ_DIAG_PIN 18  // only needed for autohome function
+        //AZ TMC2209 UART specific pins
+        #define AZ_SERIAL_PORT_TX 42 // SoftwareSerial TX port
+        #define AZ_SERIAL_PORT_RX 65 // SoftwareSerial RX port
+        #define AZ_DRIVER_ADDRESS 0b10  // Set by MS1/MS2. LOW/LOW in this case
+        //---------------------------------------
+        // If using 28BYJ-48 and ULN2003 drivers:        
+        #define ALT_IN1_PIN 66
+        #define ALT_IN2_PIN 24
+        #define ALT_IN3_PIN 26
+        #define ALT_IN4_PIN 28
+        //-----------------------
+        // If using NEMA steppers
+        #define ALT_STEP_PIN 26  // STEP
+        #define ALT_DIR_PIN  28  // DIR
+        #define ALT_EN_PIN   24  // Enable
+        #define ALT_DIAG_PIN 2  // only needed for autohome function
+        //AZ TMC2209 UART specific pins
+        #define ALT_SERIAL_PORT_TX 44 // SoftwareSerial TX port
+        #define ALT_SERIAL_PORT_RX 66 // SoftwareSerial RX port
+        #define ALT_DRIVER_ADDRESS 0b11  // Set by MS1/MS2. LOW/LOW in this case
     #endif
     //---------------
     // MISC PINS amd SETTINGS
