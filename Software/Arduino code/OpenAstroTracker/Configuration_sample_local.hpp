@@ -25,7 +25,7 @@
 #define USE_GYRO_LEVEL 1
 
 // Set this to 1 if the mount has motorized Azimuth and Altitude adjustment. Set pins in configuration_pins.hpp. Change motor speeds in Configuration_adv.hpp
-#define AZIMUTH_ALTITUDE_MOTORS  1
+#define AZIMUTH_ALTITUDE_MOTORS  0
 #define AZ_STEPPER_TYPE     STEPPER_TYPE_28BYJ48
 #define ALT_STEPPER_TYPE    STEPPER_TYPE_28BYJ48
 #define AZ_DRIVER_TYPE      DRIVER_TYPE_ULN2003
