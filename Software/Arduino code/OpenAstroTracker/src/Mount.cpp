@@ -2358,11 +2358,11 @@ void Mount::moveSteppersTo(float targetRA, float targetDEC) {
   _stepperRA->moveTo(targetRA);
 
   if (_decUpperLimit != 0) {
-    targetDEC = min(targetDEC, _decUpperLimit);
+    targetDEC = min(targetDEC, (float)_decUpperLimit);
     LOGV2(DEBUG_MOUNT,F("Mount::MoveSteppersTo: DEC Upper Limit enforced. To: %f"), targetDEC);
   }
   if (_decLowerLimit != 0) {
-    targetDEC = max(targetDEC, _decLowerLimit);
+    targetDEC = max(targetDEC, (float)_decLowerLimit);
     LOGV2(DEBUG_MOUNT,F("Mount::MoveSteppersTo: DEC Lower Limit enforced. To: %f"), targetDEC);
   }
 
