@@ -18,24 +18,26 @@
 #define HIGHLIGHT_DEC_STEPS 5
 #define HIGHLIGHT_BACKLASH_STEPS 6
 #define HIGHLIGHT_PARKING_POS 7
+#define HIGHLIGHT_DEC_LOWER_LIMIT 8
+#define HIGHLIGHT_DEC_UPPER_LIMIT 9
 
 #if AZIMUTH_ALTITUDE_MOTORS == 1
-  #define HIGHLIGHT_AZIMUTH_ADJUSTMENT 8
-  #define HIGHLIGHT_ALTITUDE_ADJUSTMENT 9
+  #define HIGHLIGHT_AZIMUTH_ADJUSTMENT 10
+  #define HIGHLIGHT_ALTITUDE_ADJUSTMENT 11
+  #if USE_GYRO_LEVEL == 1
+    #define HIGHLIGHT_ROLL_LEVEL 12
+    #define HIGHLIGHT_PITCH_LEVEL 13
+    #define HIGHLIGHT_LAST 13
+  #else
+    #define HIGHLIGHT_LAST 11
+  #endif
+#else
   #if USE_GYRO_LEVEL == 1
     #define HIGHLIGHT_ROLL_LEVEL 10
     #define HIGHLIGHT_PITCH_LEVEL 11
     #define HIGHLIGHT_LAST 11
   #else
     #define HIGHLIGHT_LAST 9
-  #endif
-#else
-  #if USE_GYRO_LEVEL == 1
-    #define HIGHLIGHT_ROLL_LEVEL 8
-    #define HIGHLIGHT_PITCH_LEVEL 9
-    #define HIGHLIGHT_LAST 9
-  #else
-    #define HIGHLIGHT_LAST 7
   #endif
 #endif
 
@@ -64,7 +66,15 @@
 // Backlash calibration only has one state, allowing you to adjust the number of steps with UP and DOWN
 #define BACKLASH_CALIBRATION 70
 
+// Confirm that the current position is the parking position
 #define PARKING_POS_CONFIRM 80
+
+// Confirm that current position is the DEC Lower limit
+#define DEC_LOWER_LIMIT_CONFIRM 90
+
+// Confirm that current position is the DEC Upper limit
+#define DEC_UPPER_LIMIT_CONFIRM 93
+
 // Brightness setting only has one state, allowing you to adjust the brightness with UP and DOWN
 // #define BACKLIGHT_CALIBRATION 90
 
@@ -98,6 +108,9 @@ byte driftSubIndex = 1;
 // The index of Yes or No to confirm parking pos
 byte parkYesNoIndex = 0;
 
+// The index of Y or N to confirm DEC limits (used for hi and lo).
+byte limitSetClearCancelIndex  = 0;
+
 // The requested total duration of the drift alignment run.
 byte driftDuration = 0;
 
@@ -112,8 +125,6 @@ int AltitudeMinutes = 0;
 #if USE_GYRO_LEVEL == 1
 int setRollZeroPoint = false;
 int setPitchZeroPoint = false;
-float PitchCalibrationAngle = 0.0;
-float RollCalibrationAngle = 0.0;
 bool gyroStarted = false;
 #endif
 
@@ -180,16 +191,6 @@ void gotoNextHighlightState(int dir)
   {
     SpeedCalibration = (mount.getSpeedCalibration() - 1.0) * 10000.0 + 0.5;
   }
-#if USE_GYRO_LEVEL == 1
-  else if (calState == HIGHLIGHT_PITCH_LEVEL)
-  {
-    PitchCalibrationAngle = mount.getPitchCalibrationAngle();
-  }
-  else if (calState == HIGHLIGHT_ROLL_LEVEL)
-  {
-    RollCalibrationAngle = mount.getRollCalibrationAngle();
-  }
-#endif
   // else if (calState == HIGHLIGHT_BACKLIGHT) {
   //   Brightness = lcdMenu.getBacklightBrightness();
   // }
@@ -285,7 +286,7 @@ bool processCalibrationKeys()
   {
     if (!mount.isSlewingRAorDEC())
     {
-      lcdMenu.updateDisplay();
+      okToUpdateMenu = true;
       calState = HIGHLIGHT_POLAR;
     }
   }
@@ -501,6 +502,7 @@ bool processCalibrationKeys()
          else
          {
             calState = ROLL_OFFSET_CONFIRM;
+            okToUpdateMenu = false;
             lcdMenu.setCursor(0, 0);
             lcdMenu.printMenu(F("Set as level?"));
         }
@@ -525,14 +527,19 @@ bool processCalibrationKeys()
     {
       if (key == btnSELECT)
       {
+        auto angles = Gyro::getCurrentAngles();
         if (setRollZeroPoint)
         {
-          auto angles = Gyro::getCurrentAngles();
+          LOGV2(DEBUG_GYRO, "CAL: Confirmed Roll offset is %f", angles.rollAngle);
           mount.setRollCalibrationAngle(angles.rollAngle);
-          RollCalibrationAngle = angles.rollAngle;
+          LOGV2(DEBUG_GYRO, "CAL: New Roll offset is %f", mount.getRollCalibrationAngle());
+        }
+        else
+        {
+          LOGV2(DEBUG_GYRO, "CAL: Did not confirm, Roll offset was %f", angles.rollAngle);
         }
         calState = HIGHLIGHT_ROLL_LEVEL;
-        lcdMenu.updateDisplay();
+        okToUpdateMenu = true;
       }     
       else if (key == btnLEFT) 
       {
@@ -546,6 +553,7 @@ bool processCalibrationKeys()
       if (key == btnSELECT)
       {
         calState = PITCH_OFFSET_CONFIRM;
+        okToUpdateMenu = false;
         lcdMenu.setCursor(0, 0);
         lcdMenu.printMenu(F("Set as level?"));
       }
@@ -565,14 +573,18 @@ bool processCalibrationKeys()
     {
       if (key == btnSELECT)
       {
+        auto angles = Gyro::getCurrentAngles();
         if (setPitchZeroPoint)
         {
-          auto angles = Gyro::getCurrentAngles();
+          LOGV2(DEBUG_GYRO, "CAL: Confirmed Pitch offset is %f", angles.pitchAngle);
           mount.setPitchCalibrationAngle(angles.pitchAngle);
-          PitchCalibrationAngle = angles.pitchAngle;
+        }
+        else
+        {
+          LOGV2(DEBUG_GYRO, "CAL: Did not confirm, Pitch offset was %f", angles.pitchAngle);
         }
         calState = HIGHLIGHT_PITCH_LEVEL;
-        lcdMenu.updateDisplay();
+        okToUpdateMenu = true;
       }     
       else if (key == btnLEFT) 
       {
@@ -617,6 +629,7 @@ bool processCalibrationKeys()
         // it is from the Celestial Pole. That equates to 88deg 42' 11.2".
         mount.targetDEC() = DegreeTime(88 - (NORTHERN_HEMISPHERE ? 90 : -90), 42, 11);
         mount.startSlewingToTarget();
+        okToUpdateMenu = false;
       }
       else if (key == btnRIGHT)
       {
@@ -705,13 +718,9 @@ bool processCalibrationKeys()
 
     case PARKING_POS_CONFIRM:
     {
-      if (key == btnDOWN || key == btnLEFT)
+      if (key == btnDOWN || key == btnLEFT || key == btnUP)
       {
         parkYesNoIndex= adjustWrap(parkYesNoIndex, 1, 0, 1);
-      }
-      if (key == btnUP)
-      {
-        parkYesNoIndex= adjustWrap(parkYesNoIndex, -1, 0, 3);
       }
       if (key == btnSELECT)
       {
@@ -737,6 +746,48 @@ bool processCalibrationKeys()
         // RIGHT cancels duration selection and returns to menu
         calState = HIGHLIGHT_PARKING_POS;
         driftSubIndex = 1;
+      }
+    }
+    break;
+
+    case DEC_LOWER_LIMIT_CONFIRM:
+    case DEC_UPPER_LIMIT_CONFIRM:
+    {
+      if (key == btnDOWN || key == btnLEFT || key == btnUP)
+      {
+        limitSetClearCancelIndex  = adjustWrap(limitSetClearCancelIndex , 1, 0, 2);
+      }
+      if (key == btnSELECT)
+      {
+        if (limitSetClearCancelIndex  == 0) { // Set
+          mount.setDecLimitPosition(calState == DEC_UPPER_LIMIT_CONFIRM);
+          lcdMenu.printMenu(calState == DEC_UPPER_LIMIT_CONFIRM? "UprLimit stored" : "LowLimit stored" );
+          mount.delay(800);
+        }
+        if (limitSetClearCancelIndex  == 1) { // Clear
+          mount.clearDecLimitPosition(calState == DEC_UPPER_LIMIT_CONFIRM);
+          lcdMenu.printMenu(calState == DEC_UPPER_LIMIT_CONFIRM? "UprLimit cleared" : "LowLimit cleared" );
+          mount.delay(800);
+        }
+        else if (limitSetClearCancelIndex  == 2) { // Cancel
+
+          lcdMenu.printMenu("Use CTRL to move");
+          mount.delay(750);
+          lcdMenu.setCursor(0,1);
+          lcdMenu.printMenu("OAT to limit,");
+          mount.delay(750);
+          lcdMenu.setCursor(0,1);
+          lcdMenu.printMenu("then come back.");
+          mount.delay(700);
+        }
+        calState = (calState == DEC_UPPER_LIMIT_CONFIRM) ? HIGHLIGHT_DEC_UPPER_LIMIT : HIGHLIGHT_DEC_LOWER_LIMIT;
+        okToUpdateMenu = true;
+      }
+      else if (key == btnRIGHT)
+      {
+        // RIGHT cancels limit selection and returns to menu
+        calState = (calState == DEC_UPPER_LIMIT_CONFIRM) ? HIGHLIGHT_DEC_UPPER_LIMIT : HIGHLIGHT_DEC_LOWER_LIMIT;
+        okToUpdateMenu = true;
       }
     }
     break;
@@ -797,6 +848,26 @@ bool processCalibrationKeys()
         gotoNextHighlightState(-1);
       else if (key == btnSELECT)
         calState = PARKING_POS_CONFIRM;
+      else if (key == btnRIGHT)
+      {
+        gotoNextMenu();
+        calState = HIGHLIGHT_FIRST;
+      }
+    }
+    break;
+
+    case HIGHLIGHT_DEC_LOWER_LIMIT:
+    case HIGHLIGHT_DEC_UPPER_LIMIT:
+    {
+      if (key == btnDOWN)
+        gotoNextHighlightState(1);
+      if (key == btnUP)
+        gotoNextHighlightState(-1);
+      else if (key == btnSELECT) 
+      {
+        calState = calState == HIGHLIGHT_DEC_LOWER_LIMIT? DEC_LOWER_LIMIT_CONFIRM : DEC_UPPER_LIMIT_CONFIRM;
+        okToUpdateMenu = false;
+      }
       else if (key == btnRIGHT)
       {
         gotoNextMenu();
@@ -937,6 +1008,14 @@ void printCalibrationSubmenu()
   {
     lcdMenu.printMenu(">Set Parking Pos");
   }
+  else if (calState == HIGHLIGHT_DEC_LOWER_LIMIT)
+  {
+    lcdMenu.printMenu(">DEC Lower Limit");
+  }
+  else if (calState == HIGHLIGHT_DEC_UPPER_LIMIT)
+  {
+    lcdMenu.printMenu(">DEC Upper Limit");
+  }
 #if AZIMUTH_ALTITUDE_MOTORS == 1
   else if (calState == HIGHLIGHT_AZIMUTH_ADJUSTMENT)
   {
@@ -1001,7 +1080,26 @@ void printCalibrationSubmenu()
   else if (calState == PARKING_POS_CONFIRM)
   {
     sprintf(scratchBuffer, "Parked?  Yes  No");
-    scratchBuffer[8+parkYesNoIndex * 5] = '>';
+    scratchBuffer[8 + parkYesNoIndex * 5] = '>';
+    lcdMenu.printMenu(scratchBuffer);
+  }
+  else if (calState == DEC_LOWER_LIMIT_CONFIRM)
+  {
+    lcdMenu.setCursor(0, 0);
+    lcdMenu.printMenu("DEC Lower Limit");
+    lcdMenu.setCursor(0, 1);
+
+    sprintf(scratchBuffer, " Set  Clr  Cancl");
+    scratchBuffer[limitSetClearCancelIndex * 5] = '>';
+    lcdMenu.printMenu(scratchBuffer);
+  }
+  else if (calState == DEC_UPPER_LIMIT_CONFIRM)
+  {
+    lcdMenu.setCursor(0, 0);
+    lcdMenu.printMenu("DEC Upper Limit");
+    lcdMenu.setCursor(0, 1);
+    sprintf(scratchBuffer, " Set  Clr  Cancl");
+    scratchBuffer[limitSetClearCancelIndex * 5] = '>';
     lcdMenu.printMenu(scratchBuffer);
   }
 #if AZIMUTH_ALTITUDE_MOTORS == 1
@@ -1021,7 +1119,7 @@ void printCalibrationSubmenu()
   {
     auto angles = Gyro::getCurrentAngles();
     sprintf(scratchBuffer, "R: -------------");
-    makeIndicator(scratchBuffer, angles.rollAngle - RollCalibrationAngle);
+    makeIndicator(scratchBuffer, angles.rollAngle - mount.getRollCalibrationAngle());
     lcdMenu.printMenu(scratchBuffer);
   }
   else if (calState == ROLL_OFFSET_CONFIRM)
@@ -1035,7 +1133,7 @@ void printCalibrationSubmenu()
   {
     auto angles = Gyro::getCurrentAngles();
     sprintf(scratchBuffer, "P: -------------");
-    makeIndicator(scratchBuffer, angles.pitchAngle - PitchCalibrationAngle);
+    makeIndicator(scratchBuffer, angles.pitchAngle - mount.getPitchCalibrationAngle());
     lcdMenu.printMenu(scratchBuffer);
   }
   else if (calState == PITCH_OFFSET_CONFIRM)

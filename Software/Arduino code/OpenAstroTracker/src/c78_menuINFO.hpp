@@ -4,7 +4,7 @@
 
 #if SUPPORT_INFO_DISPLAY == 1
 byte infoIndex = 0;
-byte maxInfoIndex = 7;
+byte maxInfoIndex = 9;
 byte subIndex = 0;
 unsigned long lastInfoUpdate = 0;
 
@@ -108,12 +108,26 @@ void printStatusSubmenu() {
       break;
 
       case 5: {
+        long lowerLimit, upperLimit;
+        mount.getDecLimitPositions(lowerLimit, upperLimit);
+        lcdMenu.printMenu("DEC Lo: "+String(lowerLimit));
+      }
+      break;
+
+      case 6: {
+        long lowerLimit, upperLimit;
+        mount.getDecLimitPositions(lowerLimit, upperLimit);
+        lcdMenu.printMenu("DEC Up: "+String(upperLimit));
+      }
+      break;
+      
+      case 7: {
         sprintf(scratchBuffer, "MemAvail: %d", freeMemory());
         lcdMenu.printMenu(scratchBuffer);
       }
       break;
 
-      case 6: {
+      case 8: {
         long now = millis();
         long msPerDay = 60L * 60 * 24 * 1000;
         int days = (int)(now / msPerDay);
@@ -124,7 +138,7 @@ void printStatusSubmenu() {
       }
       break;
 
-      case 7: {
+      case 9: {
         lcdMenu.printMenu("Firmw.: " + String(VERSION));
       }
       break;

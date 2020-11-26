@@ -53,6 +53,8 @@
 #define EEPROM_ROLL_OFFSET 8
 #define EEPROM_RA_PARKING_POS 9
 #define EEPROM_DEC_PARKING_POS 10
+#define EEPROM_DEC_LOWER_LIMIT 11
+#define EEPROM_DEC_UPPER_LIMIT 12
 
 //////////////////////////////////////////////////////////////////
 //
@@ -206,6 +208,15 @@ public:
   // Set the current stepper positions to be parking position.
   void setParkingPosition();
 
+  // Set the DEC limit position to the current stepper position. If upper is true, sets the upper limit, else the lower limit.
+  void setDecLimitPosition(bool upper); 
+  
+  // Clear the DEC limit position. If upper is true, clears upper limit, else the lower limit.
+  void clearDecLimitPosition(bool upper);
+
+  // Get the DEC limit positions
+  void getDecLimitPositions(long & lowerLimit, long & upperLimit);
+
   // Auto Home with TMC2209 UART
   #if (RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART)
     void startFindingHomeRA();
@@ -261,7 +272,7 @@ public:
   int getBacklashCorrection();
   
   // Called when startup is complete and the mount needs to start updating steppers.
-  void  startTimerInterrupts();
+  void startTimerInterrupts();
 
   // Read the saved configuration from persistent storage
   void readConfiguration();
@@ -271,6 +282,9 @@ public:
   
   // Get Mount configuration data
   String getMountHardwareInfo();
+
+  // Returns a flag indicating whether the mount is fully booted.
+  bool isBootComplete();
 
   // Let the mount know that the system has finished booting
   void bootComplete();
@@ -310,6 +324,8 @@ private:
   int _moveRate;
   long _raParkingPos;
   long _decParkingPos;
+  long _decLowerLimit;
+  long _decUpperLimit;
 
 #if USE_GYRO_LEVEL == 1
   float _pitchCalibrationAngle;

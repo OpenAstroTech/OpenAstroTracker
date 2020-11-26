@@ -113,6 +113,7 @@ bool inStartup = false;        // Start with a guided startup
 
 // Serial control variables
 bool inSerialControl = false; // When the serial port is in control
+bool okToUpdateMenu = true;   // Can be used to supress rendering the first line of the menu.
 bool quitSerialOnNextButtonRelease = false; // Used to detect SELECT button to quit Serial mode.
 
 // Global variables

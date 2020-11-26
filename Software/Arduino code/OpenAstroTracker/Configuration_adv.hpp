@@ -212,7 +212,7 @@
 //
 // SETTINGS
 //
-  #define INFRA_SSID "YouSSID"
+  #define INFRA_SSID "YourSSID"
   #define INFRA_WPAKEY "YourWPAKey"
   #define OAT_WPAKEY "superSecret"
   #define HOSTNAME "OATerScope"
@@ -247,6 +247,7 @@
 #define DEBUG_VERBOSE        0x0080
 #define DEBUG_STEPPERS       0x0100
 #define DEBUG_EEPROM         0x0200
+#define DEBUG_GYRO           0x0400
 #define DEBUG_ANY            0xFFFF
 
 ////////////////////////////
