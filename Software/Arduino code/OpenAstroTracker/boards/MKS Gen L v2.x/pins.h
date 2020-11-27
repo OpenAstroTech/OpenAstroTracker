@@ -1,11 +1,9 @@
-#pragma once
-
-#include "Configuration.hpp"
-
 ////////////////////////////////////////////////////////////////////
-// Arduino MEGA 
+// MKS GEN L 2.X Pins
+// Copy this code and replace the Mega pins with it. Later this will
+// be handled by the HAL.
 ////////////////////////////////////////////////////////////////////
-#ifdef __AVR_ATmega2560__  // Arduino Mega
+#ifdef __AVR_ATmega2560__  // MKS GEN L 2.X
     //---------------------------------------
     // If using 28BYJ-48 and ULN2003 drivers:
     #define RA_IN1_PIN  63
@@ -76,4 +74,4 @@
         #define DEW_HEATER_PIN 10
     #endif
     
-#endif //mega
+#endif // mks
