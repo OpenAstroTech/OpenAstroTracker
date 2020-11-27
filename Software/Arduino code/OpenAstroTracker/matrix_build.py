@@ -1,6 +1,6 @@
 import os
 import itertools
-from collections import defaultdict 
+from collections import defaultdict
 
 CONTINUE_ON_ERROR = True
 
@@ -58,6 +58,7 @@ all_combinations = []
 for permutation in all_permutations:
     combination = {}
     combination_tuples = [(list(matrix.keys())[i], value) for i, value in enumerate(permutation)]
+
     for t in combination_tuples:
         combination[t[0]] = t[1]
     all_combinations.append(combination)
@@ -91,10 +92,12 @@ for c in allowed_combinations:
 #     print("{}: {}".format(i, command))
 # exit(0)
 
+errors = []
+
 for command in run_commands:
     print(command)
-    d = dict(os.environ)
-    d['PLATFORMIO_BUILD_FLAGS'] = command['env.PLATFORMIO_BUILD_FLAGS']
+    os.environ['PLATFORMIO_BUILD_FLAGS'] = command['env.PLATFORMIO_BUILD_FLAGS']
+
     result = os.system(command['command'])
     if result:
         errors.append(command)
