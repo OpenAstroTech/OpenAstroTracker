@@ -93,7 +93,6 @@
 #define RA_AUDIO_FEEDBACK  0 // If one of these are set to 1, the respective driver will shut off the stealthchop mode, resulting in a audible whine
 #define DEC_AUDIO_FEEDBACK 0 // of the stepper coils. Use this to verify that UART is working properly. 
 
-
 ////////////////////////////
 //
 // GUIDE SETTINGS
@@ -151,6 +150,10 @@
 #define ALTITUDE_MAX_ACCEL 200
 #define ALTITUDE_ARC_SECONDS_PER_STEP (0.61761f)
 #define ALTITUDE_STEPS_PER_ARC_MINUTE (60.0f/ALTITUDE_ARC_SECONDS_PER_STEP)
+
+// Enable dew heater output (for boards that have MOSFETs)
+#define DEW_HEATER 0
+
 
 #if DISPLAY_TYPE > 0
 

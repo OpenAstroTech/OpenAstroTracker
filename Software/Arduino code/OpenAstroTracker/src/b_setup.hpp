@@ -7,11 +7,20 @@
 #include "LcdMenu.hpp"
 #include "Utility.hpp"
 #include "EPROMStore.hpp"
-#include "inc/Config.hpp"
-
 
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
-LcdButtons lcdButtons(0, &lcdMenu);
+#if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD
+LcdButtons lcdButtons(LCD_PINA0, &lcdMenu);
+#endif
+
+#if defined(__AVR_ATmega2560__)
+#if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+  SoftwareSerial RA_SERIAL_PORT(RA_SERIAL_PORT_RX, RA_SERIAL_PORT_TX);
+#endif
+#if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+  SoftwareSerial DEC_SERIAL_PORT(DEC_SERIAL_PORT_RX, DEC_SERIAL_PORT_TX);
+#endif
+#endif
 
 #ifdef ESP32
 DRAM_ATTR Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
@@ -86,6 +95,11 @@ void setup() {
   GPS_SERIAL_PORT.begin(GPS_BAUD_RATE);
   #endif
 
+  //Turn on dew heater
+  #if DEW_HEATER == 1
+  digitalWrite(DEW_HEATER_PIN, HIGH);
+  #endif
+
   /////////////////////////////////
   //   Microstepping/driver pins
   /////////////////////////////////
@@ -100,10 +114,12 @@ void setup() {
       #endif
     #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE
       // include TMC2209 Standalone pins
-      pinMode(40, OUTPUT);
-      digitalWrite(40, LOW);  // ENABLE, LOW to enable
-      digitalWrite(41, HIGH);  // MS2
-      digitalWrite(42, HIGH);  // MS1
+      pinMode(RA_EN_PIN, OUTPUT);
+      digitalWrite(RA_EN_PIN, LOW);  // ENABLE, LOW to enable
+      // Microstepping control via MS pins - TODO -----------------------
+      //digitalWrite(RA_MS0_PIN, HIGH);  // MS0
+      //digitalWrite(RA_MS1_PIN, HIGH);  // MS1
+      //digitalWrite(RA_MS2_PIN, HIGH);  // MS2
       #endif
     #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
       // include TMC2209 UART pins  
@@ -121,11 +137,13 @@ void setup() {
       digitalWrite(DEC_MS2_PIN, HIGH);  // MS3
     #endif
     #if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE
-      // include TMC2209 Standalone pins  TODO-----------------------
-      //pinMode(40, OUTPUT);
-      //digitalWrite(40, LOW);  // ENABLE, LOW to enable
-      //digitalWrite(41, HIGH);  // MS2
-      //digitalWrite(42, HIGH);  // MS1
+      // include TMC2209 Standalone pins
+      pinMode(DEC_EN_PIN, OUTPUT);
+      digitalWrite(DEC_EN_PIN, LOW);  // ENABLE, LOW to enable
+      // Microstepping control via MS pins - TODO -----------------------
+      //digitalWrite(DEC_MS0_PIN, HIGH);  // MS0
+      //digitalWrite(DEC_MS1_PIN, HIGH);  // MS1
+      //digitalWrite(DEC_MS2_PIN, HIGH);  // MS2
     #endif
     #if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
       // include TMC2209 UART pins  

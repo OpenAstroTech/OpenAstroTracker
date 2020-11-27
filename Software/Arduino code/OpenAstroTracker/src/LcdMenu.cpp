@@ -1,6 +1,7 @@
 #include "Utility.hpp"
 #include "EPROMStore.hpp"
 #include "LcdMenu.hpp"
+#include "inc/Config.hpp"
 
 #if DISPLAY_TYPE > 0
 
@@ -8,7 +9,7 @@
 // You add a string and an id item and this class handles the display and navigation
 // Create a new menu, using the given number of LCD display columns and rows
 #if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD
-LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(8, 9, 4, 5, 6, 7)
+LcdMenu::LcdMenu(byte cols, byte rows, int maxItems) : _lcd(LCD_PIN8, LCD_PIN9, LCD_PIN4, LCD_PIN5, LCD_PIN6, LCD_PIN7)
 {
   _cols = cols;
   _rows = rows;

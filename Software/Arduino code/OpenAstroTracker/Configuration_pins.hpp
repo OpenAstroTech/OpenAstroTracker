@@ -26,7 +26,8 @@
     #define RA_MS1_PIN  32
     #define RA_MS2_PIN  34
     //RA TMC2209 UART specific pins
-    #define RA_SERIAL_PORT Serial3  // HardwareSerial port, wire to TX3 for write-only
+    #define RA_SERIAL_PORT_TX 14 // SoftwareSerial TX port
+    #define RA_SERIAL_PORT_RX 15 // SoftwareSerial RX port
     #define RA_DRIVER_ADDRESS 0b00  // Set by MS1/MS2. LOW/LOW in this case
 
     #define DEC_STEP_PIN 23  // STEP
@@ -37,19 +38,20 @@
     #define DEC_MS1_PIN  33
     #define DEC_MS2_PIN  35
     //DEC TMC2209 UART specific pins
-    #define DEC_SERIAL_PORT Serial3  // HardwareSerial port, wire to TX2 for write-only
+    #define DEC_SERIAL_PORT_TX 14 // SoftwareSerial TX port
+    #define DEC_SERIAL_PORT_RX 15 // SoftwareSerial RX port
     #define DEC_DRIVER_ADDRESS 0b01  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
     
     #if AZIMUTH_ALTITUDE_MOTORS == 1
         // Azimuth and Altitude pins
-        #define ALT_IN1_PIN 46
-        #define ALT_IN2_PIN 48
-        #define ALT_IN3_PIN 50
-        #define ALT_IN4_PIN 52
         #define AZ_IN1_PIN 47
         #define AZ_IN2_PIN 49
         #define AZ_IN3_PIN 51
         #define AZ_IN4_PIN 53
+        #define ALT_IN1_PIN 46
+        #define ALT_IN2_PIN 48
+        #define ALT_IN3_PIN 50
+        #define ALT_IN4_PIN 52
     #endif
     //---------------
     // MISC PINS amd SETTINGS
@@ -57,6 +59,18 @@
         #define GPS_SERIAL_PORT Serial1
         #define GPS_BAUD_RATE 9600
     #endif
+    
+    //LCD pin definitions (to allow configuration on different boards)
+    #if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD
+        #define LCD_PINA0 0
+        #define LCD_PIN4 4
+        #define LCD_PIN5 5
+        #define LCD_PIN6 6
+        #define LCD_PIN7 7
+        #define LCD_PIN8 8
+        #define LCD_PIN9 9
+    #endif
+    
 #endif //mega
 
 ////////////////////////////////////////////////////////////////////
@@ -111,5 +125,16 @@
 
     #if USE_GYRO_LEVEL == 1
         #error Digital Level not currently configured/supported in ESP32
+    #endif
+    
+    //LCD pin definitions (to allow configuration on different boards)
+    #if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD
+        #define LCD_PINA0 0
+        #define LCD_PIN4 4
+        #define LCD_PIN5 5
+        #define LCD_PIN6 6
+        #define LCD_PIN7 7
+        #define LCD_PIN8 8
+        #define LCD_PIN9 9
     #endif
 #endif

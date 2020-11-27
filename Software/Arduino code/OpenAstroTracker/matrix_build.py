@@ -107,3 +107,5 @@ if errors:
     print("There were errors during the matrix build for following configurations:")
     for error in errors:
         print(error)
+else:
+    print("There were no errors found during the matrix build.")
