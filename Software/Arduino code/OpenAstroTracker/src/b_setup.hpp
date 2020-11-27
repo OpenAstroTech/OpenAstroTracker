@@ -20,6 +20,14 @@ LcdButtons lcdButtons(LCD_PINA0, &lcdMenu);
 #if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
   SoftwareSerial DEC_SERIAL_PORT(DEC_SERIAL_PORT_RX, DEC_SERIAL_PORT_TX);
 #endif
+#if AZIMUTH_ALTITUDE_MOTORS == 1
+  #if AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+    SoftwareSerial AZ_SERIAL_PORT(AZ_SERIAL_PORT_RX, AZ_SERIAL_PORT_TX);
+  #endif
+  #if ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+    SoftwareSerial ALT_SERIAL_PORT(ALT_SERIAL_PORT_RX, ALT_SERIAL_PORT_TX);
+  #endif
+#endif
 #endif
 
 #ifdef ESP32
@@ -155,7 +163,28 @@ void setup() {
       DEC_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
     #endif
   #endif
-  // end microstepping -------------------
+  
+  #if AZIMUTH_ALTITUDE_MOTORS == 1  
+    #if AZ_DRIVER_TYPE == DRIVER_TYPE_GENERIC || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART  
+      pinMode(AZ_EN_PIN, OUTPUT);
+      digitalWrite(AZ_EN_PIN, HIGH);  // Logic HIGH to disable the driver initally
+    #endif
+    #if AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+      // include TMC2209 UART pins
+      pinMode(AZ_DIAG_PIN, INPUT);
+      AZ_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
+    #endif
+    #if ALT_DRIVER_TYPE == DRIVER_TYPE_GENERIC || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART  
+      pinMode(ALT_EN_PIN, OUTPUT);
+      digitalWrite(ALT_EN_PIN, HIGH);  // Logic HIGH to disable the driver initally
+    #endif
+    #if ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+      // include TMC2209 UART pins
+      pinMode(ALT_DIAG_PIN, INPUT);
+      ALT_SERIAL_PORT.begin(57600);  // Start HardwareSerial comms with driver
+    #endif
+  #endif
+// end microstepping -------------------
 
   Serial.begin(57600);
   #ifdef BLUETOOTH_ENABLED 
@@ -279,9 +308,33 @@ void finishSetup()
 
   #if AZIMUTH_ALTITUDE_MOTORS == 1
     LOGV1(DEBUG_ANY, F("Configure AZ stepper..."));
-    mount.configureAzStepper(HALFSTEP_MODE, AZmotorPin1, AZmotorPin2, AZmotorPin3, AZmotorPin4, AZIMUTH_MAX_SPEED, AZIMUTH_MAX_ACCEL);
+    #if AZ_DRIVER_TYPE == DRIVER_TYPE_ULN2003 
+      #if AZ_MICROSTEPPING == 1
+         mount.configureAZStepper(FULLSTEP_MODE, AZmotorPin1, AZmotorPin2, AZmotorPin3, AZmotorPin4, AZ_STEPPER_SPEED, AZ_STEPPER_ACCELERATION);
+      #elif AZ_MICROSTEPPING == 2
+         mount.configureAZStepper(HALFSTEP_MODE, AZmotorPin1, AZmotorPin2, AZmotorPin3, AZmotorPin4, AZ_STEPPER_SPEED, AZ_STEPPER_ACCELERATION);
+      #endif
+    #elif AZ_DRIVER_TYPE == DRIVER_TYPE_GENERIC || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+      mount.configureAZStepper(DRIVER_MODE, AZmotorPin1, AZmotorPin2, AZ_STEPPER_SPEED, AZ_STEPPER_ACCELERATION);
+    #endif
+    #if AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+      LOGV1(DEBUG_ANY, F("Configure AZ driver..."));
+      mount.configureAZdriver(&AZ_SERIAL_PORT, R_SENSE, AZ_DRIVER_ADDRESS, AZ_RMSCURRENT, AZ_STALL_VALUE);
+    #endif
     LOGV1(DEBUG_ANY, F("Configure Alt stepper..."));
-    mount.configureAltStepper(FULLSTEP_MODE, ALTmotorPin1, ALTmotorPin2, ALTmotorPin3, ALTmotorPin4, ALTITUDE_MAX_SPEED, ALTITUDE_MAX_ACCEL);
+    #if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003 
+      #if ALT_MICROSTEPPING == 1
+        mount.configureALTStepper(FULLSTEP_MODE, ALTmotorPin1, ALTmotorPin2, ALTmotorPin3, ALTmotorPin4, ALT_STEPPER_SPEED, ALT_STEPPER_ACCELERATION);
+      #elif ALT_MICROSTEPPING == 2
+        mount.configureALTStepper(HALFSTEP_MODE, ALTmotorPin1, ALTmotorPin2, ALTmotorPin3, ALTmotorPin4, ALT_STEPPER_SPEED, ALT_STEPPER_ACCELERATION);
+      #endif
+    #elif ALT_DRIVER_TYPE == DRIVER_TYPE_GENERIC || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+      mount.configureALTStepper(DRIVER_MODE, ALTmotorPin1, ALTmotorPin2, ALT_STEPPER_SPEED, ALT_STEPPER_ACCELERATION);
+    #endif
+    #if ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+      LOGV1(DEBUG_ANY, F("Configure ALT driver..."));
+      mount.configureALTdriver(&ALT_SERIAL_PORT, R_SENSE, ALT_DRIVER_ADDRESS, ALT_RMSCURRENT, ALT_STALL_VALUE);
+    #endif
   #endif
 
   // The mount uses EEPROM storage locations 0-10 that it reads during construction

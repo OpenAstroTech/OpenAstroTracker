@@ -10,7 +10,7 @@
 #include "DayTime.hpp"
 #include "LcdMenu.hpp"
 
-#if (RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART)
+#if (RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART)
  #include <TMCStepper.h>
  // If you get an error here, download the TMCstepper library from "Tools > Manage Libraries"
 #endif
@@ -83,9 +83,18 @@ public:
     void configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration);
 #endif
 
+// Configure the AZ/ALT stepper motors.
 #if AZIMUTH_ALTITUDE_MOTORS == 1
-  void configureAzStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
-  void configureAltStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
+  #if AZ_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+    void configureAZStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
+  #elif AZ_DRIVER_TYPE == DRIVER_TYPE_GENERIC || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+    void configureAZStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration);
+  #endif
+  #if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+    void configureALTStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration);
+  #elif ALT_DRIVER_TYPE == DRIVER_TYPE_GENERIC || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+    void configureALTStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration);
+  #endif
 #endif
 
 #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
@@ -97,6 +106,16 @@ public:
   void configureDECdriver(Stream *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
 #endif
 
+// Configure the AZ/ALT drivers.
+#if AZIMUTH_ALTITUDE_MOTORS == 1
+  #if AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+    void configureAZdriver(Stream *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
+  #endif
+  #if ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+    void configureALTdriver(Stream *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue);
+  #endif
+#endif
+  
   // Get the current RA tracking speed factor
   float getSpeedCalibration();
 
@@ -314,12 +333,18 @@ private:
 
 private:
   LcdMenu* _lcdMenu;
-  int  _stepsPerRADegree;
+  int _stepsPerRADegree;
   int _stepsPerDECDegree;
+  int _stepsPerAZDegree;
+  int _stepsPerALTDegree;
   int _maxRASpeed;
   int _maxDECSpeed;
+  int _maxAZSpeed;
+  int _maxALTSpeed;
   int _maxRAAcceleration;
   int _maxDECAcceleration;
+  int _maxAZAcceleration;
+  int _maxALTAcceleration;
   int _backlashCorrectionSteps;
   int _moveRate;
   long _raParkingPos;
@@ -361,6 +386,12 @@ private:
     AccelStepper* _stepperAZ;
     AccelStepper* _stepperALT;
     bool _azAltWasRunning;
+    #if AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+      TMC2209Stepper* _driverAZ;
+    #endif 
+    #if ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+      TMC2209Stepper* _driverALT;
+    #endif 
   #endif
 
   unsigned long _guideEndTime;
