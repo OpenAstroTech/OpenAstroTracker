@@ -40,6 +40,7 @@
     #define DEC_SERIAL_PORT_RX 64 // SoftwareSerial RX port
     #define DEC_DRIVER_ADDRESS 0b00  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
     
+    // Azimuth and Altitude pins    
     #if AZIMUTH_ALTITUDE_MOTORS == 1
         //---------------------------------------
         // If using 28BYJ-48 and ULN2003 drivers:
