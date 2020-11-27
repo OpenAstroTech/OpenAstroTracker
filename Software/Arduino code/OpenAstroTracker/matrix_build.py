@@ -114,7 +114,6 @@ time.sleep(3)
 
 run_commands = []
 for c in allowed_combinations:
-    print(f"Building {c} of {len(allowed_combinations)} permutations...")
     flags = ["-D {}={}".format(item[0], item[1]) for item in c.items()]
     flags_str = " ".join(flags)
     run_commands.append(
@@ -131,6 +130,7 @@ for c in allowed_combinations:
 errors = []
 
 for command in run_commands:
+    print(f"Building {c} of {len(allowed_combinations)} permutations...")
     print(command)
     os.environ['PLATFORMIO_BUILD_FLAGS'] = command['env.PLATFORMIO_BUILD_FLAGS']
     result = os.system(command['command'])
