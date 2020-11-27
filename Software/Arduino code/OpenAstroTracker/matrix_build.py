@@ -129,8 +129,8 @@ for c in allowed_combinations:
 
 errors = []
 
-for command in run_commands:
-    print(f"Building {c} of {len(allowed_combinations)} permutations...")
+for index,command in enumerate(run_commands):
+    print(f"Building {index+1} of {len(allowed_combinations)} permutations...")
     print(command)
     os.environ['PLATFORMIO_BUILD_FLAGS'] = command['env.PLATFORMIO_BUILD_FLAGS']
     result = os.system(command['command'])
