@@ -40,7 +40,7 @@
     //DEC TMC2209 UART specific pins
     #define DEC_SERIAL_PORT_TX 59 // SoftwareSerial TX port
     #define DEC_SERIAL_PORT_RX 64 // SoftwareSerial RX port
-    #define DEC_DRIVER_ADDRESS 0b01  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
+    #define DEC_DRIVER_ADDRESS 0b00  // Set by MS1/MS2 (MS1 HIGH, MS2 LOW)
     
     #if AZIMUTH_ALTITUDE_MOTORS == 1
         // Azimuth and Altitude pins

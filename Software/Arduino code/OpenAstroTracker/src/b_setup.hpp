@@ -13,11 +13,13 @@ LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(LCD_PINA0, &lcdMenu);
 #endif
 
+#if defined(__AVR_ATmega2560__)
 #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
   SoftwareSerial RA_SERIAL_PORT(RA_SERIAL_PORT_RX, RA_SERIAL_PORT_TX);
 #endif
 #if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
   SoftwareSerial DEC_SERIAL_PORT(DEC_SERIAL_PORT_RX, DEC_SERIAL_PORT_TX);
+#endif
 #endif
 
 #ifdef ESP32
