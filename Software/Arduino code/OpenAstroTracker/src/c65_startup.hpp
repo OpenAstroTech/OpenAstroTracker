@@ -39,6 +39,7 @@ void startupIsCompleted() {
 
   startupState = StartupCompleted;
   inStartup = false;
+  okToUpdateMenu = true;
 
   mount.startSlewing(TRACKING);
 
@@ -87,6 +88,7 @@ bool processStartupKeys() {
             #else
             startupState = StartupWaitForPoleCompletion;
             inStartup = false;
+            okToUpdateMenu = false;
             lcdMenu.setCursor(0, 0);
             lcdMenu.printMenu("Home with ^~<>");
             lcdMenu.setActive(Control_Menu);

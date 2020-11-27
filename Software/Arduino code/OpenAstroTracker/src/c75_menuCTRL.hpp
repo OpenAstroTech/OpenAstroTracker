@@ -121,15 +121,11 @@ bool processControlKeys()
           mount.startSlewing(TRACKING);
         }
 
-        // Set flag to prevent resetting zero point when moving over the menu items
-        ctrlState = HIGHLIGHT_MANUAL;
-
 #if SUPPORT_GUIDED_STARTUP == 1
         if (startupState == StartupWaitForPoleCompletion)
         {
           startupState = StartupPoleConfirmed;
           inStartup = true;
-          ctrlState = HIGHLIGHT_MANUAL;
         }
         else
 #endif
@@ -138,6 +134,7 @@ bool processControlKeys()
         }
 
         ctrlState = HIGHLIGHT_MANUAL;
+        okToUpdateMenu = true;
         setZeroPoint = true;
       }
       else if (key == btnLEFT)
@@ -192,6 +189,7 @@ bool processControlKeys()
         else
 #endif
         {
+          okToUpdateMenu = false;
           lcdMenu.setCursor(0, 0);
           lcdMenu.printMenu("Set home pos?");
           ctrlState = MANUAL_CONTROL_CONFIRM_HOME;

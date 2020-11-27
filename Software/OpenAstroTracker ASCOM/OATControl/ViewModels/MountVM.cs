@@ -77,6 +77,7 @@ namespace OATControl.ViewModels
 		DelegateCommand _parkCommand;
 		DelegateCommand _driftAlignCommand;
 		DelegateCommand _polarAlignCommand;
+		DelegateCommand _showLogFolderCommand;
 
 		DispatcherTimer _timerStatus;
 		DispatcherTimer _timerFineSlew;
@@ -125,6 +126,7 @@ namespace OATControl.ViewModels
 			_parkCommand = new DelegateCommand(async () => await OnPark(), () => MountConnected);
 			_driftAlignCommand = new DelegateCommand(async dur => await OnRunDriftAlignment(int.Parse(dur.ToString())), () => MountConnected);
 			_polarAlignCommand = new DelegateCommand(() => OnRunPolarAlignment(), () => MountConnected);
+			_showLogFolderCommand = new DelegateCommand(() => OnShowLogFolder(), () => true);
 
 			_util = new Util();
 			_transform = new ASCOM.Astrometry.Transform.Transform();
@@ -135,6 +137,12 @@ namespace OATControl.ViewModels
 			{
 				XDocument doc = XDocument.Load(poiFile);
 				_pointsOfInterest = doc.Element("PointsOfInterest").Elements("Object").Select(e => new PointOfInterest(e)).ToList();
+				_pointsOfInterest.Sort((p1, p2) =>
+				{
+					if (p1.Name.StartsWith("Polaris")) return -1;
+					if (p2.Name.StartsWith("Polaris")) return 1;
+					return p1.Name.CompareTo(p2.Name);
+				});
 				_pointsOfInterest.Insert(0, new PointOfInterest("--- Select Target Object ---"));
 				_selectedPointOfInterest = 0;
 				Log.WriteLine("Mount: Successfully read {0} Points of Interest.", _pointsOfInterest.Count - 1);
@@ -142,6 +150,12 @@ namespace OATControl.ViewModels
 
 			this.Version = Assembly.GetExecutingAssembly().GetName().Version;
 			Log.WriteLine("Mount: Initialization of OATControl {0} complete...", this.Version);
+		}
+
+		private void OnShowLogFolder()
+		{
+			ProcessStartInfo info = new ProcessStartInfo("explorer.exe", Path.GetDirectoryName(Log.Filename)) { UseShellExecute = true };
+			Process.Start(info);
 		}
 
 		private async Task OnSetHome()
@@ -514,10 +528,19 @@ namespace OATControl.ViewModels
 						MountConnected = true;
 						Log.WriteLine("Mount: Successfully connected and configured!");
 					}
+					catch (FormatException fex)
+					{
+						ScopeName = string.Empty;
+						ScopeHardware = string.Empty;
+						Log.WriteLine("Mount: Failed to connect and configure OAT! {0}", fex.Message);
+						MessageBox.Show("Connected to OpenAstroTracker, but protocol could not be established.\n\nIs the firmware compiled with DEBUG_LEVEL set to DEBUG_NONE?", "Protocol Error", MessageBoxButton.OK, MessageBoxImage.Error);
+					}
 					catch (Exception ex)
 					{
+						ScopeName = string.Empty;
+						ScopeHardware = string.Empty;
 						Log.WriteLine("Mount: Failed to connect and configure OAT! {0}", ex.Message);
-						MessageBox.Show("Error trying to connect to OpenAstroTracker. " + ex.Message, "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+						MessageBox.Show("Error trying to connect to OpenAstroTracker.\n\n" + ex.Message, "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
 					}
 					finally
 					{
@@ -590,6 +613,7 @@ namespace OATControl.ViewModels
 			_parkCommand.Requery();
 			_driftAlignCommand.Requery();
 			_polarAlignCommand.Requery();
+			_showLogFolderCommand.Requery();
 
 			OnPropertyChanged("ConnectCommandString");
 		}
@@ -646,13 +670,23 @@ namespace OATControl.ViewModels
 			var dlg = new DlgChooseOat(this, this.RunCustomOATCommandAsync) { Owner = Application.Current.MainWindow, WindowStartupLocation = WindowStartupLocation.CenterOwner };
 
 			Log.WriteLine("Mount: Showing OAT comms Chooser Wizard");
+			dlg.ShowDialog();
 
-			var result = dlg.ShowDialog();
-
-			if (result == true)
+			if (dlg.Result == true)
 			{
 				Log.WriteLine("OAT Connected!");
 				return true;
+			}
+			else if (dlg.Result == null)
+			{
+				Log.WriteLine("Mount: Unable to connect");
+				string extraMessage = "Is something else connected?";
+				if (Process.GetProcesses().FirstOrDefault(d => d.ProcessName.Contains("ASCOM.OpenAstroTracker")) != null)
+				{
+					extraMessage = "Another process is connected via ASCOM.";
+				}
+				MessageBox.Show("Cannot connect to mount. " + extraMessage, "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				return false;
 			}
 
 			RequeryCommands();
@@ -724,6 +758,7 @@ namespace OATControl.ViewModels
 		public ICommand ParkCommand { get { return _parkCommand; } }
 		public ICommand DriftAlignCommand { get { return _driftAlignCommand; } }
 		public ICommand PolarAlignCommand { get { return _polarAlignCommand; } }
+		public ICommand ShowLogFolderCommand { get { return _showLogFolderCommand; } }
 
 		/// <summary>
 		/// Gets or sets the RAHour

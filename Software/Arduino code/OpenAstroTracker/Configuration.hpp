@@ -2,7 +2,6 @@
 * This Configuration file contains basic settings. Use Configuration_adv for
 * more advanced adjustments! 
 */
-
 #pragma once
 
 #include "Constants.hpp"

@@ -1,3 +1,27 @@
+**V1.8.53 - Updates**
+- Enforced DEC limits on slew movements. There is currently no indication that limiting has occurred.
+- Added display of DEC limits to INFO screen.
+- Changed some logging output.
+
+**V1.8.52 - Updates**
+- Moved LCD updates out of the mount loop.
+- Fixed a bug that did not correctly handle displaying Roll and Pitch offset.
+- Added ability to define DEC limits. Limits are not enforced yet, that code is still in development.
+- Added new debug channel for digital level.
+
+**V1.8.51 - Updates**
+- Added EEPROM clear command to extended LX200 protocol.
+
+**V1.8.50 - Updates**
+- Fixed a bug related to setting EEPROM values.
+- Moved some initialization code to a later stage during boot.
+
+**V1.8.47 - Updates**
+- Incorporated Roll levelling into guided startup (if Digital Level is present).
+
+**V1.8.46 - Updates**
+- Switched units for manual slew speed to degrees/sec.
+
 **V1.8.45 - Updates**
 - Fixed some ESP32 build errors
 - Checked from some invalid ESP32 configurations
