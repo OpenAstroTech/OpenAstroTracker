@@ -57,8 +57,8 @@ all_permutations = list(itertools.product(*(matrix.values())))
 all_combinations = []
 for permutation in all_permutations:
     combination = {}
-    combination_tuples = [(list(matrix.keys())[i], value) for i, value in enumerate(permutation)]
-
+    combination_tuples = [(list(matrix.keys())[i], value)
+                          for i, value in enumerate(permutation)]
     for t in combination_tuples:
         combination[t[0]] = t[1]
     all_combinations.append(combination)
@@ -97,7 +97,6 @@ errors = []
 for command in run_commands:
     print(command)
     os.environ['PLATFORMIO_BUILD_FLAGS'] = command['env.PLATFORMIO_BUILD_FLAGS']
-
     result = os.system(command['command'])
     if result:
         errors.append(command)
@@ -108,3 +107,5 @@ if errors:
     print("There were errors during the matrix build for following configurations:")
     for error in errors:
         print(error)
+else:
+    print("There were no errors found during the matrix build.")
