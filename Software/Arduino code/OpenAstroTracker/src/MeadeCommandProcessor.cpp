@@ -505,13 +505,19 @@ String MeadeCommandProcessor::handleMeadeGetInfo(String inCmd) {
       return retVal + "#";
     }
     case 't': {
+      auto lat = DegreeTime(_mount->latitude());
       char achBuffer[20];
-      _mount->latitude().formatString(achBuffer,"{d}*{m}#");
+      sprintf(achBuffer, "%c%02d*%02d#", lat.getTotalDegrees() >= 0 ? '+' : '-', int(fabs(lat.getDegrees())), lat.getMinutes());
       return String(achBuffer);
     }
     case 'g': {
+      float lon = _mount->longitude();
+      if (lon < 0) {
+        lon += 360;
+      }
+      int lonMin = (lon - (int)lon) * 60;
       char achBuffer[20];
-      _mount->longitude().formatString(achBuffer,"{d}*{m}#");
+      sprintf(achBuffer, "%03d*%02d#", (int)lon, lonMin);
       return String(achBuffer);
     }
   }
@@ -549,7 +555,7 @@ String MeadeCommandProcessor::handleMeadeGPSCommands(String inCmd) {
 /////////////////////////////
 String MeadeCommandProcessor::handleMeadeSyncControl(String inCmd) {
   if (inCmd[0] == 'M') {
-    _mount->syncPosition(_mount->targetRA(), _mount->targetDEC());
+    _mount->syncPosition(_mount->targetRA().getHours(), _mount->targetRA().getMinutes(), _mount->targetRA().getSeconds(), _mount->targetDEC().getHours(), _mount->targetDEC().getMinutes(), _mount->targetDEC().getSeconds());
     return "NONE#";
   }
 
@@ -564,10 +570,17 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     // Set DEC
     //   0123456789
     // :Sd+84*03:02
+    int sgn = inCmd[1] == '+' ? 1 : -1;
     if (((inCmd[4] == '*') || (inCmd[4] == ':')) && (inCmd[7] == ':'))
     {
-      Declination dec = Declination::ParseFromMeade(inCmd.substring(1));
-      _mount->targetDEC() = dec;
+      int deg = sgn * inCmd.substring(2, 4).toInt();
+      if (NORTHERN_HEMISPHERE) {
+        deg = deg - 90;
+      }
+      else {
+        deg = -90 - deg;
+      }
+      _mount->targetDEC().set(deg, inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
       LOGV2(DEBUG_MEADE, F("MEADE: SetInfo: Received Target DEC: %s"), _mount->targetDEC().ToString());
       return "1";
     }
@@ -625,26 +638,38 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     // Sync RA, DEC - current position is the given coordinate
     //   0123456789012345678
     // :SY+84*03:02.18:34:12
+    int sgn = inCmd[1] == '+' ? 1 : -1;
     if (((inCmd[4] == '*') || (inCmd[4] == ':')) && (inCmd[7] == ':') && (inCmd[10] == '.') && (inCmd[13] == ':') && (inCmd[16] == ':')) {
-      Declination dec = Declination::ParseFromMeade(inCmd.substring(1, 9));
-      DayTime ra = DayTime::ParseFromMeade(inCmd.substring(11));
-
-      _mount->syncPosition(ra, dec);
+      int deg = inCmd.substring(2, 4).toInt();
+      _mount->syncPosition(inCmd.substring(11, 13).toInt(), inCmd.substring(14, 16).toInt(), inCmd.substring(17, 19).toInt(), sgn * deg + (NORTHERN_HEMISPHERE ? -90 : 90), inCmd.substring(5, 7).toInt(), inCmd.substring(8, 10).toInt());
       return "1";
     }
     return "0";
   }
   else if ((inCmd[0] == 't')) // latitude: :St+30*29#
   {
-    Latitude lat = Latitude::ParseFromMeade(inCmd.substring(1));
-    _mount->setLatitude(lat);
-    return "1";
+    float sgn = inCmd[1] == '+' ? 1.0f : -1.0f;
+    if ((inCmd[4] == '*') || (inCmd[4] == ':')) {
+      int deg = inCmd.substring(2, 4).toInt();
+      int minute = inCmd.substring(5, 7).toInt();
+      _mount->setLatitude(sgn * (1.0f * deg + (minute / 60.0f)));
+      return "1";
+    }
+    return "0";
   }
   else if (inCmd[0] == 'g') // longitude :Sg097*34#
   {
-    Longitude lon = Longitude::ParseFromMeade(inCmd.substring(1));
-     _mount->setLongitude(lon);
-     return "1";
+    if ((inCmd[4] == '*') || (inCmd[4] == ':')) {
+      int deg = inCmd.substring(1, 4).toInt();
+      int minute = inCmd.substring(5, 7).toInt();
+      float lon = 1.0f * deg + (1.0f * minute / 60.0f);
+      if (lon > 180) {
+        lon -= 360;
+      }
+      _mount->setLongitude(lon);
+      return "1";
+    }
+    return "0";
   }
   else if (inCmd[0] == 'G') // utc offset :SG+05#
   {

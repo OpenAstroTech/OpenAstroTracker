@@ -627,7 +627,7 @@ bool processCalibrationKeys()
 
         // Set DEC to move the same distance past Polaris as
         // it is from the Celestial Pole. That equates to 88deg 42' 11.2".
-        mount.targetDEC() = Declination(88 - (NORTHERN_HEMISPHERE ? 90 : -90), 42, 11);
+        mount.targetDEC() = DegreeTime(88 - (NORTHERN_HEMISPHERE ? 90 : -90), 42, 11);
         mount.startSlewingToTarget();
         okToUpdateMenu = false;
       }
@@ -647,7 +647,8 @@ bool processCalibrationKeys()
         mount.delay(750);
 
         // Sync the mount to Polaris, since that's where it's pointing
-        mount.syncPosition(mount.currentRA(), Declination(89 - (NORTHERN_HEMISPHERE ? 90 : -90), 21, 6));
+        DayTime currentRa = mount.currentRA();
+        mount.syncPosition(currentRa.getHours(), currentRa.getMinutes(), currentRa.getSeconds(), 89 - (NORTHERN_HEMISPHERE ? 90 : -90), 21, 6);
 
         // Go home from here
         mount.setTargetToHome();
