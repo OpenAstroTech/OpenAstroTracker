@@ -65,16 +65,16 @@
 #ifdef ESP32
 
   // RA Motor pins
-  #define RA_IN1_PIN  19  
-  #define RA_IN2_PIN  21  
-  #define RA_IN3_PIN  22  
-  #define RA_IN4_PIN  23  
+  #define RA_IN1_PIN  13
+  #define RA_IN2_PIN  14
+  #define RA_IN3_PIN  12
+  #define RA_IN4_PIN  27
 
   // DEC Motor pins
-  #define DEC_IN1_PIN  16  
-  #define DEC_IN2_PIN  17  
-  #define DEC_IN3_PIN  5   
-  #define DEC_IN4_PIN  18  
+  #define DEC_IN1_PIN 26
+  #define DEC_IN2_PIN 33
+  #define DEC_IN3_PIN 25
+  #define DEC_IN4_PIN 32
 
   // If using NEMA steppers
   #define RA_STEP_PIN 19  // STEP
@@ -109,7 +109,4 @@
         #error GPS module not currently configured/supported in ESP32
     #endif
 
-    #if USE_GYRO_LEVEL == 1
-        #error Digital Level not currently configured/supported in ESP32
-    #endif
 #endif

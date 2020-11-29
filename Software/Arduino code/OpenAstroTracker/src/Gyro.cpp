@@ -27,7 +27,7 @@ void Gyro::startup()
         Wire.beginTransmission(MPU);
         Wire.write(0x3B); // Start with register 0x3B (ACCEL_XOUT_H)
         Wire.endTransmission(false);
-        Wire.requestFrom(MPU, 6, true);       // Read 6 registers total, each axis value is stored in 2 registers
+        Wire.requestFrom(MPU, 6, 1);       // Read 6 registers total, each axis value is stored in 2 registers
         AcX = Wire.read() << 8 | Wire.read(); // X-axis value
         AcY = Wire.read() << 8 | Wire.read(); // Y-axis value
         AcZ = Wire.read() << 8 | Wire.read(); // Z-axis value
@@ -38,7 +38,7 @@ void Gyro::startup()
 void Gyro::shutdown()
 {
     LOGV1(DEBUG_INFO, F("GYRO: Shutdown"));
-    Wire.end();
+    // Nothing to do
 }
 
 angle_t Gyro::getCurrentAngles()
@@ -53,7 +53,7 @@ angle_t Gyro::getCurrentAngles()
         Wire.beginTransmission(MPU);
         Wire.write(0x3B); // Start with register 0x3B (ACCEL_XOUT_H)
         Wire.endTransmission(false);
-        Wire.requestFrom(MPU, 6, true);       // Read 6 registers total, each axis value is stored in 2 registers
+        Wire.requestFrom(MPU, 6, 1);       // Read 6 registers total, each axis value is stored in 2 registers
         AcX = Wire.read() << 8 | Wire.read(); // X-axis value
         AcY = Wire.read() << 8 | Wire.read(); // Y-axis value
         AcZ = Wire.read() << 8 | Wire.read(); // Z-axis value
@@ -82,7 +82,7 @@ float Gyro::getCurrentTemperature()
     Wire.beginTransmission(MPU);
     Wire.write(0x41); // Start with register 0x41 (TEMP_OUT_H)
     Wire.endTransmission(false);
-    Wire.requestFrom(MPU, 2, true);             // Read 2 registers total, the temperature value is stored in 2 registers
+    Wire.requestFrom(MPU, 2, 1);             // Read 2 registers total, the temperature value is stored in 2 registers
     tempValue = Wire.read() << 8 | Wire.read(); // Raw Temperature value
     // Calculating the actual temperature value
     result = float(tempValue) / 340 + 36.53;
