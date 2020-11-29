@@ -4,7 +4,34 @@
 
 // The platform-independant EEPROM class
 
-#ifdef ESPBOARD
+#if USE_DUMMY_EEPROM == 1
+
+static uint8_t dummyEepromStorage[32];
+
+// Initialize the EEPROM object for ESP boards, settign aside 32 bytes for storage
+void EPROMStore::initialize()
+{
+  LOGV1(DEBUG_EEPROM, F("EEPROM[DUMMY]: Startup with 32 bytes"));
+  memset(dummyEepromStorage, sizeof(dummyEepromStorage), 1);
+}
+
+// Update the given location with the given value
+void EPROMStore::update(int location, uint8_t value)
+{
+  LOGV3(DEBUG_EEPROM, F("EEPROM[DUMMY]: Writing %x to %d"), value, location);
+  dummyEepromStorage[location] = value;
+}
+
+// Read the value at the given location
+uint8_t EPROMStore::read(int location)
+{
+  uint8_t value;
+  value = dummyEepromStorage[location];
+  LOGV3(DEBUG_EEPROM, F("EEPROM[DUMMY]: Read %x from %d"), value, location);
+  return value;
+}
+
+#elif defined(ESPBOARD)
 
 // Initialize the EEPROM object for ESP boards, settign aside 32 bytes for storage
 void EPROMStore::initialize()
