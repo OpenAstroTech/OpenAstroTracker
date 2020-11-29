@@ -32,11 +32,8 @@ void finishSetup();
 //   ESP32
 /////////////////////////////////
 #if defined(ESP32) && (RUN_STEPPERS_IN_MAIN_LOOP == 0)
-// Forward declare the two functions we run in the main loop
-void serialLoop();
 
 TaskHandle_t StepperTask;
-TaskHandle_t  CommunicationsTask;
 
 /////////////////////////////////
 //
@@ -53,26 +50,6 @@ void IRAM_ATTR stepperControlTask(void* payload)
   }
 }
 
-
-
-/////////////////////////////////
-//
-// mainLoopFunc
-//
-// This task function is run on Core 2 of the ESP32
-/////////////////////////////////
-void IRAM_ATTR mainLoopTask(void* payload)
-{
-  finishSetup();
-
-  for (;;) {
-    serialLoop();
-    #ifdef BLUETOOTH_ENABLED
-    BTin();
-    #endif
-    vTaskDelay(1);
-  }
-}
 #endif
 
 /////////////////////////////////
@@ -163,29 +140,8 @@ void setup() {
       2,                     // Priority (2 is higher than 1)
       &StepperTask,          // The location that receives the thread id
       0);                    // The core to run this on
-
-    delay(100);
-
-    xTaskCreatePinnedToCore(
-      mainLoopTask,             // Function to run on this core
-      "CommunicationControl",   // Name of this task
-      32767,                    // Stack space in bytes
-      NULL,                     // payload
-      1,                        // Priority (2 is higher than 1)
-      &CommunicationsTask,      // The location that receives the thread id
-      1);                       // The core to run this on
-
-    delay(100);
-
-  #else
-
-    finishSetup();
-
   #endif
-}
 
-void finishSetup()
-{
   // Calling the LCD startup here, I2C can't be found if called earlier
   #if DISPLAY_TYPE > 0
     lcdMenu.startup();
@@ -229,17 +185,17 @@ void finishSetup()
   // Delay for a while to get UARTs booted...
   delay(1000);  
 
-  LOGV1(DEBUG_ANY, F("Configure RA stepper..."));
   // Set the stepper motor parameters
   #if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48 
+    LOGV1(DEBUG_ANY, "Configure RA stepper 28BYJ-48...");
     mount.configureRAStepper(FULLSTEP_MODE, RAmotorPin1, RAmotorPin2, RAmotorPin3, RAmotorPin4, RA_STEPPER_SPEED, RA_STEPPER_ACCELERATION);
   #elif RA_STEPPER_TYPE == STEPPER_TYPE_NEMA17
+    LOGV1(DEBUG_ANY, F("Configure RA stepper NEMA..."));
     mount.configureRAStepper(DRIVER_MODE, RAmotorPin1, RAmotorPin2, RA_STEPPER_SPEED, RA_STEPPER_ACCELERATION);
   #else
     #error New stepper type? Configure it here.
   #endif
 
-  LOGV1(DEBUG_ANY, F("Configure DEC stepper..."));
   #if DEC_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
     LOGV1(DEBUG_ANY, "Configure DEC stepper 28BYJ-48...");
     mount.configureDECStepper(HALFSTEP_MODE, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, RA_STEPPER_SPEED, DEC_STEPPER_ACCELERATION);
@@ -251,11 +207,11 @@ void finishSetup()
   #endif
 
   #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-    LOGV1(DEBUG_ANY, F("Configure RA driver..."));
+    LOGV1(DEBUG_ANY, F("Configure RA driver TMC2209 UART..."));
     mount.configureRAdriver(&RA_SERIAL_PORT, R_SENSE, RA_DRIVER_ADDRESS, RA_RMSCURRENT, RA_STALL_VALUE);
   #endif
   #if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-    LOGV1(DEBUG_ANY, F("Configure DEC driver TMC2009 UART..."));
+    LOGV1(DEBUG_ANY, F("Configure DEC driver TMC2209 UART..."));
     mount.configureDECdriver(&DEC_SERIAL_PORT, R_SENSE, DEC_DRIVER_ADDRESS, DEC_RMSCURRENT, DEC_STALL_VALUE);
   #endif
 
