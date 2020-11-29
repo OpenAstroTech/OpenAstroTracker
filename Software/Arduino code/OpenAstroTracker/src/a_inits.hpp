@@ -1,9 +1,6 @@
 #pragma once
 
 #include <AccelStepper.h>
-#if DISPLAY_TYPE > 0
-#include <LiquidCrystal.h>
-#endif
 #include "inc/Globals.hpp"
 
 #include "Utility.hpp"
@@ -22,10 +19,6 @@
   //SoftwareSerial SoftSerial(GPS_SERIAL_RX_PIN, GPS_SERIAL_TX_PIN); // RX, TX
   TinyGPSPlus gps;
 #endif
-
-#define HALFSTEP_MODE 8
-#define FULLSTEP_MODE 4
-#define DRIVER_MODE 1
 
 ////////////////////////////////////
 // Stepper definitions /////////////

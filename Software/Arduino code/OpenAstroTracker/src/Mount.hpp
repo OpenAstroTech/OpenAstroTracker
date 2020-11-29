@@ -1,10 +1,6 @@
 #ifndef _MOUNT_HPP_
 #define _MOUNT_HPP_
 
-#if DISPLAY_TYPE > 0
-#include <LiquidCrystal.h>
-#endif
-
 #include <AccelStepper.h>
 #include "inc/Config.hpp"
 #include "DayTime.hpp"
@@ -32,9 +28,9 @@
 #define TARGET_STRING      B01000
 #define CURRENT_STRING     B10000
 
-#define HALFSTEP_MODE 8
-#define FULLSTEP_MODE 4
-#define DRIVER_MODE 1
+#define HALFSTEP_MODE AccelStepper::HALF4WIRE
+#define FULLSTEP_MODE AccelStepper::FULL4WIRE
+#define DRIVER_MODE AccelStepper::DRIVER
 
 #define RA_STEPS  1
 #define DEC_STEPS 2
