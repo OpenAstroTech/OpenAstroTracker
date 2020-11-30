@@ -1,3 +1,11 @@
+
+**V1.8.61 - Updates**
+- Rewrote the coordinate handling to correctly handle negative coordinates between 0 and -1.
+- Fixed some bugs in the coordinate handling.
+- Prevented backlash code from doing nothing when backlash is zero.
+- Added some more logging.
+- Removed an errant Meade return value when no command was sent.
+
 **V1.8.53 - Updates**
 - Enforced DEC limits on slew movements. There is currently no indication that limiting has occurred.
 - Added display of DEC limits to INFO screen.

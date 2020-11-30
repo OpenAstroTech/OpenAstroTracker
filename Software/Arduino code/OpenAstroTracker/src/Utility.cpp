@@ -203,8 +203,8 @@ String formatArg(const char *input, va_list args)
 
     case 'c':
     {
-      char *ch = va_arg(args, char *);
-      *p++ = *ch;
+      char ch = (char)va_arg(args, int);
+      *p++ = ch;
     }
     break;
 
