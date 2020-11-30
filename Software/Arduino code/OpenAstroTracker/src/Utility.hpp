@@ -247,6 +247,12 @@ int clamp(int current, int minVal, int maxVal);
 // Limits are inclusive, so they represent the lowest and highest valid number.
 float clamp(float current, float minVal, float maxVal);
 
+// Return -1 if the given number is less than zero, 1 if not.
+int sign(long num);
+
+// Return -1 if the given number is less than zero, 1 if not.
+int fsign(float num);
+
 // Read the LCD Shield's key state and return the button being pressed (btnUP, etc.).
 //int read_LCD_buttons();
 
