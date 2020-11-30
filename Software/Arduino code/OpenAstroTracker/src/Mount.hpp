@@ -7,7 +7,9 @@
 
 #include <AccelStepper.h>
 #include "inc/Config.hpp"
-#include "DayTime.hpp"
+#include "Latitude.hpp"
+#include "Longitude.hpp"
+#include "Declination.hpp"
 #include "LcdMenu.hpp"
 
 #if (RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART)
@@ -135,25 +137,25 @@ public:
   void setLST(const DayTime& haTime);
   const DayTime& LST() const;
 
-  void setLatitude(float lat);
-  void setLongitude(float lon);
-  const float latitude() const;
-  const float longitude() const;
+  void setLatitude(Latitude lat);
+  void setLongitude(Longitude lon);
+  const Latitude latitude() const;
+  const Longitude longitude() const;
 
   // Get a reference to the target RA value.
   DayTime& targetRA();
 
   // Get a reference to the target DEC value.
-  DegreeTime& targetDEC();
+  Declination& targetDEC();
 
   // Get current RA value.
   const DayTime currentRA() const;
 
   // Get current DEC value.
-  const DegreeTime currentDEC() const;
+  const Declination currentDEC() const;
 
   // Set the current RA and DEC position to be the given coordinates
-  void syncPosition(int raHour, int raMinute, int raSecond, int decDegree, int decMinute, int decSecond);
+  void syncPosition(DayTime ra, Declination dec);
 
   // Calculates movement parameters and program steppers to move
   // there. Must call loop() frequently to actually move.
@@ -339,13 +341,13 @@ private:
   DayTime _targetRA;
   long _currentRAStepperPosition;
 
-  DegreeTime _targetDEC;
+  Declination _targetDEC;
   long _currentDECStepperPosition;
 
   float _totalDECMove;
   float _totalRAMove;
-  float _latitude;
-  float _longitude;
+  Latitude _latitude;
+  Longitude _longitude;
 
   // Stepper control for RA, DEC and TRK.
   AccelStepper* _stepperRA;
