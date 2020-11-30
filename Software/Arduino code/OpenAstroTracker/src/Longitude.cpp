@@ -40,7 +40,7 @@ Longitude Longitude::ParseFromMeade(String s)
   DayTime dt = DayTime::ParseFromMeade(s);
   result.totalSeconds = dt.getTotalSeconds();
   result.checkHours();
-  LOGV3(DEBUG_GENERAL, F("Longitude.Parse(%s) -> %s"), s.c_str(), result.ToString());
+  LOGV4(DEBUG_GENERAL, F("Longitude.Parse(%s) -> %s = %ls"), s.c_str(), result.ToString(), result.getTotalSeconds());
   return result;
 }
 

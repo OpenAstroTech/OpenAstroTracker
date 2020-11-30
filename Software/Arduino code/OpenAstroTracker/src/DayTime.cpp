@@ -13,31 +13,46 @@
 DayTime DayTime::ParseFromMeade(String s)
 {
   DayTime result;
-  int i = -1;
-  int sgn = 1;
-
+  int i = 0;
+  long sgn = 1;
+  LOGV2(DEBUG_MEADE, F("DayTime: Parse Coord from [%s]"), s.c_str());
   // Check whether we have a sign. This should be able to parse RA and DEC strings (RA never has a sign, and DEC should always have one).
-  if (s[0] == '-' || s[0] == '+')
+  if ((s[i] == '-') || (s[i] == '+'))
   {
-    sgn = s[0] == '-' ? -1 : +1;
+    sgn = s[i] == '-' ? -1 : +1;
     i++;
   }
 
   // Degs can be 2 or 3 digits
-  int degs = s[i++] - '0';
+  long degs = s[i++] - '0';
+  LOGV3(DEBUG_MEADE, F("DayTime: 1st digit [%c] -> degs=%l"), s[i - 1], degs);
   degs = degs * 10 + s[i++] - '0';
+  LOGV3(DEBUG_MEADE, F("DayTime: 2nd digit [%c] -> degs=%l"), s[i - 1], degs);
 
   // Third digit?
   if ((s[i] >= '0') && (s[i] <= '9'))
   {
     degs = degs * 10 + s[i++] - '0';
+    LOGV3(DEBUG_MEADE, F("DayTime: 3rd digit [%c] -> degs=%d"), s[i - 1], degs);
   }
   i++; // Skip seperator
-  int mins = s.substring(i, i + 1).toInt();
-  int secs = (s.length() > i + 2) ? s.substring(i + 2, i + 3).toInt() : 0;
 
+  int mins = s.substring(i, i + 2).toInt();
+  LOGV3(DEBUG_MEADE, F("DayTime: Minutes are [%s] -> mins=%d"), s.substring(i, i + 2).c_str(), mins);
+  int secs = 0;
+  if (s.length() > i + 4)
+  {
+    secs = s.substring(i + 3, i + 5).toInt();
+    LOGV3(DEBUG_MEADE, F("DayTime: Seconds are [%s] -> secs=%d"), s.substring(i + 3, i + 5).c_str(), secs);
+  }
+  else
+  {
+    LOGV3(DEBUG_MEADE, F("DayTime: No Seconds. slen %d is not > %d"), s.length(), i + 4);
+  }
   // Get the signed total seconds specified....
-  result.totalSeconds = sgn * (((degs * 60 + mins) * 60) + secs);
+  result.totalSeconds = sgn * (((degs * 60L + mins) * 60L) + secs);
+
+  LOGV5(DEBUG_MEADE, F("DayTime: TotalSeconds are %l from %lh %dm %ds"), result.totalSeconds, degs, mins, secs);
 
   return result;
 }
@@ -54,18 +69,20 @@ DayTime::DayTime(const DayTime &other)
 
 DayTime::DayTime(int h, int m, int s)
 {
-  int sgn = sign(h);
+  LOGV4(DEBUG_INFO, "DayTime ctor(%d, %d, %d)", h, m, s);
+  long sgn = sign(h);
   h = abs(h);
-  totalSeconds = sgn * ((h * 60 + m) * 60 + s);
+  totalSeconds = sgn * ((60L* h + m) * 60L + s);
+  LOGV6(DEBUG_INFO, "DayTime ctor(%d, %d, %d) -> %l -> %s", h, m, s, totalSeconds, ToString());
 }
 
 DayTime::DayTime(float timeInHours)
 {
-  LOGV2(DEBUG_INFO,"DayTime ctor(%f)", timeInHours);
+  LOGV2(DEBUG_INFO, "DayTime ctor(%f)", timeInHours);
   long sgn = fsign(timeInHours);
   timeInHours = abs(timeInHours);
   totalSeconds = sgn * round(timeInHours * 60 * 60);
-  LOGV4(DEBUG_INFO,"DayTime ctor(%f) -> %l -> %s", timeInHours, totalSeconds, ToString());
+  LOGV4(DEBUG_INFO, "DayTime ctor(%f) -> %l -> %s", timeInHours, totalSeconds, ToString());
 }
 
 int DayTime::getHours() const
@@ -168,12 +185,14 @@ void DayTime::addSeconds(long deltaSecs)
 void DayTime::addTime(const DayTime &other)
 {
   totalSeconds += other.totalSeconds;
+  checkHours();
 }
 
 // Subtract another time, wrapping seconds, minutes and hours if needed
 void DayTime::subtractTime(const DayTime &other)
 {
   totalSeconds -= other.totalSeconds;
+  checkHours();
 }
 
 char achBuf[32];
@@ -328,4 +347,3 @@ const char *DayTime::formatString(char *targetBuffer, const char *format, long *
 
   return formatStringImpl(targetBuffer, format, sgn, degs, mins, secs);
 }
-

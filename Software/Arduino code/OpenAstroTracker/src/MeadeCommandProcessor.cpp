@@ -516,7 +516,7 @@ String MeadeCommandProcessor::handleMeadeGetInfo(String inCmd) {
     }
   }
 
-  return "0#";
+  return "";
 }
 
 /////////////////////////////
@@ -643,6 +643,7 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
   else if (inCmd[0] == 'g') // longitude :Sg097*34#
   {
     Longitude lon = Longitude::ParseFromMeade(inCmd.substring(1));
+    
      _mount->setLongitude(lon);
      return "1";
   }
@@ -880,6 +881,9 @@ String MeadeCommandProcessor::handleMeadeExtraCommands(String inCmd) {
     else if (inCmd[1] == '0') { // Turn off Gyro
       Gyro::shutdown();
       return String("1#");
+    }
+    else{
+      return "Unknown Level command: X" + inCmd;
     }
     #endif
     return String("0#");
