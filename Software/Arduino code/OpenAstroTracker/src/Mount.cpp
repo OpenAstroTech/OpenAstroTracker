@@ -81,11 +81,11 @@
 
 const char* formatStringsDEC[] = {
   "",
-  " {d}@ {m}' {s}\"",  // LCD Menu w/ cursor
-  "{d}*{m}'{s}#",      // Meade
-  "{d} {m}'{s}\"",     // Print
-  "{d}@{m}'{s}\"",     // LCD display only
-  "{d}{m}{s}",         // Compact
+  " %c%02d@ %02d' %02d\"",  // LCD Menu w/ cursor
+  "%c%02d*%02d'%02d#",      // Meade
+  "%c%02d %02d'%02d\"",     // Print
+  "%c%02d@%02d'%02d\"",     // LCD display only
+  "%c%02d%02d%02d",         // Compact
 };
 
 const char* formatStringsRA[] = {
@@ -132,8 +132,8 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
   _mountStatus = 0;
   _lastDisplayUpdate = 0;
   _stepperWasRunning = false;
-  _latitude = Latitude(45.0);
-  _longitude = Longitude(100.0);
+  _latitude = 45;
+  _longitude = 100;
 
   _compensateForTrackerOff = false;
   _trackerStoppedAt = 0;
@@ -279,16 +279,16 @@ void Mount::readPersistentData()
   }
 
   if ((marker & EEPROM_MAGIC_MASK_LATITUDE) == EEPROM_LATITUDE_MARKER_BIT) {
-    _latitude = Latitude(1.0f * EPROMStore::readInt16(12, 13) / 100.0f);
-    LOGV2(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: Latitude Marker OK! Latitude is %f"), _latitude.ToString());
+    _latitude = 1.0f * EPROMStore::readInt16(12, 13) / 100.0f;
+    LOGV2(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: Latitude Marker OK! Latitude is %f"), _latitude);
   } 
   else {
     LOGV1(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: No stored value for latitude"));
   }
 
   if ((marker & EEPROM_MAGIC_MASK_LONGITUDE) == EEPROM_LONGITUDE_MARKER_BIT) {
-    _longitude = Longitude(1.0f * EPROMStore::readInt16(14, 15) / 100.0f);
-    LOGV2(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: Longitude Marker OK! Longitude is %f"), _longitude.ToString());
+    _longitude = 1.0f * EPROMStore::readInt16(14, 15) / 100.0f;
+    LOGV2(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: Longitude Marker OK! Longitude is %f"), _longitude);
   } 
   else {
     LOGV1(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: No stored value for longitude"));
@@ -946,9 +946,9 @@ void Mount::setLST(const DayTime& lst) {
 // setLatitude
 //
 /////////////////////////////////
-void Mount::setLatitude(Latitude latitude) {
-  _latitude = latitude;
-  writePersistentData(EEPROM_LATITUDE, round(latitude.getTotalHours() * 100));
+void Mount::setLatitude(float lat) {
+  _latitude = lat;
+  writePersistentData(EEPROM_LATITUDE, round(lat * 100));
 }
 
 /////////////////////////////////
@@ -956,9 +956,9 @@ void Mount::setLatitude(Latitude latitude) {
 // setLongitude
 //
 /////////////////////////////////
-void Mount::setLongitude(Longitude longitude) {
-  _longitude = longitude;
-  writePersistentData(EEPROM_LONGITUDE, round(longitude.getTotalHours() * 100));
+void Mount::setLongitude(float lon) {
+  _longitude = lon;
+  writePersistentData(EEPROM_LONGITUDE, round(lon * 100));
 }
 
 /////////////////////////////////
@@ -966,7 +966,7 @@ void Mount::setLongitude(Longitude longitude) {
 // latitude
 //
 /////////////////////////////////
-const Latitude Mount::latitude() const {
+const float Mount::latitude() const {
   return _latitude;
 }
 /////////////////////////////////
@@ -974,7 +974,7 @@ const Latitude Mount::latitude() const {
 // longitude
 //
 /////////////////////////////////
-const Longitude Mount::longitude() const {
+const float Mount::longitude() const {
   return _longitude;
 }
 
@@ -994,7 +994,7 @@ DayTime& Mount::targetRA() {
 //
 /////////////////////////////////
 // Get a reference to the target DEC value.
-Declination& Mount::targetDEC() {
+DegreeTime& Mount::targetDEC() {
   return _targetDEC;
 }
 
@@ -1043,7 +1043,7 @@ const DayTime Mount::currentRA() const {
 //
 /////////////////////////////////
 // Get current DEC value.
-const Declination Mount::currentDEC() const {
+const DegreeTime Mount::currentDEC() const {
 
   float degreePos = 1.0 * _stepperDEC->currentPosition() / _stepsPerDECDegree;
   //LOGV2(DEBUG_MOUNT_VERBOSE,F("CurrentDEC: Steps/deg  : %d"), _stepsPerDECDegree);
@@ -1056,7 +1056,7 @@ const Declination Mount::currentDEC() const {
     //LOGV1(DEBUG_MOUNT_VERBOSE,F("CurrentDEC: Greater Zero, flipping."));
   }
 
-  //LOGV2(DEBUG_MOUNT_VERBOSE,F("CurrentDEC: POS      : %s"), Declination(degreePos).ToString());
+  //LOGV2(DEBUG_MOUNT_VERBOSE,F("CurrentDEC: POS      : %s"), DegreeTime(degreePos).ToString());
   return degreePos;
 }
 
@@ -1067,13 +1067,13 @@ const Declination Mount::currentDEC() const {
 /////////////////////////////////
 // Set the current RA and DEC position to be the given coordinate. We do this by setting the stepper motor coordinate 
 // to be at the calculated positions (that they would be if we were slewing there).
-void Mount::syncPosition(DayTime ra, Declination dec)
+void Mount::syncPosition(int raHour, int raMinute, int raSecond, int decDegree, int decMinute, int decSecond)
 {
-  _targetRA = ra;
-  _targetDEC = dec;
+  _targetRA.set(raHour,raMinute,raSecond);
+  _targetDEC.set(decDegree,decMinute,decSecond);
 
   float targetRA, targetDEC;
-  LOGV3(DEBUG_MOUNT, "Mount: Sync Position to RA: %s and DEC: %s", _targetRA.ToString(), _targetDEC.ToString());
+  LOGV7(DEBUG_MOUNT, "Mount: Sync Position to RA: %d:%d:%d and DEC: %d*%d:%d", raHour, raMinute, raSecond, decDegree, decMinute, decSecond);
   calculateRAandDECSteppers(targetRA, targetDEC);
   LOGV3(DEBUG_STEPPERS, F("STEP-syncPosition: Set current position to RA: %f and DEC: %f"), targetRA, targetDEC);
   _stepperRA->setCurrentPosition(targetRA);
@@ -1114,12 +1114,12 @@ void Mount::startSlewingToTarget() {
   _mountStatus |= STATUS_SLEWING | STATUS_SLEWING_TO_TARGET;
   _totalDECMove = 1.0f * _stepperDEC->distanceToGo();
   _totalRAMove = 1.0f * _stepperRA->distanceToGo();
-  LOGV3(DEBUG_MOUNT, "Mount: RA Dist: %l,   DEC Dist: %l", _stepperRA->distanceToGo(), _stepperDEC->distanceToGo());
+  LOGV3(DEBUG_MOUNT, "Mount: RA Dist: %d,   DEC Dist: %d", _stepperRA->distanceToGo(), _stepperDEC->distanceToGo());
   #if RA_STEPPER_TYPE == STEPPER_TYPE_NEMA17  // tracking while slewing causes audible lagging
     if ((_stepperRA->distanceToGo() != 0) || (_stepperDEC->distanceToGo() != 0)) {
       // Only stop tracking if we're actually going to slew somewhere else, otherwise the 
       // mount::loop() code won't detect the end of the slewing operation...
-      LOGV1(DEBUG_STEPPERS, "Mount: Stop tracking (NEMA steppers)");
+      LOGV1(DEBUG_MOUNT, "Mount: Stop tracking (NEMA steppers)");
       stopSlewing(TRACKING);
       _trackerStoppedAt = millis();
       _compensateForTrackerOff = true;
@@ -1930,7 +1930,7 @@ void Mount::loop() {
   #if DEBUG_LEVEL & (DEBUG_MOUNT && DEBUG_VERBOSE)
   unsigned long now = millis();
   if (now - _lastMountPrint > 2000) {
-    LOGV2(DEBUG_MOUNT, "%s",getStatusString().c_str());
+    Serial.println(getStatusString());
     _lastMountPrint = now;
   }
   #endif
@@ -2347,7 +2347,7 @@ void Mount::moveSteppersTo(float targetRA, float targetDEC) {
   LOGV3(DEBUG_MOUNT,F("Mount::MoveSteppersTo: RA  From: %l  To: %f"), _stepperRA->currentPosition(), targetRA);
   LOGV3(DEBUG_MOUNT,F("Mount::MoveSteppersTo: DEC From: %l  To: %f"), _stepperDEC->currentPosition(), targetDEC);
 
-  if ((_backlashCorrectionSteps != 0) && ((_stepperRA->currentPosition() - targetRA) > 0)) {
+  if ((_stepperRA->currentPosition() - targetRA) > 0) {
     LOGV2(DEBUG_MOUNT,F("Mount::MoveSteppersTo: Needs backlash correction of %d!"), _backlashCorrectionSteps);
     targetRA -= _backlashCorrectionSteps;
     _correctForBacklash = true;
@@ -2454,22 +2454,20 @@ void Mount::displayStepperPositionThrottled() {
 // Return a string of DEC in the given format. For LCDSTRING, active determines where the cursor is
 /////////////////////////////////
 String Mount::DECString(byte type, byte active) {
-  Declination dec;
+  DegreeTime dec;
   if ((type & TARGET_STRING) == TARGET_STRING) {
     //LOGV1(DEBUG_MOUNT_VERBOSE,F("DECString: TARGET!"));
     dec = _targetDEC;
   }
   else {
     //LOGV1(DEBUG_MOUNT_VERBOSE,F("DECString: CURRENT!"));
-    dec = Declination(currentDEC());
+    dec = DegreeTime(currentDEC());
   }
-  //LOGV5(DEBUG_INFO,F("DECString: Precheck  : %s   %s  %dm %ds"), dec.ToString(), dec.getDegreesDisplay().c_str(), dec.getMinutes(), dec.getSeconds());
-  // dec.checkHours();
-  // LOGV2(DEBUG_MOUNT_VERBOSE,F("DECString: Postcheck : %s"), dec.ToString());
+  //LOGV2(DEBUG_MOUNT_VERBOSE,F("DECString: Precheck  : %s"), dec.ToString());
+  dec.checkHours();
+  //LOGV2(DEBUG_MOUNT_VERBOSE,F("DECString: Postcheck : %s"), dec.ToString());
 
-  dec.formatString(scratchBuffer, formatStringsDEC[type & FORMAT_STRING_MASK]);
-
-  // sprintf(scratchBuffer, formatStringsDEC[type & FORMAT_STRING_MASK], dec.getDegreesDisplay().c_str(), dec.getMinutes(), dec.getSeconds());
+  sprintf(scratchBuffer, formatStringsDEC[type & FORMAT_STRING_MASK], dec.getPrintDegrees() > 0 ? '+' : '-', int(fabs(dec.getPrintDegrees())), dec.getMinutes(), dec.getSeconds());
   if ((type & FORMAT_STRING_MASK) == LCDMENU_STRING) {
     scratchBuffer[active * 4 + (active > 0 ? 1 : 0)] = '>';
   }

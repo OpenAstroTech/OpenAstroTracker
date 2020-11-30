@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _DAYTIME_HPP_
+#define _DAYTIME_HPP_
 
 #include <Arduino.h>
 #include "inc/Config.hpp"
@@ -6,18 +7,21 @@
 // A class to handle hours, minutes, seconds in a unified manner, allowing
 // addition of hours, minutes, seconds, other times and conversion to string.
 
-// DayTime handles a 24-hour time.
-class DayTime
-{
+class DayTime {
 protected:
-  long totalSeconds;
-  long hourWrap = 24;
+  int hours;
+  int mins;
+  int secs;
+  int hourWrap = 24;
 
 public:
   DayTime();
 
-  DayTime(const DayTime &other);
+  DayTime(const DayTime& other);
   DayTime(int h, int m, int s);
+
+  // From milliseconds. Does not handle days!
+  DayTime(long ms);
 
   // From hours
   DayTime(float timeInHours);
@@ -27,11 +31,11 @@ public:
   int getSeconds() const;
   float getTotalHours() const;
   float getTotalMinutes() const;
-  long getTotalSeconds() const;
+  float getTotalSeconds() const;
 
-  void getTime(int &h, int &m, int &s) const;
-  virtual void set(int h, int m, int s);
-  void set(const DayTime &other);
+  void getTime(int& h, int& m, int& s) const;
+  void set(int h, int m, int s);
+  void set(const DayTime& other);
 
   // Add hours, wrapping days (which are not tracked). Negative or positive.
   virtual void addHours(int deltaHours);
@@ -46,21 +50,44 @@ public:
   void addTime(int deltaHours, int deltaMinutes, int deltaSeconds);
 
   // Add another time, wrapping seconds, minutes and hours if needed
-  void addTime(const DayTime &other);
+  void addTime(const DayTime& other);
   // Subtract another time, wrapping seconds, minutes and hours if needed
 
-  void subtractTime(const DayTime &other);
+  void subtractTime(const DayTime& other);
 
   // Convert to a standard string (like 14:45:06)
-  virtual const char *ToString() const;
-  virtual const char *formatString(char *targetBuffer, const char *format, long *pSeconds = nullptr) const;
+  virtual const char* ToString() const;
 
   //protected:
   virtual void checkHours();
-
-  static DayTime ParseFromMeade(String s);
-
-protected:
-  const char *formatStringImpl(char *targetBuffer, const char *format, char sgn, long degs, long mins, long secs) const;
-  void printTwoDigits(char *achDegs, int num) const;
 };
+
+class DegreeTime : public DayTime {
+public:
+  DegreeTime();
+  DegreeTime(const DegreeTime& other);
+  DegreeTime(int h, int m, int s);
+  DegreeTime(float inDegrees);
+
+  // Add degrees, clamp at 90
+  void addDegrees(int deltaDegrees);
+
+  // Get degrees component
+  int getDegrees();
+
+  // Get degrees for printing component
+  int getPrintDegrees() const;
+
+  // Get total degrees
+  float getTotalDegrees() const;
+  //protected:
+  virtual void checkHours() override;
+
+  // Convert to a standard string (like 14:45:06)
+  virtual const char* ToString() const override;
+
+private:
+  void clampDegrees();
+};
+
+#endif
