@@ -67,6 +67,11 @@
 #define DEC_DRIVER_TYPE     DRIVER_TYPE_ULN2003
 #endif
 
+//For UART communication, TX has to be wired with a 1K Resistor and RX with no Resistor to both PDN Pins
+#ifndef TMC_USE_UART
+#define TMC_USE_UART      0
+#endif
+
 // Your pulley tooth count. 16 for the bought (aluminium) one, 20 for the printed one.
 #ifndef RA_PULLEY_TEETH
 #define RA_PULLEY_TEETH     16

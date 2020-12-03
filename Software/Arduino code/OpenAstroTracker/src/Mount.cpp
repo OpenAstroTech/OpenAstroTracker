@@ -626,6 +626,35 @@ void Mount::configureRAdriver(HardwareSerial *serial, float rsense, byte drivera
 {
   _driverRA = new TMC2209Stepper(serial, rsense, driveraddress);
   _driverRA->begin();
+
+  #if TMC_USE_UART == 1 
+  sprintf(scratchBuffer, "Connecting to RA");
+  _lcdMenu->setCursor(0, 0);
+  _lcdMenu->printMenu(String(scratchBuffer));
+  sprintf(scratchBuffer, "");
+  _lcdMenu->setCursor(0, 1);
+  _lcdMenu->printMenu(String(scratchBuffer));
+
+  int testConnection;
+  for(int i=0; i<5; i++) {
+      testConnection = _driverRA->test_connection();
+      if(testConnection == 0) {
+          break;
+      }
+      else {
+        sprintf(scratchBuffer, "RA not connected yet");
+        _lcdMenu->setCursor(0, 0);
+        _lcdMenu->printMenu(String(scratchBuffer));
+        sprintf(scratchBuffer, "Status = %d", testConnection);
+        _lcdMenu->setCursor(0, 1);
+        _lcdMenu->printMenu(String(scratchBuffer));
+        delay(500);
+      }
+  }
+
+  _driverRA->pdn_disable(true); //enable UART
+  #endif
+
   #if RA_AUDIO_FEEDBACK == 1
   _driverRA->en_spreadCycle(1);
   #endif
@@ -655,6 +684,34 @@ void Mount::configureDECdriver(HardwareSerial *serial, float rsense, byte driver
 {
   _driverDEC = new TMC2209Stepper(serial, rsense, driveraddress);
   _driverDEC->begin();
+
+  #if TMC_USE_UART == 1 
+  sprintf(scratchBuffer, "Connecting to DEC");
+  _lcdMenu->setCursor(0, 0);
+  _lcdMenu->printMenu(String(scratchBuffer));
+  sprintf(scratchBuffer, "");
+  _lcdMenu->setCursor(0, 1);
+  _lcdMenu->printMenu(String(scratchBuffer));
+
+  int testConnection;
+  for(int i=0; i<5; i++) {
+      testConnection = _driverDEC->test_connection();
+      if(testConnection == 0) {
+          break;
+      }
+      else {
+        sprintf(scratchBuffer, "DEC not connected yet");
+        _lcdMenu->setCursor(0, 0);
+        _lcdMenu->printMenu(String(scratchBuffer));
+        sprintf(scratchBuffer, "Status = %d", testConnection);
+        _lcdMenu->setCursor(0, 1);
+        _lcdMenu->printMenu(String(scratchBuffer));
+        delay(500);
+      }
+  }
+  _driverDEC->pdn_disable(true); //enable UART
+  #endif
+
   _driverDEC->blank_time(24);
   #if DEC_AUDIO_FEEDBACK == 1
   _driverDEC->en_spreadCycle(1);
@@ -2539,7 +2596,7 @@ void Mount::finishFindingHomeDEC()
 void Mount::startFindingHomeRA()  {
   _driverRA->SGTHRS(50);
   _driverRA->rms_current(1000);
-  _driverRA->microsteps(FULLSTEP);
+  _driverRA->microsteps(2);
   _driverRA->semin(0);  // turn off coolstep
   _driverRA->semin(5);
   //_driverRA->TCOOLTHRS(0xFF);  // turn autocurrent threshold down to prevent false reading
