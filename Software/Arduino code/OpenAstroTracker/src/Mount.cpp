@@ -625,6 +625,33 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
   {
     _driverRA = new TMC2209Stepper(serial, rsense, driveraddress);
     _driverRA->begin();
+
+    #if RA_DRIVER_TMC2209_UART_MODE == TMC2209_MODE_UART 
+    int testConnection;
+    for(int i=0; i<5; i++) {
+        testConnection = _driverRA->test_connection();
+        if(testConnection == 0) {
+            break;
+        }
+        else {
+          delay(500);
+        }
+    }
+
+    if( testConnection != 0 ) {
+       sprintf(scratchBuffer, "RA Drv Status");
+       _lcdMenu->setCursor(0, 0);
+       _lcdMenu->printMenu(String(scratchBuffer));
+       sprintf(scratchBuffer, "Error Status: %d", testConnection);
+       _lcdMenu->setCursor(0, 1);
+       _lcdMenu->printMenu(String(scratchBuffer));
+       delay(2000);
+    }
+
+    _driverRA->pdn_disable(true); //enable UART
+    _driverRA->mstep_reg_select(true); //enable microstep selection over UART
+    #endif
+
     #if RA_AUDIO_FEEDBACK == 1
     _driverRA->en_spreadCycle(1);
     #endif
@@ -653,6 +680,33 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
   {
     _driverDEC = new TMC2209Stepper(serial, rsense, driveraddress);
     _driverDEC->begin();
+
+    #if DEC_DRIVER_TMC2209_UART_MODE == TMC2209_MODE_UART 
+    int testConnection;
+    for(int i=0; i<5; i++) {
+        testConnection = _driverDEC->test_connection();
+        if(testConnection == 0) {
+            break;
+        }
+        else {
+          delay(500);
+        }
+    }
+
+    if( testConnection != 0 ) {
+       sprintf(scratchBuffer, "DEC Drv Status");
+       _lcdMenu->setCursor(0, 0);
+       _lcdMenu->printMenu(String(scratchBuffer));
+       sprintf(scratchBuffer, "Error Status: %d", testConnection);
+       _lcdMenu->setCursor(0, 1);
+       _lcdMenu->printMenu(String(scratchBuffer));
+       delay(2000);
+    }
+
+    _driverDEC->pdn_disable(true); //enable UART
+    _driverDEC->mstep_reg_select(true); //enable microstep selection over UART
+    #endif
+
     _driverDEC->blank_time(24);
     #if DEC_AUDIO_FEEDBACK == 1
     _driverDEC->en_spreadCycle(1);
