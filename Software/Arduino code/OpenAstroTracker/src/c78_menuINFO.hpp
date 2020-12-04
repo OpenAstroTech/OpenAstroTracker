@@ -166,6 +166,23 @@ void printStatusSubmenu()
 
     case 9:
     {
+        MeadeCommandProcessor *mcp = MeadeCommandProcessor::instance();
+        sprintf(scratchBuffer, "DrY: %04d-%02d-%02d", mcp->year(), mcp->month(), mcp->day() );
+        lcdMenu.printMenu(scratchBuffer);
+    }
+    break;
+
+    case 10:
+    {
+        MeadeCommandProcessor *mcp = MeadeCommandProcessor::instance();
+        DayTime drvUtc = mcp->driverUTC();
+        sprintf(scratchBuffer, "DrUTC: %02d:%02d:%02d", drvUtc.getHours(), drvUtc.getMinutes(), drvUtc.getSeconds() );
+        lcdMenu.printMenu(scratchBuffer);
+    }
+    break;
+
+    case 11:
+    {
       lcdMenu.printMenu("Firmw.: " + String(VERSION));
     }
     break;

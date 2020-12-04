@@ -4,6 +4,7 @@
 #include "Utility.hpp"
 #include "WifiControl.hpp"
 #include "Gyro.hpp"
+#include "Sidereal.hpp"
 
 #if USE_GPS == 1
 bool gpsAqcuisitionComplete(int & indicator); // defined in c72_menuHA_GPS.hpp
@@ -449,6 +450,16 @@ MeadeCommandProcessor::MeadeCommandProcessor(Mount* mount, LcdMenu* lcdMenu) {
 
   // In case of DISPLAY_TYPE_NONE mode, the lcdMenu is just an empty shell class to save having to null check everywhere
   _lcdMenu = lcdMenu;
+
+  this->_utcOffset = 0;
+  this->_year = 2000;
+  this->_month = 1;
+  this->_day = 1;
+  this->_hours = 0;
+  this->_minutes = 0;
+  this->_seconds = 0;
+
+  this->_timeSetMillis = -1;
 }
 
 /////////////////////////////
@@ -513,6 +524,36 @@ String MeadeCommandProcessor::handleMeadeGetInfo(String inCmd) {
       char achBuffer[20];
       _mount->longitude().formatString(achBuffer,"{d}*{m}#");
       return String(achBuffer);
+    }
+    case 'c': {
+      return "(24)#";
+    }
+    case 'a': {
+      char achBuffer[20];
+      sprintf(achBuffer, "%02d:%02d:%02d#", _hours%12, _minutes, _seconds);
+      return String(achBuffer);
+    }
+    case 'L': {
+      char achBuffer[20];
+      sprintf(achBuffer, "%02d:%02d:%02d#", _hours, _minutes, _seconds);
+      return String(achBuffer);
+    }
+    case 'C': {
+      char achBuffer[20];
+      sprintf(achBuffer, "%02d/%02d/%02d#", _month, _day, _year % 100);
+      return String(achBuffer);
+    }
+    case 'M': {
+      return "OAT1#";
+    }
+    case 'N': {
+      return "OAT2#";
+    }
+    case 'O': {
+      return "OAT3#";
+    }
+    case 'P': {
+      return "OAT4#";
     }
   }
 
@@ -645,22 +686,83 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
     Longitude lon = Longitude::ParseFromMeade(inCmd.substring(1));
     
      _mount->setLongitude(lon);
+     this->calcHa();
      return "1";
   }
   else if (inCmd[0] == 'G') // utc offset :SG+05#
   {
+    int offset = inCmd.substring(2, 4).toInt();
+    this->_utcOffset = inCmd[1] == '+' ? offset : -offset;
+    this->calcHa();
+
     return "1";
   }
   else if (inCmd[0] == 'L') // Local time :SL19:33:03#
   {
+    this->_hours = inCmd.substring( 1, 3 ).toInt();
+    this->_minutes = inCmd.substring( 4, 6 ).toInt();
+    this->_seconds = inCmd.substring( 7, 9 ).toInt();
+    this->_timeSetMillis = millis();
+    this->calcHa();
     return "1";
   }
   else if (inCmd[0] == 'C') { // Set Date (MM/DD/YY) :SC04/30/20#
-    return "1Updating Planetary Data#"; // 
+    this->_month = inCmd.substring( 1, 3 ).toInt();
+    this->_day = inCmd.substring( 4, 6 ).toInt();
+    this->_year = 2000 + inCmd.substring( 7, 9 ).toInt();
+    
+    this->calcHa();
+
+    /*
+    From https://www.astro.louisville.edu/software/xmtel/archive/xmtel-indi-6.0/xmtel-6.0l/support/lx200/CommandSet.html :
+    SC: Calendar: If the date is valid 2 <string>s are returned, each string is 31 bytes long. 
+    The first is: "Updating planetary data#" followed by a second string of 30 spaces terminated by '#'
+    */
+    return "1Updating Planetary Data#                              #"; // 
   }
   else {
     return "0";
   }
+}
+
+DayTime MeadeCommandProcessor::driverUTC() {
+  DayTime timeUTC = DayTime(this->_hours, this->_minutes, this->_seconds);
+  timeUTC.addHours( this->_utcOffset );
+  timeUTC.addSeconds( ( millis() - this->_timeSetMillis ) / 1000 );
+  return timeUTC;
+}
+
+const int MeadeCommandProcessor::year() const {
+  return _year;
+}
+
+const int MeadeCommandProcessor::month() const {
+  return _month;
+}
+
+const int MeadeCommandProcessor::day() const {
+  return _day;
+}
+
+void MeadeCommandProcessor::calcHa() {
+  if( this->_timeSetMillis < 0 ) {
+    return;
+  }
+
+  DayTime timeUTC = this->driverUTC();
+  DayTime lst = Sidereal::calculateByDriver( _mount->longitude().getTotalHours(), this->_year, this->_month, this->_day, &timeUTC );
+  float lstDeg = lst.getTotalHours() * 15; //to deg
+
+  //subtract Poloars RA
+  lstDeg -= ( ( POLARIS_RA_MINUTE/60.0f + POLARIS_RA_HOUR ) * 15.0f );
+
+  //ensure positive deg
+  while( lstDeg < 0.0f ) {
+    lstDeg += 360.0f;
+  }
+
+  //update HA
+  _mount->setHA( DayTime( lstDeg / 15.0f ) );
 }
 
 /////////////////////////////

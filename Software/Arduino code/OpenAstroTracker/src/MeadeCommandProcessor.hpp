@@ -10,6 +10,12 @@ public:
   static MeadeCommandProcessor* instance();
   String processCommand(String incmd);
 
+  DayTime driverUTC();
+
+  const int year() const;
+  const int month() const;
+  const int day() const;
+
 private:
   MeadeCommandProcessor(Mount* mount, LcdMenu* lcdMenu);
   String handleMeadeSetInfo(String inCmd);
@@ -23,7 +29,11 @@ private:
   String handleMeadeDistance(String inCmd);
   String handleMeadeSetSlewRate(String inCmd);
   String handleMeadeExtraCommands(String inCmd);
+  void calcHa();
   Mount* _mount;
   LcdMenu* _lcdMenu;
   static MeadeCommandProcessor* _instance;
+
+  int _utcOffset, _year, _month, _day, _hours, _minutes, _seconds;
+  long _timeSetMillis;
 };
