@@ -4,7 +4,7 @@
 
 #if SUPPORT_INFO_DISPLAY == 1
 byte infoIndex = 0;
-byte maxInfoIndex = 9;
+byte maxInfoIndex = 11;
 byte subIndex = 0;
 unsigned long lastInfoUpdate = 0;
 
