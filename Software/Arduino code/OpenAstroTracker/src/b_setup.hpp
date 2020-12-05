@@ -9,7 +9,7 @@
 #include "EPROMStore.hpp"
 
 LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
-#if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD
+#if DISPLAY_TYPE > 0
 LcdButtons lcdButtons(LCD_PINA0, &lcdMenu);
 #endif
 

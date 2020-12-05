@@ -61,7 +61,7 @@
     #endif
     
     //LCD pin definitions (to allow configuration on different boards)
-    #if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD
+    #if DISPLAY_TYPE > 0
         #define LCD_PINA0 0
         #define LCD_PIN4 4
         #define LCD_PIN5 5
