@@ -60,7 +60,7 @@ void LcdMenu::startup()
   _lcd.setBacklight(RED);
   #endif
 
-  _brightness = EPROMStore::read(16);
+  _brightness = EPROMStore::readUint8(EPROMStore::LCD_BRIGHTNESS);
   LOGV2(DEBUG_INFO, F("LCD: Brightness from EEPROM is %d"), _brightness);
   // pinMode(10, OUTPUT);
   // analogWrite(10, _brightness);
@@ -142,7 +142,7 @@ void LcdMenu::setBacklightBrightness(int level, bool persist)
   if (persist)
   {
     // LOGV2(DEBUG_INFO, F("LCD: Saving %d as brightness"), (_brightness & 0x00FF));
-    EPROMStore::update(EPROMStore::LCD_BRIGHTNESS, (byte)(_brightness & 0x00FF));
+    EPROMStore::updateUint8(EPROMStore::LCD_BRIGHTNESS, (byte)(_brightness & 0x00FF));
   }
 }
 
