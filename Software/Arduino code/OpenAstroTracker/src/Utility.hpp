@@ -151,6 +151,17 @@ public:
     _lastKey = -2;
   }
 
+  LcdButtons(LcdMenu* lcdMenu) {
+    _lcdMenu = lcdMenu;
+    _lastKeyChange = 0;
+
+    _newKey = -1;
+    _lastNewKey = -2;
+
+    _currentKey = -1;
+    _lastKey = -2;
+  }
+  
   byte currentKey() {
     checkKey();
     return _newKey;

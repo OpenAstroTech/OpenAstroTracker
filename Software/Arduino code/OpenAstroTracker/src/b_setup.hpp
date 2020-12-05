@@ -13,6 +13,10 @@ LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(LCD_PINA0, &lcdMenu);
 #endif
 
+#if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23017 || DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23008
+LcdButtons lcdButtons(&lcdMenu);
+#endif
+
 #if defined(__AVR_ATmega2560__)
 #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
   SoftwareSerial RA_SERIAL_PORT(RA_SERIAL_PORT_RX, RA_SERIAL_PORT_TX);
