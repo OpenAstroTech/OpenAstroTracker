@@ -14,7 +14,7 @@ LcdButtons lcdButtons(LCD_PINA0, &lcdMenu);
 #endif
 
 #if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23017 || DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23008
-LcdButtons lcdButtons(-1, &lcdMenu);
+LcdButtons lcdButtons(&lcdMenu);
 #endif
 
 #if defined(__AVR_ATmega2560__)
