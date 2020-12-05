@@ -3,7 +3,7 @@
 #include "../Configuration_adv.hpp"
 
 #if USE_GYRO_LEVEL == 1
-struct angle_t { float pitchAngle; float rollAngle; };
+struct angle_t { float pitchAngle = 0; float rollAngle = 0; };
 
 class Gyro 
 {
@@ -14,7 +14,6 @@ public:
   static float getCurrentTemperature();
   
 private:
-  static int16_t AcX, AcY, AcZ;
-  static int16_t AcXOffset, AcYOffset, AcZOffset;
+  static bool isPresent;  // True if gyro correctly detected on startup
 };
 #endif
