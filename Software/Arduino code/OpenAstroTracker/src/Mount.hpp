@@ -267,9 +267,6 @@ public:
   // Get the number of steps to use for backlash correction
   int getBacklashCorrection();
   
-  // Called when startup is complete and the mount needs to start updating steppers.
-  void startTimerInterrupts();
-
   // Read the saved configuration from persistent storage
   void readConfiguration();
 

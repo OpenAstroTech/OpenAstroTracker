@@ -1,5 +1,3 @@
-#include "InterruptCallback.hpp"
-
 #include "LcdMenu.hpp"
 #include "Mount.hpp"
 #include "Utility.hpp"
@@ -98,15 +96,6 @@ const char* formatStringsRA[] = {
   "%02d%02d%02d",           // Compact
 };
 
-/////////////////////////////////
-// This is the callback function for the timer interrupt. It does very minimal work,
-// only stepping the stepper motors as needed.
-/////////////////////////////////
-void mountLoop(void* payload) {
-  Mount* mount = reinterpret_cast<Mount*>(payload);
-  mount->interruptLoop();
-}
-
 Mount* Mount::_instance = nullptr;
 Mount Mount::instance() { return *_instance; };
 
@@ -163,23 +152,6 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
   _pitchCalibrationAngle = 0;
   _rollCalibrationAngle = 0;
   #endif
-}
-
-/////////////////////////////////
-//
-// startTimerInterrupts
-//
-/////////////////////////////////
-void Mount::startTimerInterrupts()
-{
-#ifndef ESPBOARD
-  // 2 kHz updates (higher frequency interferes with serial communications and complete messes up OATControl communications)
-  if (!InterruptCallback::setInterval(0.5f, mountLoop, this))
-  {
-    LOGV1(DEBUG_MOUNT, F("Mount:: CANNOT setup interrupt timer!"));
-  }
-#endif // !ESPBOARD
-
 }
 
 /////////////////////////////////
