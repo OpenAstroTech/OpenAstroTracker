@@ -145,17 +145,17 @@ void setup() {
   // Calling the LCD startup here, I2C can't be found if called earlier
   #if DISPLAY_TYPE > 0
     lcdMenu.startup();
-  #endif
+#endif
 
-  LOGV1(DEBUG_ANY, F("Finishing boot..."));
-  // Show a splash screen
-  lcdMenu.setCursor(0, 0);
-  lcdMenu.printMenu("OpenAstroTracker");
-  lcdMenu.setCursor(5, 1);
-  lcdMenu.printMenu(VERSION);
+    LOGV1(DEBUG_ANY, F("Finishing boot..."));
+    // Show a splash screen
+    lcdMenu.setCursor(0, 0);
+    lcdMenu.printMenu("OpenAstroTracker");
+    lcdMenu.setCursor(5, 1);
+    lcdMenu.printMenu(VERSION);
 
-  #if DISPLAY_TYPE > 0
-    // Check for EEPROM reset (Button down during boot)
+#if DISPLAY_TYPE > 0
+      // Check for EEPROM reset (Button down during boot)
     if (lcdButtons.currentState() == btnDOWN){
       LOGV1(DEBUG_INFO, F("Erasing configuration in EEPROM!"));
       mount.clearConfiguration();
@@ -167,7 +167,7 @@ void setup() {
       }
     }
 
-  unsigned long now = millis();
+    unsigned long now = millis();
   #endif
   
   LOGV2(DEBUG_ANY, F("Hardware: %s"), mount.getMountHardwareInfo().c_str());
@@ -227,7 +227,7 @@ void setup() {
   mount.readConfiguration();
   
   // Read other persisted values and set in mount
-  DayTime haTime = DayTime(EPROMStore::read(1), EPROMStore::read(2), 0);
+  DayTime haTime = DayTime(EPROMStore::readUint8(EPROMStore::HA_HOUR), EPROMStore::readUint8(EPROMStore::HA_MINUTE), 0);
 
   LOGV2(DEBUG_INFO, "SpeedCal: %s", String(mount.getSpeedCalibration(), 5).c_str());
   LOGV2(DEBUG_INFO, "TRKSpeed: %s", String(mount.getSpeed(TRACKING), 5).c_str());
@@ -244,7 +244,7 @@ void setup() {
   LOGV1(DEBUG_ANY, F("Start Tracking..."));
   mount.startSlewing(TRACKING);
 
-  #if DISPLAY_TYPE > 0
+#if DISPLAY_TYPE > 0
     LOGV1(DEBUG_ANY, F("Setup menu system..."));
 
     // Create the LCD top-level menu items
