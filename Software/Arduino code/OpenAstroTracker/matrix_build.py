@@ -2,16 +2,10 @@ import os
 import itertools
 from collections import defaultdict
 
-CONTINUE_ON_ERROR = True
-
-boards = {
-    "0001": "mega2560",
-    "0002": "mks_gen_l_2",
-    "1001": "esp32"
-}
+CONTINUE_ON_ERROR = False
 
 matrix = {
-    "BOARD": ['0001', '1001'],
+    "env": ['mega2560', 'mksgenl2', 'esp32'],
     "RA_STEPPER_TYPE": [0, 1],
     "DEC_STEPPER_TYPE": [0, 1],
     "RA_DRIVER_TYPE": [0, 1, 2, 3],
@@ -33,10 +27,10 @@ filters = [
     {'DEC_STEPPER_TYPE': 0, 'DEC_DRIVER_TYPE': 3},
     {'RA_STEPPER_TYPE': 1, 'RA_DRIVER_TYPE': 0},
     {'DEC_STEPPER_TYPE': 1, 'DEC_DRIVER_TYPE': 0},
-    {'BOARD': "1001", "USE_GPS": 1},
-    {'BOARD': "1001", "USE_GYRO_LEVEL": 1},
-    {'BOARD': "1001", "AZIMUTH_ALTITUDE_MOTORS": 1},
-    {'BOARD': "1001", "DISPLAY_TYPE": 1},
+    {'BOARD': "BOARD_ESP32_ESP32DEV", "USE_GPS": 1},
+    {'BOARD': "BOARD_ESP32_ESP32DEV", "USE_GYRO_LEVEL": 1},
+    {'BOARD': "BOARD_ESP32_ESP32DEV", "AZIMUTH_ALTITUDE_MOTORS": 1},
+    {'BOARD': "BOARD_ESP32_ESP32DEV", "DISPLAY_TYPE": 1},
     # actually possible combinations not to be handled by this script to reduce build times
     {'RA_STEPPER_TYPE': 0, 'DEC_STEPPER_TYPE': 1},
     {'RA_STEPPER_TYPE': 1, 'DEC_STEPPER_TYPE': 0},
@@ -80,11 +74,12 @@ allowed_combinations = list(filter(allowedCombination, all_combinations))
 run_commands = []
 for c in allowed_combinations:
     flags = ["-D {}={}".format(item[0], item[1]) for item in c.items()]
+    flags.append('-D DISABLE_LOCAL_CONFIG')
     flags_str = " ".join(flags)
     run_commands.append(
         {
             "env.PLATFORMIO_BUILD_FLAGS": flags_str,
-            "command": "pio run -e {}".format(boards[c['BOARD']])
+            "command": "pio run -e {}".format(c['env'])
         }
     )
 
@@ -102,6 +97,7 @@ for command in run_commands:
         errors.append(command)
         if not CONTINUE_ON_ERROR:
             break
+    # exit(0)
 
 if errors:
     print("There were errors during the matrix build for following configurations:")

@@ -26,12 +26,22 @@
  * These files won't be tracked by Git and thus will remain after branch changes or code updates. 
   **/
 
-#if defined(ESP32) && __has_include("Configuration_local_esp32.hpp")                // ESP32
-    #include "Configuration_local_esp32.hpp"
-#elif defined(__AVR_ATmega2560__) && __has_include("Configuration_local_mega.hpp")  // Mega2560
-    #include "Configuration_local_mega.hpp"
-#elif __has_include("Configuration_local.hpp")                                      // Custom config
-    #include "Configuration_local.hpp"
+/**
+ * Define the board used or take the one already specified by the toolchain (e.g. while using PlatformIO). Valid options
+ * can be looked up in Constants.hpp file.
+ **/
+#ifndef BOARD
+    #define BOARD BOARD_AVR_MEGA2560
+#endif
+
+#ifndef DISABLE_LOCAL_CONFIG // sometimes we want to skip local config (e.g. if we use matrix build script)
+    #if defined(ESP32) && __has_include("Configuration_local_esp32.hpp")                // ESP32
+        #include "Configuration_local_esp32.hpp"
+    #elif defined(__AVR_ATmega2560__) && __has_include("Configuration_local_mega.hpp")  // Mega2560
+        #include "Configuration_local_mega.hpp"
+    #elif __has_include("Configuration_local.hpp")                                      // Custom config
+        #include "Configuration_local.hpp"
+    #endif
 #endif
 
 // Set to 1 for the northern hemisphere, 0 otherwise

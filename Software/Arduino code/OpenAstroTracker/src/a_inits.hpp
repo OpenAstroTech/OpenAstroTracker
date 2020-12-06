@@ -1,5 +1,7 @@
 #pragma once
 
+#include "HAL/HAL.h"
+
 #include <AccelStepper.h>
 #if DISPLAY_TYPE > 0
 #include <LiquidCrystal.h>

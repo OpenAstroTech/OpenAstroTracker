@@ -2,6 +2,7 @@
 #include "EPROMStore.hpp"
 #include "LcdMenu.hpp"
 #include "inc/Config.hpp"
+#include "HAL/HAL.h"
 
 #if DISPLAY_TYPE > 0
 
