@@ -79,6 +79,9 @@
 #define EEPROM_PARKING_POS_MARKER_BIT         0x0001
 #define EEPROM_DEC_LIMIT_MARKER_BIT           0x0002
 
+// Seconds per astronomical day (23h 56m 4.0905s)
+#define SECONDS_PER_DAY 86164.0905
+
 const char* formatStringsDEC[] = {
   "",
   " {d}@ {m}' {s}\"",  // LCD Menu w/ cursor
@@ -109,7 +112,7 @@ void mountLoop(void* payload) {
 Mount* Mount::_instance = nullptr;
 Mount Mount::instance() { return *_instance; };
 
-const float siderealDegreesInHour = 14.95902778;
+const float siderealDegreesInHour = 14.95904348958;
 /////////////////////////////////
 //
 // CTOR
@@ -691,9 +694,9 @@ void Mount::setSpeedCalibration(float val, bool saveToStorage) {
   // Tracking speed has to be exactly the rotation speed of the earth. The earth rotates 360° per astronomical day.
   // This is 23h 56m 4.0905s
   #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-  _trackingSpeed = _trackingSpeedCalibration * RA_STEPS_PER_DEGREE * TRACKING_MICROSTEPPING * 360.0 / (23.0*60.0*60.0 + 56.0*60.0 + 4.0905);
+  _trackingSpeed = _trackingSpeedCalibration * RA_STEPS_PER_DEGREE * TRACKING_MICROSTEPPING * 360.0 / SECONDS_PER_DAY;
   #else
-  _trackingSpeed = _trackingSpeedCalibration * RA_STEPS_PER_DEGREE * 360.0 / (23.0*60.0*60.0 + 56.0*60.0 + 4.0905);
+  _trackingSpeed = _trackingSpeedCalibration * RA_STEPS_PER_DEGREE * 360.0 / SECONDS_PER_DAY;
   #endif
   LOGV2(DEBUG_MOUNT, F("Mount: New tracking speed is %f steps/sec"), _trackingSpeed);
 
