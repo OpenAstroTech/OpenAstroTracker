@@ -65,7 +65,7 @@
 //////////////////////////////////////////////////////////////////
 class Mount {
 public:
-  Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu);
+  Mount(float stepsPerRADegree, float stepsPerDECDegree, LcdMenu* lcdMenu);
 
   static Mount instance();
 
@@ -316,7 +316,7 @@ private:
 
 private:
   LcdMenu* _lcdMenu;
-  int  _stepsPerRADegree;
+  float _stepsPerRADegree;
   int _stepsPerDECDegree;
   int _maxRASpeed;
   int _maxDECSpeed;

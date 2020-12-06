@@ -115,7 +115,7 @@ const float siderealDegreesInHour = 14.95902778;
 // CTOR
 //
 /////////////////////////////////
-Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
+Mount::Mount(float stepsPerRADegree, float stepsPerDECDegree, LcdMenu* lcdMenu) {
    _instance = this;
    
   #if RA_DRIVER_TYPE != DRIVER_TYPE_ULN2003
@@ -688,12 +688,12 @@ void Mount::setSpeedCalibration(float val, bool saveToStorage) {
 
   LOGV2(DEBUG_MOUNT, F("Mount: Current tracking speed is %f steps/sec"), _trackingSpeed);
 
-  // The tracker simply needs to rotate at 15degrees/hour, adjusted for sidereal
-  // time (i.e. the 15degrees is per 23h56m04s. 86164s/86400 = 0.99726852. 3590/3600 is the same ratio) So we only go 15 x 0.99726852 in an hour.
+  // Tracking speed has to be exactly the rotation speed of the earth. The earth rotates 360° per astronomical day.
+  // This is 23h 56m 4.0905s
   #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-  _trackingSpeed = _trackingSpeedCalibration * _stepsPerRADegree * TRACKING_MICROSTEPPING * siderealDegreesInHour / (3600.0f * SET_MICROSTEPPING);
+  _trackingSpeed = _trackingSpeedCalibration * RA_STEPS_PER_DEGREE * TRACKING_MICROSTEPPING * 360.0 / (23.0*60.0*60.0 + 56.0*60.0 + 4.0905);
   #else
-  _trackingSpeed = _trackingSpeedCalibration * _stepsPerRADegree * siderealDegreesInHour / 3600.0f;
+  _trackingSpeed = _trackingSpeedCalibration * RA_STEPS_PER_DEGREE * 360.0 / (23.0*60.0*60.0 + 56.0*60.0 + 4.0905);
   #endif
   LOGV2(DEBUG_MOUNT, F("Mount: New tracking speed is %f steps/sec"), _trackingSpeed);
 

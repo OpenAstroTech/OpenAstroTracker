@@ -3,5 +3,5 @@
 
 // TODO (AS): This is just a tmp fix, we need to get rid of these globals
 
-int RAStepsPerDegree = RA_STEPS_PER_DEGREE;
+float RAStepsPerDegree = RA_STEPS_PER_DEGREE;
 int DECStepsPerDegree = DEC_STEPS_PER_DEGREE;
