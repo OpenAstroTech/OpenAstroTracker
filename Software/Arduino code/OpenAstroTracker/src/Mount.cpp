@@ -42,8 +42,8 @@
 // EPROM constants
 #define EEPROM_MAGIC_MASK                  0xFE00    // If these bits are set to 0xBE00, something has been written to the EEPROM
 #define EEPROM_MAGIC_EXTENDED_MASK         0xFF00    // If these bits are set to 0xBF00, an extended value has been written to the EEPROM
-#define EEPROM_MAGIC_MARKER                0xBE00
-#define EEPROM_MAGIC_EXTENDED_MARKER       0xBF00
+#define EEPROM_MAGIC_MARKER                0xCE00    // Changed to 0xCxxx in V1.8.60 since we changed RA and DEC Steps to be 10x (previous settings ignored)
+#define EEPROM_MAGIC_EXTENDED_MARKER       0xCF00    // Changed to 0xCxxx in V1.8.60 since we changed RA and DEC Steps to be 10x
 
 // The markjer bits for the first 8 values stored in EEPROM.
 #define EEPROM_RA_STEPS_BIT                0x0001
@@ -248,16 +248,16 @@ void Mount::readPersistentData()
 
 
   if ((marker & EEPROM_MAGIC_MASK_RA_STEPS) == EEPROM_RA_STEPS_MARKER_BIT) {
-    _stepsPerRADegree = EPROMStore::read(6) + EPROMStore::read(7) * 256;
-    LOGV2(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: RA Marker OK! RA steps/deg is %d"), _stepsPerRADegree);
+    _stepsPerRADegree = 0.1 * (EPROMStore::read(6) + EPROMStore::read(7) * 256);
+    LOGV2(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: RA Marker OK! RA steps/deg is %f"), _stepsPerRADegree);
   }
   else{
     LOGV1(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: No stored value for RA steps"));
   }
 
   if ((marker & EEPROM_MAGIC_MASK_DEC_STEPS) == EEPROM_DEC_STEPS_MARKER_BIT) {
-    _stepsPerDECDegree = EPROMStore::read(8) + EPROMStore::read(9) * 256;
-    LOGV2(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: DEC Marker OK! DEC steps/deg is %d"), _stepsPerDECDegree);
+    _stepsPerDECDegree = 0.1 * (EPROMStore::read(8) + EPROMStore::read(9) * 256);
+    LOGV2(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: DEC Marker OK! DEC steps/deg is %f"), _stepsPerDECDegree);
   }
   else{
     LOGV1(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: No stored value for DEC steps"));
@@ -367,10 +367,10 @@ void Mount::writePersistentData(int which, long val)
     flag = EPROMStore::read(4);
     if ((magicMarker & EEPROM_MAGIC_EXTENDED_MASK) == EEPROM_MAGIC_EXTENDED_MARKER) {
       extendedFlag = EPROMStore::readInt16(21, 22);
-      LOGV4(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: Marker is 0xBF, flag is %x, extended flag is %x (%d)"), flag, extendedFlag, extendedFlag);
+      LOGV4(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: Marker is 0xCF, flag is %x, extended flag is %x (%d)"), flag, extendedFlag, extendedFlag);
     }
     else{
-     LOGV3(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: Marker is 0xBE, flag is %x (%d)"), flag, flag);
+     LOGV3(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: Marker is 0xCE, flag is %x (%d)"), flag, flag);
     }
   }
 
@@ -498,7 +498,7 @@ void Mount::writePersistentData(int which, long val)
     EPROMStore::updateInt16(21, 22, extendedFlag);
   }
   else {
-    magicMarker |= EEPROM_MAGIC_MARKER;
+    magicMarker = (magicMarker & ~EEPROM_MAGIC_MASK) | EEPROM_MAGIC_MARKER;
     LOGV4(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: New Marker is %x, flag is %x (%d)"), magicMarker, flag, flag);
     EPROMStore::update(4, flag);
     EPROMStore::update(5, magicMarker >> 8);
@@ -769,7 +769,7 @@ void Mount::setRollCalibrationAngle(float angle)
 // getStepsPerDegree
 //
 /////////////////////////////////
-int Mount::getStepsPerDegree(int which)
+float Mount::getStepsPerDegree(int which)
 {
   if (which == RA_STEPS) {
     return _stepsPerRADegree;
@@ -789,14 +789,15 @@ int Mount::getStepsPerDegree(int which)
 // Function to set steps per degree for each axis. This function stores the value in persistent storage.
 // The EEPROM storage location 5 is set to 0xBE if this value has ever been written. The storage location 4
 // contains a bitfield indicating which values have been stored. Currently bit 0 is used for RA and bit 1 for DEC.
-void Mount::setStepsPerDegree(int which, int steps) {
+// We store 10x the amount of steps (essentially storing 1/10th resolution)
+void Mount::setStepsPerDegree(int which, float steps) {
   if (which == DEC_STEPS) {
-    writePersistentData(EEPROM_DEC, steps);
+    writePersistentData(EEPROM_DEC, (int)round(steps * 10));
     _stepsPerDECDegree = steps;
 
   }
   else if (which == RA_STEPS) {
-    writePersistentData(EEPROM_RA , steps);
+    writePersistentData(EEPROM_RA , (int)round(steps * 10));
     _stepsPerRADegree = steps;
   }
 }
@@ -1015,7 +1016,7 @@ const DayTime Mount::currentRA() const {
   #else
   float hourPos =  -_stepperRA->currentPosition() / stepsPerSiderealHour;
   #endif
-  LOGV4(DEBUG_MOUNT_VERBOSE,F("CurrentRA: Steps/h    : %s (%d x %s)"), String(stepsPerSiderealHour, 2).c_str(), _stepsPerRADegree, String(siderealDegreesInHour, 5).c_str());
+  LOGV4(DEBUG_MOUNT_VERBOSE,F("CurrentRA: Steps/h    : %s (%f x %s)"), String(stepsPerSiderealHour, 2).c_str(), _stepsPerRADegree, String(siderealDegreesInHour, 5).c_str());
   LOGV2(DEBUG_MOUNT_VERBOSE,F("CurrentRA: RA Steps   : %d"), _stepperRA->currentPosition());
   LOGV2(DEBUG_MOUNT_VERBOSE,F("CurrentRA: POS        : %s"), String(hourPos).c_str());
   hourPos += _zeroPosRA.getTotalHours();

@@ -120,11 +120,11 @@ public:
 #endif
 
   // Returns the number of steps the given motor turns to move one degree
-  int getStepsPerDegree(int which);
+  float getStepsPerDegree(int which);
 
   // Function to set the number of steps the given motor turns to move one 
   // degree for each axis. This function stores the value in persistent storage
-  void setStepsPerDegree(int which, int steps);
+  void setStepsPerDegree(int which, float steps);
 
   // Sets the slew rate of the mount. rate is between 1 (slowest) and 4 (fastest)
   void setSlewRate(int rate);
