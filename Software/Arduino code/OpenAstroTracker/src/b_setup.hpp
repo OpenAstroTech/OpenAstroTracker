@@ -62,7 +62,7 @@ void IRAM_ATTR stepperControlTask(void* payload)
   Mount* mount = reinterpret_cast<Mount*>(payload);
   for (;;) {
     mount->interruptLoop();
-    vTaskDelay(1);
+    // vTaskDelay(200);
   }
 }
 
