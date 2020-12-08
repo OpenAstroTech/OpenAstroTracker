@@ -26,6 +26,8 @@ LcdButtons lcdButtons(&lcdMenu);
       #define RA_SERIAL_PORT Serial2
     #elif RA_SERIAL_PORT_TX == 18 && RA_SERIAL_PORT_RX == 19
       #define RA_SERIAL_PORT Serial1
+    #else
+      #error RA: Can not use UART with Software Serial
     #endif
   #else
     SoftwareSerial RA_SERIAL_PORT(RA_SERIAL_PORT_RX, RA_SERIAL_PORT_TX);
@@ -39,6 +41,8 @@ LcdButtons lcdButtons(&lcdMenu);
         #define DEC_SERIAL_PORT Serial2
       #elif DEC_SERIAL_PORT_TX == 18 && DEC_SERIAL_PORT_RX == 19
         #define DEC_SERIAL_PORT Serial1
+      #else
+        #error DEC: Can not use UART with Software Serial
       #endif
     #else
       SoftwareSerial DEC_SERIAL_PORT(DEC_SERIAL_PORT_RX, DEC_SERIAL_PORT_TX);

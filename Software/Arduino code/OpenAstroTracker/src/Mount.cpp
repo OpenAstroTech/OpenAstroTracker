@@ -6,6 +6,7 @@
 #include "EPROMStore.hpp"
 #include "inc/Config.hpp"
 #include "inc/Globals.hpp"
+#include "Sidereal.hpp"
 
 //mountstatus
 #define STATUS_PARKED              0B0000000000000000
@@ -162,6 +163,12 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
   _pitchCalibrationAngle = 0;
   _rollCalibrationAngle = 0;
   #endif
+
+  this->_localUtcOffset = 0;
+  this->_localDate.year = 2000;
+  this->_localDate.month = 1;
+  this->_localDate.day = 1;
+  this->_localTimeSetMillis = -1;
 }
 
 /////////////////////////////////
@@ -615,6 +622,35 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
 }
 #endif
 
+#if RA_DRIVER_TMC2209_UART_MODE == TMC2209_MODE_UART || DEC_DRIVER_TMC2209_UART_MODE == TMC2209_MODE_UART 
+void connectToDriver( TMC2209Stepper* driver, LcdMenu* _lcdMenu, const char *driverKind ) {
+    int testConnection;
+    for(int i=0; i<5; i++) {
+        testConnection = driver->test_connection();
+        if(testConnection == 0) {
+            break;
+        }
+        else {
+          delay(500);
+        }
+    }
+
+    if( testConnection != 0 ) {
+       char scratchBuffer[24];
+       sprintf(scratchBuffer, "%s Drv Status", driverKind );
+       _lcdMenu->setCursor(0, 0);
+       _lcdMenu->printMenu(String(scratchBuffer));
+       sprintf(scratchBuffer, "Error Status: %d", testConnection);
+       _lcdMenu->setCursor(0, 1);
+       _lcdMenu->printMenu(String(scratchBuffer));
+       delay(1000);
+    }
+
+    driver->pdn_disable(true); //enable UART
+    driver->mstep_reg_select(true); //enable microstep selection over UART
+}
+#endif
+
 /////////////////////////////////
 //
 // configureRAdriver
@@ -627,29 +663,7 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
     _driverRA->begin();
 
     #if RA_DRIVER_TMC2209_UART_MODE == TMC2209_MODE_UART 
-    int testConnection;
-    for(int i=0; i<5; i++) {
-        testConnection = _driverRA->test_connection();
-        if(testConnection == 0) {
-            break;
-        }
-        else {
-          delay(500);
-        }
-    }
-
-    if( testConnection != 0 ) {
-       sprintf(scratchBuffer, "RA Drv Status");
-       _lcdMenu->setCursor(0, 0);
-       _lcdMenu->printMenu(String(scratchBuffer));
-       sprintf(scratchBuffer, "Error Status: %d", testConnection);
-       _lcdMenu->setCursor(0, 1);
-       _lcdMenu->printMenu(String(scratchBuffer));
-       delay(2000);
-    }
-
-    _driverRA->pdn_disable(true); //enable UART
-    _driverRA->mstep_reg_select(true); //enable microstep selection over UART
+    connectToDriver( _driverRA, _lcdMenu, "RA" );
     #endif
 
     #if RA_AUDIO_FEEDBACK == 1
@@ -682,29 +696,7 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
     _driverDEC->begin();
 
     #if DEC_DRIVER_TMC2209_UART_MODE == TMC2209_MODE_UART 
-    int testConnection;
-    for(int i=0; i<5; i++) {
-        testConnection = _driverDEC->test_connection();
-        if(testConnection == 0) {
-            break;
-        }
-        else {
-          delay(500);
-        }
-    }
-
-    if( testConnection != 0 ) {
-       sprintf(scratchBuffer, "DEC Drv Status");
-       _lcdMenu->setCursor(0, 0);
-       _lcdMenu->printMenu(String(scratchBuffer));
-       sprintf(scratchBuffer, "Error Status: %d", testConnection);
-       _lcdMenu->setCursor(0, 1);
-       _lcdMenu->printMenu(String(scratchBuffer));
-       delay(2000);
-    }
-
-    _driverDEC->pdn_disable(true); //enable UART
-    _driverDEC->mstep_reg_select(true); //enable microstep selection over UART
+    connectToDriver( _driverDEC, _lcdMenu, "DEC" );
     #endif
 
     _driverDEC->blank_time(24);
@@ -1013,6 +1005,8 @@ void Mount::setLatitude(Latitude latitude) {
 void Mount::setLongitude(Longitude longitude) {
   _longitude = longitude;
   writePersistentData(EEPROM_LONGITUDE, round(longitude.getTotalHours() * 100));
+
+  this->autoCalcHa();
 }
 
 /////////////////////////////////
@@ -2342,13 +2336,25 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
 
   // We can move 6 hours in either direction. Outside of that we need to flip directions.
 #if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
-  float RALimit = (6.0f * stepsPerSiderealHour / 2);
-#else
-  float RALimit = (6.0f * stepsPerSiderealHour);
+  #if NORTHERN_HEMISPHERE == 1 
+    float RALimitL = (5.0f * stepsPerSiderealHour / 2);
+    float RALimitR = (7.0f * stepsPerSiderealHour / 2);
+  #else
+    float RALimitL = (7.0f * stepsPerSiderealHour / 2);
+    float RALimitR = (5.0f * stepsPerSiderealHour / 2);  
+  #endif
+  #else
+  #if NORTHERN_HEMISPHERE == 1 
+    float RALimitL = (5.0f * stepsPerSiderealHour);
+    float RALimitR = (7.0f * stepsPerSiderealHour);
+  #else
+    float RALimitL = (7.0f * stepsPerSiderealHour);
+    float RALimitR = (5.0f * stepsPerSiderealHour);  
+  #endif
 #endif
 
   // If we reach the limit in the positive direction ...
-  if (moveRA > RALimit) {
+  if (moveRA > RALimitR) {
     //LOGV2(DEBUG_MOUNT_VERBOSE,F("Mount::CalcSteppersIn: RA is past +limit: %f, DEC: %f"), RALimit);
 
     // ... turn both RA and DEC axis around
@@ -2361,7 +2367,7 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
     //LOGV3(DEBUG_MOUNT_VERBOSE,F("Mount::CalcSteppersIn: Adjusted Target Step pos RA: %f, DEC: %f"), moveRA, moveDEC);
   }
   // If we reach the limit in the negative direction...
-  else if (moveRA < -RALimit) {
+  else if (moveRA < -RALimitL) {
     //LOGV2(DEBUG_MOUNT_VERBOSE,F("Mount::CalcSteppersIn: RA is past -limit: %f, DEC: %f"), -RALimit);
     // ... turn both RA and DEC axis around
 #if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
@@ -2618,12 +2624,79 @@ void Mount::finishFindingHomeRA()
   
   while (_stepperRA->run());
   
-
    //setManualSlewMode(false);
-   
    
    startSlewing(TRACKING);
    setHome(true);
 
 }
 #endif
+
+
+DayTime Mount::utcTime() {
+  DayTime timeUTC = this->localTime();
+  timeUTC.addHours( this->_localUtcOffset );
+  return timeUTC;
+}
+
+DayTime Mount::localTime() {
+  DayTime timeUTC = this->_localTime;
+  timeUTC.addSeconds( ( millis() - this->_localTimeSetMillis ) / 1000 );
+  return timeUTC;
+}
+
+LocalDate Mount::localDate() {
+  return this->_localDate;
+}
+
+const int Mount::localUtcOffset() const {
+  return _localUtcOffset;
+}
+
+void Mount::setLocalDate( int year, int month, int day ) {
+  this->_localDate.year = year;
+  this->_localDate.month = month;
+  this->_localDate.day = day;
+
+  this->autoCalcHa();
+}
+void Mount::setLocalTime( DayTime localTime ) {
+  this->_localTime = localTime;
+  this->_localTimeSetMillis = millis();
+
+  this->autoCalcHa();
+}
+void Mount::setLocalUtcOffset( int offset ) {
+  this->_localUtcOffset = offset;
+
+  this->autoCalcHa();
+}
+
+
+void Mount::autoCalcHa() {
+  //update HA
+  this->setHA( this->calculateHa() );
+}
+
+DayTime Mount::calculateLst() {
+  DayTime timeUTC = utcTime();
+  DayTime lst = Sidereal::calculateByDriver( this->longitude().getTotalHours(), _localDate.year, _localDate.month, _localDate.day, &timeUTC );
+  return lst;
+}
+
+DayTime Mount::calculateHa() {
+
+  DayTime lst = this->calculateLst();
+  float lstDeg = lst.getTotalHours() * 15; //to deg
+
+  //subtract Poloars RA
+  lstDeg -= ( ( POLARIS_RA_MINUTE/60.0f + POLARIS_RA_HOUR ) * 15.0f );
+
+  //ensure positive deg
+  while( lstDeg < 0.0f ) {
+    lstDeg += 360.0f;
+  }
+
+  //update HA
+  return DayTime( lstDeg / 15.0f );
+}
