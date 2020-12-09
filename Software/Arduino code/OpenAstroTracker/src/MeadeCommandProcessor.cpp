@@ -550,7 +550,7 @@ String MeadeCommandProcessor::handleMeadeGetInfo(String inCmd) {
       return "OAT4#";
     }
     case 'T': {
-      return "60.1#"; //default MEADE Tracking Frequency
+      return "60.0#"; //default MEADE Tracking Frequency
     }
   }
 

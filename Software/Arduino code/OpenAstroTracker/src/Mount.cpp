@@ -2690,7 +2690,7 @@ DayTime Mount::calculateHa() {
   float lstDeg = lst.getTotalHours() * 15; //to deg
 
   //subtract Poloars RA
-  lstDeg -= ( ( POLARIS_RA_MINUTE/60.0f + POLARIS_RA_HOUR ) * 15.0f );
+  lstDeg -= ( ( POLARIS_RA_MINUTE/60.0f + POLARIS_RA_HOUR + POLARIS_RA_SECOND ) * 15.0f );
 
   //ensure positive deg
   while( lstDeg < 0.0f ) {
