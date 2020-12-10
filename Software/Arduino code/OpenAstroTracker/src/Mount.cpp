@@ -143,6 +143,8 @@ Mount::Mount(float stepsPerRADegree, float stepsPerDECDegree, LcdMenu* lcdMenu) 
 
   #if AZIMUTH_ALTITUDE_MOTORS == 1
   _azAltWasRunning = false;
+  _stepsPerAZDegree = AZIMUTH_STEPS_PER_REV / 360;
+  _stepsPerALTDegree = ALTITUDE_STEPS_PER_REV / 360;
   #endif
 
   _totalDECMove = 0;
@@ -585,24 +587,6 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, 
 }
 #endif
 
-#if AZIMUTH_ALTITUDE_MOTORS == 1
-void Mount::configureAzStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
-{
-  _stepperAZ = new AccelStepper(HALFSTEP_MODE, pin1, pin2, pin3, pin4);
-  _stepperAZ->setSpeed(0);
-  _stepperAZ->setMaxSpeed(maxSpeed);
-  _stepperAZ->setAcceleration(maxAcceleration);
-}
-
-void Mount::configureAltStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
-{
-  _stepperALT = new AccelStepper(FULLSTEP_MODE, pin1, pin2, pin3, pin4);
-  _stepperALT->setSpeed(0);
-  _stepperALT->setMaxSpeed(maxSpeed);
-  _stepperALT->setAcceleration(maxAcceleration);
-}
-#endif
-
 #if DEC_STEPPER_TYPE == STEPPER_TYPE_NEMA17
 void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration)
 {
@@ -616,6 +600,52 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
   _stepperDEC->setPinsInverted(true, false, false);
   #endif
 }
+#endif
+
+/////////////////////////////////
+//
+// configureAZStepper / configureALTStepper
+//
+/////////////////////////////////
+#if AZIMUTH_ALTITUDE_MOTORS == 1
+  #if AZ_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+    void Mount::configureAZStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
+    {
+      _stepperAZ = new AccelStepper(stepMode, pin1, pin2, pin3, pin4);
+      _stepperAZ->setSpeed(0);
+      _stepperAZ->setMaxSpeed(maxSpeed);
+      _stepperAZ->setAcceleration(maxAcceleration);
+    }
+  #endif
+  #if AZ_DRIVER_TYPE == DRIVER_TYPE_GENERIC || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+    void Mount::configureAZStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration)
+    {
+      _stepperAZ = new AccelStepper(stepMode, pin1, pin2);
+      _stepperAZ->setMaxSpeed(maxSpeed);
+      _stepperAZ->setAcceleration(maxAcceleration);
+      _maxAZSpeed = maxSpeed;
+      _maxAZAcceleration = maxAcceleration;
+    }
+  #endif
+  #if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+    void Mount::configureALTStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
+    {
+      _stepperALT = new AccelStepper(stepMode, pin1, pin2, pin3, pin4);
+      _stepperALT->setSpeed(0);
+      _stepperALT->setMaxSpeed(maxSpeed);
+      _stepperALT->setAcceleration(maxAcceleration);
+    }
+  #endif
+  #if ALT_DRIVER_TYPE == DRIVER_TYPE_GENERIC || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+    void Mount::configureALTStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration)
+    {
+      _stepperALT = new AccelStepper(stepMode, pin1, pin2);
+      _stepperALT->setMaxSpeed(maxSpeed);
+      _stepperALT->setAcceleration(maxAcceleration);
+      _maxALTSpeed = maxSpeed;
+      _maxALTAcceleration = maxAcceleration;
+    }
+  #endif  
 #endif
 
 /////////////////////////////////
@@ -668,6 +698,50 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
     _driverDEC->sedn(0b01);
     _driverDEC->SGTHRS(stallvalue);
     _driverDEC->ihold(DEC_HOLDCURRENT);
+  }
+#endif
+
+/////////////////////////////////
+//
+// configureAZdriver
+// TMC2209 UART only
+/////////////////////////////////
+#if AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+  void Mount::configureAZdriver(Stream *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue)
+  {
+    _driverAZ = new TMC2209Stepper(serial, rsense, driveraddress);
+    _driverAZ->begin();
+    #if AZ_AUDIO_FEEDBACK == 1
+      _driverAZ->en_spreadCycle(1);
+    #endif
+    _driverAZ->toff(4);
+    _driverAZ->blank_time(24);
+    _driverAZ->rms_current(rmscurrent);
+    _driverAZ->microsteps(AZ_MICROSTEPPING);
+    _driverAZ->fclktrim(4);
+    _driverAZ->TCOOLTHRS(0xFFFFF);  //xFFFFF);
+  }
+#endif
+
+/////////////////////////////////
+//
+// configureALTdriver
+// TMC2209 UART only
+/////////////////////////////////
+#if ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+  void Mount::configureALTdriver(Stream *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue)
+  {
+    _driverALT = new TMC2209Stepper(serial, rsense, driveraddress);
+    _driverALT->begin();
+    #if ALT_AUDIO_FEEDBACK == 1
+      _driverALT->en_spreadCycle(1);
+    #endif
+    _driverALT->toff(4);
+    _driverALT->blank_time(24);
+    _driverALT->rms_current(rmscurrent);
+    _driverALT->microsteps(ALT_MICROSTEPPING);
+    _driverALT->fclktrim(4);
+    _driverALT->TCOOLTHRS(0xFFFFF);  //xFFFFF);
   }
 #endif
 
@@ -1341,48 +1415,60 @@ void Mount::setSpeed(int which, float speedDegsPerSec) {
   }
   #if AZIMUTH_ALTITUDE_MOTORS == 1
   else if (which == AZIMUTH_STEPS) {
-    float curAzSpeed = _stepperAZ->speed();
+    #if AZ_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+      float curAzSpeed = _stepperAZ->speed();
 
-    // If we are changing directions or asking for a stop, do a stop
-    if ((signbit(speedDegsPerSec) != signbit(curAzSpeed)) || (speedDegsPerSec == 0))
-    {
-      _stepperAZ->stop();
-      while (_stepperAZ->isRunning()){
-        loop();
+      // If we are changing directions or asking for a stop, do a stop
+      if ((signbit(speedDegsPerSec) != signbit(curAzSpeed)) || (speedDegsPerSec == 0))
+      {
+        _stepperAZ->stop();
+        while (_stepperAZ->isRunning()){
+          loop();
+        }
       }
-    }
 
-    // Are we starting a move or changing speeds?
-    if (speedDegsPerSec != 0) {
-      _stepperAZ->enableOutputs();
-      _stepperAZ->setSpeed(speedDegsPerSec);
-      _stepperAZ->move(speedDegsPerSec * 100000);
-    } // Are we stopping a move?
-    else if (speedDegsPerSec == 0) {
-      _stepperAZ->disableOutputs();
-    }
+      // Are we starting a move or changing speeds?
+      if (speedDegsPerSec != 0) {
+        _stepperAZ->enableOutputs();
+        _stepperAZ->setSpeed(speedDegsPerSec);
+        _stepperAZ->move(speedDegsPerSec * 100000);
+      } // Are we stopping a move?
+      else if (speedDegsPerSec == 0) {
+        _stepperAZ->disableOutputs();
+      }
+    #elif AZ_DRIVER_TYPE == DRIVER_TYPE_GENERIC || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+      float stepsPerSec = speedDegsPerSec * _stepsPerAZDegree;
+      LOGV3(DEBUG_STEPPERS, F("STEP-setSpeed: Set AZ speed %f degs/s, which is %f steps/s"), speedDegsPerSec, stepsPerSec);
+      _stepperAZ->setSpeed(stepsPerSec);  
+    #endif
   }
   else if (which == ALTITUDE_STEPS) {
-    float curAltSpeed = _stepperALT->speed();
+    #if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+      float curAltSpeed = _stepperALT->speed();
 
-    // If we are changing directions or asking for a stop, do a stop
-    if ((signbit(speedDegsPerSec) != signbit(curAltSpeed)) || (speedDegsPerSec == 0))
-    {
-      _stepperALT->stop();
-      while (_stepperALT->isRunning()){
-        loop();
+      // If we are changing directions or asking for a stop, do a stop
+      if ((signbit(speedDegsPerSec) != signbit(curAltSpeed)) || (speedDegsPerSec == 0))
+      {
+        _stepperALT->stop();
+        while (_stepperALT->isRunning()){
+          loop();
+        }
       }
-    }
 
-    // Are we starting a move or changing speeds?
-    if (speedDegsPerSec != 0) {
-      _stepperALT->enableOutputs();
-      _stepperALT->setSpeed(speedDegsPerSec);
-      _stepperALT->move(speedDegsPerSec * 100000);
-    } // Are we stopping a move?
-    else if (speedDegsPerSec == 0) {
-      _stepperALT->disableOutputs();
-    }
+      // Are we starting a move or changing speeds?
+      if (speedDegsPerSec != 0) {
+        _stepperALT->enableOutputs();
+        _stepperALT->setSpeed(speedDegsPerSec);
+        _stepperALT->move(speedDegsPerSec * 100000);
+      } // Are we stopping a move?
+      else if (speedDegsPerSec == 0) {
+        _stepperALT->disableOutputs();
+      }
+    #elif ALT_DRIVER_TYPE == DRIVER_TYPE_GENERIC || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+      float stepsPerSec = speedDegsPerSec * _stepsPerALTDegree;
+      LOGV3(DEBUG_STEPPERS, F("STEP-setSpeed: Set ALT speed %f degs/s, which is %f steps/s"), speedDegsPerSec, stepsPerSec);
+      _stepperALT->setSpeed(stepsPerSec);  
+    #endif
   }
   #endif
 }
@@ -1438,25 +1524,6 @@ bool Mount::isRunningALT() const {
 
 /////////////////////////////////
 //
-// getAltAzPositions
-//
-/////////////////////////////////
-void Mount::getAltAzPositions(long * altSteps, long* azSteps, float* altDeltaSecs, float*  azDeltaSecs){
-  if (altSteps != nullptr) {
-    *altSteps = _stepperALT->currentPosition();
-  }
-  if (azSteps != nullptr) {
-    *azSteps = _stepperAZ->currentPosition();
-  }
-  if (altDeltaSecs != nullptr) {
-    *altDeltaSecs = _stepperALT->currentPosition() * ALTITUDE_ARC_SECONDS_PER_STEP;
-  }
-  if (azDeltaSecs != nullptr) {
-    *azDeltaSecs = _stepperAZ->currentPosition() * AZIMUTH_ARC_SECONDS_PER_STEP;
-  }
-}
-/////////////////////////////////
-//
 // moveBy
 //
 /////////////////////////////////
@@ -1464,12 +1531,21 @@ void Mount::moveBy(int direction, float arcMinutes)
 {
     if (direction == AZIMUTH_STEPS) {
       enableAzAltMotors();
-      int stepsToMove = 2.0f * arcMinutes * AZIMUTH_STEPS_PER_ARC_MINUTE;
+      #if AZ_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+        int stepsToMove = arcMinutes * AZIMUTH_STEPS_PER_ARC_MINUTE * AZ_MICROSTEPPING;
+      #else
+        int stepsToMove = arcMinutes * AZIMUTH_STEPS_PER_ARC_MINUTE;
+      #endif
       _stepperAZ->move(stepsToMove);
     }
     else if (direction == ALTITUDE_STEPS) {
       enableAzAltMotors();
-      int stepsToMove = arcMinutes * ALTITUDE_STEPS_PER_ARC_MINUTE;
+      #if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+        int stepsToMove = arcMinutes * ALTITUDE_STEPS_PER_ARC_MINUTE * ALT_MICROSTEPPING;
+      #else
+        int stepsToMove = arcMinutes * ALTITUDE_STEPS_PER_ARC_MINUTE;
+      #endif
+
       _stepperALT->move(stepsToMove);
     }
 }
@@ -1485,18 +1561,34 @@ void Mount::disableAzAltMotors() {
   while (_stepperALT->isRunning() || _stepperAZ->isRunning()){
     loop();
   }
-  _stepperALT->disableOutputs();
-  _stepperAZ->disableOutputs();
+  #if AZ_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+    _stepperAZ->disableOutputs();
+  #else
+    digitalWrite(AZ_EN_PIN, HIGH);  // Logic HIGH to disable driver
+  #endif
+  #if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+    _stepperALT->disableOutputs();
+  #else
+    digitalWrite(ALT_EN_PIN, HIGH);  // Logic HIGH to disable driver
+  #endif
 }
 
 /////////////////////////////////
 //
-// disableAzAltMotors
+// enableAzAltMotors
 //
 /////////////////////////////////
 void Mount::enableAzAltMotors() {
-  _stepperALT->enableOutputs();
-  _stepperAZ->enableOutputs();
+  #if AZ_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+    _stepperAZ->enableOutputs();
+  #else
+    digitalWrite(AZ_EN_PIN, LOW);  // Logic LOW to enable driver
+  #endif
+  #if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+    _stepperALT->enableOutputs();
+  #else
+    digitalWrite(ALT_EN_PIN, LOW);  // Logic LOW to enable driver
+  #endif
 }
 
 #endif

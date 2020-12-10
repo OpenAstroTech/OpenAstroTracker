@@ -1,6 +1,7 @@
 import os
 import itertools
 from collections import defaultdict
+import time
 
 CONTINUE_ON_ERROR = True
 
@@ -19,6 +20,10 @@ matrix = {
     "USE_GPS": [0, 1],
     "USE_GYRO_LEVEL": [0, 1],
     "AZIMUTH_ALTITUDE_MOTORS": [0, 1],
+    #"AZ_STEPPER_TYPE": [0, 1],
+    #"ALT_STEPPER_TYPE": [0, 1],
+    #"AZ_DRIVER_TYPE": [0, 1, 2, 3],
+    #"ALT_DRIVER_TYPE": [0, 1, 2, 3],
     "DISPLAY_TYPE": [0, 1],
 }
 
@@ -37,6 +42,10 @@ filters = [
     {'BOARD': "1001", "USE_GYRO_LEVEL": 1},
     {'BOARD': "1001", "AZIMUTH_ALTITUDE_MOTORS": 1},
     {'BOARD': "1001", "DISPLAY_TYPE": 1},
+    {"AZIMUTH_ALTITUDE_MOTORS": 0, "AZ_STEPPER_TYPE": 1},
+    {"AZIMUTH_ALTITUDE_MOTORS": 0, "AZ_DRIVER_TYPE": 1},
+    {"AZIMUTH_ALTITUDE_MOTORS": 0, "AZ_DRIVER_TYPE": 2},
+    {"AZIMUTH_ALTITUDE_MOTORS": 0, "AZ_DRIVER_TYPE": 3},
     # actually possible combinations not to be handled by this script to reduce build times
     {'RA_STEPPER_TYPE': 0, 'DEC_STEPPER_TYPE': 1},
     {'RA_STEPPER_TYPE': 1, 'DEC_STEPPER_TYPE': 0},
@@ -50,6 +59,30 @@ for r in range(4):
                 {'RA_DRIVER_TYPE': r, 'DEC_DRIVER_TYPE': d}
             )
 
+# only allow same steppers for RA and DEC
+for r in range(2):
+    for d in range(2):
+        if (r != d):
+            filters.append(
+                {'RA_STEPPER_TYPE': r, 'DEC_STEPPER_TYPE': d}
+            )
+            
+# only allow same drivers for AZ and ALT
+for r in range(4):
+    for d in range(4):
+        if (r != d):
+            filters.append(
+                {'AZ_DRIVER_TYPE': r, 'ALT_DRIVER_TYPE': d}
+            )
+
+# only allow same steppers for AZ and ALT
+for r in range(2):
+    for d in range(2):
+        if (r != d):
+            filters.append(
+                {'AZ_STEPPER_TYPE': r, 'ALT_STEPPER_TYPE': d}
+            )
+            
 # all boards and flags as value tuples, regardless of the filters
 all_permutations = list(itertools.product(*(matrix.values())))
 
@@ -76,6 +109,8 @@ def allowedCombination(combination):
 
 
 allowed_combinations = list(filter(allowedCombination, all_combinations))
+print(f"Testing {len(allowed_combinations)} permutations...")
+time.sleep(3)
 
 run_commands = []
 for c in allowed_combinations:
@@ -94,7 +129,8 @@ for c in allowed_combinations:
 
 errors = []
 
-for command in run_commands:
+for index,command in enumerate(run_commands):
+    print(f"Building {index+1} of {len(allowed_combinations)} permutations...")
     print(command)
     os.environ['PLATFORMIO_BUILD_FLAGS'] = command['env.PLATFORMIO_BUILD_FLAGS']
     result = os.system(command['command'])
@@ -108,5 +144,4 @@ if errors:
     for error in errors:
         print(error)
 else:
-    print("There were no errors found during the matrix build.")
- 
+    print(f"There were no errors found during the matrix build. {len(allowed_combinations)} permutations tested.")
