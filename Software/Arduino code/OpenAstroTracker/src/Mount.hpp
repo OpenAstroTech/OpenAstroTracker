@@ -7,7 +7,9 @@
 
 #include <AccelStepper.h>
 #include "inc/Config.hpp"
-#include "DayTime.hpp"
+#include "Latitude.hpp"
+#include "Longitude.hpp"
+#include "Declination.hpp"
 #include "LcdMenu.hpp"
 
 #if (RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART) || (ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART)
@@ -63,7 +65,7 @@
 //////////////////////////////////////////////////////////////////
 class Mount {
 public:
-  Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu);
+  Mount(float stepsPerRADegree, float stepsPerDECDegree, LcdMenu* lcdMenu);
 
   static Mount instance();
 
@@ -137,11 +139,11 @@ public:
 #endif
 
   // Returns the number of steps the given motor turns to move one degree
-  int getStepsPerDegree(int which);
+  float getStepsPerDegree(int which);
 
   // Function to set the number of steps the given motor turns to move one 
   // degree for each axis. This function stores the value in persistent storage
-  void setStepsPerDegree(int which, int steps);
+  void setStepsPerDegree(int which, float steps);
 
   // Sets the slew rate of the mount. rate is between 1 (slowest) and 4 (fastest)
   void setSlewRate(int rate);
@@ -154,25 +156,25 @@ public:
   void setLST(const DayTime& haTime);
   const DayTime& LST() const;
 
-  void setLatitude(float lat);
-  void setLongitude(float lon);
-  const float latitude() const;
-  const float longitude() const;
+  void setLatitude(Latitude lat);
+  void setLongitude(Longitude lon);
+  const Latitude latitude() const;
+  const Longitude longitude() const;
 
   // Get a reference to the target RA value.
   DayTime& targetRA();
 
   // Get a reference to the target DEC value.
-  DegreeTime& targetDEC();
+  Declination& targetDEC();
 
   // Get current RA value.
   const DayTime currentRA() const;
 
   // Get current DEC value.
-  const DegreeTime currentDEC() const;
+  const Declination currentDEC() const;
 
   // Set the current RA and DEC position to be the given coordinates
-  void syncPosition(int raHour, int raMinute, int raSecond, int decDegree, int decMinute, int decSecond);
+  void syncPosition(DayTime ra, Declination dec);
 
   // Calculates movement parameters and program steppers to move
   // there. Must call loop() frequently to actually move.
@@ -333,7 +335,7 @@ private:
 
 private:
   LcdMenu* _lcdMenu;
-  int _stepsPerRADegree;
+  float _stepsPerRADegree;
   int _stepsPerDECDegree;
   int _stepsPerAZDegree;
   int _stepsPerALTDegree;
@@ -364,13 +366,13 @@ private:
   DayTime _targetRA;
   long _currentRAStepperPosition;
 
-  DegreeTime _targetDEC;
+  Declination _targetDEC;
   long _currentDECStepperPosition;
 
   float _totalDECMove;
   float _totalRAMove;
-  float _latitude;
-  float _longitude;
+  Latitude _latitude;
+  Longitude _longitude;
 
   // Stepper control for RA, DEC and TRK.
   AccelStepper* _stepperRA;
