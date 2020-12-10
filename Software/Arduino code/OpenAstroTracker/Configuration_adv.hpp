@@ -42,7 +42,7 @@
   #error Unsupported RA wheel version, please recheck RA_STEPPER_TYPE
 #endif
 
-// the Circumference of the DEC wheel.  V1 = 1057.1  |  V2 = 1131
+// the Circumference of the DEC wheel.
 #define DEC_WHEEL_CIRCUMFERENCE 565.5
 
 // Steps per degree:
