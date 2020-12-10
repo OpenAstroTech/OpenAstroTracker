@@ -13,6 +13,10 @@ LcdMenu lcdMenu(16, 2, MAXMENUITEMS);
 LcdButtons lcdButtons(LCD_PINA0, &lcdMenu);
 #endif
 
+#if DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23017 || DISPLAY_TYPE == DISPLAY_TYPE_LCD_KEYPAD_I2C_MCP23008
+LcdButtons lcdButtons(&lcdMenu);
+#endif
+
 #if defined(__AVR_ATmega2560__)
 #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
   SoftwareSerial RA_SERIAL_PORT(RA_SERIAL_PORT_RX, RA_SERIAL_PORT_TX);
@@ -23,7 +27,7 @@ LcdButtons lcdButtons(LCD_PINA0, &lcdMenu);
 #endif
 
 #ifdef ESP32
-DRAM_ATTR Mount mount(RAStepsPerDegree, DECStepsPerDegree, &lcdMenu);
+DRAM_ATTR Mount mount(RA_STEPS_PER_DEGREE, DEC_STEPS_PER_DEGREE, &lcdMenu);
 #else
 Mount mount(RA_STEPS_PER_DEGREE, DEC_STEPS_PER_DEGREE, &lcdMenu);
 #endif
@@ -58,7 +62,6 @@ void IRAM_ATTR stepperControlTask(void* payload)
   Mount* mount = reinterpret_cast<Mount*>(payload);
   for (;;) {
     mount->interruptLoop();
-    vTaskDelay(1);
   }
 }
 
@@ -259,7 +262,7 @@ void finishSetup()
 
   LOGV1(DEBUG_ANY, F("Configure DEC stepper..."));
   #if DEC_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
-    LOGV1(DEBUG_ANY, "Configure DEC stepper 28BYJ-48...");
+    LOGV1(DEBUG_ANY, F("Configure DEC stepper 28BYJ-48..."));
     mount.configureDECStepper(HALFSTEP_MODE, DECmotorPin1, DECmotorPin2, DECmotorPin3, DECmotorPin4, RA_STEPPER_SPEED, DEC_STEPPER_ACCELERATION);
   #elif DEC_STEPPER_TYPE == STEPPER_TYPE_NEMA17
     LOGV1(DEBUG_ANY, F("Configure DEC stepper NEMA..."));
