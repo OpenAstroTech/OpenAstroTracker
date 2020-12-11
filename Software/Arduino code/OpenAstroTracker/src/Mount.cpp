@@ -43,8 +43,8 @@
 // EPROM constants
 #define EEPROM_MAGIC_MASK                  0xFE00    // If these bits are set to 0xBE00, something has been written to the EEPROM
 #define EEPROM_MAGIC_EXTENDED_MASK         0xFF00    // If these bits are set to 0xBF00, an extended value has been written to the EEPROM
-#define EEPROM_MAGIC_MARKER                0xBE00
-#define EEPROM_MAGIC_EXTENDED_MARKER       0xBF00
+#define EEPROM_MAGIC_MARKER                0xCE00    // Changed to 0xCxxx in V1.8.60 since we changed RA and DEC Steps to be 10x (previous settings ignored)
+#define EEPROM_MAGIC_EXTENDED_MARKER       0xCF00    // Changed to 0xCxxx in V1.8.60 since we changed RA and DEC Steps to be 10x
 
 // The markjer bits for the first 8 values stored in EEPROM.
 #define EEPROM_RA_STEPS_BIT                0x0001
@@ -80,6 +80,9 @@
 #define EEPROM_PARKING_POS_MARKER_BIT         0x0001
 #define EEPROM_DEC_LIMIT_MARKER_BIT           0x0002
 
+// Seconds per astronomical day (23h 56m 4.0905s)
+#define SECONDS_PER_DAY 86164.0905
+
 const char* formatStringsDEC[] = {
   "",
   " {d}@ {m}' {s}\"",  // LCD Menu w/ cursor
@@ -110,13 +113,13 @@ void mountLoop(void* payload) {
 Mount* Mount::_instance = nullptr;
 Mount Mount::instance() { return *_instance; };
 
-const float siderealDegreesInHour = 14.95902778;
+const float siderealDegreesInHour = 14.95904348958;
 /////////////////////////////////
 //
 // CTOR
 //
 /////////////////////////////////
-Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
+Mount::Mount(float stepsPerRADegree, float stepsPerDECDegree, LcdMenu* lcdMenu) {
    _instance = this;
    
   #if RA_DRIVER_TYPE != DRIVER_TYPE_ULN2003
@@ -141,6 +144,8 @@ Mount::Mount(int stepsPerRADegree, int stepsPerDECDegree, LcdMenu* lcdMenu) {
 
   #if AZIMUTH_ALTITUDE_MOTORS == 1
   _azAltWasRunning = false;
+  _stepsPerAZDegree = AZIMUTH_STEPS_PER_REV / 360;
+  _stepsPerALTDegree = ALTITUDE_STEPS_PER_REV / 360;
   #endif
 
   _totalDECMove = 0;
@@ -252,16 +257,16 @@ void Mount::readPersistentData()
 
 
   if ((marker & EEPROM_MAGIC_MASK_RA_STEPS) == EEPROM_RA_STEPS_MARKER_BIT) {
-    _stepsPerRADegree = EPROMStore::read(6) + EPROMStore::read(7) * 256;
-    LOGV2(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: RA Marker OK! RA steps/deg is %d"), _stepsPerRADegree);
+    _stepsPerRADegree = 0.1 * (EPROMStore::read(6) + EPROMStore::read(7) * 256);
+    LOGV2(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: RA Marker OK! RA steps/deg is %f"), _stepsPerRADegree);
   }
   else{
     LOGV1(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: No stored value for RA steps"));
   }
 
   if ((marker & EEPROM_MAGIC_MASK_DEC_STEPS) == EEPROM_DEC_STEPS_MARKER_BIT) {
-    _stepsPerDECDegree = EPROMStore::read(8) + EPROMStore::read(9) * 256;
-    LOGV2(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: DEC Marker OK! DEC steps/deg is %d"), _stepsPerDECDegree);
+    _stepsPerDECDegree = 0.1 * (EPROMStore::read(8) + EPROMStore::read(9) * 256);
+    LOGV2(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: DEC Marker OK! DEC steps/deg is %f"), _stepsPerDECDegree);
   }
   else{
     LOGV1(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM: No stored value for DEC steps"));
@@ -371,10 +376,10 @@ void Mount::writePersistentData(int which, long val)
     flag = EPROMStore::read(4);
     if ((magicMarker & EEPROM_MAGIC_EXTENDED_MASK) == EEPROM_MAGIC_EXTENDED_MARKER) {
       extendedFlag = EPROMStore::readInt16(21, 22);
-      LOGV4(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: Marker is 0xBF, flag is %x, extended flag is %x (%d)"), flag, extendedFlag, extendedFlag);
+      LOGV4(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: Marker is 0xCF, flag is %x, extended flag is %x (%d)"), flag, extendedFlag, extendedFlag);
     }
     else{
-     LOGV3(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: Marker is 0xBE, flag is %x (%d)"), flag, flag);
+     LOGV3(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: Marker is 0xCE, flag is %x (%d)"), flag, flag);
     }
   }
 
@@ -502,7 +507,7 @@ void Mount::writePersistentData(int which, long val)
     EPROMStore::updateInt16(21, 22, extendedFlag);
   }
   else {
-    magicMarker |= EEPROM_MAGIC_MARKER;
+    magicMarker = (magicMarker & ~EEPROM_MAGIC_MASK) | EEPROM_MAGIC_MARKER;
     LOGV4(DEBUG_INFO|DEBUG_EEPROM,F("Mount: EEPROM Write: New Marker is %x, flag is %x (%d)"), magicMarker, flag, flag);
     EPROMStore::update(4, flag);
     EPROMStore::update(5, magicMarker >> 8);
@@ -589,24 +594,6 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, byte pin3, 
 }
 #endif
 
-#if AZIMUTH_ALTITUDE_MOTORS == 1
-void Mount::configureAzStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
-{
-  _stepperAZ = new AccelStepper(HALFSTEP_MODE, pin1, pin2, pin3, pin4);
-  _stepperAZ->setSpeed(0);
-  _stepperAZ->setMaxSpeed(maxSpeed);
-  _stepperAZ->setAcceleration(maxAcceleration);
-}
-
-void Mount::configureAltStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
-{
-  _stepperALT = new AccelStepper(FULLSTEP_MODE, pin1, pin2, pin3, pin4);
-  _stepperALT->setSpeed(0);
-  _stepperALT->setMaxSpeed(maxSpeed);
-  _stepperALT->setAcceleration(maxAcceleration);
-}
-#endif
-
 #if DEC_STEPPER_TYPE == STEPPER_TYPE_NEMA17
 void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration)
 {
@@ -649,6 +636,52 @@ void connectToDriver( TMC2209Stepper* driver, LcdMenu* _lcdMenu, const char *dri
     driver->pdn_disable(true); //enable UART
     driver->mstep_reg_select(true); //enable microstep selection over UART
 }
+#endif
+
+/////////////////////////////////
+//
+// configureAZStepper / configureALTStepper
+//
+/////////////////////////////////
+#if AZIMUTH_ALTITUDE_MOTORS == 1
+  #if AZ_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+    void Mount::configureAZStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
+    {
+      _stepperAZ = new AccelStepper(stepMode, pin1, pin2, pin3, pin4);
+      _stepperAZ->setSpeed(0);
+      _stepperAZ->setMaxSpeed(maxSpeed);
+      _stepperAZ->setAcceleration(maxAcceleration);
+    }
+  #endif
+  #if AZ_DRIVER_TYPE == DRIVER_TYPE_GENERIC || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+    void Mount::configureAZStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration)
+    {
+      _stepperAZ = new AccelStepper(stepMode, pin1, pin2);
+      _stepperAZ->setMaxSpeed(maxSpeed);
+      _stepperAZ->setAcceleration(maxAcceleration);
+      _maxAZSpeed = maxSpeed;
+      _maxAZAcceleration = maxAcceleration;
+    }
+  #endif
+  #if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+    void Mount::configureALTStepper(byte stepMode, byte pin1, byte pin2, byte pin3, byte pin4, int maxSpeed, int maxAcceleration)
+    {
+      _stepperALT = new AccelStepper(stepMode, pin1, pin2, pin3, pin4);
+      _stepperALT->setSpeed(0);
+      _stepperALT->setMaxSpeed(maxSpeed);
+      _stepperALT->setAcceleration(maxAcceleration);
+    }
+  #endif
+  #if ALT_DRIVER_TYPE == DRIVER_TYPE_GENERIC || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+    void Mount::configureALTStepper(byte stepMode, byte pin1, byte pin2, int maxSpeed, int maxAcceleration)
+    {
+      _stepperALT = new AccelStepper(stepMode, pin1, pin2);
+      _stepperALT->setMaxSpeed(maxSpeed);
+      _stepperALT->setAcceleration(maxAcceleration);
+      _maxALTSpeed = maxSpeed;
+      _maxALTAcceleration = maxAcceleration;
+    }
+  #endif  
 #endif
 
 /////////////////////////////////
@@ -716,6 +749,50 @@ void connectToDriver( TMC2209Stepper* driver, LcdMenu* _lcdMenu, const char *dri
 
 /////////////////////////////////
 //
+// configureAZdriver
+// TMC2209 UART only
+/////////////////////////////////
+#if AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+  void Mount::configureAZdriver(Stream *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue)
+  {
+    _driverAZ = new TMC2209Stepper(serial, rsense, driveraddress);
+    _driverAZ->begin();
+    #if AZ_AUDIO_FEEDBACK == 1
+      _driverAZ->en_spreadCycle(1);
+    #endif
+    _driverAZ->toff(4);
+    _driverAZ->blank_time(24);
+    _driverAZ->rms_current(rmscurrent);
+    _driverAZ->microsteps(AZ_MICROSTEPPING);
+    _driverAZ->fclktrim(4);
+    _driverAZ->TCOOLTHRS(0xFFFFF);  //xFFFFF);
+  }
+#endif
+
+/////////////////////////////////
+//
+// configureALTdriver
+// TMC2209 UART only
+/////////////////////////////////
+#if ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+  void Mount::configureALTdriver(Stream *serial, float rsense, byte driveraddress, int rmscurrent, int stallvalue)
+  {
+    _driverALT = new TMC2209Stepper(serial, rsense, driveraddress);
+    _driverALT->begin();
+    #if ALT_AUDIO_FEEDBACK == 1
+      _driverALT->en_spreadCycle(1);
+    #endif
+    _driverALT->toff(4);
+    _driverALT->blank_time(24);
+    _driverALT->rms_current(rmscurrent);
+    _driverALT->microsteps(ALT_MICROSTEPPING);
+    _driverALT->fclktrim(4);
+    _driverALT->TCOOLTHRS(0xFFFFF);  //xFFFFF);
+  }
+#endif
+
+/////////////////////////////////
+//
 // getSpeedCalibration
 //
 /////////////////////////////////
@@ -734,12 +811,12 @@ void Mount::setSpeedCalibration(float val, bool saveToStorage) {
 
   LOGV2(DEBUG_MOUNT, F("Mount: Current tracking speed is %f steps/sec"), _trackingSpeed);
 
-  // The tracker simply needs to rotate at 15degrees/hour, adjusted for sidereal
-  // time (i.e. the 15degrees is per 23h56m04s. 86164s/86400 = 0.99726852. 3590/3600 is the same ratio) So we only go 15 x 0.99726852 in an hour.
+  // Tracking speed has to be exactly the rotation speed of the earth. The earth rotates 360° per astronomical day.
+  // This is 23h 56m 4.0905s
   #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-  _trackingSpeed = _trackingSpeedCalibration * _stepsPerRADegree * TRACKING_MICROSTEPPING * siderealDegreesInHour / (3600.0f * SET_MICROSTEPPING);
+  _trackingSpeed = _trackingSpeedCalibration * RA_STEPS_PER_DEGREE * TRACKING_MICROSTEPPING * 360.0 / SECONDS_PER_DAY;
   #else
-  _trackingSpeed = _trackingSpeedCalibration * _stepsPerRADegree * siderealDegreesInHour / 3600.0f;
+  _trackingSpeed = _trackingSpeedCalibration * RA_STEPS_PER_DEGREE * 360.0 / SECONDS_PER_DAY;
   #endif
   LOGV2(DEBUG_MOUNT, F("Mount: New tracking speed is %f steps/sec"), _trackingSpeed);
 
@@ -812,7 +889,7 @@ void Mount::setRollCalibrationAngle(float angle)
 // getStepsPerDegree
 //
 /////////////////////////////////
-int Mount::getStepsPerDegree(int which)
+float Mount::getStepsPerDegree(int which)
 {
   if (which == RA_STEPS) {
     return _stepsPerRADegree;
@@ -832,14 +909,15 @@ int Mount::getStepsPerDegree(int which)
 // Function to set steps per degree for each axis. This function stores the value in persistent storage.
 // The EEPROM storage location 5 is set to 0xBE if this value has ever been written. The storage location 4
 // contains a bitfield indicating which values have been stored. Currently bit 0 is used for RA and bit 1 for DEC.
-void Mount::setStepsPerDegree(int which, int steps) {
+// We store 10x the amount of steps (essentially storing 1/10th resolution)
+void Mount::setStepsPerDegree(int which, float steps) {
   if (which == DEC_STEPS) {
-    writePersistentData(EEPROM_DEC, steps);
+    writePersistentData(EEPROM_DEC, (int)round(steps * 10));
     _stepsPerDECDegree = steps;
 
   }
   else if (which == RA_STEPS) {
-    writePersistentData(EEPROM_RA , steps);
+    writePersistentData(EEPROM_RA , (int)round(steps * 10));
     _stepsPerRADegree = steps;
   }
 }
@@ -1060,7 +1138,7 @@ const DayTime Mount::currentRA() const {
   #else
   float hourPos =  -_stepperRA->currentPosition() / stepsPerSiderealHour;
   #endif
-  LOGV4(DEBUG_MOUNT_VERBOSE,F("CurrentRA: Steps/h    : %s (%d x %s)"), String(stepsPerSiderealHour, 2).c_str(), _stepsPerRADegree, String(siderealDegreesInHour, 5).c_str());
+  LOGV4(DEBUG_MOUNT_VERBOSE,F("CurrentRA: Steps/h    : %s (%f x %s)"), String(stepsPerSiderealHour, 2).c_str(), _stepsPerRADegree, String(siderealDegreesInHour, 5).c_str());
   LOGV2(DEBUG_MOUNT_VERBOSE,F("CurrentRA: RA Steps   : %d"), _stepperRA->currentPosition());
   LOGV2(DEBUG_MOUNT_VERBOSE,F("CurrentRA: POS        : %s"), String(hourPos).c_str());
   hourPos += _zeroPosRA.getTotalHours();
@@ -1385,48 +1463,60 @@ void Mount::setSpeed(int which, float speedDegsPerSec) {
   }
   #if AZIMUTH_ALTITUDE_MOTORS == 1
   else if (which == AZIMUTH_STEPS) {
-    float curAzSpeed = _stepperAZ->speed();
+    #if AZ_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+      float curAzSpeed = _stepperAZ->speed();
 
-    // If we are changing directions or asking for a stop, do a stop
-    if ((signbit(speedDegsPerSec) != signbit(curAzSpeed)) || (speedDegsPerSec == 0))
-    {
-      _stepperAZ->stop();
-      while (_stepperAZ->isRunning()){
-        loop();
+      // If we are changing directions or asking for a stop, do a stop
+      if ((signbit(speedDegsPerSec) != signbit(curAzSpeed)) || (speedDegsPerSec == 0))
+      {
+        _stepperAZ->stop();
+        while (_stepperAZ->isRunning()){
+          loop();
+        }
       }
-    }
 
-    // Are we starting a move or changing speeds?
-    if (speedDegsPerSec != 0) {
-      _stepperAZ->enableOutputs();
-      _stepperAZ->setSpeed(speedDegsPerSec);
-      _stepperAZ->move(speedDegsPerSec * 100000);
-    } // Are we stopping a move?
-    else if (speedDegsPerSec == 0) {
-      _stepperAZ->disableOutputs();
-    }
+      // Are we starting a move or changing speeds?
+      if (speedDegsPerSec != 0) {
+        _stepperAZ->enableOutputs();
+        _stepperAZ->setSpeed(speedDegsPerSec);
+        _stepperAZ->move(speedDegsPerSec * 100000);
+      } // Are we stopping a move?
+      else if (speedDegsPerSec == 0) {
+        _stepperAZ->disableOutputs();
+      }
+    #elif AZ_DRIVER_TYPE == DRIVER_TYPE_GENERIC || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+      float stepsPerSec = speedDegsPerSec * _stepsPerAZDegree;
+      LOGV3(DEBUG_STEPPERS, F("STEP-setSpeed: Set AZ speed %f degs/s, which is %f steps/s"), speedDegsPerSec, stepsPerSec);
+      _stepperAZ->setSpeed(stepsPerSec);  
+    #endif
   }
   else if (which == ALTITUDE_STEPS) {
-    float curAltSpeed = _stepperALT->speed();
+    #if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+      float curAltSpeed = _stepperALT->speed();
 
-    // If we are changing directions or asking for a stop, do a stop
-    if ((signbit(speedDegsPerSec) != signbit(curAltSpeed)) || (speedDegsPerSec == 0))
-    {
-      _stepperALT->stop();
-      while (_stepperALT->isRunning()){
-        loop();
+      // If we are changing directions or asking for a stop, do a stop
+      if ((signbit(speedDegsPerSec) != signbit(curAltSpeed)) || (speedDegsPerSec == 0))
+      {
+        _stepperALT->stop();
+        while (_stepperALT->isRunning()){
+          loop();
+        }
       }
-    }
 
-    // Are we starting a move or changing speeds?
-    if (speedDegsPerSec != 0) {
-      _stepperALT->enableOutputs();
-      _stepperALT->setSpeed(speedDegsPerSec);
-      _stepperALT->move(speedDegsPerSec * 100000);
-    } // Are we stopping a move?
-    else if (speedDegsPerSec == 0) {
-      _stepperALT->disableOutputs();
-    }
+      // Are we starting a move or changing speeds?
+      if (speedDegsPerSec != 0) {
+        _stepperALT->enableOutputs();
+        _stepperALT->setSpeed(speedDegsPerSec);
+        _stepperALT->move(speedDegsPerSec * 100000);
+      } // Are we stopping a move?
+      else if (speedDegsPerSec == 0) {
+        _stepperALT->disableOutputs();
+      }
+    #elif ALT_DRIVER_TYPE == DRIVER_TYPE_GENERIC || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+      float stepsPerSec = speedDegsPerSec * _stepsPerALTDegree;
+      LOGV3(DEBUG_STEPPERS, F("STEP-setSpeed: Set ALT speed %f degs/s, which is %f steps/s"), speedDegsPerSec, stepsPerSec);
+      _stepperALT->setSpeed(stepsPerSec);  
+    #endif
   }
   #endif
 }
@@ -1482,25 +1572,6 @@ bool Mount::isRunningALT() const {
 
 /////////////////////////////////
 //
-// getAltAzPositions
-//
-/////////////////////////////////
-void Mount::getAltAzPositions(long * altSteps, long* azSteps, float* altDeltaSecs, float*  azDeltaSecs){
-  if (altSteps != nullptr) {
-    *altSteps = _stepperALT->currentPosition();
-  }
-  if (azSteps != nullptr) {
-    *azSteps = _stepperAZ->currentPosition();
-  }
-  if (altDeltaSecs != nullptr) {
-    *altDeltaSecs = _stepperALT->currentPosition() * ALTITUDE_ARC_SECONDS_PER_STEP;
-  }
-  if (azDeltaSecs != nullptr) {
-    *azDeltaSecs = _stepperAZ->currentPosition() * AZIMUTH_ARC_SECONDS_PER_STEP;
-  }
-}
-/////////////////////////////////
-//
 // moveBy
 //
 /////////////////////////////////
@@ -1508,12 +1579,21 @@ void Mount::moveBy(int direction, float arcMinutes)
 {
     if (direction == AZIMUTH_STEPS) {
       enableAzAltMotors();
-      int stepsToMove = 2.0f * arcMinutes * AZIMUTH_STEPS_PER_ARC_MINUTE;
+      #if AZ_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+        int stepsToMove = arcMinutes * AZIMUTH_STEPS_PER_ARC_MINUTE * AZ_MICROSTEPPING;
+      #else
+        int stepsToMove = arcMinutes * AZIMUTH_STEPS_PER_ARC_MINUTE;
+      #endif
       _stepperAZ->move(stepsToMove);
     }
     else if (direction == ALTITUDE_STEPS) {
       enableAzAltMotors();
-      int stepsToMove = arcMinutes * ALTITUDE_STEPS_PER_ARC_MINUTE;
+      #if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+        int stepsToMove = arcMinutes * ALTITUDE_STEPS_PER_ARC_MINUTE * ALT_MICROSTEPPING;
+      #else
+        int stepsToMove = arcMinutes * ALTITUDE_STEPS_PER_ARC_MINUTE;
+      #endif
+
       _stepperALT->move(stepsToMove);
     }
 }
@@ -1529,18 +1609,34 @@ void Mount::disableAzAltMotors() {
   while (_stepperALT->isRunning() || _stepperAZ->isRunning()){
     loop();
   }
-  _stepperALT->disableOutputs();
-  _stepperAZ->disableOutputs();
+  #if AZ_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+    _stepperAZ->disableOutputs();
+  #else
+    digitalWrite(AZ_EN_PIN, HIGH);  // Logic HIGH to disable driver
+  #endif
+  #if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+    _stepperALT->disableOutputs();
+  #else
+    digitalWrite(ALT_EN_PIN, HIGH);  // Logic HIGH to disable driver
+  #endif
 }
 
 /////////////////////////////////
 //
-// disableAzAltMotors
+// enableAzAltMotors
 //
 /////////////////////////////////
 void Mount::enableAzAltMotors() {
-  _stepperALT->enableOutputs();
-  _stepperAZ->enableOutputs();
+  #if AZ_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+    _stepperAZ->enableOutputs();
+  #else
+    digitalWrite(AZ_EN_PIN, LOW);  // Logic LOW to enable driver
+  #endif
+  #if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+    _stepperALT->enableOutputs();
+  #else
+    digitalWrite(ALT_EN_PIN, LOW);  // Logic LOW to enable driver
+  #endif
 }
 
 #endif

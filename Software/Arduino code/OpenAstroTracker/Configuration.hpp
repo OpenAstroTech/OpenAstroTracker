@@ -57,6 +57,12 @@
 #ifndef DEC_STEPPER_TYPE
 #define DEC_STEPPER_TYPE    STEPPER_TYPE_28BYJ48
 #endif
+#ifndef AZ_STEPPER_TYPE
+#define AZ_STEPPER_TYPE    STEPPER_TYPE_28BYJ48
+#endif
+#ifndef ALT_STEPPER_TYPE
+#define ALT_STEPPER_TYPE    STEPPER_TYPE_28BYJ48
+#endif
 
 // Driver selection
 // GENERIC drivers include A4988 and any Bipolar STEP/DIR based drivers. Note Microstep assignments in config_pins.
@@ -65,6 +71,12 @@
 #endif
 #ifndef DEC_DRIVER_TYPE
 #define DEC_DRIVER_TYPE     DRIVER_TYPE_ULN2003
+#endif
+#ifndef AZ_DRIVER_TYPE
+#define AZ_DRIVER_TYPE     DRIVER_TYPE_ULN2003
+#endif
+#ifndef ALT_DRIVER_TYPE
+#define ALT_DRIVER_TYPE     DRIVER_TYPE_ULN2003
 #endif
 
 // For UART communication, TX has to be wired with a 1K Resistor and RX with no Resistor to both PDN Pins
@@ -81,6 +93,20 @@
 #endif
 #ifndef DEC_PULLEY_TEETH
 #define DEC_PULLEY_TEETH    16
+#endif
+#ifndef AZ_PULLEY_TEETH
+#define AZ_PULLEY_TEETH    16
+#endif
+#ifndef ALT_PULLEY_TEETH
+#define ALT_PULLEY_TEETH    16
+#endif
+
+// Set these factors to correct Alt/Az arcsecond/step values
+#ifndef AZ_CORRECTION_FACTOR
+#define AZ_CORRECTION_FACTOR    1.0000
+#endif
+#ifndef ALT_CORRECTION_FACTOR
+#define ALT_CORRECTION_FACTOR    1.0000
 #endif
 
 // Set this to 1 if you are using a NEO6m GPS module for HA/LST and location automatic determination.

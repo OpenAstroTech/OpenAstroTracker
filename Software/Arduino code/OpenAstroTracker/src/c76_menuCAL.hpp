@@ -142,7 +142,7 @@ void gotoNextMenu()
 #endif
 }
 
-bool checkProgressiveUpDown(int *val)
+bool checkProgressiveUpDown(int *val, int minDelay = 25)
 {
   bool ret = true;
 
@@ -150,14 +150,14 @@ bool checkProgressiveUpDown(int *val)
   {
     *val = *val + 1;
     mount.delay(calDelay);
-    calDelay = max(25.0, 0.94 * calDelay);
+    calDelay = max(minDelay, 0.94 * calDelay);
     ret = false;
   }
   else if (lcdButtons.currentState() == btnDOWN)
   {
     *val = *val - 1;
     mount.delay(calDelay);
-    calDelay = max(25.0, 0.94 * calDelay);
+    calDelay = max(minDelay, 0.94 * calDelay);
     ret = false;
   }
   else
@@ -177,11 +177,11 @@ void gotoNextHighlightState(int dir)
 
   if (calState == HIGHLIGHT_RA_STEPS)
   {
-    RAStepsPerDegree = mount.getStepsPerDegree(RA_STEPS);
+    RAStepsPerDegree = mount.getStepsPerDegree(RA_STEPS) * 10.0;
   }
   else if (calState == HIGHLIGHT_DEC_STEPS)
   {
-    DECStepsPerDegree = mount.getStepsPerDegree(DEC_STEPS);
+    DECStepsPerDegree = mount.getStepsPerDegree(DEC_STEPS) * 10.0;
   }
   else if (calState == HIGHLIGHT_BACKLASH_STEPS)
   {
@@ -262,11 +262,11 @@ bool processCalibrationKeys()
 #endif
   else if (calState == RA_STEP_CALIBRATION)
   {
-    checkForKeyChange = checkProgressiveUpDown(&RAStepsPerDegree);
+    checkForKeyChange = checkProgressiveUpDown(&RAStepsPerDegree, 5);
   }
   else if (calState == DEC_STEP_CALIBRATION)
   {
-    checkForKeyChange = checkProgressiveUpDown(&DECStepsPerDegree);
+    checkForKeyChange = checkProgressiveUpDown(&DECStepsPerDegree, 5);
   }
   else if (calState == BACKLASH_CALIBRATION)
   {
@@ -295,25 +295,25 @@ bool processCalibrationKeys()
       if (currentButtonState == btnUP)
       {
         if (!mount.isRunningALT()) {
-          mount.setSpeed(ALTITUDE_STEPS, 500) ;
+          mount.setSpeed(ALTITUDE_STEPS, ALT_STEPPER_SPEED) ;
         }
       }
       else if (currentButtonState == btnDOWN)
       {
         if (!mount.isRunningALT()) {
-          mount.setSpeed(ALTITUDE_STEPS, -500) ;
+          mount.setSpeed(ALTITUDE_STEPS, -ALT_STEPPER_SPEED) ;
         }
       }
       else if (currentButtonState == btnRIGHT)
       {
         if (!mount.isRunningAZ()) {
-          mount.setSpeed(AZIMUTH_STEPS, 500) ;
+          mount.setSpeed(AZIMUTH_STEPS, AZ_STEPPER_SPEED) ;
         }
       }
       else if (currentButtonState == btnLEFT)
       {
         if (!mount.isRunningAZ()) {
-          mount.setSpeed(AZIMUTH_STEPS, -500) ;
+          mount.setSpeed(AZIMUTH_STEPS, -AZ_STEPPER_SPEED) ;
         }
       }
       else if (currentButtonState == btnNONE)
@@ -399,7 +399,7 @@ bool processCalibrationKeys()
       // UP and DOWN are handled above
       if (key == btnSELECT)
       {
-        mount.setStepsPerDegree(RA_STEPS, RAStepsPerDegree);
+        mount.setStepsPerDegree(RA_STEPS, 0.1 * RAStepsPerDegree);
         lcdMenu.printMenu("RA steps stored");
         mount.delay(500);
         calState = HIGHLIGHT_RA_STEPS;
@@ -417,7 +417,7 @@ bool processCalibrationKeys()
       // UP and DOWN are handled above
       if (key == btnSELECT)
       {
-        mount.setStepsPerDegree(DEC_STEPS, DECStepsPerDegree);
+        mount.setStepsPerDegree(DEC_STEPS, 0.1 * DECStepsPerDegree);
         lcdMenu.printMenu("DEC steps stored.");
         mount.delay(500);
         calState = HIGHLIGHT_DEC_STEPS;
@@ -1063,12 +1063,12 @@ void printCalibrationSubmenu()
   }
   else if (calState == RA_STEP_CALIBRATION)
   {
-    sprintf(scratchBuffer, "RA Steps: %d", RAStepsPerDegree);
+    sprintf(scratchBuffer, "RA Steps: %s", String(0.1 * RAStepsPerDegree, 1).c_str());
     lcdMenu.printMenu(scratchBuffer);
   }
   else if (calState == DEC_STEP_CALIBRATION)
   {
-    sprintf(scratchBuffer, "DEC Steps: %d", DECStepsPerDegree);
+    sprintf(scratchBuffer, "DEC Steps: %s", String(0.1 * DECStepsPerDegree, 1).c_str());
     lcdMenu.printMenu(scratchBuffer);
   }
   else if (calState == BACKLASH_CALIBRATION)

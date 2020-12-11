@@ -37,12 +37,12 @@
 #if RA_WHEEL_VERSION == 1
   #define RA_WHEEL_CIRCUMFERENCE 1057.1
 #elif RA_WHEEL_VERSION >= 2
-  #define RA_WHEEL_CIRCUMFERENCE 1131.0
+  #define RA_WHEEL_CIRCUMFERENCE 1132.73
 #else
   #error Unsupported RA wheel version, please recheck RA_STEPPER_TYPE
 #endif
 
-// the Circumference of the RA wheel.  V1 = 1057.1  |  V2 = 1131
+// the Circumference of the DEC wheel.
 #define DEC_WHEEL_CIRCUMFERENCE 565.5
 
 // Steps per degree:
@@ -141,15 +141,65 @@
 //////////////////////////////////////////
 //
 // Enable Azimuth and Altitude motor functionality in Configuration.hpp
-#define AZIMUTH_MAX_SPEED 500
-#define AZIMUTH_MAX_ACCEL 200
-#define AZIMUTH_ARC_SECONDS_PER_STEP (7.9997f)
-#define AZIMUTH_STEPS_PER_ARC_MINUTE (60.0f/AZIMUTH_ARC_SECONDS_PER_STEP)
 
-#define ALTITUDE_MAX_SPEED 500
-#define ALTITUDE_MAX_ACCEL 200
-#define ALTITUDE_ARC_SECONDS_PER_STEP (0.61761f)
-#define ALTITUDE_STEPS_PER_ARC_MINUTE (60.0f/ALTITUDE_ARC_SECONDS_PER_STEP)
+#if AZ_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+  #define AZ_MICROSTEPPING        2     // Halfstep mode using ULN2003 driver
+#elif AZ_DRIVER_TYPE == DRIVER_TYPE_GENERIC || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || AZ_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+  #define AZ_MICROSTEPPING        32
+#endif
+#if AZ_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
+  #define AZ_STEPPER_SPR            2048  // 28BYJ-48 in full step mode
+  #define AZ_STEPPER_SPEED          600   // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+  #define AZ_STEPPER_ACCELERATION   400   // High speeds tend to make these cheap steppers unprecice
+#elif AZ_STEPPER_TYPE == STEPPER_TYPE_NEMA17
+  #define AZ_STEPPER_SPR            400   // NEMA 0.9° = 400  |  NEMA 1.8° = 200
+  #define AZ_STEPPER_SPEED          600  // You can change the speed and acceleration of the steppers here. Max. Speed = 3000. 
+  #define AZ_STEPPER_ACCELERATION   1000
+#else
+  #error New Stepper type? Add it here...
+#endif
+
+
+#if ALT_DRIVER_TYPE == DRIVER_TYPE_ULN2003
+  #define ALT_MICROSTEPPING        1     // Fullstep mode using ULN2003 driver
+#elif ALT_DRIVER_TYPE == DRIVER_TYPE_GENERIC || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_STANDALONE || ALT_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
+  #define ALT_MICROSTEPPING        32
+#endif
+#if ALT_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
+  #define ALT_STEPPER_SPR            2048  // 28BYJ-48 in full step mode
+  #define ALT_STEPPER_SPEED          600   // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+  #define ALT_STEPPER_ACCELERATION   400   // High speeds tend to make these cheap steppers unprecice
+#elif ALT_STEPPER_TYPE == STEPPER_TYPE_NEMA17
+  #define ALT_STEPPER_SPR            400   // NEMA 0.9° = 400  |  NEMA 1.8° = 200
+  #define ALT_STEPPER_SPEED          600  // You can change the speed and acceleration of the steppers here. Max. Speed = 3000. 
+  #define ALT_STEPPER_ACCELERATION   1000
+#else
+  #error New Stepper type? Add it here...
+#endif
+
+
+// the Circumference of the AZ rotation. 808mm dia.
+#define AZ_CIRCUMFERENCE 2538.4
+// the Circumference of the AZ rotation. 770mm dia.
+#define ALT_CIRCUMFERENCE 2419
+// the ratio of the ALT gearbox (40:3)
+#define ALT_WORMGEAR_RATIO (40/3)
+
+#define AZIMUTH_STEPS_PER_REV           (AZ_CORRECTION_FACTOR * (AZ_CIRCUMFERENCE / (AZ_PULLEY_TEETH * 2)) * AZ_STEPPER_SPR)
+#define ALTITUDE_STEPS_PER_REV          (ALT_CORRECTION_FACTOR * (ALT_CIRCUMFERENCE / (ALT_PULLEY_TEETH * 2)) * ALT_STEPPER_SPR * ALT_WORMGEAR_RATIO)
+#define AZIMUTH_STEPS_PER_ARC_MINUTE    (AZIMUTH_STEPS_PER_REV / (360 * 60.0f)) // Used to determine move distance in steps
+#define ALTITUDE_STEPS_PER_ARC_MINUTE   (ALTITUDE_STEPS_PER_REV / (360 * 60.0f)) // Used to determine move distance in steps
+
+// ALT/AZ TMC2209 UART settings
+// These settings work only with TMC2209 in UART connection (single wire to TX)
+#define AZ_AUDIO_FEEDBACK 0 // of the stepper coils. Use this to verify that UART is working properly. 
+#define ALT_AUDIO_FEEDBACK 0 // of the stepper coils. Use this to verify that UART is working properly.
+#define AZ_STALL_VALUE 10    // adjust this value if the RA autohoming sequence often false triggers, or triggers too late
+#define AZ_RMSCURRENT 1000   // RMS current in mA. Warning: Peak current will be 1.414 times higher!! Do not exceed your steppers max current!
+#define ALT_STALL_VALUE 10    // adjust this value if the RA autohoming sequence often false triggers, or triggers too late
+#define ALT_RMSCURRENT 1000   // RMS current in mA. Warning: Peak current will be 1.414 times higher!! Do not exceed your steppers max current!
+
+
 
 // Enable dew heater output (for boards that have MOSFETs)
 #define DEW_HEATER 0
