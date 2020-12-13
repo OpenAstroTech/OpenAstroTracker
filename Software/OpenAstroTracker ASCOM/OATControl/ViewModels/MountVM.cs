@@ -36,8 +36,8 @@ namespace OATControl.ViewModels
 		int _raStepper = 0;
 		int _decStepper = 0;
 		int _trkStepper = 0;
-		int _raStepsPerDegree = 0;
-		int _decStepsPerDegree = 0;
+		float _raStepsPerDegree = 0;
+		float _decStepsPerDegree = 0;
 		bool _connected = false;
 		bool _slewInProgress = false;
 		bool _isTracking = false;
@@ -508,10 +508,10 @@ namespace OATControl.ViewModels
 						Log.WriteLine("Mount: Getting current OAT RA steps/degree...");
 						string steps = await RunCustomOATCommandAsync(string.Format(":XGR#,#"));
 						Log.WriteLine("Mount: Current RA steps/degree is {0}. Getting current DEC steps/degree...", steps);
-						_raStepsPerDegree = int.Parse(steps);
+						_raStepsPerDegree = float.Parse(steps, _oatCulture);
 						steps = await RunCustomOATCommandAsync(string.Format(":XGD#,#"));
 						Log.WriteLine("Mount: Current DEC steps/degree is {0}. Getting current Speed factor...", steps);
-						_decStepsPerDegree = int.Parse(steps);
+						_decStepsPerDegree = float.Parse(steps, _oatCulture);
 						OnPropertyChanged("RAStepsPerDegree");
 						OnPropertyChanged("DECStepsPerDegree");
 
@@ -931,13 +931,13 @@ namespace OATControl.ViewModels
 		/// <summary>
 		/// Gets or sets the RA steps per degree
 		/// </summary>
-		public int RAStepsPerDegree
+		public float RAStepsPerDegree
 		{
 			get { return _raStepsPerDegree; }
 			set { SetPropertyValue(ref _raStepsPerDegree, value, OnRAStepsChanged); }
 		}
 
-		private void OnRAStepsChanged(int oldVal, int newVal)
+		private void OnRAStepsChanged(float oldVal, float newVal)
 		{
 			Task.Run(async () => await RunCustomOATCommandAsync(string.Format(":XSR{0:0}#", newVal)));
 		}
@@ -945,13 +945,13 @@ namespace OATControl.ViewModels
 		/// <summary>
 		/// Gets or sets the DEC steps per degree
 		/// </summary>
-		public int DECStepsPerDegree
+		public float DECStepsPerDegree
 		{
 			get { return _decStepsPerDegree; }
 			set { SetPropertyValue(ref _decStepsPerDegree, value, OnDECStepsChanged); }
 		}
 
-		private void OnDECStepsChanged(int oldVal, int newVal)
+		private void OnDECStepsChanged(float oldVal, float newVal)
 		{
 			Task.Run(async () => await RunCustomOATCommandAsync(string.Format(":XSD{0:0}#", newVal)));
 		}

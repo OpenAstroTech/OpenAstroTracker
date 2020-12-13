@@ -373,8 +373,8 @@ namespace OATControl
 						// Get the reference angles from the level.
 						string referenceAngles = await _sendCommand(":XLGR#,#");
 						var angles = referenceAngles.Split(",".ToCharArray());
-						_pitchReference = float.Parse(angles[0]);
-						_rollReference = float.Parse(angles[1]);
+						float.TryParse(angles[0], out _pitchReference);
+						float.TryParse(angles[1], out _rollReference);
 						ShowLevelDisplay = true;
 					}
 					else if (_mountViewModel.IsAddonSupported("GPS"))
@@ -396,8 +396,8 @@ namespace OATControl
 					if (!currentAngles.Contains("NAN"))
 					{
 						var angles = currentAngles.Split(",".ToCharArray());
-						float currentPitch = float.Parse(angles[0]);
-						float currentRoll = float.Parse(angles[1]);
+						float.TryParse(angles[0], out float currentPitch);
+						float.TryParse(angles[1], out float currentRoll);
 						
 						// Keep a rolling average of the last 6 values.
 						if (_rollOffsetHistory.Count > 5)
