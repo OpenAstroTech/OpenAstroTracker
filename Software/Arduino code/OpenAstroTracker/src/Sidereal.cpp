@@ -18,7 +18,7 @@ DayTime Sidereal::calculateByGPS(TinyGPSPlus* gps){
     }
 #endif // USE_GPS
 
-DayTime Sidereal::calculateByDriver( double longitude, int year, int month, int day, DayTime *timeUTC ) {
+DayTime Sidereal::calculateByDateAndTime( double longitude, int year, int month, int day, DayTime *timeUTC ) {
     int deltaJd = calculateDeltaJd( year, month, day );
     double deltaJ = deltaJd + ((timeUTC->getTotalHours()) / 24.0);
     return DayTime((float)(calculateTheta(deltaJ, longitude, timeUTC->getTotalHours()) / 15.0));
@@ -53,3 +53,18 @@ const int Sidereal::calculateDeltaJd(int year, int month, int day){
 }
 
 
+DayTime Sidereal::calculateHa( float lstTotalHours ) {
+
+  float lstDeg = lstTotalHours * 15; //to deg
+
+  //subtract Poloars RA
+  lstDeg -= ( ( POLARIS_RA_SECOND / 3600.0f + POLARIS_RA_MINUTE/60.0f + POLARIS_RA_HOUR ) * 15.0f );
+
+  //ensure positive deg
+  while( lstDeg < 0.0f ) {
+    lstDeg += 360.0f;
+  }
+
+  //update HA
+  return DayTime( lstDeg / 15.0f );
+}

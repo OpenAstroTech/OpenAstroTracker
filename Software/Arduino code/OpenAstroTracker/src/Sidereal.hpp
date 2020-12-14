@@ -19,7 +19,8 @@ class Sidereal
     static DayTime calculateByGPS(TinyGPSPlus* gps);
  #endif
 
-   static DayTime calculateByDriver( double longitude, int year, int month, int day, DayTime *timeUTC );
+   static DayTime calculateByDateAndTime( double longitude, int year, int month, int day, DayTime *timeUTC );
+   static DayTime calculateHa( float lstTotalHours );
 
  private:
     static const double calculateTheta(double deltaJ, double longitude, float timeUTC);

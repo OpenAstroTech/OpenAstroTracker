@@ -170,10 +170,10 @@ Mount::Mount(float stepsPerRADegree, float stepsPerDECDegree, LcdMenu* lcdMenu) 
   #endif
 
   this->_localUtcOffset = 0;
-  this->_localDate.year = 2000;
-  this->_localDate.month = 1;
-  this->_localDate.day = 1;
-  this->_localTimeSetMillis = -1;
+  this->_localStartDate.year = 2000;
+  this->_localStartDate.month = 1;
+  this->_localStartDate.day = 1;
+  this->_localStartTimeSetMillis = -1;
 }
 
 /////////////////////////////////
@@ -609,12 +609,12 @@ void Mount::configureDECStepper(byte stepMode, byte pin1, byte pin2, int maxSpee
 }
 #endif
 
-#if RA_DRIVER_TMC2209_UART_MODE == TMC2209_MODE_UART || DEC_DRIVER_TMC2209_UART_MODE == TMC2209_MODE_UART 
+#if RA_DRIVER_TMC2209_CONNECTION_TEST == ENABLED || DEC_DRIVER_TMC2209_CONNECTION_TEST == ENABLED 
 void connectToDriver( TMC2209Stepper* driver, LcdMenu* _lcdMenu, const char *driverKind ) {
-    int testConnection;
+    int connectionStatus;
     for(int i=0; i<5; i++) {
-        testConnection = driver->test_connection();
-        if(testConnection == 0) {
+        connectionStatus = driver->test_connection();
+        if(connectionStatus == 0) {
             break;
         }
         else {
@@ -622,12 +622,12 @@ void connectToDriver( TMC2209Stepper* driver, LcdMenu* _lcdMenu, const char *dri
         }
     }
 
-    if( testConnection != 0 ) {
+    if( connectionStatus != 0 ) {
        char scratchBuffer[24];
        sprintf(scratchBuffer, "%s Drv Status", driverKind );
        _lcdMenu->setCursor(0, 0);
        _lcdMenu->printMenu(String(scratchBuffer));
-       sprintf(scratchBuffer, "Error Status: %d", testConnection);
+       sprintf(scratchBuffer, "Error Status: %d", connectionStatus);
        _lcdMenu->setCursor(0, 1);
        _lcdMenu->printMenu(String(scratchBuffer));
        delay(1000);
@@ -695,7 +695,7 @@ void connectToDriver( TMC2209Stepper* driver, LcdMenu* _lcdMenu, const char *dri
     _driverRA = new TMC2209Stepper(serial, rsense, driveraddress);
     _driverRA->begin();
 
-    #if RA_DRIVER_TMC2209_UART_MODE == TMC2209_MODE_UART 
+    #if RA_DRIVER_TMC2209_CONNECTION_TEST == ENABLED 
     connectToDriver( _driverRA, _lcdMenu, "RA" );
     #endif
 
@@ -728,7 +728,7 @@ void connectToDriver( TMC2209Stepper* driver, LcdMenu* _lcdMenu, const char *dri
     _driverDEC = new TMC2209Stepper(serial, rsense, driveraddress);
     _driverDEC->begin();
 
-    #if DEC_DRIVER_TMC2209_UART_MODE == TMC2209_MODE_UART 
+    #if DEC_DRIVER_TMC2209_CONNECTION_TEST == ENABLED 
     connectToDriver( _driverDEC, _lcdMenu, "DEC" );
     #endif
 
@@ -2736,29 +2736,67 @@ DayTime Mount::utcTime() {
 }
 
 DayTime Mount::localTime() {
-  DayTime timeUTC = this->_localTime;
-  timeUTC.addSeconds( ( millis() - this->_localTimeSetMillis ) / 1000 );
+  DayTime timeUTC = this->_localStartTime;
+  timeUTC.addSeconds( ( millis() - this->_localStartTimeSetMillis ) / 1000 );
   return timeUTC;
 }
 
 LocalDate Mount::localDate() {
-  return this->_localDate;
+  LocalDate localDate = this->_localStartDate;
+  long secondsSinceSetDayEnd = ( ( millis() - this->_localStartTimeSetMillis ) / 1000 ) - ( 86400 - this->_localStartTime.getTotalSeconds() );
+  
+  while( secondsSinceSetDayEnd >= 0 ) {
+    localDate.day++;
+    secondsSinceSetDayEnd -= 86400;
+
+    int maxDays = 31;
+    switch( localDate.month ) {
+      case 2:
+        if( ( ( localDate.year % 4 == 0) && ( localDate.year % 100 != 0 ) ) || ( localDate.year % 400 == 0 ) ) {
+          maxDays = 29;
+        }
+        else {
+          maxDays = 28;
+        }
+      break;
+
+      case 4:
+      case 6:
+      case 9:
+      case 11:
+        maxDays = 30;
+      break;
+    }
+
+    //calculate day overflow
+    if( localDate.day > maxDays ) {
+      localDate.day = 1;
+      localDate.month++;
+    }
+    //calculate year overflow
+    if( localDate.month > 12 ) {
+      localDate.month = 1;
+      localDate.year++;
+    }
+  }
+
+  return localDate;
 }
 
 const int Mount::localUtcOffset() const {
   return _localUtcOffset;
 }
 
-void Mount::setLocalDate( int year, int month, int day ) {
-  this->_localDate.year = year;
-  this->_localDate.month = month;
-  this->_localDate.day = day;
+void Mount::setLocalStartDate( int year, int month, int day ) {
+  this->_localStartDate.year = year;
+  this->_localStartDate.month = month;
+  this->_localStartDate.day = day;
 
   this->autoCalcHa();
 }
-void Mount::setLocalTime( DayTime localTime ) {
-  this->_localTime = localTime;
-  this->_localTimeSetMillis = millis();
+void Mount::setLocalStartTime( DayTime localTime ) {
+  this->_localStartTime = localTime;
+  this->_localStartTimeSetMillis = millis();
 
   this->autoCalcHa();
 }
@@ -2775,24 +2813,13 @@ void Mount::autoCalcHa() {
 }
 
 DayTime Mount::calculateLst() {
-  DayTime timeUTC = utcTime();
-  DayTime lst = Sidereal::calculateByDriver( this->longitude().getTotalHours(), _localDate.year, _localDate.month, _localDate.day, &timeUTC );
+  DayTime timeUTC = this->utcTime();
+  LocalDate localDate = this->localDate();
+  DayTime lst = Sidereal::calculateByDateAndTime( this->longitude().getTotalHours(), localDate.year, localDate.month, localDate.day, &timeUTC );
   return lst;
 }
 
 DayTime Mount::calculateHa() {
-
   DayTime lst = this->calculateLst();
-  float lstDeg = lst.getTotalHours() * 15; //to deg
-
-  //subtract Poloars RA
-  lstDeg -= ( ( POLARIS_RA_SECOND / 3600.0f + POLARIS_RA_MINUTE/60.0f + POLARIS_RA_HOUR ) * 15.0f );
-
-  //ensure positive deg
-  while( lstDeg < 0.0f ) {
-    lstDeg += 360.0f;
-  }
-
-  //update HA
-  return DayTime( lstDeg / 15.0f );
+  return Sidereal::calculateHa( lst.getTotalHours() );
 }

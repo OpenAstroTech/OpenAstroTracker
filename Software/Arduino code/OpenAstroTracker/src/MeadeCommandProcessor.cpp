@@ -517,19 +517,20 @@ String MeadeCommandProcessor::handleMeadeGetInfo(String inCmd) {
     }
     case 'G': { // utc offset +05#
       int offset = this->_mount->localUtcOffset();
-      char sign = offset < 0 ? '-' : '+';
-      offset = abs( offset );
-      sprintf(achBuffer, "%c%02d#", sign, offset );
+      sprintf(achBuffer, "%+03d#", offset );
       return String(achBuffer);
     }
     case 'a': {
       DayTime time = _mount->localTime();
-      sprintf(achBuffer, "%02d:%02d:%02d#", time.getHours() % 12, time.getMinutes(), time.getSeconds() );
+      if( time.getHours() > 12 ) {
+        time.addHours(-12);
+      }
+      time.formatString( achBuffer, "{d}:{m}:{s}" );
       return String(achBuffer);
     }
     case 'L': {
       DayTime time = _mount->localTime();
-      sprintf(achBuffer, "%02d:%02d:%02d#", time.getHours(), time.getMinutes(), time.getSeconds());
+      time.formatString( achBuffer, "{d}:{m}:{s}" );
       return String(achBuffer);
     }
     case 'C': {
@@ -686,24 +687,20 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
   }
   else if (inCmd[0] == 'G') // utc offset :SG+05#
   {
-    int offset = inCmd.substring(2, 4).toInt();
-    this->_mount->setLocalUtcOffset( inCmd[1] == '+' ? offset : -offset );
+    int offset = inCmd.substring(1, 4).toInt();
+    this->_mount->setLocalUtcOffset( offset );
     return "1";
   }
   else if (inCmd[0] == 'L') // Local time :SL19:33:03#
   {
-    int hours = inCmd.substring( 1, 3 ).toInt();
-    int minutes = inCmd.substring( 4, 6 ).toInt();
-    int seconds = inCmd.substring( 7, 9 ).toInt();
-    this->_mount->setLocalTime( DayTime( hours, minutes, seconds ) );
+    this->_mount->setLocalStartTime( DayTime::ParseFromMeade( inCmd.substring( 1 ) ) );
     return "1";
   }
   else if (inCmd[0] == 'C') { // Set Date (MM/DD/YY) :SC04/30/20#
     int month = inCmd.substring( 1, 3 ).toInt();
     int day = inCmd.substring( 4, 6 ).toInt();
     int year = 2000 + inCmd.substring( 7, 9 ).toInt();
-
-    this->_mount->setLocalDate( year, month,day );
+    this->_mount->setLocalStartDate( year, month,day );
 
     /*
     From https://www.astro.louisville.edu/software/xmtel/archive/xmtel-indi-6.0/xmtel-6.0l/support/lx200/CommandSet.html :

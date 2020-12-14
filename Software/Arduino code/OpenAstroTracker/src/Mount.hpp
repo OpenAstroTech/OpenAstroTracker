@@ -322,8 +322,8 @@ public:
 
   const int localUtcOffset() const;
 
-  void setLocalDate( int year, int month, int day );
-  void setLocalTime( DayTime localTime );
+  void setLocalStartDate( int year, int month, int day );
+  void setLocalStartTime( DayTime localTime );
   void setLocalUtcOffset( int offset );
 
   DayTime calculateLst();
@@ -434,9 +434,9 @@ private:
   bool _bootComplete;
   
   int _localUtcOffset;
-  LocalDate _localDate;
-  DayTime _localTime;
-  long _localTimeSetMillis;
+  LocalDate _localStartDate;
+  DayTime _localStartTime;
+  long _localStartTimeSetMillis;
 
   static Mount* _instance;
 };

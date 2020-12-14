@@ -19,7 +19,7 @@ LcdButtons lcdButtons(&lcdMenu);
 
 #if defined(__AVR_ATmega2560__)
 #if RA_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-  #if RA_DRIVER_TMC2209_UART_MODE == TMC2209_MODE_UART
+  #if RA_DRIVER_TMC2209_CONNECTION_TEST == ENABLED
     #if RA_SERIAL_PORT_TX == 14 && RA_SERIAL_PORT_RX == 15
       #define RA_SERIAL_PORT Serial3
     #elif RA_SERIAL_PORT_TX == 16 && RA_SERIAL_PORT_RX == 17
@@ -27,14 +27,14 @@ LcdButtons lcdButtons(&lcdMenu);
     #elif RA_SERIAL_PORT_TX == 18 && RA_SERIAL_PORT_RX == 19
       #define RA_SERIAL_PORT Serial1
     #else
-      #error RA: Can not use UART with Software Serial
+      #error RA: Can not use connection testing with Software Serial
     #endif
   #else
     SoftwareSerial RA_SERIAL_PORT(RA_SERIAL_PORT_RX, RA_SERIAL_PORT_TX);
   #endif
 #endif
 #if DEC_DRIVER_TYPE == DRIVER_TYPE_TMC2209_UART
-  #if DEC_DRIVER_TMC2209_UART_MODE == TMC2209_MODE_UART
+  #if DEC_DRIVER_TMC2209_CONNECTION_TEST == ENABLED
       #if DEC_SERIAL_PORT_TX == 14 && DEC_SERIAL_PORT_RX == 15
         #define DEC_SERIAL_PORT Serial3
       #elif DEC_SERIAL_PORT_TX == 16 && DEC_SERIAL_PORT_RX == 17
@@ -42,7 +42,7 @@ LcdButtons lcdButtons(&lcdMenu);
       #elif DEC_SERIAL_PORT_TX == 18 && DEC_SERIAL_PORT_RX == 19
         #define DEC_SERIAL_PORT Serial1
       #else
-        #error DEC: Can not use UART with Software Serial
+        #error DEC: Can not use connection testing with Software Serial
       #endif
     #else
       SoftwareSerial DEC_SERIAL_PORT(DEC_SERIAL_PORT_RX, DEC_SERIAL_PORT_TX);
