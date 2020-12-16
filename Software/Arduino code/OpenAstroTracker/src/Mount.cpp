@@ -2430,35 +2430,43 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
   //LOGV3(DEBUG_MOUNT_VERBOSE,F("Mount::CalcSteppersIn: RA Steps/deg: %d   Steps/srhour: %f"), _stepsPerRADegree, stepsPerSiderealHour);
   //LOGV3(DEBUG_MOUNT_VERBOSE,F("Mount::CalcSteppersIn: Target Step pos RA: %f, DEC: %f"), moveRA, moveDEC);
 
-  // We can move 6 hours in either direction. Outside of that we need to flip directions.
-#if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
-  #if NORTHERN_HEMISPHERE == 1 
-    float RALimitL = (5.0f * stepsPerSiderealHour / 2);
-    float RALimitR = (7.0f * stepsPerSiderealHour / 2);
+  /*
+  * Current RA wheel has a rotation limit of around 7 hours in each direction from home position.
+  * Since tracking does not trigger the meridian flip, we try to extend the possible tracking time 
+  * without reaching the RA ring end by executing the meridian flip before slewing to the target.
+  * For this flip the RA and DEC rings have to be flipped by 180° (which is 12 RA hours). Based
+  * on the physical RA ring limits, this means that the flip can only be executed during +/-[5h to 7h]
+  * sections around the home position of RA. The tracking time will still be limited to around 2h in
+  * worst case if the target is located right before the 5h mark during slewing. 
+  */
+  #if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
+    #if NORTHERN_HEMISPHERE == 1 
+      float RALimitL = (5.0f * stepsPerSiderealHour / 2);
+      float RALimitR = (7.0f * stepsPerSiderealHour / 2);
+    #else
+      float RALimitL = (7.0f * stepsPerSiderealHour / 2);
+      float RALimitR = (5.0f * stepsPerSiderealHour / 2);  
+    #endif
   #else
-    float RALimitL = (7.0f * stepsPerSiderealHour / 2);
-    float RALimitR = (5.0f * stepsPerSiderealHour / 2);  
+    #if NORTHERN_HEMISPHERE == 1 
+      float RALimitL = (5.0f * stepsPerSiderealHour);
+      float RALimitR = (7.0f * stepsPerSiderealHour);
+    #else
+      float RALimitL = (7.0f * stepsPerSiderealHour);
+      float RALimitR = (5.0f * stepsPerSiderealHour);  
+    #endif
   #endif
-  #else
-  #if NORTHERN_HEMISPHERE == 1 
-    float RALimitL = (5.0f * stepsPerSiderealHour);
-    float RALimitR = (7.0f * stepsPerSiderealHour);
-  #else
-    float RALimitL = (7.0f * stepsPerSiderealHour);
-    float RALimitR = (5.0f * stepsPerSiderealHour);  
-  #endif
-#endif
 
   // If we reach the limit in the positive direction ...
   if (moveRA > RALimitR) {
     //LOGV2(DEBUG_MOUNT_VERBOSE,F("Mount::CalcSteppersIn: RA is past +limit: %f, DEC: %f"), RALimit);
 
     // ... turn both RA and DEC axis around
-#if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
-    moveRA -= long(12.0f * stepsPerSiderealHour / 2);
-#else
-    moveRA -= long(12.0f * stepsPerSiderealHour);
-#endif
+    #if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
+      moveRA -= long(12.0f * stepsPerSiderealHour / 2);
+    #else
+      moveRA -= long(12.0f * stepsPerSiderealHour);
+    #endif
     moveDEC = -moveDEC;
     //LOGV3(DEBUG_MOUNT_VERBOSE,F("Mount::CalcSteppersIn: Adjusted Target Step pos RA: %f, DEC: %f"), moveRA, moveDEC);
   }
@@ -2466,11 +2474,11 @@ void Mount::calculateRAandDECSteppers(float& targetRA, float& targetDEC) {
   else if (moveRA < -RALimitL) {
     //LOGV2(DEBUG_MOUNT_VERBOSE,F("Mount::CalcSteppersIn: RA is past -limit: %f, DEC: %f"), -RALimit);
     // ... turn both RA and DEC axis around
-#if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
-    moveRA += long(12.0f * stepsPerSiderealHour / 2);
-#else
-    moveRA += long(12.0f * stepsPerSiderealHour);
-#endif
+    #if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
+      moveRA += long(12.0f * stepsPerSiderealHour / 2);
+    #else
+      moveRA += long(12.0f * stepsPerSiderealHour);
+    #endif
     moveDEC = -moveDEC;
     //LOGV1(DEBUG_MOUNT_VERBOSE,F("Mount::CalcSteppersPost: Adjusted Target. Moved RA, inverted DEC"));
   }
