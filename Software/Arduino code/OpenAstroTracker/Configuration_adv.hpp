@@ -10,25 +10,49 @@
 
 // This is how many steps your stepper needs for a full rotation.
 #if RA_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
-  #define RA_STEPPER_SPR            4096  // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
-  #define RA_STEPPER_SPEED          400   // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
-  #define RA_STEPPER_ACCELERATION   600   // High speeds tend to make these cheap steppers unprecice
+  #ifndef RA_STEPPER_SPR
+    #define RA_STEPPER_SPR            4096  // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+  #endif
+  #ifndef RA_STEPPER_SPEED
+    #define RA_STEPPER_SPEED          400   // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+  #endif
+  #ifndef RA_STEPPER_ACCELERATION
+    #define RA_STEPPER_ACCELERATION   600   // High speeds tend to make these cheap steppers unprecice
+  #endif
 #elif RA_STEPPER_TYPE == STEPPER_TYPE_NEMA17
-  #define RA_STEPPER_SPR            400   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
-  #define RA_STEPPER_SPEED          1200  // You can change the speed and acceleration of the steppers here. Max. Speed = 3000. 
-  #define RA_STEPPER_ACCELERATION   6000
+  #ifndef RA_STEPPER_SPR
+    #define RA_STEPPER_SPR            400   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+  #endif
+  #ifndef RA_STEPPER_SPEED
+    #define RA_STEPPER_SPEED          1200  // You can change the speed and acceleration of the steppers here. Max. Speed = 3000. 
+  #endif
+  #ifndef RA_STEPPER_ACCELERATION
+    #define RA_STEPPER_ACCELERATION   6000
+  #endif
 #else
   #error New RA Stepper type? Add it here...
 #endif
 
 #if DEC_STEPPER_TYPE == STEPPER_TYPE_28BYJ48
-  #define DEC_STEPPER_SPR            4096  // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
-  #define DEC_STEPPER_SPEED          600   // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
-  #define DEC_STEPPER_ACCELERATION   400   // High speeds tend to make these cheap steppers unprecice
+  #ifndef DEC_STEPPER_SPR
+    #define DEC_STEPPER_SPR            4096  // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+  #endif
+  #ifndef DEC_STEPPER_SPEED
+    #define DEC_STEPPER_SPEED          600   // You can change the speed and acceleration of the steppers here. Max. Speed = 600. 
+   #endif
+  #ifndef DEC_STEPPER_ACCELERATION
+    #define DEC_STEPPER_ACCELERATION   400   // High speeds tend to make these cheap steppers unprecice
+  #endif
 #elif DEC_STEPPER_TYPE == STEPPER_TYPE_NEMA17
-  #define DEC_STEPPER_SPR            400   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
-  #define DEC_STEPPER_SPEED          1300  // You can change the speed and acceleration of the steppers here. Max. Speed = 3000. 
-  #define DEC_STEPPER_ACCELERATION   6000
+  #ifndef DEC_STEPPER_SPR
+    #define DEC_STEPPER_SPR            400   // 28BYJ-48 = 4096  |  NEMA 0.9° = 400  |  NEMA 1.8° = 200
+  #endif
+  #ifndef DEC_STEPPER_SPEED
+    #define DEC_STEPPER_SPEED          1300  // You can change the speed and acceleration of the steppers here. Max. Speed = 3000. 
+  #endif
+  #ifndef DEC_STEPPER_ACCELERATION
+    #define DEC_STEPPER_ACCELERATION   6000
+  #endif
 #else
   #error New DEC Stepper type? Add it here...
 #endif
