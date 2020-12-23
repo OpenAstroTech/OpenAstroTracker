@@ -6,6 +6,7 @@
 #include "EPROMStore.hpp"
 #include "inc/Config.hpp"
 #include "inc/Globals.hpp"
+#include "Sidereal.hpp"
 
 //mountstatus
 #define STATUS_PARKED              0B0000000000000000
@@ -167,6 +168,12 @@ Mount::Mount(float stepsPerRADegree, float stepsPerDECDegree, LcdMenu* lcdMenu) 
   _pitchCalibrationAngle = 0;
   _rollCalibrationAngle = 0;
   #endif
+
+  this->_localUtcOffset = 0;
+  this->_localStartDate.year = 2000;
+  this->_localStartDate.month = 1;
+  this->_localStartDate.day = 1;
+  this->_localStartTimeSetMillis = -1;
 }
 
 /////////////////////////////////
@@ -1037,6 +1044,8 @@ void Mount::setLatitude(Latitude latitude) {
 void Mount::setLongitude(Longitude longitude) {
   _longitude = longitude;
   writePersistentData(EEPROM_LONGITUDE, round(longitude.getTotalHours() * 100));
+
+  this->autoCalcHa();
 }
 
 /////////////////////////////////
@@ -2660,12 +2669,106 @@ void Mount::finishFindingHomeRA()
   
   while (_stepperRA->run());
   
-
    //setManualSlewMode(false);
-   
    
    startSlewing(TRACKING);
    setHome(true);
 
 }
 #endif
+
+
+DayTime Mount::utcTime() {
+  DayTime timeUTC = this->localTime();
+  timeUTC.addHours( this->_localUtcOffset );
+  return timeUTC;
+}
+
+DayTime Mount::localTime() {
+  DayTime timeUTC = this->_localStartTime;
+  timeUTC.addSeconds( ( millis() - this->_localStartTimeSetMillis ) / 1000 );
+  return timeUTC;
+}
+
+LocalDate Mount::localDate() {
+  LocalDate localDate = this->_localStartDate;
+  long secondsSinceSetDayEnd = ( ( millis() - this->_localStartTimeSetMillis ) / 1000 ) - ( 86400 - this->_localStartTime.getTotalSeconds() );
+  
+  while( secondsSinceSetDayEnd >= 0 ) {
+    localDate.day++;
+    secondsSinceSetDayEnd -= 86400;
+
+    int maxDays = 31;
+    switch( localDate.month ) {
+      case 2:
+        if( ( ( localDate.year % 4 == 0) && ( localDate.year % 100 != 0 ) ) || ( localDate.year % 400 == 0 ) ) {
+          maxDays = 29;
+        }
+        else {
+          maxDays = 28;
+        }
+      break;
+
+      case 4:
+      case 6:
+      case 9:
+      case 11:
+        maxDays = 30;
+      break;
+    }
+
+    //calculate day overflow
+    if( localDate.day > maxDays ) {
+      localDate.day = 1;
+      localDate.month++;
+    }
+    //calculate year overflow
+    if( localDate.month > 12 ) {
+      localDate.month = 1;
+      localDate.year++;
+    }
+  }
+
+  return localDate;
+}
+
+const int Mount::localUtcOffset() const {
+  return _localUtcOffset;
+}
+
+void Mount::setLocalStartDate( int year, int month, int day ) {
+  this->_localStartDate.year = year;
+  this->_localStartDate.month = month;
+  this->_localStartDate.day = day;
+
+  this->autoCalcHa();
+}
+void Mount::setLocalStartTime( DayTime localTime ) {
+  this->_localStartTime = localTime;
+  this->_localStartTimeSetMillis = millis();
+
+  this->autoCalcHa();
+}
+void Mount::setLocalUtcOffset( int offset ) {
+  this->_localUtcOffset = offset;
+
+  this->autoCalcHa();
+}
+
+
+void Mount::autoCalcHa() {
+  //update HA
+  this->setHA( this->calculateHa() );
+}
+
+DayTime Mount::calculateLst() {
+  DayTime timeUTC = this->utcTime();
+  LocalDate localDate = this->localDate();
+  DayTime lst = Sidereal::calculateByDateAndTime( this->longitude().getTotalHours(), localDate.year, localDate.month, localDate.day, &timeUTC );
+  return lst;
+}
+
+DayTime Mount::calculateHa() {
+  DayTime lst = this->calculateLst();
+  return Sidereal::calculateHa( lst.getTotalHours() );
+}

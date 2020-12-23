@@ -79,6 +79,14 @@
 #define ALT_DRIVER_TYPE     DRIVER_TYPE_ULN2003
 #endif
 
+// For cpnnection testing, TX has to be wired with a 1K Resistor and RX with no Resistor to both PDN Pins
+#ifndef RA_DRIVER_TMC2209_CONNECTION_TEST
+#define RA_DRIVER_TMC2209_CONNECTION_TEST      DISABLED
+#endif
+#ifndef DEC_DRIVER_TMC2209_CONNECTION_TEST
+#define DEC_DRIVER_TMC2209_CONNECTION_TEST     DISABLED
+#endif
+
 // Your pulley tooth count. 16 for the bought (aluminium) one, 20 for the printed one.
 #ifndef RA_PULLEY_TEETH
 #define RA_PULLEY_TEETH     16

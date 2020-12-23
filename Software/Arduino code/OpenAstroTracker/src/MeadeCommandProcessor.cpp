@@ -4,7 +4,6 @@
 #include "Utility.hpp"
 #include "WifiControl.hpp"
 #include "Gyro.hpp"
-
 #if USE_GPS == 1
 bool gpsAqcuisitionComplete(int & indicator); // defined in c72_menuHA_GPS.hpp
 #endif
@@ -469,6 +468,7 @@ String MeadeCommandProcessor::handleMeadeInit(String inCmd) {
 String MeadeCommandProcessor::handleMeadeGetInfo(String inCmd) {
   char cmdOne = inCmd[0];
   char cmdTwo = (inCmd.length() > 1) ? inCmd[1] : '\0';
+  char achBuffer[20];
 
   switch (cmdOne) {
     case 'V':
@@ -505,14 +505,53 @@ String MeadeCommandProcessor::handleMeadeGetInfo(String inCmd) {
       return retVal + "#";
     }
     case 't': {
-      char achBuffer[20];
       _mount->latitude().formatString(achBuffer,"{d}*{m}#");
       return String(achBuffer);
     }
     case 'g': {
-      char achBuffer[20];
       _mount->longitude().formatString(achBuffer,"{d}*{m}#");
       return String(achBuffer);
+    }
+    case 'c': {
+      return "24#";
+    }
+    case 'G': { // utc offset +05#
+      int offset = this->_mount->localUtcOffset();
+      sprintf(achBuffer, "%+03d#", offset );
+      return String(achBuffer);
+    }
+    case 'a': {
+      DayTime time = _mount->localTime();
+      if( time.getHours() > 12 ) {
+        time.addHours(-12);
+      }
+      time.formatString( achBuffer, "{d}:{m}:{s}" );
+      return String(achBuffer);
+    }
+    case 'L': {
+      DayTime time = _mount->localTime();
+      time.formatString( achBuffer, "{d}:{m}:{s}" );
+      return String(achBuffer);
+    }
+    case 'C': {
+      LocalDate date = _mount->localDate();
+      sprintf(achBuffer, "%02d/%02d/%02d#", date.month, date.day, date.year % 100);
+      return String(achBuffer);
+    }
+    case 'M': {
+      return "OAT1#";
+    }
+    case 'N': {
+      return "OAT2#";
+    }
+    case 'O': {
+      return "OAT3#";
+    }
+    case 'P': {
+      return "OAT4#";
+    }
+    case 'T': {
+      return "60.0#"; //default MEADE Tracking Frequency
     }
   }
 
@@ -643,20 +682,32 @@ String MeadeCommandProcessor::handleMeadeSetInfo(String inCmd) {
   else if (inCmd[0] == 'g') // longitude :Sg097*34#
   {
     Longitude lon = Longitude::ParseFromMeade(inCmd.substring(1));
-    
      _mount->setLongitude(lon);
      return "1";
   }
   else if (inCmd[0] == 'G') // utc offset :SG+05#
   {
+    int offset = inCmd.substring(1, 4).toInt();
+    this->_mount->setLocalUtcOffset( offset );
     return "1";
   }
   else if (inCmd[0] == 'L') // Local time :SL19:33:03#
   {
+    this->_mount->setLocalStartTime( DayTime::ParseFromMeade( inCmd.substring( 1 ) ) );
     return "1";
   }
   else if (inCmd[0] == 'C') { // Set Date (MM/DD/YY) :SC04/30/20#
-    return "1Updating Planetary Data#"; // 
+    int month = inCmd.substring( 1, 3 ).toInt();
+    int day = inCmd.substring( 4, 6 ).toInt();
+    int year = 2000 + inCmd.substring( 7, 9 ).toInt();
+    this->_mount->setLocalStartDate( year, month,day );
+
+    /*
+    From https://www.astro.louisville.edu/software/xmtel/archive/xmtel-indi-6.0/xmtel-6.0l/support/lx200/CommandSet.html :
+    SC: Calendar: If the date is valid 2 <string>s are returned, each string is 31 bytes long. 
+    The first is: "Updating planetary data#" followed by a second string of 30 spaces terminated by '#'
+    */
+    return "1Updating Planetary Data#                              #"; // 
   }
   else {
     return "0";

@@ -4,7 +4,7 @@
 
 #if SUPPORT_INFO_DISPLAY == 1
 byte infoIndex = 0;
-byte maxInfoIndex = 9;
+byte maxInfoIndex = 13;
 byte subIndex = 0;
 unsigned long lastInfoUpdate = 0;
 
@@ -165,6 +165,39 @@ void printStatusSubmenu()
     break;
 
     case 9:
+    {
+        LocalDate date = mount.localDate();
+        sprintf(scratchBuffer, "Date: %04d-%02d-%02d", date.year, date.month, date.day );
+        lcdMenu.printMenu(scratchBuffer);
+    }
+    break;
+
+    case 10:
+    {
+        DayTime drvUtc = mount.utcTime();
+        sprintf(scratchBuffer, "UTC: %02d:%02d:%02d", drvUtc.getHours(), drvUtc.getMinutes(), drvUtc.getSeconds() );
+        lcdMenu.printMenu(scratchBuffer);
+    }
+    break;
+
+    case 11:
+    {
+        DayTime lst = mount.calculateLst();
+        sprintf(scratchBuffer, "LST: %02d:%02d:%02d", lst.getHours(), lst.getMinutes(), lst.getSeconds() );
+        lcdMenu.printMenu(scratchBuffer);
+    }
+    break;
+
+    case 12:
+    {
+        DayTime ha = mount.calculateHa();
+        sprintf(scratchBuffer, "HA: %02d:%02d:%02d", ha.getHours(), ha.getMinutes(), ha.getSeconds() );
+        lcdMenu.printMenu(scratchBuffer);
+    }
+    break;
+
+
+    case 13:
     {
       lcdMenu.printMenu("Firmw.: " + String(VERSION));
     }

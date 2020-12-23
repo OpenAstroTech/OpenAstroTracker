@@ -1,9 +1,8 @@
 #pragma once
 #include "../Configuration_adv.hpp"
 
-#if USE_GPS == 1
 #include "Sidereal.hpp"
-#endif
+
 #if USE_GYRO_LEVEL == 1
 #include "Gyro.hpp"
 #endif

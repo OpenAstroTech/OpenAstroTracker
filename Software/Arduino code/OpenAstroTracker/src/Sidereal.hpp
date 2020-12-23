@@ -1,21 +1,28 @@
 #pragma once
 #include "inc/Config.hpp"
 
-#if USE_GPS == 1
 #include <math.h>
 
+#if USE_GPS == 1
+
 #include <TinyGPS++.h>
+
+#endif
+
 #include "DayTime.hpp"
 
 
 class Sidereal
 {
  public:
+ #if USE_GPS == 1
     static DayTime calculateByGPS(TinyGPSPlus* gps);
+ #endif
+
+   static DayTime calculateByDateAndTime( double longitude, int year, int month, int day, DayTime *timeUTC );
+   static DayTime calculateHa( float lstTotalHours );
 
  private:
     static const double calculateTheta(double deltaJ, double longitude, float timeUTC);
     static const int calculateDeltaJd(int year, int month, int day);
 };
-
-#endif

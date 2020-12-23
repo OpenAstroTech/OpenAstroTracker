@@ -33,3 +33,6 @@
 #define DRIVER_TYPE_GENERIC             1
 #define DRIVER_TYPE_TMC2209_STANDALONE  2
 #define DRIVER_TYPE_TMC2209_UART        3
+
+#define DISABLED 0
+#define ENABLED  1
