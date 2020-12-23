@@ -686,16 +686,16 @@ String MeadeCommandProcessor::handleMeadeMovement(String inCmd) {
       return "0";
     }
   }
-  else if (inCmd[0] == 'G') {
+  else if (inCmd[0] == 'G' || inCmd[0] == 'g') { //indi sends :Mgnxxxx# https://github.com/indilib/indi/blob/1b2f462b9c9b0f75629b635d77dc626b9d4b74a3/drivers/telescope/lx200driver.cpp#L1342
     // Guide pulse
     //   012345678901
     // :MGd0403
     if (inCmd.length() == 6) {
       byte direction = EAST;
-      if (inCmd[1] == 'N') direction = NORTH;
-      else if (inCmd[1] == 'S') direction = SOUTH;
-      else if (inCmd[1] == 'E') direction = EAST;
-      else if (inCmd[1] == 'W') direction = WEST;
+      if (inCmd[1] == 'n') direction = NORTH;
+      else if (inCmd[1] == 's') direction = SOUTH;
+      else if (inCmd[1] == 'e') direction = EAST;
+      else if (inCmd[1] == 'w') direction = WEST;
       int duration = (inCmd[2] - '0') * 1000 + (inCmd[3] - '0') * 100 + (inCmd[4] - '0') * 10 + (inCmd[5] - '0');
       _mount->guidePulse(direction, duration);
       return "1";
