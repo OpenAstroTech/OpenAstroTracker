@@ -12,6 +12,12 @@ I you would be interested in buying the tracker as a printed kit, head over to [
 
 ##
 
-For instructions, please see [this](https://www.instructables.com/id/OpenAstroTracker-a-DSLR-Tracking-GoTo-Mount-for-As/) Instructable 
+Check out our [Wiki](https://wiki.openastrotech.com/wiki/OpenAstroTracker) for all the guides!
 
-A list of all guides can be found [here](https://www.reddit.com/r/OpenAstroTech/comments/gc4pmr/all_current_guides/)
+##
+
+This is the Repo for CAD and STL files. The other Repo's are:
+ - [/OpenAstroTracker-Firmware](https://github.com/OpenAstroTech/OpenAstroTracker-Firmware) for OAT Arduino Firmware
+ - [/OpenAstroTracker-Desktop](https://github.com/OpenAstroTech/OpenAstroTracker-Desktop) for OAT ASCOM and OATcontrol
+ - [/OpenAstroTracker-Addons](https://github.com/OpenAstroTech/OpenAstroTracker-Addons) for OAT Hardware addons 
+ - [/OpenAstroTracker-Apps](https://github.com/OpenAstroTech/OpenAstroTracker-Apps) (WIP) Mobile Apps
