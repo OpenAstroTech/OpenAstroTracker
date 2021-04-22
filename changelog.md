@@ -1,6 +1,11 @@
 # Changelog
 
 ## Parts
+22.04.2021
+ - Updated 14_RAmotor_mount_NEMA_down to v4, adding adjustment for belt tension and making _up obsolete. 
+ - Added 14_RAmotor_mount_NEMA_down_SngleRAring_v4 for the single piece RA Rings.
+ - Updated 05_pole to v5, adding stoppers for upcoming sensorless homing with TMC2209 builds.
+
 20.05.2020
  - see [this post](https://www.reddit.com/r/OpenAstroTech/comments/gnjsvu/a_whole_bunch_of_updated_parts/)
 
