@@ -7,14 +7,14 @@ https://youtu.be/9MNLAIyqGoA
 A cheap 3D printed tracking, GoTo and autoguiding mount for DSLR astrophotography.
 
 # Links
-[Software](https://github.com/OpenAstroTech/OpenAstroTracker/releases)
-[Reddit](https://www.reddit.com/r/OpenAstroTech/)
-[Guides](https://www.reddit.com/r/OpenAstroTech/comments/gc4pmr/all_current_guides/)
-[Wiki](https://wiki.openastrotech.com/)
-[OpenAstroGuider](https://www.thingiverse.com/thing:4181640) Autoguiding Addon
-[Community-made Addons](https://www.thingiverse.com/openastrotech/collections/things-for-the-openastrotracker) I'll add things to this Collection, if you made something, send me a message.
-[My Images](https://www.instagram.com/fabianuehleke/)
-[Community Images](https://www.flickr.com/groups/14697674@N24/)
+ - [Software](https://github.com/OpenAstroTech/OpenAstroTracker/releases)
+ - [Reddit](https://www.reddit.com/r/OpenAstroTech/)
+ - [Guides](https://www.reddit.com/r/OpenAstroTech/comments/gc4pmr/all_current_guides/)
+ - [Wiki](https://wiki.openastrotech.com/)
+ - [OpenAstroGuider](https://www.thingiverse.com/thing:4181640) Autoguiding Addon
+ - [Community-made Addons](https://www.thingiverse.com/openastrotech/collections/things-for-the-openastrotracker) I'll add things to this Collection, if you made something, send me a message.
+ - [My Images](https://www.instagram.com/fabianuehleke/)
+ - [Community Images](https://www.flickr.com/groups/14697674@N24/)
 
 ##
 
