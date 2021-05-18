@@ -6,9 +6,12 @@ https://youtu.be/9MNLAIyqGoA
 
 A cheap 3D printed tracking, GoTo and autoguiding mount for DSLR astrophotography.
 
+# [OpenAstroTracker Kits Now Available!](https://shop.openastrotech.com/products/openastrotracker-diy-kit)
+
 # Links
  - [Software](https://github.com/OpenAstroTech/OpenAstroTracker/releases)
  - [Reddit](https://www.reddit.com/r/OpenAstroTech/)
+ - [Discord](https://discord.gg/TmEfSNaBnB)
  - [Guides](https://www.reddit.com/r/OpenAstroTech/comments/gc4pmr/all_current_guides/)
  - [Wiki](https://wiki.openastrotech.com/)
  - [OpenAstroGuider](https://www.thingiverse.com/thing:4181640) Autoguiding Addon
