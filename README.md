@@ -25,7 +25,7 @@ A cheap 3D printed tracking, GoTo and autoguiding mount for DSLR astrophotograph
 
 
 # Like this Project?
-**[Buy me and the devs a coffee!](https://paypal.me/pools/c/8vUJtTMosw)**
+**[Buy me and the devs a coffee!](https://www.paypal.com/donate/?hosted_button_id=HMY3H3PTGPFXN)**
 
 
 I you would be interested in buying the tracker as a printed kit, head over to [this site](https://openastrotech.com/products/)
